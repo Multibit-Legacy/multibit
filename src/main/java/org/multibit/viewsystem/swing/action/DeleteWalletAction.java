@@ -50,7 +50,7 @@ public class DeleteWalletAction extends MultiBitSubmitAction {
         if (abort()) {
             return;
         }
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
   
         try {
@@ -58,7 +58,7 @@ public class DeleteWalletAction extends MultiBitSubmitAction {
             deleteWalletConfirmDialog.setVisible(true);
         } finally {
             setEnabled(true);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 }

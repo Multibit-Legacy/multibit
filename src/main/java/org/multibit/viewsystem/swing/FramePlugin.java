@@ -21,45 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
+package org.multibit.viewsystem.swing;
 
-import org.multibit.viewsystem.swing.FramePlugin;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import org.multibit.viewsystem.ViewSystem;
+
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface ViewSystem {
+public interface FramePlugin extends ViewSystem {
 
-    /**
-     * display the view specified
-     * @param view to display - one of the View constants
-     */
-    void displayView(int viewToDisplay);
+    CoreFrame getCoreFrame();
     
+    void addToFileMenu(JMenu fileMenu);
 
-    /**
-     * tells the view system that the model data has changed (but the wallet is still the same)
-     */   
-    public void fireDataChanged();
+    void addToHeaderPanel(JPanel headerPanel);
+
+    void addToLeftTabbedPane(MultiBitTabbedPane viewLeftTabbedPane);
+
+    void addToMenuBar(JMenuBar menuBar);
+
+    void addToViewMenu(JMenu viewMenu);
+
+    void addToViewTabbedPane(MultiBitTabbedPane viewTabbedPane);
+    
+    
+    void fireFinishInitUI();
+    
     
     /**
-     * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
-     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
+     * updates the header of the view.
      */
-    void navigateAwayFromView(int viewToNavigateAwayFrom);
-
-    /**
-     * tells the view system to recreate all views e.g. after a language change or wallet change
-     * @param initUI Completely redraw everything on all screens = true
-     */
-    void recreateAllViews(boolean initUI);
-    
-
-    /**
-     * Set the help context to display
-     * @param helpContextToDisplay
-     */
-    void setHelpContext(String helpContextToDisplay);
+    void updateHeader();
     
 }

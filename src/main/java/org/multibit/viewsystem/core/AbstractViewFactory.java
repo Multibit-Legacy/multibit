@@ -30,21 +30,24 @@ import java.util.Map;
  *
  * @author Cameron Garnham
  */
-public abstract class AbstractViewFactory {
+public abstract class AbstractViewFactory implements ViewFactory {
     protected Map<Integer, View> viewMap;
 
     public AbstractViewFactory() {
         initialise();
     }
     
+    @Override
     public final void initialise() {
         viewMap = new HashMap<Integer, View>();
     }
 
+    @Override
     public void addView(int viewNumber, MultiBitView view) {
         viewMap.put(viewNumber, view);
     }
 
+    @Override
     public View getView(int viewNumber) {
         View viewToReturn = viewMap.get(viewNumber);
         if (viewToReturn == null) {
@@ -52,6 +55,4 @@ public abstract class AbstractViewFactory {
         }
         return viewToReturn;
     }
-    
-    protected abstract View createView(int viewNumber);
 }

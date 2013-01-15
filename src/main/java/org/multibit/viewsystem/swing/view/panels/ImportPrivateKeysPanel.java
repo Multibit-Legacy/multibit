@@ -850,9 +850,9 @@ public class ImportPrivateKeysPanel extends JPanel implements MultiBitView, Wall
 
         try {
             callingButton.setEnabled(false);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            int returnVal = fileChooser.showOpenDialog(mainFrame);
+            int returnVal = fileChooser.showOpenDialog(mainFrame.getCoreFrame());
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 numberOfKeysLabel.setText(" ");
@@ -906,7 +906,7 @@ public class ImportPrivateKeysPanel extends JPanel implements MultiBitView, Wall
                 }
             }
         } finally {
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             callingButton.setEnabled(true);
         }
     }

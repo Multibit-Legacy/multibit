@@ -17,24 +17,20 @@ package org.multibit.viewsystem.core;
 
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
 import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.MessagesPanel;
 import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
 import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
-import org.multibit.viewsystem.swing.view.panels.HelpAboutPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.PreferencesPanel;
 import org.multibit.viewsystem.swing.view.panels.ChartsPanel;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.panels.MultiBitPreferencesPanel;
 
 /**
  * a factory class that lazy loads views
@@ -54,7 +50,7 @@ public class MultiBitViewFactory extends AbstractViewFactory {
     }
     
     @Override
-    protected View createView(int viewNumber) {
+    public View createView(int viewNumber) {
         View viewToReturn = null;
         switch (viewNumber) {
             case MultiBitView.SAME_VIEW:
@@ -64,22 +60,12 @@ public class MultiBitViewFactory extends AbstractViewFactory {
                 }
             case MultiBitView.WELCOME_VIEW:
                 {
-                    viewToReturn = new WelcomePanel(controller, mainFrame);
+                    viewToReturn = new WelcomePanel(controller);
                     break;
                 }
             case MultiBitView.TRANSACTIONS_VIEW:
                 {
                     viewToReturn = new ShowTransactionsPanel(controller, mainFrame);
-                    break;
-                }
-            case MultiBitView.HELP_ABOUT_VIEW:
-                {
-                    viewToReturn = new HelpAboutPanel(controller, mainFrame);
-                    break;
-                }
-            case MultiBitView.HELP_CONTENTS_VIEW:
-                {
-                    viewToReturn = new HelpContentsPanel(controller, mainFrame);
                     break;
                 }
             case MultiBitView.RECEIVE_BITCOIN_VIEW:
@@ -90,13 +76,6 @@ public class MultiBitViewFactory extends AbstractViewFactory {
             case MultiBitView.SEND_BITCOIN_VIEW:
                 {
                     viewToReturn = new SendBitcoinPanel(controller, mainFrame);
-                    break;
-                }
-            case MultiBitView.PREFERENCES_VIEW:
-                {
-                    PreferencesPanel preferencesPanel = new PreferencesPanel(controller, mainFrame);
-                    preferencesPanel.AddPreferencesPlugin(new MultiBitPreferencesPanel(controller, mainFrame, preferencesPanel));
-                    viewToReturn = preferencesPanel;
                     break;
                 }
             case MultiBitView.RESET_TRANSACTIONS_VIEW:

@@ -61,6 +61,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Utils;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
 
 public class SendBitcoinPanel extends AbstractTradePanel implements MultiBitView {
@@ -154,7 +155,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements MultiBitView
         MultiBitLabel notUsedReceiveAddressLabel = new MultiBitLabel(receiveAddressText);
         formPanel.add(MultiBitTitledPanel.createStent((int)notUsedReceiveAddressLabel.getPreferredSize().getWidth()), constraints);
         
-        int longFieldWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
+        int longFieldWidth = fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT);
         addressTextField = new MultiBitTextField("", 24);
         addressTextField.setHorizontalAlignment(JTextField.LEADING);
         addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
@@ -405,7 +406,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements MultiBitView
                 controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
                 sendButton.requestFocusInWindow();
 
-                mainFrame.bringToFront();
+                mainFrame.getCoreFrame().bringToFront();
             } catch (AddressFormatException e) {
                 throw new RuntimeException(e);
             }
@@ -428,7 +429,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements MultiBitView
         String bringToFront = controller.getModel().getUserPreference(MultiBitModel.BRING_TO_FRONT);
         if (Boolean.TRUE.toString().equals(bringToFront)) {
             controller.getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "false");
-            mainFrame.bringToFront();
+            mainFrame.getCoreFrame().bringToFront();
         }
 
         // disable any new changes if another process has changed the wallet

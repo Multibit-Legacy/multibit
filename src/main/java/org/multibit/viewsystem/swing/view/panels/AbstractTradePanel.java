@@ -107,6 +107,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.uri.BitcoinURI;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
 import org.multibit.viewsystem.swing.view.ImageSelection;
 
@@ -391,7 +392,7 @@ public abstract class AbstractTradePanel extends JPanel implements MultiBitView,
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        panel.add(MultiBitTitledPanel.createStent(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), separatorSize),
+        panel.add(MultiBitTitledPanel.createStent(fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT), separatorSize),
                 constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -1164,7 +1165,7 @@ public abstract class AbstractTradePanel extends JPanel implements MultiBitView,
         amountPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints constraints2 = new GridBagConstraints();
-        int longFieldWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
+        int longFieldWidth = fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT);
 
         amountBTCTextField = new MultiBitTextField("", 10);
         amountBTCTextField.setHorizontalAlignment(JTextField.TRAILING);
@@ -1742,9 +1743,9 @@ public abstract class AbstractTradePanel extends JPanel implements MultiBitView,
             addressesTable.invalidate();
             addressesTable.validate();
             addressesTable.repaint();
-            mainFrame.invalidate();
-            mainFrame.validate();
-            mainFrame.repaint();
+            mainFrame.getCoreFrame().invalidate();
+            mainFrame.getCoreFrame().validate();
+            mainFrame.getCoreFrame().repaint();
 
             log.debug("AbstractTradePanel - ping 7");
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, addressString);

@@ -63,7 +63,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
      * Creates a new {@link DeleteWalletConfirmDialog}.
      */
     public DeleteWalletConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame, controller.getLocaliser().getString("deleteWalletConfirmDialog.title"));
+        super(mainFrame.getCoreFrame(), controller.getLocaliser().getString("deleteWalletConfirmDialog.title"));
         this.controller = controller;
 
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);

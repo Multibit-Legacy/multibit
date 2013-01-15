@@ -25,6 +25,7 @@ import javax.swing.event.HyperlinkListener;
 
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 public class ActivatedHyperlinkListener implements HyperlinkListener {
@@ -37,13 +38,13 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
 
     private static final String SPACER = " "; // 3 spaces
 
-    MultiBitFrame mainFrame;
+    CoreFrame mainFrame;
 
     Browser browser;
 
     String currentUrl;
 
-    public ActivatedHyperlinkListener(MultiBitFrame frame, Browser browser, String currentUrl) {
+    public ActivatedHyperlinkListener(CoreFrame frame, Browser browser, String currentUrl) {
         this.mainFrame = frame;
         this.browser = browser;
     }

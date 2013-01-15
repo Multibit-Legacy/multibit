@@ -58,7 +58,7 @@ public class WelcomePanel extends JPanel implements View {
     /**
      * Creates a new {@link WelcomePanel}.
      */
-    public WelcomePanel(Controller controller, MultiBitFrame mainFrame) {
+    public WelcomePanel(Controller controller) {
         this.controller = controller;
 
         setLayout(new BorderLayout());

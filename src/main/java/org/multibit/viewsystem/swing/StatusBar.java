@@ -42,11 +42,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.LayoutManager2;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Locale;
@@ -72,20 +69,18 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
 
-import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
 import org.multibit.model.StatusEnum;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Block;
+import org.multibit.controller.Controller;
 
 /**
  * StatusBar. <BR>
@@ -128,8 +123,8 @@ public class StatusBar extends JPanel implements MessageListener {
     private HashMap<String, Component> idToZones;
     private Border zoneBorder;
 
-    private MultiBitController controller;
-    private MultiBitFrame mainFrame;
+    private Controller controller;
+    private CoreFrame mainFrame;
     
     private JProgressBar syncProgressBar; 
     
@@ -139,7 +134,7 @@ public class StatusBar extends JPanel implements MessageListener {
      * Construct a new StatusBar
      * 
      */
-    public StatusBar(MultiBitController controller, MultiBitFrame mainFrame) {
+    public StatusBar(Controller controller, CoreFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -152,7 +147,7 @@ public class StatusBar extends JPanel implements MessageListener {
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        final MultiBitController finalController = controller;
+        final Controller finalController = controller;
         
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
@@ -163,32 +158,34 @@ public class StatusBar extends JPanel implements MessageListener {
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
         onlineLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        onlineLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent arg0) {
-                int blockHeight = -1;
-                if (finalController.getMultiBitService() != null) {
-                    if (finalController.getMultiBitService().getChain() != null) {
-                        if (finalController.getMultiBitService().getChain().getChainHead() != null) {
-                            blockHeight = finalController.getMultiBitService().getChain().getChainHead().getHeight();
-                            Block blockHeader = finalController.getMultiBitService().getChain().getChainHead().getHeader();
-                            Date blockTime = blockHeader.getTime();
-                            int numberOfPeers = 0;
-                            if ( finalController.getMultiBitService().getPeerGroup() != null && finalController.getMultiBitService().getPeerGroup().getConnectedPeers() != null) {
-                                numberOfPeers = finalController.getMultiBitService().getPeerGroup().getConnectedPeers().size();
-                            }
-                            onlineLabel.setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[] {
-                                    finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
-                                            new Object[] { blockHeight }),
-                                            finalController.getLocaliser().getString("multiBitFrame.blockDate",
-                                                    new Object[] { dateFormatter.format(blockTime) }),
-                                            finalController.getLocaliser().getString("multiBitFrame.connectedTo",
-                                                    new Object[] { numberOfPeers })}));
-                        }
-                    }
-                }
-            }
-        });
+        
+        // TODO:  Move to MultiBit Class
+//        onlineLabel.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseEntered(MouseEvent arg0) {
+//                int blockHeight = -1;
+//                if (finalController.getMultiBitService() != null) {
+//                    if (finalController.getMultiBitService().getChain() != null) {
+//                        if (finalController.getMultiBitService().getChain().getChainHead() != null) {
+//                            blockHeight = finalController.getMultiBitService().getChain().getChainHead().getHeight();
+//                            Block blockHeader = finalController.getMultiBitService().getChain().getChainHead().getHeader();
+//                            Date blockTime = blockHeader.getTime();
+//                            int numberOfPeers = 0;
+//                            if ( finalController.getMultiBitService().getPeerGroup() != null && finalController.getMultiBitService().getPeerGroup().getConnectedPeers() != null) {
+//                                numberOfPeers = finalController.getMultiBitService().getPeerGroup().getConnectedPeers().size();
+//                            }
+//                            onlineLabel.setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[] {
+//                                    finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
+//                                            new Object[] { blockHeight }),
+//                                            finalController.getLocaliser().getString("multiBitFrame.blockDate",
+//                                                    new Object[] { dateFormatter.format(blockTime) }),
+//                                            finalController.getLocaliser().getString("multiBitFrame.connectedTo",
+//                                                    new Object[] { numberOfPeers })}));
+//                        }
+//                    }
+//                }
+//            }
+//        });
 
         statusLabel = new MultiBitButton("");
         statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -277,14 +274,15 @@ public class StatusBar extends JPanel implements MessageListener {
                 if (finalStatusEnum == StatusEnum.ONLINE) {
                     onlineLabel.setForeground(new Color(0, 100, 0));
                     if (mainFrame != null) {
-                        BlinkLabel estimatedBalanceBTCLabel = mainFrame.getEstimatedBalanceBTCLabel();
-                        if (estimatedBalanceBTCLabel != null) {
-                            estimatedBalanceBTCLabel.setBlinkEnabled(true);
-                        }
-                        BlinkLabel estimatedBalanceFiatLabel = mainFrame.getEstimatedBalanceFiatLabel();
-                        if (estimatedBalanceFiatLabel != null) {
-                            estimatedBalanceFiatLabel.setBlinkEnabled(true);
-                        }
+                        // TODO:  Move To multibit Class
+//                        BlinkLabel estimatedBalanceBTCLabel = mainFrame.getEstimatedBalanceBTCLabel();
+//                        if (estimatedBalanceBTCLabel != null) {
+//                            estimatedBalanceBTCLabel.setBlinkEnabled(true);
+//                        }
+//                        BlinkLabel estimatedBalanceFiatLabel = mainFrame.getEstimatedBalanceFiatLabel();
+//                        if (estimatedBalanceFiatLabel != null) {
+//                            estimatedBalanceFiatLabel.setBlinkEnabled(true);
+//                        }
                     }
                 } else {
                     onlineLabel.setForeground(new Color(180, 0, 0));

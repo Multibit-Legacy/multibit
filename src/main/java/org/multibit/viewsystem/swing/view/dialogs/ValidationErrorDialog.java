@@ -58,7 +58,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
      * Creates a new {@link ValidationErrorDialog}.
      */
     public ValidationErrorDialog(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
+        super(mainFrame.getCoreFrame(), controller.getLocaliser().getString("validationErrorView.title"));
         this.controller = controller;
 
         initUI();

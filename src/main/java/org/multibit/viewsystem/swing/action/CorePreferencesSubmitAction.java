@@ -34,6 +34,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.controller.Controller;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.action.PreferencesSubmitAction;
 
 /**
@@ -45,12 +46,12 @@ public class CorePreferencesSubmitAction extends AbstractAction implements Prefe
 
     Controller controller;
     PreferencesDataProvider dataProvider;
-    MultiBitFrame mainFrame;
+    CoreFrame mainFrame;
 
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public CorePreferencesSubmitAction(Controller controller, PreferencesDataProvider dataProvider, MultiBitFrame mainFrame) {
+    public CorePreferencesSubmitAction(Controller controller, PreferencesDataProvider dataProvider, CoreFrame mainFrame) {
         this.controller = controller;
         this.dataProvider = dataProvider;
         this.mainFrame = mainFrame;

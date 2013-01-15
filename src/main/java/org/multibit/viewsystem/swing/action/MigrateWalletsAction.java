@@ -93,7 +93,7 @@ public class MigrateWalletsAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
 
         try {
@@ -239,7 +239,7 @@ public class MigrateWalletsAction extends AbstractAction {
             }                    
         } finally {
             setEnabled(true);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
     
@@ -393,7 +393,7 @@ public class MigrateWalletsAction extends AbstractAction {
     }
     
     private MultiBitDialog createDialog(MultiBitFrame mainFrame, int numberOfWalletsToMigrate) {
-        MultiBitDialog dialog = new MultiBitDialog(mainFrame, controller.getLocaliser().getString("migrateWalletsAction.text"));
+        MultiBitDialog dialog = new MultiBitDialog(mainFrame.getCoreFrame(), controller.getLocaliser().getString("migrateWalletsAction.text"));
 
         JButton okButton = new JButton(controller.getLocaliser().getString("okBackToParentAction.text"));
         okButton.addActionListener(new ActionListener(){

@@ -95,7 +95,7 @@ public class ChartsPanel extends JPanel implements MultiBitView, ComponentListen
         setOpaque(true);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        mainFrame.addComponentListener(this);
+        mainFrame.getCoreFrame().addComponentListener(this);
         addComponentListener(this);
 
         initUI();

@@ -46,6 +46,7 @@ import org.multibit.model.WalletInfo;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
@@ -146,7 +147,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements MultiBitV
         formPanel.add(addressLabel, constraints);
 
         FontMetrics fontMetric = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
+        int longFieldWidth = fontMetric.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT);
         addressTextField = new MultiBitTextField("", 24);
 
         //addressTextField = new MultiBitTextArea("", 24, 1, controller);

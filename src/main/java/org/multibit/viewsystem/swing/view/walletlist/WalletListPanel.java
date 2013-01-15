@@ -44,6 +44,7 @@ import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.MultiBitTabbedPane;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
@@ -410,11 +411,11 @@ public class WalletListPanel extends JPanel implements MultiBitView, WalletBusyL
     public void componentResized(ComponentEvent arg0) {
         int preferredWalletWidth = SingleWalletPanel.calculateNormalWidth(this) + LEFT_BORDER + RIGHT_BORDER + 4;
         if (scrollPane.getVerticalScrollBar().isVisible()) {
-            preferredWalletWidth -= MultiBitFrame.SCROLL_BAR_DELTA;
+            preferredWalletWidth -= CoreFrame.SCROLL_BAR_DELTA;
         }         
 
         walletListPanel.setPreferredSize(new Dimension(preferredWalletWidth, walletListPanel.getPreferredSize().height));
-        mainFrame.calculateDividerPosition();
+        mainFrame.getCoreFrame().calculateDividerPosition();
     }
 
     @Override

@@ -25,6 +25,7 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
@@ -33,6 +34,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.browser.Browser;
 
@@ -55,14 +57,14 @@ public class HelpContentsPanel extends JPanel implements MultiBitView {
     private Browser browser;
     private String helpContext;
 
-    private MultiBitController controller;
-    private MultiBitFrame mainFrame;
+    private Controller controller;
+    private CoreFrame mainFrame;
   
     public static final String SPACER = "   "; // 3 spaces
 
     boolean firstTimeLoaded = false;
 
-    public HelpContentsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public HelpContentsPanel(Controller controller, CoreFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
         helpContext = mainFrame.getHelpContext();
@@ -75,8 +77,8 @@ public class HelpContentsPanel extends JPanel implements MultiBitView {
 
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        final MultiBitController finalController = controller;
-        final MultiBitFrame finalMainFrame = mainFrame;
+        final Controller finalController = controller;
+        final CoreFrame finalMainFrame = mainFrame;
 
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         browser = new Browser(finalController, finalMainFrame, HELP_BASE_URL + helpContext);

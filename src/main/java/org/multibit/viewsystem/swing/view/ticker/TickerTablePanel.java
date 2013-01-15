@@ -40,6 +40,7 @@ import org.joda.money.BigMoney;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -198,7 +199,7 @@ public class TickerTablePanel extends JPanel {
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.getViewport().setPreferredSize(
                 new Dimension(tickerWidth, idealHeight));
-        scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, MultiBitFrame.HEIGHT_OF_HEADER)));
+        scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, CoreFrame.HEIGHT_OF_HEADER)));
 
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -224,9 +225,9 @@ public class TickerTablePanel extends JPanel {
         validate();
         repaint();
 
-        mainFrame.getHeaderPanel().invalidate();
-        mainFrame.getHeaderPanel().validate();
-        mainFrame.getHeaderPanel().repaint();
+        mainFrame.getCoreFrame().getHeaderPanel().invalidate();
+        mainFrame.getCoreFrame().getHeaderPanel().validate();
+        mainFrame.getCoreFrame().getHeaderPanel().repaint();
 
     }
 

@@ -60,7 +60,7 @@ public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
             return;
         }
 
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
 
         try {
@@ -69,7 +69,7 @@ public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
             createNewReceivingAddressDialog.setVisible(true);
         } finally {
             setEnabled(true);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
         if (receiveBitcoinPanel != null && receiveBitcoinPanel.getLabelTextArea() != null) {

@@ -64,7 +64,7 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
      */
     public DeleteSendingAddressConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame,
             SendBitcoinPanel sendBitcoinPanel) {
-        super(mainFrame, controller.getLocaliser().getString("deleteSendingAddressConfirmDialog.title"));
+        super(mainFrame.getCoreFrame(), controller.getLocaliser().getString("deleteSendingAddressConfirmDialog.title"));
         this.controller = controller;
         this.sendBitcoinPanel = sendBitcoinPanel;
 

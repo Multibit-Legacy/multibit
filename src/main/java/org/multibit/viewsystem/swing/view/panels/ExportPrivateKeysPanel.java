@@ -848,7 +848,7 @@ public class ExportPrivateKeysPanel extends JPanel implements MultiBitView, Wall
             fileChooser.setSelectedFile(new File(defaultFileName));
         }
 
-        int returnVal = fileChooser.showSaveDialog(mainFrame);
+        int returnVal = fileChooser.showSaveDialog(mainFrame.getCoreFrame());
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();

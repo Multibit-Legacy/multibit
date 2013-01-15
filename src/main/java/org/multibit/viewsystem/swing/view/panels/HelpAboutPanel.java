@@ -23,6 +23,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
@@ -39,12 +40,12 @@ public class HelpAboutPanel extends JPanel implements MultiBitView {
 
     private static final String MULTIBIT_URL = "https://multibit.org";
     
-    private MultiBitController controller;
+    private Controller controller;
 
   /**
      * Creates a new {@link HelpAboutPanel}.
      */
-    public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
+    public HelpAboutPanel(Controller controller) {        
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         this.controller = controller;
 

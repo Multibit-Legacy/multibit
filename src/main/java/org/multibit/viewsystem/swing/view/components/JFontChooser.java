@@ -50,6 +50,7 @@ import javax.swing.text.Position;
 import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +136,7 @@ public class JFontChooser extends JComponent {
 
         fontMetrics = getFontMetrics(defaultFont);
 
-        int minimumWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT) + WIDTH_DELTA;
+        int minimumWidth = fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT) + WIDTH_DELTA;
         int minimumHeight = 12 * fontMetrics.getHeight() + HEIGHT_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         setPreferredSize(new Dimension(minimumWidth, minimumHeight));

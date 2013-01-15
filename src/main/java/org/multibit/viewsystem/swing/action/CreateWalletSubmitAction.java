@@ -76,7 +76,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (mainFrame != null) {
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         }
         setEnabled(false);
 
@@ -97,7 +97,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
             fileChooser.setSelectedFile(new File(defaultFileName));
 
             fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            int returnVal = fileChooser.showSaveDialog(mainFrame);
+            int returnVal = fileChooser.showSaveDialog(mainFrame.getCoreFrame());
 
             String newWalletFilename = null;
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -110,7 +110,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
         } finally {
             setEnabled(true);
             if (mainFrame != null) {
-                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
     }

@@ -158,7 +158,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite",
                     new Object[] { exportPrivateKeysFile.getName() });
             String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
-            int selection = JOptionPane.showOptionDialog(mainFrame, questionText, questionTitle, JOptionPane.YES_NO_OPTION,
+            int selection = JOptionPane.showOptionDialog(mainFrame.getCoreFrame(), questionText, questionTitle, JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE, ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] {
                             yesText, noText }, noText);
             if (selection != JOptionPane.YES_OPTION) {

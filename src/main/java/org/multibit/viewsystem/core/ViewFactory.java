@@ -21,45 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
-
-import org.multibit.viewsystem.swing.FramePlugin;
+package org.multibit.viewsystem.core;
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface ViewSystem {
+public interface ViewFactory {
 
-    /**
-     * display the view specified
-     * @param view to display - one of the View constants
-     */
-    void displayView(int viewToDisplay);
-    
+    void addView(int viewNumber, MultiBitView view);
 
-    /**
-     * tells the view system that the model data has changed (but the wallet is still the same)
-     */   
-    public void fireDataChanged();
-    
-    /**
-     * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
-     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
-     */
-    void navigateAwayFromView(int viewToNavigateAwayFrom);
+    View createView(int viewNumber);
 
-    /**
-     * tells the view system to recreate all views e.g. after a language change or wallet change
-     * @param initUI Completely redraw everything on all screens = true
-     */
-    void recreateAllViews(boolean initUI);
-    
+    View getView(int viewNumber);
 
-    /**
-     * Set the help context to display
-     * @param helpContextToDisplay
-     */
-    void setHelpContext(String helpContextToDisplay);
+    void initialise();
     
 }

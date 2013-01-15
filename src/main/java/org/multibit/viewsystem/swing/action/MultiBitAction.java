@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
@@ -30,7 +31,7 @@ public class MultiBitAction extends AbstractAction {
 
     private static final long serialVersionUID = 191948235465057705L;
 
-    private MultiBitController controller;
+    private Controller controller;
     private int viewToDisplay;
 
     /**
@@ -42,7 +43,7 @@ public class MultiBitAction extends AbstractAction {
      * @param mnemonicKey The localisation key for the mnemonic of the action
      * @param viewToDisplay The view to display on action activation.  One of the View constants
      */
-    public MultiBitAction(MultiBitController controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, int viewToDisplay) {
+    public MultiBitAction(Controller controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, int viewToDisplay) {
         super(textKey == null ? "" : controller.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
         this.controller = controller;
         this.viewToDisplay = viewToDisplay;

@@ -61,7 +61,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements MultiBitView, S
      * Creates a new {@link ShowOpenUriDialog}.
      */
     public ShowOpenUriDialog(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame, controller.getLocaliser().getString("showOpenUriView.title"));
+        super(mainFrame.getCoreFrame(), controller.getLocaliser().getString("showOpenUriView.title"));
         this.controller = controller;
         this.mainFrame = mainFrame;
         

@@ -49,13 +49,13 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import org.multibit.controller.Controller;
 
-import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.core.MultiBitView;
+import org.multibit.viewsystem.core.View;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
-import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.action.ChooseFontAction;
 import org.multibit.viewsystem.swing.action.CorePreferencesSubmitAction;
 import org.multibit.viewsystem.swing.action.PreferencesSubmitActionGroup;
@@ -68,7 +68,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 /**
  * The show preferences view.
  */
-public class PreferencesPanel extends JPanel implements MultiBitView, PreferencesDataProvider {
+public class PreferencesPanel extends JPanel implements View, PreferencesDataProvider {
 
     private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
 
@@ -84,7 +84,7 @@ public class PreferencesPanel extends JPanel implements MultiBitView, Preference
 
 
     private Controller controller;
-    private MultiBitFrame mainFrame;
+    private CoreFrame mainFrame;
     Set<PreferencePlugin> preferencePlugins;
 
     SortedSet<LanguageData> languageDataSet;
@@ -123,7 +123,7 @@ public class PreferencesPanel extends JPanel implements MultiBitView, Preference
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
-    public PreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public PreferencesPanel(Controller controller, CoreFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.controller = controller;

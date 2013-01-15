@@ -50,6 +50,7 @@ import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
@@ -204,7 +205,13 @@ public class MultiBit {
             
             // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface");
-            swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());
+            CoreFrame coreFrame = new CoreFrame(controller, genericApplication);
+            MultiBitFrame multiBitFrame = new MultiBitFrame(controller,coreFrame);
+            coreFrame.addFramePlugin(multiBitFrame);
+
+            coreFrame.Load(controller.getCurrentView());
+            
+            swingViewSystem = coreFrame;
 
             log.debug("Registering with controller");
             controller.registerViewSystem(swingViewSystem);
@@ -360,7 +367,7 @@ public class MultiBit {
                     if (actualOrderToLoad.size() > 0) {
                         boolean thereWasAnErrorLoadingTheWallet = false;
 
-                        ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        ((CoreFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         for (String actualOrder : actualOrderToLoad) {
                             log.debug("Loading wallet from '{}'", actualOrder);
                             Message message = new Message(controller.getLocaliser().getString("multiBit.openingWallet",
@@ -419,7 +426,7 @@ public class MultiBit {
                     }
                     controller.fireDataChanged();
 
-                    ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    ((CoreFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
             }
 

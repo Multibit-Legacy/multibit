@@ -54,6 +54,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
+import org.multibit.controller.Controller;
 
 /**
  * Class consolidating the File IO in MultiBit for wallets and wallet infos.
@@ -641,7 +642,7 @@ public class FileHandler {
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
     }
 
-    public static void writeUserPreferences(MultiBitController controller) {
+    public static void writeUserPreferences(Controller controller) {
         // Save all the wallets' filenames in the user preferences.
         if (controller.getModel().getPerWalletModelDataList() != null) {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
