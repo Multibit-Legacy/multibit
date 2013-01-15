@@ -40,7 +40,7 @@ import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
@@ -61,9 +61,10 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Utils;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
 
-public class SendBitcoinPanel extends AbstractTradePanel implements View {
+public class SendBitcoinPanel extends AbstractTradePanel implements MultiBitView {
 
     private static final long serialVersionUID = -2065108865497111662L;
 
@@ -154,8 +155,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         MultiBitLabel notUsedReceiveAddressLabel = new MultiBitLabel(receiveAddressText);
         formPanel.add(MultiBitTitledPanel.createStent((int)notUsedReceiveAddressLabel.getPreferredSize().getWidth()), constraints);
         
-        int longFieldWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
-        addressTextField = new MultiBitTextField("", 24, controller);
+        int longFieldWidth = fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT);
+        addressTextField = new MultiBitTextField("", 24);
         addressTextField.setHorizontalAlignment(JTextField.LEADING);
         addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
                 .getHeight() + TEXTFIELD_VERTICAL_DELTA));
@@ -405,7 +406,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
                 controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
                 sendButton.requestFocusInWindow();
 
-                mainFrame.bringToFront();
+                mainFrame.getCoreFrame().bringToFront();
             } catch (AddressFormatException e) {
                 throw new RuntimeException(e);
             }
@@ -428,7 +429,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         String bringToFront = controller.getModel().getUserPreference(MultiBitModel.BRING_TO_FRONT);
         if (Boolean.TRUE.toString().equals(bringToFront)) {
             controller.getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "false");
-            mainFrame.bringToFront();
+            mainFrame.getCoreFrame().bringToFront();
         }
 
         // disable any new changes if another process has changed the wallet
@@ -485,7 +486,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
     @Override
     public int getViewId() {
-        return View.SEND_BITCOIN_VIEW;
+        return MultiBitView.SEND_BITCOIN_VIEW;
     }
     
     public SendBitcoinConfirmAction getSendBitcoinConfirmAction() {

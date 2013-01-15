@@ -28,13 +28,14 @@ import org.joda.money.Money;
 import org.joda.money.format.MoneyFormatter;
 import org.junit.Test;
 import org.multibit.Localiser;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 
 public class CurrencyConverterTest extends TestCase {
     @Test
     public void testBasic() throws IOException {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
         assertNotNull(model);
@@ -66,7 +67,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test
     public void testConvert() throws Exception {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);   
 
@@ -89,7 +90,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testFormatter() throws Exception {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
         
@@ -108,7 +109,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringEnglish() throws Exception {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         
         Localiser localiser = new Localiser(Locale.ENGLISH);
         controller.setLocaliser(localiser);
@@ -139,7 +140,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringGerman() throws Exception {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         
         Localiser localiser = new Localiser(Locale.GERMAN);
         controller.setLocaliser(localiser);
@@ -171,7 +172,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringFrench() throws Exception {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         
         Localiser localiser = new Localiser(Locale.FRENCH);
         controller.setLocaliser(localiser);

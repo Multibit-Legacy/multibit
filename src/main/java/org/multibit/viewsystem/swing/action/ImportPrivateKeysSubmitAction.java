@@ -52,6 +52,7 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.BlockStoreException;
 import com.piuk.blockchain.MyWallet;
+import java.util.logging.Level;
 
 /**
  * This {@link Action} imports the private keys to the active wallet.
@@ -119,14 +120,17 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 importPrivateKeysPanel.setMessageText2(" ");
                 return;
             }
-
-            // See if the password is the correct wallet password.
-            if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
-                // The password supplied is incorrect.
-                importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
-                        "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                importPrivateKeysPanel.setMessageText2(" ");
-                return;
+            try {
+                // See if the password is the correct wallet password.
+                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
+                    // The password supplied is incorrect.
+                    importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
+                            "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                    importPrivateKeysPanel.setMessageText2(" ");
+                    return;
+                }
+            } catch (EncrypterDecrypterException ex) {
+                java.util.logging.Logger.getLogger(ImportPrivateKeysSubmitAction.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -422,7 +426,11 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         } else {
             byte[] unencryptedKeyToAdd = new byte[0];
             if (keyToAdd.isEncrypted()) {
-                unencryptedKeyToAdd = keyToAdd.getEncrypterDecrypter().decrypt(keyToAdd.getEncryptedPrivateKey(), keyToAdd.getEncrypterDecrypter().deriveKey(walletPassword));
+                try {
+                    unencryptedKeyToAdd = keyToAdd.getEncrypterDecrypter().decrypt(keyToAdd.getEncryptedPrivateKey(), keyToAdd.getEncrypterDecrypter().deriveKey(walletPassword));
+                } catch (EncrypterDecrypterException ex) {
+                    java.util.logging.Logger.getLogger(ImportPrivateKeysSubmitAction.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             for (byte[] loopEncryptedPrivateKey : unencryptedPrivateKeys) { 
                 if (Arrays.equals(unencryptedKeyToAdd, loopEncryptedPrivateKey)) {

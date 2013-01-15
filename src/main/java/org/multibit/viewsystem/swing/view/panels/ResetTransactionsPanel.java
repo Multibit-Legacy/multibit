@@ -46,7 +46,7 @@ import javax.swing.border.Border;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -64,7 +64,7 @@ import com.toedter.calendar.JCalendar;
 /**
  * The reset blockchain and transactions view
  */
-public class ResetTransactionsPanel extends JPanel implements View, ResetTransactionsDataProvider {
+public class ResetTransactionsPanel extends JPanel implements MultiBitView, ResetTransactionsDataProvider {
 
     private static final long serialVersionUID = 199992298245057705L;
 
@@ -537,7 +537,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
     @Override
     public int getViewId() {
-        return View.RESET_TRANSACTIONS_VIEW;
+        return MultiBitView.RESET_TRANSACTIONS_VIEW;
     }
 
     class ChangeResetDateListener implements ItemListener {

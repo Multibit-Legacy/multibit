@@ -20,6 +20,7 @@ import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
+import org.multibit.controller.CoreController;
 
 /**
  * Class containing utility methods for action tests.
@@ -31,7 +32,7 @@ public class ActionTestUtils {
     private static SecureRandom secureRandom;
 
     public static MultiBitController createController() {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
          
          Localiser localiser = new Localiser(Locale.ENGLISH);
          MultiBitModel model = new MultiBitModel(controller);

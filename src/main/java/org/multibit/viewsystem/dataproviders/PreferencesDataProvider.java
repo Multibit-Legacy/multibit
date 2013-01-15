@@ -8,22 +8,11 @@ import java.awt.Font;
  * @author jim
  *
  */
-public interface PreferencesDataProvider extends DataProvider { 
+public interface PreferencesDataProvider extends DataProvider{ 
     /**
      * Get the previous 'undo changes' text
      */
     public String getPreviousUndoChangesText();
-    
-    
-    /**
-     * Get the previous send fee
-     */
-    public String getPreviousSendFee();
-    
-    /**
-     * Get the new send fee
-     */
-    public String getNewSendFee();
     
     
     /**
@@ -84,51 +73,7 @@ public interface PreferencesDataProvider extends DataProvider {
      * get the new font
      */
     public Font getSelectedFont();
-
-    /**
-     * ticker information
-     * @return
-     */
-    public boolean getPreviousShowCurrency();
-    public boolean getNewShowCurrency();
-    
-    public boolean getPreviousShowRate();
-    public boolean getNewShowRate();
-    
-    public boolean getPreviousShowBid();
-    public boolean getNewShowBid();
-    
-    public boolean getPreviousShowAsk();
-    public boolean getNewShowAsk();
-    
-    public boolean getPreviousShowExchange();
-    public boolean getNewShowExchange();
-    
-    public String getPreviousExchange1();
-    public String getNewExchange1();
-    
-    public String getPreviousCurrency1();
-    public String getNewCurrency1();
- 
-    public boolean getPreviousShowSecondRow();
-    public boolean getNewShowSecondRow();
-
-    public String getPreviousExchange2();
-    public String getNewExchange2();
-
-    public String getPreviousCurrency2();
-    public String getNewCurrency2();
-
-
-    boolean isTickerVisible();
-
-    boolean getPreviousShowTicker();
-    boolean getNewShowTicker();
     
     String getPreviousLookAndFeel();
     String getNewLookAndFeel();
-
-
-    boolean getNewShowBitcoinConvertedToFiat();
-    boolean getPreviousShowBitcoinConvertedToFiat();
 }

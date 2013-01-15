@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,7 +248,7 @@ public class MultiBitModel {
 
         // Initialize everything to look at the stored opened view.
         // If no properties passed in just initialize to the default view.
-        int initialView = View.DEFAULT_VIEW;
+        int initialView = MultiBitView.DEFAULT_VIEW;
         if (userPreferences != null) {
             String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
             if (viewString != null) {
@@ -256,8 +256,8 @@ public class MultiBitModel {
                     int initialViewInProperties = Integer.parseInt(viewString);
 
                     // Do not open obsolete views.
-                    if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties
-                            && View.SEND_BITCOIN_CONFIRM_VIEW != initialViewInProperties) {
+                    if (MultiBitView.OPEN_WALLET_VIEW != initialViewInProperties && MultiBitView.SAVE_WALLET_AS_VIEW != initialViewInProperties
+                            && MultiBitView.SEND_BITCOIN_CONFIRM_VIEW != initialViewInProperties) {
                         initialView = initialViewInProperties;
                     }
                 } catch (NumberFormatException nfe) {

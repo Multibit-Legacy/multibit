@@ -55,6 +55,8 @@ import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import java.util.logging.Level;
 
 /**
  * Class for handling reading and writing of private keys to a file.
@@ -84,8 +86,11 @@ public class PrivateKeysHandler {
             throw new IllegalArgumentException("NetworkParameters must be supplied");
         }
         this.networkParameters = networkParameters;
-
-        encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+        try {
+            encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+        } catch (EncrypterDecrypterException ex) {
+            java.util.logging.Logger.getLogger(PrivateKeysHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile, char[] exportPassword, char[] walletPassword)
@@ -109,8 +114,12 @@ public class PrivateKeysHandler {
         String keyOutputText = outputStringBuffer.toString();
 
         if (performEncryptionOfExportFile) {
-            EncrypterDecrypterOpenSSL encrypter = new EncrypterDecrypterOpenSSL();
-            keyOutputText = encrypter.encrypt(keyOutputText, exportPassword);
+                    try {
+                        EncrypterDecrypterOpenSSL encrypter = new EncrypterDecrypterOpenSSL();
+                        keyOutputText = encrypter.encrypt(keyOutputText, exportPassword);
+                    } catch (EncrypterDecrypterException ex) {
+                        java.util.logging.Logger.getLogger(PrivateKeysHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
         }
         
         FileWriter fileWriter = null;
@@ -148,7 +157,7 @@ public class PrivateKeysHandler {
      * @return Verification The result of verification
      */
     public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile,
-            char[] exportPassword, char[] walletPassword) {
+            char[] exportPassword, char[] walletPassword) throws EncrypterDecrypterException {
         boolean thereWereFailures = false;
 
         String messageKey = "privateKeysHandler.failedForUnknownReason";
@@ -201,7 +210,7 @@ public class PrivateKeysHandler {
         return new Verification(!thereWereFailures, messageKey, messageData);
     }
 
-    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException {
+    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException, EncrypterDecrypterException {
         if (importFile == null) {
             throw new PrivateKeysHandlerException("Import file cannot be null");
         }
@@ -338,7 +347,11 @@ public class PrivateKeysHandler {
                 EncrypterDecrypter walletEncrypterDecrypter = wallet.getEncrypterDecrypter();
                 KeyParameter aesKey = null;
                 if (decryptionRequired) {
-                    aesKey = walletEncrypterDecrypter.deriveKey(walletPassword);
+                    try {
+                        aesKey = walletEncrypterDecrypter.deriveKey(walletPassword);
+                    } catch (EncrypterDecrypterException ex) {
+                        java.util.logging.Logger.getLogger(PrivateKeysHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 
                 for (ECKey ecKey : keychain) {
@@ -353,8 +366,13 @@ public class PrivateKeysHandler {
                     }
                     if (decryptionRequired) {
                         // Create a new decrypted key holding the private key.
-                        ECKey decryptedKey = new ECKey(walletEncrypterDecrypter.decrypt(ecKey.getEncryptedPrivateKey(),
-                                aesKey), ecKey.getPubKey());
+                        ECKey decryptedKey = null;
+                        try {
+                            decryptedKey = new ECKey(walletEncrypterDecrypter.decrypt(ecKey.getEncryptedPrivateKey(),
+                              aesKey), ecKey.getPubKey());
+                        } catch (EncrypterDecrypterException ex) {
+                            java.util.logging.Logger.getLogger(PrivateKeysHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         keyAndDates.add(new PrivateKeyAndDate(decryptedKey, earliestUsageDate));
                     } else {
                         keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));

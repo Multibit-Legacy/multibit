@@ -47,6 +47,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.EncryptionType;
+import java.util.logging.Level;
 
 /**
  * This {@link Action} represents an action to actually create receiving
@@ -106,12 +107,15 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     return;
                 }
                 encryptNewKeys = true;
-
-                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
-                    // The password supplied is incorrect.
-                    createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
-                            "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                    return;
+                try {
+                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                        // The password supplied is incorrect.
+                        createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
+                                "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                        return;
+                    }
+                } catch (EncrypterDecrypterException ex) {
+                    java.util.logging.Logger.getLogger(CreateNewReceivingAddressSubmitAction.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

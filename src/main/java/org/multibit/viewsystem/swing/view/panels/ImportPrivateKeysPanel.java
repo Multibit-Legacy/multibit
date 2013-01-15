@@ -51,7 +51,7 @@ import org.multibit.file.PrivateKeysHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
@@ -67,13 +67,15 @@ import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 
 /**
  * The import private keys view.
  */
-public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyListener {
+public class ImportPrivateKeysPanel extends JPanel implements MultiBitView, WalletBusyListener {
 
     private static final long serialVersionUID = 444992294329957705L;
 
@@ -145,8 +147,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
             walletPasswordRequired = true;
         }
         enableWalletPassword(walletPasswordRequired);
-        
-        encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+        try {
+            encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+        } catch (EncrypterDecrypterException ex) {
+            Logger.getLogger(ImportPrivateKeysPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
         multiBitFileChooser = new PrivateKeyFileFilter(controller);
         myWalletPlainFileChooser = new MyWalletPlainKeyFileFilter();
         myWalletEncryptedFileChooser = new MyWalletEncryptedKeyFileFilter();
@@ -845,9 +850,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
         try {
             callingButton.setEnabled(false);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            int returnVal = fileChooser.showOpenDialog(mainFrame);
+            int returnVal = fileChooser.showOpenDialog(mainFrame.getCoreFrame());
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 numberOfKeysLabel.setText(" ");
@@ -892,12 +897,16 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                     } else if (myWalletPlainFileChooser.accept(file)) {
                         // File is not encrypted.
                         enableImportFilePasswordPanel(false);
-                        readInImportFileAndUpdateDetails();
+                        try {
+                            readInImportFileAndUpdateDetails();
+                        } catch (EncrypterDecrypterException ex) {
+                            Logger.getLogger(ImportPrivateKeysPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
             }
         } finally {
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             callingButton.setEnabled(true);
         }
     }
@@ -940,7 +949,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
     /**
      * Read in the import file and show the file details.
      */
-    private void readInImportFileAndUpdateDetails() {
+    private void readInImportFileAndUpdateDetails() throws EncrypterDecrypterException {
         // Update number of keys and earliest date.
 
         try {
@@ -1088,7 +1097,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
     @Override
     public int getViewId() {
-        return View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
+        return MultiBitView.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
     }
     
     // Used in testing.

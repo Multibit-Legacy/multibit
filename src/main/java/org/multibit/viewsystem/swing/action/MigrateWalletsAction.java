@@ -48,7 +48,7 @@ import org.multibit.model.PerWalletModelData;
 import com.google.bitcoin.core.WalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.VersionComparator;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -93,7 +93,7 @@ public class MigrateWalletsAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
 
         try {
@@ -117,7 +117,7 @@ public class MigrateWalletsAction extends AbstractAction {
             } else {
                 boolean thereWereFailures = false;
                 
-                controller.displayView(View.MESSAGES_VIEW);
+                controller.displayView(MultiBitView.MESSAGES_VIEW);
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.start") + " " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
                        
@@ -235,11 +235,11 @@ public class MigrateWalletsAction extends AbstractAction {
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 controller.fireDataChanged();
                 controller.fireRecreateAllViews(false);
-                controller.displayView(View.MESSAGES_VIEW);
+                controller.displayView(MultiBitView.MESSAGES_VIEW);
             }                    
         } finally {
             setEnabled(true);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
     
@@ -393,7 +393,7 @@ public class MigrateWalletsAction extends AbstractAction {
     }
     
     private MultiBitDialog createDialog(MultiBitFrame mainFrame, int numberOfWalletsToMigrate) {
-        MultiBitDialog dialog = new MultiBitDialog(mainFrame, controller.getLocaliser().getString("migrateWalletsAction.text"));
+        MultiBitDialog dialog = new MultiBitDialog(mainFrame.getCoreFrame(), controller.getLocaliser().getString("migrateWalletsAction.text"));
 
         JButton okButton = new JButton(controller.getLocaliser().getString("okBackToParentAction.text"));
         okButton.addActionListener(new ActionListener(){

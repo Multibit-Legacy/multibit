@@ -44,6 +44,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.EncryptionType;
+import java.util.logging.Level;
 
 /**
  * This {@link Action} actually spends bitcoin.
@@ -139,11 +140,14 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                         sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
                         return;
                     }
-     
-                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
-                        // The password supplied is incorrect.
-                        sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
-                        return;
+                    try {
+                        if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
+                            // The password supplied is incorrect.
+                            sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
+                            return;
+                        }
+                    } catch (EncrypterDecrypterException ex) {
+                        java.util.logging.Logger.getLogger(SendBitcoinNowAction.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
@@ -201,9 +205,6 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                     log.debug("Sent transaction was:\n" + transaction.toString());
                }
             }
-        } catch (EncrypterDecrypterException e) {
-            log.error(e.getMessage(), e);
-            message = e.getMessage();
         } catch (WalletSaveException e) {
             log.error(e.getMessage(), e);
             message = e.getMessage();

@@ -85,7 +85,7 @@ import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -107,6 +107,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.uri.BitcoinURI;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
 import org.multibit.viewsystem.swing.view.ImageSelection;
 
@@ -116,7 +117,7 @@ import org.multibit.viewsystem.swing.view.ImageSelection;
  * @author jim
  * 
  */
-public abstract class AbstractTradePanel extends JPanel implements View, CopyQRCodeImageDataProvider, BitcoinFormDataProvider, CurrencyConverterListener {
+public abstract class AbstractTradePanel extends JPanel implements MultiBitView, CopyQRCodeImageDataProvider, BitcoinFormDataProvider, CurrencyConverterListener {
 
     public boolean isShowSidePanel() {
         return showSidePanel;
@@ -391,7 +392,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        panel.add(MultiBitTitledPanel.createStent(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), separatorSize),
+        panel.add(MultiBitTitledPanel.createStent(fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT), separatorSize),
                 constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -1164,9 +1165,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         amountPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints constraints2 = new GridBagConstraints();
-        int longFieldWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
+        int longFieldWidth = fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT);
 
-        amountBTCTextField = new MultiBitTextField("", 10, controller);
+        amountBTCTextField = new MultiBitTextField("", 10);
         amountBTCTextField.setHorizontalAlignment(JTextField.TRAILING);
         amountBTCTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
@@ -1226,7 +1227,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         amountPanel.add(amountEqualsLabel, constraints2);
         amountPanel.add(MultiBitTitledPanel.createStent(amountEqualsLabel.getPreferredSize().width, amountEqualsLabel.getPreferredSize().height), constraints2);
 
-        amountFiatTextField = new MultiBitTextField("", 8, controller);
+        amountFiatTextField = new MultiBitTextField("", 8);
         amountFiatTextField.setHorizontalAlignment(JTextField.TRAILING);
         amountFiatTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.2), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
@@ -1742,9 +1743,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             addressesTable.invalidate();
             addressesTable.validate();
             addressesTable.repaint();
-            mainFrame.invalidate();
-            mainFrame.validate();
-            mainFrame.repaint();
+            mainFrame.getCoreFrame().invalidate();
+            mainFrame.getCoreFrame().validate();
+            mainFrame.getCoreFrame().repaint();
 
             log.debug("AbstractTradePanel - ping 7");
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, addressString);

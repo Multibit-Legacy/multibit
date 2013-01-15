@@ -18,10 +18,11 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 import javax.swing.plaf.TabbedPaneUI;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     private int tabCounter = 0;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     private final MultiBitTabbedPane thisTabbedPane;
     
@@ -43,7 +44,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitTabbedPane.class);
 
-    public MultiBitTabbedPane(final MultiBitController controller) {
+    public MultiBitTabbedPane(final Controller controller) {
         thisTabbedPane = this;
         this.controller = controller;
         
@@ -70,12 +71,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
         try {
             // Get current tab.
             JPanel tabPanelComponent = (JPanel) getComponentAt(index);
-            View selectedView = null;
+            MultiBitView selectedView = null;
             if (tabPanelComponent != null) {
                 Component[] childComponents = tabPanelComponent.getComponents();
                 selectedView = null;
-                if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-                    selectedView = ((View) childComponents[0]);
+                if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof MultiBitView) {
+                    selectedView = ((MultiBitView) childComponents[0]);
                     if (selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
                         // We are already displaying the correct tab.
                         // Just update the contents.
@@ -107,14 +108,14 @@ public class MultiBitTabbedPane extends JTabbedPane {
         }
     }
     
-    public View getCurrentlyShownView() {
+    public MultiBitView getCurrentlyShownView() {
         // Get current tab.
         JPanel tabComponent = (JPanel) getSelectedComponent();
         if (tabComponent != null) {
             Component[] childComponents = tabComponent.getComponents();
-            View selectedView = null;
-            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-                selectedView = ((View) childComponents[0]);
+            MultiBitView selectedView = null;
+            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof MultiBitView) {
+                selectedView = ((MultiBitView) childComponents[0]);
                 return selectedView;
             }
         }
@@ -176,8 +177,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     // notify controller of new view being shown
                     JPanel selectedTab = (JPanel) thisTabbedPane.getSelectedComponent();
                     Component[] components = selectedTab.getComponents();
-                    if (components != null && components.length > 0 && components[0] instanceof View) {
-                        View selectedView = (View) components[0];
+                    if (components != null && components.length > 0 && components[0] instanceof MultiBitView) {
+                        MultiBitView selectedView = (MultiBitView) components[0];
                         selectedView.displayView();
 
                         controller.displayView(selectedView.getViewId());
@@ -230,8 +231,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
         if (index != -1) {
             JComponent selectedTab = (JComponent)getComponentAt(index);
             Component[] components = selectedTab.getComponents();
-            if (components != null && components.length > 0 && components[0] instanceof View) {
-                return ((View) components[0]).getViewTooltip();
+            if (components != null && components.length > 0 && components[0] instanceof MultiBitView) {
+                return ((MultiBitView) components[0]).getViewTooltip();
             }
         }
 

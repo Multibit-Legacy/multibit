@@ -1,73 +1,65 @@
-/**
- * Copyright 2011 multibit.org
+/*
+ * The MIT License
  *
- * Licensed under the MIT license (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright 2013 Cameron Garnham.
  *
- *    http://opensource.org/licenses/mit-license.php
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package org.multibit.viewsystem;
 
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
-
-import com.google.bitcoin.core.WalletEventListener;
+import org.multibit.viewsystem.swing.FramePlugin;
 
 /**
- * An interface describing a collection of views that are used to render the MultiBit application
- * @author jim
  *
+ * @author Cameron Garnham
  */
-public interface ViewSystem extends WalletEventListener { 
+public interface ViewSystem {
+
     /**
      * display the view specified
      * @param view to display - one of the View constants
-     */   
-    public void displayView(int viewToDisplay);
+     */
+    void displayView(int viewToDisplay);
     
-    /**
-     * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
-     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
-     */   
-    public void navigateAwayFromView(int viewToNavigateAwayFrom);
-           
+
     /**
      * tells the view system that the model data has changed (but the wallet is still the same)
      */   
     public void fireDataChanged();
     
     /**
-     * tells the view system to recreate all views e.g. after a language change or wallet change
-     * @param initUI Completely redraw everything on all screens = true
-     */   
-    public void recreateAllViews(boolean initUI);
-       
-     /**
-     * tells the view system that an external process has modified one of the wallets
+     * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
+     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
      */
-    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData);
+    void navigateAwayFromView(int viewToNavigateAwayFrom);
 
     /**
-     * a method called when MultiBit online status changes between online, connecting. error
+     * tells the view system to recreate all views e.g. after a language change or wallet change
+     * @param initUI Completely redraw everything on all screens = true
      */
-    public void setOnlineStatus(StatusEnum statusEnum);
-   
-    /**
-     * notification that a block has been downloaded
-     * (this is typically called from a peer thread)
-     */
-    public void blockDownloaded();
- 
+    void recreateAllViews(boolean initUI);
+    
+
     /**
      * Set the help context to display
      * @param helpContextToDisplay
      */
-    public void setHelpContext(String helpContextToDisplay);
+    void setHelpContext(String helpContextToDisplay);
+    
 }

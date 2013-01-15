@@ -37,6 +37,7 @@ import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.qrcode.QRCodeGenerator;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 
@@ -75,7 +76,7 @@ public class ZoomAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
 
         try {
@@ -85,7 +86,7 @@ public class ZoomAction extends AbstractAction {
             String amount = controller.getModel().getActiveWalletPreference(tradePanel.getAmountConstant());
 
             // Get the bounds of the current frame.
-            Dimension mainFrameSize = mainFrame.getSize();
+            Dimension mainFrameSize = mainFrame.getCoreFrame().getSize();
 
             int scaleWidth = (int) (mainFrameSize.getWidth() - WIDTH_DELTA);
             int scaleHeight = (int) (mainFrameSize.getHeight() - HEIGHT_DELTA);
@@ -106,9 +107,9 @@ public class ZoomAction extends AbstractAction {
             iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
             iconPanel.add(iconLabel, BorderLayout.CENTER);
 
-            String dialogTitle = controller.getLocaliser().getString("multiBitFrame.title") + MultiBitFrame.SEPARATOR
+            String dialogTitle = controller.getLocaliser().getString("multiBitFrame.title") + CoreFrame.SEPARATOR
                     + controller.getLocaliser().getString("zoomAction.text");
-            final JDialog dialog = new JDialog(mainFrame, dialogTitle, true);
+            final JDialog dialog = new JDialog(mainFrame.getCoreFrame(), dialogTitle, true);
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
             final JOptionPane optionPane = new JOptionPane(iconPanel, JOptionPane.PLAIN_MESSAGE);
@@ -133,13 +134,13 @@ public class ZoomAction extends AbstractAction {
 
             dialog.setContentPane(optionPane);
             dialog.setSize(mainFrameSize);
-            dialog.setLocation(mainFrame.getLocationOnScreen());
+            dialog.setLocation(mainFrame.getCoreFrame().getLocationOnScreen());
             // Reduces flickiness.
             dialog.repaint();
             dialog.setVisible(true);
         } finally {
             setEnabled(true);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 }

@@ -42,8 +42,9 @@ import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.MultiBitTabbedPane;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The wallet list view.
  */
-public class WalletListPanel extends JPanel implements View, WalletBusyListener, ComponentListener, CurrencyConverterListener {
+public class WalletListPanel extends JPanel implements MultiBitView, WalletBusyListener, ComponentListener, CurrencyConverterListener {
 
     private static final long serialVersionUID = 191352298245057705L;
 
@@ -395,7 +396,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
 
     @Override
     public int getViewId() {
-        return View.YOUR_WALLETS_VIEW;
+        return MultiBitView.YOUR_WALLETS_VIEW;
     }
 
     @Override
@@ -410,11 +411,11 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
     public void componentResized(ComponentEvent arg0) {
         int preferredWalletWidth = SingleWalletPanel.calculateNormalWidth(this) + LEFT_BORDER + RIGHT_BORDER + 4;
         if (scrollPane.getVerticalScrollBar().isVisible()) {
-            preferredWalletWidth -= MultiBitFrame.SCROLL_BAR_DELTA;
+            preferredWalletWidth -= CoreFrame.SCROLL_BAR_DELTA;
         }         
 
         walletListPanel.setPreferredSize(new Dimension(preferredWalletWidth, walletListPanel.getPreferredSize().height));
-        mainFrame.calculateDividerPosition();
+        mainFrame.getCoreFrame().calculateDividerPosition();
     }
 
     @Override

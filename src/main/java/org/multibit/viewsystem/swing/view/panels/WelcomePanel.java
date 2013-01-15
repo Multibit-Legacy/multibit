@@ -29,11 +29,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import org.multibit.controller.Controller;
 
-import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
@@ -52,12 +53,12 @@ public class WelcomePanel extends JPanel implements View {
 
     private static final long serialVersionUID = 199992298245057705L;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     /**
      * Creates a new {@link WelcomePanel}.
      */
-    public WelcomePanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public WelcomePanel(Controller controller) {
         this.controller = controller;
 
         setLayout(new BorderLayout());
@@ -311,6 +312,6 @@ public class WelcomePanel extends JPanel implements View {
 
     @Override
     public int getViewId() {
-        return View.WELCOME_VIEW;
+        return MultiBitView.WELCOME_VIEW;
     }
 }

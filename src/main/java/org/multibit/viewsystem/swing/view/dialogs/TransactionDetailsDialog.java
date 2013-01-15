@@ -64,6 +64,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+import org.multibit.viewsystem.swing.CoreFrame;
 
 /**
  * The transaction details dialog.
@@ -112,7 +113,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
      * Creates a new {@link TransactionDetailsDialog}.
      */
     public TransactionDetailsDialog(MultiBitController controller, MultiBitFrame mainFrame, WalletTableData rowTableData) {
-        super(mainFrame, controller.getLocaliser().getString("transactionDetailsDialog.title"));
+        super(mainFrame.getCoreFrame(), controller.getLocaliser().getString("transactionDetailsDialog.title"));
         this.controller = controller;
         this.rowTableData = rowTableData;
 
@@ -136,7 +137,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         int minimumHeight = fontMetrics.getHeight() * 13 + HEIGHT_DELTA;
-        int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT),
+        int minimumWidth = Math.max(fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT),
                 fontMetrics.stringWidth("0123456789") * 5)
                 + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));

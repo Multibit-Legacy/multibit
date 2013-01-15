@@ -76,7 +76,7 @@ public class OpenWalletAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
 
         try {
@@ -93,7 +93,7 @@ public class OpenWalletAction extends AbstractAction {
             }
 
             fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            int returnVal = fileChooser.showOpenDialog(mainFrame);
+            int returnVal = fileChooser.showOpenDialog(mainFrame.getCoreFrame());
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
@@ -115,7 +115,7 @@ public class OpenWalletAction extends AbstractAction {
             }
         } finally {
             setEnabled(true);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 
@@ -189,7 +189,7 @@ public class OpenWalletAction extends AbstractAction {
                 } finally {
                     setEnabled(true);
                     if (mainFrame != null) {
-                        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        mainFrame.getCoreFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                     }
                 }
             }

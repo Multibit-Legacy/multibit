@@ -65,10 +65,12 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
+import java.util.logging.Level;
 
 /**
  * <p>
@@ -550,10 +552,19 @@ public class MultiBitService {
         log.debug("MultiBitService#sendCoins - Just about to send coins");
         KeyParameter aesKey = null;
         if (decryptBeforeSigning && perWalletModelData.getWallet().getEncrypterDecrypter() != null) {
-            aesKey = perWalletModelData.getWallet().getEncrypterDecrypter().deriveKey(password);
+                    try {
+                        aesKey = perWalletModelData.getWallet().getEncrypterDecrypter().deriveKey(password);
+                    } catch (EncrypterDecrypterException ex) {
+                        java.util.logging.Logger.getLogger(MultiBitService.class.getName()).log(Level.SEVERE, null, ex);
+                    }
         }
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
-                Utils.toNanoCoins(amount), fee, decryptBeforeSigning, aesKey);
+        Transaction sendTransaction = null;
+        try {
+            sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
+        Utils.toNanoCoins(amount), fee, decryptBeforeSigning, aesKey);
+        } catch (EncrypterDecrypterException ex) {
+            java.util.logging.Logger.getLogger(MultiBitService.class.getName()).log(Level.SEVERE, null, ex);
+        }
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
         assert sendTransaction != null; 

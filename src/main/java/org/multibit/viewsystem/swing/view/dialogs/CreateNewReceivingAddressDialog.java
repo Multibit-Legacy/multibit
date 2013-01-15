@@ -49,7 +49,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
      * Creates a new {@link CreateNewReceivingAddressDialog}.
      */
     public CreateNewReceivingAddressDialog(MultiBitController controller, MultiBitFrame mainFrame, ReceiveBitcoinPanel receiveBitcoinPanel) {
-        super(mainFrame, controller.getLocaliser().getString("createNewReceivingAddressDialog.title"));
+        super(mainFrame.getCoreFrame(), controller.getLocaliser().getString("createNewReceivingAddressDialog.title"));
         this.controller = controller;
         this.receiveBitcoinPanel = receiveBitcoinPanel;
       

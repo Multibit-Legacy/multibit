@@ -63,6 +63,7 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.WalletVersion;
+import org.multibit.viewsystem.swing.CoreFrame;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
@@ -224,8 +225,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         myRoundedPanel.add(filler1, constraints);
 
-        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), WIDTH_OF_TEXT_FIELD,
-                controller);
+        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), WIDTH_OF_TEXT_FIELD);
         walletDescriptionTextField.setFocusable(true);
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
@@ -456,7 +456,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = component.getFontMetrics(font);
         //return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.85 + WIDTH_DELTA);
-        return (int) (fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_MEDIUM_FIELD_TEXT) + WIDTH_DELTA) ;
+        return (int) (fontMetrics.stringWidth(CoreFrame.EXAMPLE_MEDIUM_FIELD_TEXT) + WIDTH_DELTA) ;
         
     }
     
@@ -599,11 +599,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
             String titleText = controller.getLocaliser().getString("multiBitFrame.title");
             if (controller.getModel().getActiveWallet() != null) {
-                titleText = titleText + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
+                titleText = titleText + CoreFrame.SEPARATOR
+                        + controller.getModel().getActivePerWalletModelData().getWalletDescription() + CoreFrame.SEPARATOR
                         + controller.getModel().getActivePerWalletModelData().getWalletFilename();
             }
-            mainFrame.setTitle(titleText);
+            mainFrame.getCoreFrame().setTitle(titleText);
         }
     }
 

@@ -47,8 +47,10 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,13 +122,13 @@ public class JFontChooser extends JComponent {
     private JPanel samplePanel = null;
     private JTextField sampleText = null;
 
-    private MultiBitController controller;
+    private Controller controller;
     private FontMetrics fontMetrics;
 
     /**
      * Constructs a <code>JFontChooser</code> object.
      **/
-    public JFontChooser(MultiBitController controller) {
+    public JFontChooser(Controller controller) {
         this.controller = controller;
         this.fontSizeStrings = DEFAULT_FONT_SIZE_STRINGS;
 
@@ -134,7 +136,7 @@ public class JFontChooser extends JComponent {
 
         fontMetrics = getFontMetrics(defaultFont);
 
-        int minimumWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT) + WIDTH_DELTA;
+        int minimumWidth = fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT) + WIDTH_DELTA;
         int minimumHeight = 12 * fontMetrics.getHeight() + HEIGHT_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         setPreferredSize(new Dimension(minimumWidth, minimumHeight));
@@ -167,7 +169,7 @@ public class JFontChooser extends JComponent {
 
     public JTextField getFontFamilyTextField() {
         if (fontFamilyTextField == null) {
-            fontFamilyTextField = new MultiBitTextField("", 40, controller);
+            fontFamilyTextField = new MultiBitTextField("", 40);
             fontFamilyTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(fontFamilyTextField));
             fontFamilyTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontFamilyList()));
             fontFamilyTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontFamilyList()));
@@ -181,7 +183,7 @@ public class JFontChooser extends JComponent {
 
     public JTextField getFontStyleTextField() {
         if (fontStyleTextField == null) {
-            fontStyleTextField = new MultiBitTextField("", 40, controller);
+            fontStyleTextField = new MultiBitTextField("", 40);
             fontStyleTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(fontStyleTextField));
             fontStyleTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontStyleList()));
             fontStyleTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontStyleList()));
@@ -195,7 +197,7 @@ public class JFontChooser extends JComponent {
 
     public JTextField getFontSizeTextField() {
         if (fontSizeTextField == null) {
-            fontSizeTextField = new MultiBitTextField("", 40, controller);
+            fontSizeTextField = new MultiBitTextField("", 40);
             fontSizeTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(fontSizeTextField));
             fontSizeTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontSizeList()));
             fontSizeTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontSizeList()));

@@ -25,6 +25,7 @@ import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
@@ -48,7 +49,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
      * Creates a new {@link SendBitcoinConfirmDialog}.
      */
     public SendBitcoinConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame, controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
+        super(mainFrame.getCoreFrame(), controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -71,7 +72,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         
         if (mainFrame != null) {
             int minimumHeight = fontMetrics.getHeight() * 11 + HEIGHT_DELTA;
-            int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
+            int minimumWidth = Math.max(fontMetrics.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
             setMinimumSize(new Dimension(minimumWidth, minimumHeight));
             positionDialogRelativeToParent(this, 0.5D, 0.47D);
         }

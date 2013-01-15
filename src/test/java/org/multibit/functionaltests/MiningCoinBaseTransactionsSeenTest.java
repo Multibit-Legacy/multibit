@@ -43,6 +43,7 @@ import com.google.bitcoin.core.DumpedPrivateKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
+import org.multibit.controller.CoreController;
 
 /**
  * Functional test to check that Mining Coinbase Transactions can be seen.
@@ -85,7 +86,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
             // create the controller
-            final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
+            final MultiBitController controller = new MultiBitController(new CoreController(applicationDataDirectoryLocator));
             MultiBit.setController(controller);
 
             // create the model - gets hooked up to controller automatically

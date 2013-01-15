@@ -23,7 +23,7 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
@@ -99,7 +99,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, (new Boolean(showDialog)).toString());
 
             showOpenUriDialog.setVisible(false);
-            controller.displayView(View.SEND_BITCOIN_VIEW);
+            controller.displayView(MultiBitView.SEND_BITCOIN_VIEW);
         }
     }
 }

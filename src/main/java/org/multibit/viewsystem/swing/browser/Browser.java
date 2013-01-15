@@ -25,12 +25,14 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import javax.swing.text.Document;
 import javax.swing.text.html.HTMLEditorKit;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
@@ -48,10 +50,10 @@ public class Browser extends javax.swing.JEditorPane {
     
     private boolean loading = false;
      
-    private MultiBitFrame mainFrame;
-    private MultiBitController controller;
+    private CoreFrame mainFrame;
+    private Controller controller;
     
-    public Browser(MultiBitController controller, MultiBitFrame mainFrame, String currentHref) {
+    public Browser(Controller controller, CoreFrame mainFrame, String currentHref) {
         super();
         
         this.controller = controller;

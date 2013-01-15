@@ -44,8 +44,9 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.CoreFrame;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
@@ -63,7 +64,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
+public class ReceiveBitcoinPanel extends AbstractTradePanel implements MultiBitView {
 
     static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinPanel.class);
 
@@ -146,8 +147,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         formPanel.add(addressLabel, constraints);
 
         FontMetrics fontMetric = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
-        addressTextField = new MultiBitTextField("", 24, controller);
+        int longFieldWidth = fontMetric.stringWidth(CoreFrame.EXAMPLE_LONG_FIELD_TEXT);
+        addressTextField = new MultiBitTextField("", 24);
 
         //addressTextField = new MultiBitTextArea("", 24, 1, controller);
         addressTextField.setEditable(false);
@@ -477,7 +478,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
     @Override
     public int getViewId() {
-        return View.RECEIVE_BITCOIN_VIEW;
+        return MultiBitView.RECEIVE_BITCOIN_VIEW;
     }
     
     public CreateNewReceivingAddressAction getCreateNewReceivingAddressAction() {

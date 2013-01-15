@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -41,6 +42,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 
@@ -91,7 +93,7 @@ public class FileHandlerTest extends TestCase {
         ScryptParameters scryptParameters = new ScryptParameters(salt);
         encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
         
-        controller = new MultiBitController();
+        controller = new MultiBitController(new CoreController());
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
         controller.setLocaliser(localiser);
@@ -242,7 +244,7 @@ public class FileHandlerTest extends TestCase {
     }
     
     @Test
-    public void testCreateProtobufEncryptedWallet() throws IOException {
+    public void testCreateProtobufEncryptedWallet() throws IOException, EncrypterDecrypterException {
         // Create an encrypted wallet.
         File temporaryWallet = File.createTempFile(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
@@ -350,7 +352,7 @@ public class FileHandlerTest extends TestCase {
     }
 
     @Test
-    public void testDefaultScryptParameters() throws IOException {
+    public void testDefaultScryptParameters() throws IOException, EncrypterDecrypterException {
         // Create an encrypted wallet with default scrypt parameters.
         File temporaryWallet = File.createTempFile(TEST_SCRYPT_PARAMETERS + "1", ".wallet");
         temporaryWallet.deleteOnExit();
@@ -397,7 +399,7 @@ public class FileHandlerTest extends TestCase {
     }
 
     @Test
-    public void testNonDefaultScryptParameters() throws IOException {
+    public void testNonDefaultScryptParameters() throws IOException, EncrypterDecrypterException {
         // Non default scrypt parameters.
         int n = 32768;
         int r = 8;
@@ -461,7 +463,7 @@ public class FileHandlerTest extends TestCase {
     }
     
     public void testIsSerialisdWallet() throws Exception {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
 
@@ -489,7 +491,7 @@ public class FileHandlerTest extends TestCase {
     
     @Test
     public void testCannotLoadOrSaveFutureWalletVersions() throws IOException {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
         FileHandler fileHandler = new FileHandler(controller);
@@ -540,7 +542,7 @@ public class FileHandlerTest extends TestCase {
     
     @Test
     public void testWalletVersion2() throws IOException {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
         FileHandler fileHandler = new FileHandler(controller);

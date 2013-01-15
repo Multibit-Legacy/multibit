@@ -26,6 +26,7 @@ import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 
 import com.google.bitcoin.core.WalletVersion;
+import org.multibit.controller.CoreController;
 
 public class WalletInfoTest extends TestCase {
     public static final String WALLET_TESTDATA_DIRECTORY = "wallets";
@@ -50,7 +51,7 @@ public class WalletInfoTest extends TestCase {
     @Test
     public void testRoundTrip() throws Exception {
         // set up core objects
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
 
@@ -115,7 +116,7 @@ public class WalletInfoTest extends TestCase {
     @Test
     public void testloadNonExistentInfoFile() throws Exception {
         // Set up core objects.
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
 

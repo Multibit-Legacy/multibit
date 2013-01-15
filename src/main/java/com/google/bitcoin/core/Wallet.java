@@ -1202,7 +1202,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Transaction objects which are equal. The wallet is not updated to track its pending status or to mark the
      * coins as spent until commitTx is called on the result.
      */
-    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws EncrypterDecrypterException {
         return createSend(address, nanocoins, fee, getChangeAddress(), decryptBeforeSigning, aesKey);
     }
 
@@ -1215,7 +1215,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param nanocoins How many coins to send.
      * @return the Transaction that was created, or null if there are insufficient coins in thew allet.
      */
-    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws EncrypterDecrypterException {
         Transaction tx = createSend(to, nanocoins, fee, decryptBeforeSigning, aesKey);
         if (tx == null)   // Not enough money! :-(
             return null;
@@ -1242,7 +1242,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws IOException if there was a problem broadcasting the transaction
      */
     public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey)
-            throws IOException {
+            throws IOException, EncrypterDecrypterException {
         Transaction tx = sendCoinsOffline(to, nanocoins, fee, decryptBeforeSigning, aesKey);
         if (tx == null)
             return null;  // Not enough money.
@@ -1262,7 +1262,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee       The fee to include     
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      */
-    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws EncrypterDecrypterException {
         Transaction tx = sendCoinsOffline(to, nanocoins, fee, decryptBeforeSigning, aesKey);
         if (tx == null)
             return null;  // Not enough money.
@@ -1286,7 +1286,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      * @throws IOException if there was a problem broadcasting the transaction
      */
-    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IOException {
+    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IOException, EncrypterDecrypterException {
         // TODO: This API is fairly questionable and the function isn't tested. If anything goes wrong during sending
         // on the peer you don't get access to the created Transaction object and must fish it out of the wallet then
         // do your own retry later.
@@ -1318,7 +1318,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      *                      our coins. This should be an address we own (is in the keychain).
      * @return a new {@link Transaction} or null if we cannot afford this send.
      */
-    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, boolean decryptBeforeSigning, KeyParameter aesKey) throws EncrypterDecrypterException {
         log.info("Creating send tx to " + address.toString() + " for " +
                 bitcoinValueToFriendlyString(nanocoins));
 
@@ -1340,7 +1340,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee              The fee to include     
      * @return False if we cannot afford this send, true otherwise
      */
-    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws EncrypterDecrypterException {
         // Calculate the transaction total
         BigInteger nanocoins = BigInteger.ZERO;
         for(TransactionOutput output : sendTx.getOutputs()) {
@@ -1478,7 +1478,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee              The fee to include
      * @return False if we cannot afford this send, true otherwise
      */
-    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws EncrypterDecrypterException {
         return completeTx(sendTx, getChangeAddress(), fee, decryptBeforeSigning, aesKey);
     }
 
@@ -2219,7 +2219,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Encrypt the wallet with the supplied AES key.
      * @param aesKey The AES key to use to encrypt the wallet
      */
-    public void encrypt(KeyParameter aesKey) {
+    public void encrypt(KeyParameter aesKey) throws WalletIsAlreadyEncryptedException, EncrypterDecrypterException {
         if (currentlyEncrypted) {
             throw new WalletIsAlreadyEncryptedException("Wallet is already encrypted");
         }
@@ -2267,7 +2267,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * 
      * @param aesKey The AES key to use to decrypt the wallet
      */
-    public void decrypt(KeyParameter aesKey) {
+    public void decrypt(KeyParameter aesKey) throws WalletIsAlreadyDecryptedException, EncrypterDecrypterException {
         if (!currentlyEncrypted) {
             throw new WalletIsAlreadyDecryptedException("Wallet is already decrypted");
         }
@@ -2314,7 +2314,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * 
      * @param aesKey The AES key to use to decrypt the wallet
      */
-    public void removeEncryption(KeyParameter aesKey) {
+    public void removeEncryption(KeyParameter aesKey) throws WalletIsAlreadyDecryptedException, EncrypterDecrypterException {
         // Remove any encryption on the keys.
         if (isCurrentlyEncrypted()) {
             decrypt(aesKey);
@@ -2337,7 +2337,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      *  
      *  @returns boolean True if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) {
+    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) throws EncrypterDecrypterException {
         if (encrypterDecrypter == null) {
             // The password cannot decrypt anything as the encrypterDecrypter is null.
             return false;

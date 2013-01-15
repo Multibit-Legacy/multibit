@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.MultiBit;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
@@ -60,7 +61,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
         // create the controller
-        controller = new MultiBitController(applicationDataDirectoryLocator);
+        controller = new MultiBitController(new CoreController(applicationDataDirectoryLocator));
 
         assertNotNull("Controller is null", controller);
         MultiBit.setController(controller);
