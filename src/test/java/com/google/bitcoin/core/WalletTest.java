@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -34,8 +35,11 @@ import org.junit.Test;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
+import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
+import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
 
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.MemoryBlockStore;
@@ -589,88 +593,118 @@ public class WalletTest {
         assertEquals(now + 60, wallet.getEarliestKeyCreationTime());
     }
 
-//    @Test
-//    public void oldWalletsDeserialize() throws Exception {
-//        // Check that the Wallet class fills out tx confidences as best it can when loading old wallets. The new
-//        // API provides a superset of the info that used to be available so it's impossible to do a complete
-//        // migration but we can do some.
-//        //
-//        // TODO: This test does not check migration of dead or pending transactions.
-//        InputStream stream = getClass().getResourceAsStream("old1.wallet");
-//        wallet = Wallet.loadFromFileStream(stream);
-//        Set<Transaction> transactions = wallet.getTransactions(true, true);
-//        assertEquals(91, transactions.size());
-//        Transaction tx = wallet.unspent.get(new Sha256Hash("5649c63ad55002ce2f39d1d4744996ebaccc1d15e0491c9e8d60eb3720dabebd"));
-//        assertEquals(tx.getAppearsInHashes().iterator().next(), new Sha256Hash("00000000019380f5aef28393827737f55a1cf8abb51a36d46ab6f2db0a5b9cb8"));
-//        assertEquals(TransactionConfidence.ConfidenceType.BUILDING, tx.getConfidence().getConfidenceType());
-//        assertEquals(42814, tx.getConfidence().getAppearedAtChainHeight());
-//
-//        // Re-serialize the wallet. Make sure it's all still there.
-//        ByteArrayOutputStream bios = new ByteArrayOutputStream();
-//        wallet.saveToFileStream(bios);
-//        wallet = Wallet.loadFromFileStream(new ByteArrayInputStream(bios.toByteArray()));
-//        assertEquals(91, transactions.size());
-//        tx = wallet.unspent.get(new Sha256Hash("5649c63ad55002ce2f39d1d4744996ebaccc1d15e0491c9e8d60eb3720dabebd"));
-//        assertEquals(tx.getAppearsInHashes().iterator().next(), new Sha256Hash("00000000019380f5aef28393827737f55a1cf8abb51a36d46ab6f2db0a5b9cb8"));
-//        assertEquals(TransactionConfidence.ConfidenceType.BUILDING, tx.getConfidence().getConfidenceType());
-//        assertEquals(42814, tx.getConfidence().getAppearedAtChainHeight());
-//
-//        // Now check we can serialize old wallets to protocol buffers. Covers bug 134.
-//        bios.reset();
-//        WalletProtobufSerializer.writeWallet(wallet, bios);
-//
-//    }
-    
-    @Test
-    public void encryptionDecryption() throws Exception {
-        // Check the wallet is initially of WalletType UNENCRYPTED and not currently encrypted
-        assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
-        assertTrue("Wallet is currently encrypted but should not be", !encryptedWallet.isCurrentlyEncrypted());
-        
-        // Correct password should not decrypt first private key as wallet is decrypted.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong.1", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
-        
-        // Encrypt wallet.
-        encryptedWallet.encrypt(aesKey);
+@Test
+public void encryptionDecryptionBasic() throws Exception {
+    // Check the wallet is initially of WalletType UNENCRYPTED.
+    assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
 
-        // Wallet should now be of type WalletType.UNENCRYPTED and currently encrypted.
-        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
-        assertTrue("Wallet is not currently encrypted", encryptedWallet.isCurrentlyEncrypted());
+    // Correct password should not decrypt first private key as wallet is decrypted.
+    assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong.1", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
 
-        // Correct password should decrypt first private key.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with correct password.2", encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
+    // Encrypt wallet.
+    encryptedWallet.encrypt(aesKey);
 
-        // Incorrect password should not decrypt first private key.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.3", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
+    // Wallet should now be of type WalletType.ENCRYPTED_SCRYPT_AES.
+    assertTrue("Wallet is not an encrypted wallet.1", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
 
-        // Decrypt wallet.
-        encryptedWallet.decrypt(aesKey);
-        
-        // Wallet should now be of type WalletType.ENCRYPTED and not currently encrypted.
-        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
-        assertTrue("Wallet is currently encrypted but should not be", !encryptedWallet.isCurrentlyEncrypted());
+    // Correct password should decrypt first private key.
+    assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with correct password.2", encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
 
-        // Correct password should decrypt first private key as wallet is has encrypted bytes.
-        // (Even though it is decrypted you could decrypt it again with the correct password safely - though this is not advised).
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong.4", encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
+    // Incorrect password should not decrypt first private key.
+    assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.3", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
 
-        // Incorrect password should not decrypt first private key.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.5", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
+    // Decrypt wallet.
+    encryptedWallet.decrypt(aesKey);
 
-        // Remove the wallet encryption entirely.
-        encryptedWallet.removeEncryption(aesKey);
+    // Wallet should now be of type WalletType.UNENCRYPTED.
+    assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
 
-        // Wallet should now be of type WalletType.UNENCRYPTED and not currently encrypted.
-        assertTrue("Wallet is not an unencrypted wallet", wallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
-        assertTrue("Wallet is currently encrypted but should not be", !encryptedWallet.isCurrentlyEncrypted());
+    // Correct password should not decrypt first private key as wallet is unencrypted.
+     assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with correct password", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
 
-        // Correct password should decrypt first private key as wallet is has encrypted bytes.
-        // (Even though it is unencrypted you could decrypt it again with the correct password safely - though this is not advised).
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong when wallet is unencrypted.6", encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
+    // Incorrect password should not decrypt first private key as wallet is unencrypted.
+    assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
+}
 
-        // Incorrect password should not decrypt first private key.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.5", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
+@Test
+public void encryptionDecryptionBadPassword() throws Exception {
+    // Check the wallet is not currently encrypted
+    assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
+
+    // Encrypt wallet.
+    encryptedWallet.encrypt(aesKey);
+
+    // Wallet should now be of type WalletType.ENCRYPTED_SCRYPT_AES and currently encrypted.
+    assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+
+    // Chek that the wrong password does not decrypt the wallet.
+    try {
+        encryptedWallet.decrypt(wrongAesKey);
+        fail("Incorrectly decoded wallet with wrong password");
+    } catch (EncrypterDecrypterException ede) {
+        assertTrue("Wrong message in EncrypterDecrypterException", ede.getMessage().indexOf("Could not decrypt bytes") > -1);
     }
+}
+
+@Test
+public void encryptionDecryptionCheckExceptions() throws Exception {
+    // Check the wallet is not currently encrypted
+    assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
+
+    // Try decrypting it again
+    try {
+        encryptedWallet.decrypt(aesKey);
+        fail("Should not be able to decrypt a decrypted wallet");
+    } catch (WalletIsAlreadyDecryptedException e) {
+        assertTrue("Expected behaviour", true);
+    }
+    assertTrue("Wallet is not an unencrypted wallet.2", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
+
+    // Encrypt wallet.
+    encryptedWallet.encrypt(aesKey);
+
+    assertTrue("Wallet is not an encrypted wallet.2", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+
+    // Try encrypting it again
+    try {
+        encryptedWallet.encrypt(aesKey);
+        fail("Should not be able to encrypt an encrypted wallet");
+    } catch (WalletIsAlreadyEncryptedException e) {
+        assertTrue("Expected behaviour", true);
+    }
+    assertTrue("Wallet is not an encrypted wallet.3", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+}
+
+@Test
+public void encryptionDecryptionHomogenousKeys() throws Exception {
+    // Check the wallet is not currently encrypted
+    assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
+
+    // Encrypt wallet.
+    encryptedWallet.encrypt(aesKey);
+
+    // Try added an ECKey that was encrypted with a differenct ScryptParameters (i.e. a non-homogenous key).
+    // This is not allowed as the ScryptParameters is stored at the Wallet level.
+    byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+    secureRandom.nextBytes(salt);
+    ScryptParameters scryptParameters = new ScryptParameters(salt);
+    EncrypterDecrypter encrypterDecrypterDifferent = new EncrypterDecrypterScrypt(scryptParameters);
+
+    ECKey ecKeyDifferent = new ECKey(encrypterDecrypterDifferent);
+
+    int numberOfKeys = encryptedWallet.getKeychain().size();
+    assertTrue("Wrong number of keys in wallet before key addition", numberOfKeys == 1);
+
+    try {
+        encryptedWallet.addKey(ecKeyDifferent);
+        fail("AddKey should have thrown an EncrypterDecrypterException but did not.");
+    } catch (EncrypterDecrypterException ede) {
+        // Expected behaviour.
+    }
+
+    numberOfKeys = encryptedWallet.getKeychain().size();
+    assertTrue("Wrong number of keys in wallet after key addition", numberOfKeys == 1);
+}
 
     // Support for offline spending is tested in PeerGroupTest
 }

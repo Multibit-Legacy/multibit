@@ -49,6 +49,7 @@ import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.DumpedPrivateKey;
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
@@ -270,7 +271,7 @@ public class PrivateKeysHandler {
             if (wallet != null) {
                 if (walletPassword != null && walletPassword.length > 0) {
                     // Wallet keys need to be decrypted before output.
-                    if (wallet.isCurrentlyEncrypted()) {
+                    if (wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                         decryptionRequired = true;
                     }
                 }

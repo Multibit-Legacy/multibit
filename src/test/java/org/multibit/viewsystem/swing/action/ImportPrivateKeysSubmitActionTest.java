@@ -29,6 +29,7 @@ import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.EncryptionType;
 
 public class ImportPrivateKeysSubmitActionTest extends TestCase {   
     
@@ -154,7 +155,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnencryptedWallet", true, WALLET_PASSWORD);
 
-        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().isCurrentlyEncrypted());
+        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
@@ -200,7 +201,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         Thread.sleep(DELAY_TO_COMPLETE_IMPORT);
         assertEquals("Wrong message after unencrypted import should have completed", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText1());    
               
-        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().isCurrentlyEncrypted());
+        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         // Decrypt wallet to enable private key comparision
         controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
@@ -217,7 +218,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnEncryptedWallet", true, WALLET_PASSWORD);
 
-        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().isCurrentlyEncrypted());
+        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
@@ -270,7 +271,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         Thread.sleep(DELAY_TO_COMPLETE_IMPORT);
         assertEquals("Wrong message after encrypted import is good to go", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText1());    
              
-        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().isCurrentlyEncrypted());
+        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         // Decrypt wallet to enable private key comparision.
         controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));

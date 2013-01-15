@@ -366,15 +366,11 @@ public class FileHandler {
                     // as encrypted and the version set to PROTOBUF_ENCRYPTED.
                     boolean walletIsActuallyEncrypted = false;
                     Wallet wallet = perWalletModelData.getWallet();
-                    if (wallet.isCurrentlyEncrypted()) {
-                        walletIsActuallyEncrypted = true;
-                    } else {
-                        // Check all the keys individually.
-                        for (ECKey key : wallet.getKeychain()) {
-                            if (key.isEncrypted()) {
-                                walletIsActuallyEncrypted = true;
-                                break;
-                            }
+                    // Check all the keys individually.
+                    for (ECKey key : wallet.getKeychain()) {
+                        if (key.isEncrypted()) {
+                            walletIsActuallyEncrypted = true;
+                            break;
                         }
                     }
 
@@ -452,8 +448,7 @@ public class FileHandler {
         if (passwordToUse != null && passwordToUse.length > 0) {
             if (controller.getModel() != null
                     && controller.getModel().getActiveWalletWalletInfo() != null
-                    && controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF_ENCRYPTED
-                    && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
+                    && controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF_ENCRYPTED) {
                 // Save a backup copy of the private keys, encrypted with the newPasswordToUse.
                 PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
                 String privateKeysBackupFilename = createBackupFilename(new File(controller.getModel().getActiveWalletFilename()),

@@ -22,6 +22,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.view.panels.CreateNewReceivingAddressPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
+import com.google.bitcoin.core.EncryptionType;
+
 public class CreateNewReceivingAddressSubmitActionTest extends TestCase {      
     public static final char[] TEST_PASSWORD1 = "my hovercraft has eels".toCharArray();
     
@@ -102,7 +104,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         assertTrue("Wallet password is not enabled when it should be", createNewPanel.isWalletPasswordFieldEnabled());
         assertNotNull("createNewAction was not created successfully", createNewAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
-        assertTrue("Wallet is not encrypted but it should be", controller.getModel().getActiveWallet().isCurrentlyEncrypted());
+        assertTrue("Wallet is not encrypted but it should be", controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         assertNull("The last private key backup file was not null", createNewAction.getLastPrivateKeysBackupFile());
 
         // Execute the createNewAction - by default the createNewDialog sould be set to add one key.

@@ -132,8 +132,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             char[] walletPassword = walletPasswordField.getPassword();
  
             if (controller.getModel().getActiveWallet() != null) {
-                if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES
-                        && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
+                if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                     // Encrypted wallet.
                     if (walletPassword == null || walletPassword.length == 0) {
                         // User needs to enter password.
@@ -187,7 +186,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         Wallet wallet = perWalletModelData.getWallet();
         try {
             // Work out if keys need decrypting before signing occurs.
-            if (wallet.isCurrentlyEncrypted()) {
+            if (wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                 decryptBeforeSigning = true;
             }
             

@@ -235,9 +235,7 @@ public class FileHandlerTest extends TestCase {
 
         assertEquals(WalletVersion.PROTOBUF_ENCRYPTED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
-        
-        assertTrue("Wallet isCurrentlyEncrypted when it should not be", !perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
-        
+
         deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
     }
     
@@ -278,8 +276,6 @@ public class FileHandlerTest extends TestCase {
         // Check the wallet status before it is written out and reborn.
         assertEquals(WalletVersion.PROTOBUF_ENCRYPTED, perWalletModelData.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not ENCRYPTED when it should be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
-        
-        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelData.getWallet().isCurrentlyEncrypted());
 
         // Get the keys of the wallet and check that all the keys are encrypted.
         Collection<ECKey> keys = newWallet.getKeychain();
@@ -308,9 +304,7 @@ public class FileHandlerTest extends TestCase {
 
         assertEquals(WalletVersion.PROTOBUF_ENCRYPTED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not of type ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
-        
-        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
-        
+     
         // Get the keys out the reborn wallet and check that all the keys are encrypted.
         Collection<ECKey> rebornEncryptedKeys = perWalletModelDataReborn.getWallet().getKeychain();
         for (ECKey key : rebornEncryptedKeys) {
