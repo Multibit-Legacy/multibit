@@ -24,11 +24,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.controller.MultiBitController;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
@@ -38,7 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
+import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.Wallet;
+import com.google.protobuf.ByteString;
 
 /**
  * This {@link Action} action encrypts the private keys with the password.
@@ -122,9 +125,10 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                     controller.fireWalletBusyChange(true);
 
                     if (wallet.getKeyCrypter() == null) {
-                        byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+                        byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
                         controller.getMultiBitService().getSecureRandom().nextBytes(salt);
-                        ScryptParameters scryptParameters = new ScryptParameters(salt);
+                        Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
+                        ScryptParameters scryptParameters = scryptParametersBuilder.build();
                         KeyCrypter encrypterDecrypter = new KeyCrypterScrypt(scryptParameters);
                         wallet.setKeyCrypter(encrypterDecrypter);
                     }

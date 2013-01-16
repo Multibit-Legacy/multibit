@@ -168,7 +168,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         MultiBitController controller = ActionTestUtils.createController();
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
-        ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", true, WALLET_PASSWORD);
+        ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithEncryptedWallet", true, WALLET_PASSWORD);
 
         // Hook up a wallet busy listener.
         SimpleWalletBusyListener walletBusyListener = new SimpleWalletBusyListener();

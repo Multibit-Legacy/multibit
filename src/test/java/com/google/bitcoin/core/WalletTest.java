@@ -37,14 +37,16 @@ import org.spongycastle.crypto.params.KeyParameter;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
 import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
 
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.MemoryBlockStore;
 import com.google.bitcoin.utils.BriefLogFormatter;
+import com.google.protobuf.ByteString;
 
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class WalletTest {
@@ -69,9 +71,10 @@ public class WalletTest {
         myKey = new ECKey();
         myAddress = myKey.toAddress(params);
         
-        byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+        byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
         secureRandom.nextBytes(salt);
-        ScryptParameters scryptParameters = new ScryptParameters(salt);
+        Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
+        ScryptParameters scryptParameters = scryptParametersBuilder.build();
         KeyCrypter encrypterDecrypter = new KeyCrypterScrypt(scryptParameters);
         
         wallet = new Wallet(params);
@@ -687,9 +690,10 @@ public void encryptionDecryptionHomogenousKeys() throws Exception {
 
     // Try added an ECKey that was encrypted with a differenct ScryptParameters (i.e. a non-homogenous key).
     // This is not allowed as the ScryptParameters is stored at the Wallet level.
-    byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+    byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
     secureRandom.nextBytes(salt);
-    ScryptParameters scryptParameters = new ScryptParameters(salt);
+    Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
+    ScryptParameters scryptParameters = scryptParametersBuilder.build();
     KeyCrypter keyCrypterDifferent = new KeyCrypterScrypt(scryptParameters);
 
     ECKey ecKeyDifferent = new ECKey(keyCrypterDifferent);

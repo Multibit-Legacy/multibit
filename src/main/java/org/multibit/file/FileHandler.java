@@ -649,7 +649,7 @@ public class FileHandler {
             
             for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                 // Check if this is the initial empty PerWalletModelData
-                if ("".equals(perWalletModelData.getWalletFilename()) || perWalletModelData.getWalletFilename() == null) {
+                if ("".equals(perWalletModelData.getWalletFilename()) || perWalletModelData.getWalletFilename() == null || perWalletModelData.getWalletInfo() == null) {
                     continue;
                 }
                 

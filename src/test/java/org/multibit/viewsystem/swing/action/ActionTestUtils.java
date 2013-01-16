@@ -4,11 +4,12 @@ import java.io.File;
 import java.security.SecureRandom;
 import java.util.Locale;
 
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.bitcoin.crypto.ScryptParameters;
 
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
@@ -19,7 +20,9 @@ import com.google.bitcoin.core.WalletVersion;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.Wallet;
+import com.google.protobuf.ByteString;
 
 /**
  * Class containing utility methods for action tests.
@@ -49,14 +52,20 @@ public class ActionTestUtils {
              secureRandom = new SecureRandom();
          }
          
-         byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+         byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
          secureRandom.nextBytes(salt);
-         ScryptParameters scryptParameters = new ScryptParameters(salt);
+         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
+         ScryptParameters scryptParameters = scryptParametersBuilder.build();
          KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
 
          Wallet wallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
          wallet.getKeychain().add(new ECKey());
-  
+         
+         // Encrypt wallet if required.
+         if (encrypt) {
+             wallet.encrypt(keyCrypter.deriveKey(walletPassword));
+         }
+         
          PerWalletModelData perWalletModelData = new PerWalletModelData();
          perWalletModelData.setWallet(wallet);
   
@@ -75,10 +84,6 @@ public class ActionTestUtils {
          FileHandler fileHandler = new FileHandler(controller);
          fileHandler.savePerWalletModelData(perWalletModelData, true);
          PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
-             
-         if (encrypt) {
-             loadedPerWalletModelData.getWallet().encrypt(keyCrypter.deriveKey(walletPassword));
-         }
          
          controller.getModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());
          

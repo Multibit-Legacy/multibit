@@ -57,6 +57,7 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ScriptException;
+import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -67,10 +68,12 @@ import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
+import com.google.protobuf.ByteString;
 
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
@@ -310,9 +313,10 @@ public class MultiBitService {
                 newWalletCreated = true;
             } else {
                 // Create a brand new wallet - by default protobuf and scrypt encryptable with random salt.
-                byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+                byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
                 secureRandom.nextBytes(salt);
-                ScryptParameters scryptParameters = new ScryptParameters(salt);
+                Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
+                ScryptParameters scryptParameters = scryptParametersBuilder.build();
                 KeyCrypter encrypterDecrypter = new KeyCrypterScrypt(scryptParameters);
                 wallet = new Wallet(networkParameters, encrypterDecrypter);
                 ECKey newKey = new ECKey();
