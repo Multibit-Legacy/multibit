@@ -45,6 +45,8 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.MemoryBlockStore;
 import com.google.bitcoin.utils.BriefLogFormatter;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+
 public class WalletTest {
     static final NetworkParameters params = NetworkParameters.unitTests();
 

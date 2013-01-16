@@ -29,7 +29,7 @@ import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.EncryptionType;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class ImportPrivateKeysSubmitActionTest extends TestCase {   
     

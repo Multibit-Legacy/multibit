@@ -67,6 +67,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+
 // To do list:
 //
 // - Make the keychain member protected and switch it to be a hashmap of some kind so key lookup ops are faster.

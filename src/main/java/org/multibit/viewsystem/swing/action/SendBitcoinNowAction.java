@@ -43,7 +43,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.EncryptionType;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
  * This {@link Action} actually spends bitcoin.

@@ -36,6 +36,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
@@ -48,8 +49,6 @@ import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-
-import com.google.bitcoin.core.EncryptionType;
 
 /**
  * The add password view.

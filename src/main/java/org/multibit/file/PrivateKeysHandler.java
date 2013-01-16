@@ -49,7 +49,6 @@ import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.DumpedPrivateKey;
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
@@ -58,6 +57,8 @@ import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
  * Class for handling reading and writing of private keys to a file.

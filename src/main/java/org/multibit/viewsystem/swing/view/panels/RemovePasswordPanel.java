@@ -46,7 +46,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.bitcoin.core.EncryptionType;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
  * The remove password view.

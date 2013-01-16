@@ -62,13 +62,12 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.bitcoin.core.EncryptionType;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+
 import com.google.bitcoin.crypto.EncrypterDecrypterException;
-import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
-import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 
 /**

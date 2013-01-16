@@ -60,9 +60,10 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
-import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.WalletVersion;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 

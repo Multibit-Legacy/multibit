@@ -52,7 +52,6 @@ import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
@@ -71,6 +70,8 @@ import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
  * <p>

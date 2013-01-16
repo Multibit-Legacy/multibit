@@ -100,10 +100,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /*
  * JFrame displaying Swing version of MultiBit

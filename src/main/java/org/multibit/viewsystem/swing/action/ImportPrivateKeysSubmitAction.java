@@ -47,11 +47,12 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.BlockStoreException;
 import com.piuk.blockchain.MyWallet;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
  * This {@link Action} imports the private keys to the active wallet.

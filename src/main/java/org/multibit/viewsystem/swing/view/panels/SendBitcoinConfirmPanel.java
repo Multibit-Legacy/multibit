@@ -18,7 +18,6 @@ package org.multibit.viewsystem.swing.view.panels;
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -28,29 +27,24 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
-import org.joda.money.Money;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinNowAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.Utils;
 
 /**
  * The send bitcoin confirm panel.

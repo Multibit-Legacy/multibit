@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.EncryptionType;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
  * This {@link Action} represents an action to actually create receiving

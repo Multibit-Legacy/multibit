@@ -34,7 +34,6 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
@@ -43,6 +42,8 @@ import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.crypto.EncrypterDecrypter;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class FileHandlerTest extends TestCase {
     private final String WALLET_TESTDATA_DIRECTORY = "wallets";

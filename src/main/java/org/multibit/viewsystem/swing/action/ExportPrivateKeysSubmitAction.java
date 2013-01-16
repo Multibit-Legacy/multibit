@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.EncryptionType;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.crypto.EncrypterDecrypterException;
 

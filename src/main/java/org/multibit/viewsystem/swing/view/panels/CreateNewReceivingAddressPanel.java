@@ -8,23 +8,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressSubmitAction;
-import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-
-import com.google.bitcoin.core.EncryptionType;
 import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
 
 /**
