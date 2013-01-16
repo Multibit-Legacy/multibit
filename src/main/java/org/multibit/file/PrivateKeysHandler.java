@@ -35,10 +35,10 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
-import org.multibit.crypto.EncrypterDecrypterOpenSSL;
+import org.multibit.crypto.KeyCrypterOpenSSL;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +77,7 @@ public class PrivateKeysHandler {
     private NetworkParameters networkParameters;
     private static final String SEPARATOR = " ";
 
-    private EncrypterDecrypterOpenSSL encrypterDecrypter;
+    private KeyCrypterOpenSSL encrypterDecrypter;
 
     public PrivateKeysHandler(NetworkParameters networkParameters) {
         // Date format is UTC with century, T time separator and Z for UTC timezone.
@@ -89,11 +89,11 @@ public class PrivateKeysHandler {
         }
         this.networkParameters = networkParameters;
 
-        encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+        encrypterDecrypter = new KeyCrypterOpenSSL();
     }
 
     public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile, char[] exportPassword, char[] walletPassword)
-            throws IOException, EncrypterDecrypterException {
+            throws IOException, KeyCrypterException {
 
         // Construct a StringBuffer with the private key export text.
         StringBuffer outputStringBuffer = new StringBuffer();
@@ -113,8 +113,8 @@ public class PrivateKeysHandler {
         String keyOutputText = outputStringBuffer.toString();
 
         if (performEncryptionOfExportFile) {
-            EncrypterDecrypterOpenSSL encrypter = new EncrypterDecrypterOpenSSL();
-            keyOutputText = encrypter.encrypt(keyOutputText, exportPassword);
+            KeyCrypterOpenSSL keyCrypter = new KeyCrypterOpenSSL();
+            keyOutputText = keyCrypter.encrypt(keyOutputText, exportPassword);
         }
         
         FileWriter fileWriter = null;
@@ -153,7 +153,7 @@ public class PrivateKeysHandler {
      * @throws EncrypterDecrypterException 
      */
     public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile,
-            char[] exportPassword, char[] walletPassword) throws EncrypterDecrypterException {
+            char[] exportPassword, char[] walletPassword) throws KeyCrypterException {
         boolean thereWereFailures = false;
 
         String messageKey = "privateKeysHandler.failedForUnknownReason";
@@ -206,7 +206,7 @@ public class PrivateKeysHandler {
         return new Verification(!thereWereFailures, messageKey, messageData);
     }
 
-    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException, EncrypterDecrypterException {
+    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException, KeyCrypterException {
         if (importFile == null) {
             throw new PrivateKeysHandlerException("Import file cannot be null");
         }
@@ -221,8 +221,8 @@ public class PrivateKeysHandler {
 
             if (importFileContents != null && importFileContents.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
                 // Decryption required.
-                EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
-                importFileContents = encrypterDecrypter.decrypt(importFileContents, password);
+                KeyCrypterOpenSSL keyCrypter = new KeyCrypterOpenSSL();
+                importFileContents = keyCrypter.decrypt(importFileContents, password);
             }
 
             scanner = new Scanner(new StringReader(importFileContents));
@@ -261,7 +261,7 @@ public class PrivateKeysHandler {
         out.append("#").append("\n");
     }
 
-    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, char[] walletPassword) throws EncrypterDecrypterException {
+    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, char[] walletPassword) throws KeyCrypterException {
        // Determine if keys need to be decrypted.
         boolean decryptionRequired = false;
 
@@ -340,10 +340,10 @@ public class PrivateKeysHandler {
                     }
                 }
 
-                EncrypterDecrypter walletEncrypterDecrypter = wallet.getEncrypterDecrypter();
+                KeyCrypter walletKeyCrypter = wallet.getKeyCrypter();
                 KeyParameter aesKey = null;
                 if (decryptionRequired) {
-                    aesKey = walletEncrypterDecrypter.deriveKey(walletPassword);
+                    aesKey = walletKeyCrypter.deriveKey(walletPassword);
                 }
                 
                 for (ECKey ecKey : keychain) {
@@ -358,7 +358,7 @@ public class PrivateKeysHandler {
                     }
                     if (decryptionRequired) {
                         // Create a new decrypted key holding the private key.
-                        ECKey decryptedKey = new ECKey(walletEncrypterDecrypter.decrypt(ecKey.getEncryptedPrivateKey(),
+                        ECKey decryptedKey = new ECKey(walletKeyCrypter.decrypt(ecKey.getEncryptedPrivateKey(),
                                 aesKey), ecKey.getPubKey());
                         keyAndDates.add(new PrivateKeyAndDate(decryptedKey, earliestUsageDate));
                     } else {

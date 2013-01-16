@@ -30,11 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
-public class EncrypterDecrypterOpenSSLTest extends TestCase {
+public class KeyCrypterOpenSSLTest extends TestCase {
 
-    private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypterOpenSSLTest.class);
+    private static final Logger log = LoggerFactory.getLogger(KeyCrypterOpenSSLTest.class);
 
     private static final String TEST_STRING1 = "The quick brown fox jumps over the lazy dog. 01234567890 !@#$%^&*()-=[]{};':|`~,./<>?";
    
@@ -53,8 +53,8 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
     private static final char[] PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430".toCharArray();
 
     @Test
-    public void testEncryptDecryptGood1() throws EncrypterDecrypterException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptDecryptGood1() throws Exception {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         // Encrypt.
         String cipherText = encrypterDecrypter.encrypt(TEST_STRING1, PASSWORD1);
@@ -68,8 +68,8 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
         assertEquals(TEST_STRING1, rebornPlainText);
     }
 
-    public void testEncryptDecryptGood2() throws EncrypterDecrypterException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptDecryptGood2() throws Exception {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         // Create a longer encryption string.
         StringBuffer stringBuffer = new StringBuffer();
@@ -92,8 +92,8 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
      * UUIDs are used and hence will only cover hex characters (and te separator hyphen).
      * @throws EncrypterDecrypterException
      */
-    public void testEncryptDecryptGood3() throws EncrypterDecrypterException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptDecryptGood3() throws Exception {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         int numberOfTests = 100;
         System.out.print("EncrypterDecrypterTest: Trying random UUIDs for plainText and passwords :");
@@ -113,8 +113,8 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
         System.out.println(" Done.");
     }
 
-    public void testEncryptDecryptWrongPassword() throws EncrypterDecrypterException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptDecryptWrongPassword() throws Exception {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         // create a longer encryption string
         StringBuffer stringBuffer = new StringBuffer();
@@ -128,13 +128,13 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
         try {
             encrypterDecrypter.decrypt(cipherText, WRONG_PASSWORD);
             fail("Decrypt with wrong password did not throw exception");
-        } catch (EncrypterDecrypterException ede) {
+        } catch (KeyCrypterException ede) {
             assertTrue(ede.getMessage().indexOf("Could not decrypt") > -1);
         }
     }
 
-    public void testEncryptJavaDecryptOpenSSL() throws EncrypterDecrypterException, IOException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptJavaDecryptOpenSSL() throws Exception, IOException {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         // create a longer encryption string
         StringBuffer stringBuffer = new StringBuffer();
@@ -188,8 +188,8 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
         }
     }
     
-    public void testEncryptOpenSSLDecryptJava() throws EncrypterDecrypterException, IOException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptOpenSSLDecryptJava() throws Exception, IOException {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         // Create temporary plaintext file.
         File temporaryPlainTextFile = File.createTempFile("EncrypterDecrypterTest", ".plain");
@@ -237,8 +237,8 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
     }
     
     @Test
-    public void testEncryptDecryptNullAndBlank() throws EncrypterDecrypterException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptDecryptNullAndBlank() throws Exception {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         // Encrypt a null string - it gets treated as an empty string.
         String cipherText = encrypterDecrypter.encrypt((String)null, PASSWORD1);
@@ -258,8 +258,8 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
     }
 
     @Test
-    public void testEncryptDecryptInternational() throws EncrypterDecrypterException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptDecryptInternational() throws Exception {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         // Encrypt.
         String cipherText = encrypterDecrypter.encrypt(TEST_STRING2, PASSWORD3);
@@ -274,8 +274,8 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
     }
     
     @Test
-    public void testEncryptDecryptBytes1() throws EncrypterDecrypterException {
-        EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+    public void testEncryptDecryptBytes1() throws Exception {
+        KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();
 
         // Encrypt bytes.
         byte[] cipherBytes = encrypterDecrypter.encrypt(TEST_BYTES1, PASSWORD1);
@@ -301,7 +301,7 @@ public class EncrypterDecrypterOpenSSLTest extends TestCase {
 
         try {
             fileOutputStream = new FileOutputStream(destinationFile);
-            fileOutputStream.write(textToWrite.getBytes(EncrypterDecrypterOpenSSL.STRING_ENCODING));
+            fileOutputStream.write(textToWrite.getBytes(KeyCrypterOpenSSL.STRING_ENCODING));
         } finally {
 
         }

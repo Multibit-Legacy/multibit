@@ -53,7 +53,7 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersionException;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 
 /**
@@ -441,7 +441,7 @@ public class FileHandler {
      * @return File to which keys were backed up, or null if they were not.
      * @throws EncrypterDecrypterException 
      */
-    public File backupPrivateKeys(char[] passwordToUse) throws IOException, EncrypterDecrypterException {
+    public File backupPrivateKeys(char[] passwordToUse) throws IOException, KeyCrypterException {
         File privateKeysBackupFile = null;
 
         // Only encrypted files are backed up, and they must have a non blank password.

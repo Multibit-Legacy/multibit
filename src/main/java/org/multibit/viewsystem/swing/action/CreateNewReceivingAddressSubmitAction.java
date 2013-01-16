@@ -26,8 +26,8 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -115,7 +115,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                                 "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                         return;
                     }
-                } catch (EncrypterDecrypterException ede) {
+                } catch (KeyCrypterException ede) {
                     log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
                     // The password supplied is probably incorrect.
                     createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
@@ -176,19 +176,19 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                 
                 privateKeysBackupFile = null;
 
-                final EncrypterDecrypter walletEncrypterDecrypter = finalPerWalletModelData.getWallet().getEncrypterDecrypter();
+                final KeyCrypter walletKeyCrypter = finalPerWalletModelData.getWallet().getKeyCrypter();
                     try {
                         // Derive AES key to use outside of loop - it is the same for all keys in a single wallet.
                         KeyParameter aesKey = null;
                         if (encryptNewKeys) {
-                            aesKey = walletEncrypterDecrypter.deriveKey(walletPassword);
+                            aesKey = walletKeyCrypter.deriveKey(walletPassword);
                         }
                         Collection<ECKey> newKeys = new ArrayList<ECKey>();
                         for (int i = 0; i < numberOfAddressesToCreate; i++) {
                             ECKey newKey;
                             if (encryptNewKeys) {
-                                // Use the wallet EncrypterDescrypter.
-                                newKey = new ECKey(walletEncrypterDecrypter);
+                                // Use the wallet KeyCrypter.
+                                newKey = new ECKey(walletKeyCrypter);
                                 newKey.encrypt(aesKey);
                             } else {
                                 newKey = new ECKey();
@@ -213,8 +213,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         thisAction.setLastPrivateKeysBackupFile(privateKeysBackupFile);
 
                         successMeasure = Boolean.TRUE;
-                    } catch (EncrypterDecrypterException ede) {
-                        logError(ede);
+                    } catch (KeyCrypterException kce) {
+                        logError(kce);
                     } catch (IOException io) {
                         logError(io);
                     }

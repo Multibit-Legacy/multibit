@@ -25,7 +25,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -150,8 +150,8 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                                             .getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
                             return;
                         }
-                    } catch (EncrypterDecrypterException ede) {
-                        log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
+                    } catch (KeyCrypterException kce) {
+                        log.debug(kce.getClass().getCanonicalName() + " " + kce.getMessage());
                         // The password supplied is probably incorrect.
                         sendBitcoinConfirmPanel.setMessageText(
                                 controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"),
@@ -214,7 +214,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                     log.debug("Sent transaction was:\n" + transaction.toString());
                }
             }
-        } catch (EncrypterDecrypterException e) {
+        } catch (KeyCrypterException e) {
             log.error(e.getMessage(), e);
             message = e.getMessage();
         } catch (WalletSaveException e) {

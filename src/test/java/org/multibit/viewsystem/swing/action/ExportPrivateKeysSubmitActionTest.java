@@ -25,18 +25,17 @@ import org.junit.Test;
 import org.multibit.controller.MultiBitController;
 import org.multibit.controller.MultiBitControllerTest;
 import org.multibit.controller.SimpleWalletBusyListener;
-import com.google.bitcoin.crypto.EncryptedPrivateKey;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 
 import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.bitcoin.crypto.EncryptedPrivateKey;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 public class ExportPrivateKeysSubmitActionTest extends TestCase {   
     
@@ -116,18 +115,18 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         try {
             privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), null);
             fail("An encrypted export file was read in with no password. Fail.");
-        } catch (EncrypterDecrypterException ede) {
+        } catch (KeyCrypterException kce) {
             // This is what should happen.
-            assertTrue("Unexpected exception thrown when decoding export file with no password", ede.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
+            assertTrue("Unexpected exception thrown when decoding export file with no password", kce.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
         }
         
         // Try to read in the encrypted exported private key file with the wrong password - this should fail.
         try {
             privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), WRONG_PASSWORD);
             fail("An encrypted export file was read in with the wrong password. Fail.");
-        } catch (EncrypterDecrypterException ede) {
+        } catch (KeyCrypterException kce) {
             // This is what should happen.
-            assertTrue("Unexpected exception thrown when decoding export file with wrong password", ede.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
+            assertTrue("Unexpected exception thrown when decoding export file with wrong password", kce.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
         }
         
         // Read in the encrypted exported private key file with the correct password.
@@ -178,8 +177,8 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Remember the private keys for the key - for comparision later.
         // Copy the private key bytes for checking later.
         EncryptedPrivateKey encryptedPrivateKey = controller.getModel().getActiveWallet().keychain.get(0).getEncryptedPrivateKey();
-        EncrypterDecrypter encrypterDecrypter = controller.getModel().getActiveWallet().getEncrypterDecrypter();
-        byte[] originalPrivateKeyBytes = encrypterDecrypter.decrypt(encryptedPrivateKey, encrypterDecrypter.deriveKey(WALLET_PASSWORD));
+        KeyCrypter keyCrypter = controller.getModel().getActiveWallet().getKeyCrypter();
+        byte[] originalPrivateKeyBytes = keyCrypter.decrypt(encryptedPrivateKey, keyCrypter.deriveKey(WALLET_PASSWORD));
 
         // Create a new ExportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
@@ -241,18 +240,18 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         try {
             privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), null);
             fail("An encrypted export file was read in with no export file password. Fail.");
-        } catch (EncrypterDecrypterException ede) {
+        } catch (KeyCrypterException kce) {
             // This is what should happen.
-            assertTrue("Unexpected exception thrown when decoding export file with no export file password", ede.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
+            assertTrue("Unexpected exception thrown when decoding export file with no export file password", kce.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
         }
         
         // Try to read in the encrypted exported private key file with the wrong export file password - this should fail.
         try {
             privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), WRONG_PASSWORD);
             fail("An encrypted export file was read in with the wrong export file password. Fail.");
-        } catch (EncrypterDecrypterException ede) {
+        } catch (KeyCrypterException kce) {
             // This is what should happen.
-            assertTrue("Unexpected exception thrown when decoding export file with wrong export file password", ede.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
+            assertTrue("Unexpected exception thrown when decoding export file with wrong export file password", kce.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
         }
         
         // Read in the encrypted exported private key file with the correct export file password.

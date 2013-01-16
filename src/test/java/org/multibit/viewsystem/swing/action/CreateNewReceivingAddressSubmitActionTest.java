@@ -156,6 +156,6 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 
         // The added private keys should be encrypted with the same password as the wallet password.
         // Thus a decrypt should work fine.
-        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getEncrypterDecrypter().deriveKey(TEST_PASSWORD1));
+        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getKeyCrypter().deriveKey(TEST_PASSWORD1));
     }
 }

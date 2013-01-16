@@ -57,8 +57,8 @@ import org.spongycastle.crypto.params.KeyParameter;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.crypto.EncryptedPrivateKey;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
 import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
@@ -225,9 +225,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
     private EncryptionType encryptionType;
 
     /**
-     * The encrypterDecrypter for the wallet.
+     * The keyCrypter for the wallet.
      */
-    private EncrypterDecrypter encrypterDecrypter;
+    private KeyCrypter keyCrypter;
 
     /**
      * The wallet version. This is an ordinal used to detect breaking changes
@@ -253,11 +253,19 @@ public class Wallet implements Serializable, IsMultiBitClass {
         pending = new HashMap<Sha256Hash, Transaction>();
         dead = new HashMap<Sha256Hash, Transaction>();
         createTransientState();
+        
+        encryptionType = EncryptionType.UNENCRYPTED;
     }
 
-    public Wallet(NetworkParameters params, EncrypterDecrypter encrypterDecrypter) {
+    /**
+     * Create a wallet with a specified keyCrypter.
+     * This wallet can then be actually encrypted, with a password, using encrypt().
+     */
+    public Wallet(NetworkParameters params, KeyCrypter keyCrypter) {
         this(params);
-        this.encrypterDecrypter = encrypterDecrypter;
+        this.keyCrypter = keyCrypter;
+        
+        encryptionType = EncryptionType.UNENCRYPTED;
     }
 
     private void createTransientState() {
@@ -332,9 +340,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      * Returns a wallet deserialized from the given file.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      */
-    public static Wallet loadFromFile(File f) throws IOException, EncrypterDecrypterException {
+    public static Wallet loadFromFile(File f) throws IOException, KeyCrypterException {
         FileInputStream stream = new FileInputStream(f);
         try {
             return loadFromFileStream(stream);
@@ -350,9 +358,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      * Returns a wallet deserialized from the given input stream.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      */
-    public static Wallet loadFromFileStream(InputStream stream) throws IOException, EncrypterDecrypterException {
+    public static Wallet loadFromFileStream(InputStream stream) throws IOException, KeyCrypterException {
         // Determine what kind of wallet stream this is: Java Serialization or protobuf format.
         stream = new BufferedInputStream(stream);
         stream.mark(100);
@@ -1201,10 +1209,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * This method is stateless in the sense that calling it twice with the same inputs will result in two
      * Transaction objects which are equal. The wallet is not updated to track its pending status or to mark the
      * coins as spent until commitTx is called on the result.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
         return createSend(address, nanocoins, fee, getChangeAddress(), aesKey);
     }
 
@@ -1216,10 +1224,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param to Address to send the coins to.
      * @param nanocoins How many coins to send.
      * @return the Transaction that was created, or null if there are insufficient coins in thew allet.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
         Transaction tx = createSend(to, nanocoins, fee, aesKey);
         if (tx == null)   // Not enough money! :-(
             return null;
@@ -1244,11 +1252,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee       The fee to include     
      * @return the Transaction
      * @throws IOException if there was a problem broadcasting the transaction
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
     public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey)
-            throws IOException, IllegalStateException, EncrypterDecrypterException {
+            throws IOException, IllegalStateException, KeyCrypterException {
         Transaction tx = sendCoinsOffline(to, nanocoins, fee, aesKey);
         if (tx == null)
             return null;  // Not enough money.
@@ -1267,10 +1275,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
      * @param fee       The fee to include     
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
         Transaction tx = sendCoinsOffline(to, nanocoins, fee, aesKey);
         if (tx == null)
             return null;  // Not enough money.
@@ -1293,10 +1301,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee       The fee to include     
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      * @throws IOException if there was a problem broadcasting the transaction
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IOException, IllegalStateException, EncrypterDecrypterException {
+    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IOException, IllegalStateException, KeyCrypterException {
         // TODO: This API is fairly questionable and the function isn't tested. If anything goes wrong during sending
         // on the peer you don't get access to the created Transaction object and must fish it out of the wallet then
         // do your own retry later.
@@ -1327,10 +1335,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param changeAddress Which address to send the change to, in case we can't make exactly the right value from
      *                      our coins. This should be an address we own (is in the keychain).
      * @return a new {@link Transaction} or null if we cannot afford this send.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
-    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
         log.info("Creating send tx to " + address.toString() + " for " +
                 bitcoinValueToFriendlyString(nanocoins));
 
@@ -1351,10 +1359,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      *                         our coins. This should be an address we own (is in the keychain).
      * @param fee              The fee to include     
      * @return False if we cannot afford this send, true otherwise
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
         // Calculate the transaction total
         BigInteger nanocoins = BigInteger.ZERO;
         for(TransactionOutput output : sendTx.getOutputs()) {
@@ -1437,9 +1445,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
             // If this happens it means an output script in a wallet tx could not be understood. That should never
             // happen, if it does it means the wallet has got into an inconsistent state.
             throw new RuntimeException(e);
-        } catch (EncrypterDecrypterException ede) {
+        } catch (KeyCrypterException kce) {
             // This can occur if the key being used is encrypted.
-            throw new RuntimeException(ede);
+            throw new RuntimeException(kce);
         }
 
         // keep a track of the date the tx was created (used in MultiBitService
@@ -1494,10 +1502,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param sendTx           The transaction to complete
      * @param fee              The fee to include
      * @return False if we cannot afford this send, true otherwise
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
         return completeTx(sendTx, getChangeAddress(), fee, aesKey);
     }
 
@@ -1514,9 +1522,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * If {@link Wallet#autosaveToFile(java.io.File, long, java.util.concurrent.TimeUnit, com.google.bitcoin.core.Wallet.AutosaveEventListener)}
      * has been called, triggers an auto save bypassing the normal coalescing delay and event handlers.
      * If the key already exists in the wallet, does nothing and returns false.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException 
      */
-    public synchronized boolean addKey(final ECKey key) throws EncrypterDecrypterException {
+    public synchronized boolean addKey(final ECKey key) throws KeyCrypterException {
         return addKeys(Lists.newArrayList(key)) == 1;
     }
 
@@ -1527,20 +1535,20 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Returns the number of keys added, after duplicates are ignored. The onKeyAdded event will be called for each key
      * in the list that was not already present.
      */
-    public synchronized int addKeys(final List<ECKey> keys) throws EncrypterDecrypterException {
+    public synchronized int addKeys(final List<ECKey> keys) throws KeyCrypterException {
         // TODO: Consider making keys a sorted list or hashset so membership testing is faster.
         int added = 0;
         for (final ECKey key : keys) {
             if (keychain.contains(key)) continue;
 
-            // If the key has no EncrypterDecrypter then the Wallet's is set into it.
-            if (key.getEncrypterDecrypter() == null) {
-                key.setEncrypterDecrypter(getEncrypterDecrypter());
+            // If the key has no KeyCrypter then the Wallet's is set into it.
+            if (key.getKeyCrypter() == null) {
+                key.setKeyCrypter(getKeyCrypter());
             } else {
-                // If the key has an EncrypterDecrypter that does not match the Wallet's then an exception is thrown.
-                // This is done because only one EncrypterDecrypter is stored per Wallet and hence the keys must be homogenous.
-                if (!key.getEncrypterDecrypter().equals(getEncrypterDecrypter())) {
-                    throw new EncrypterDecrypterException("Cannot add key " + key.toString() + " because the EncrypterDecrypter does not match the wallets");
+                // If the key has an KeyCrypter that does not match the Wallet's then an exception is thrown.
+                // This is done because only one KeyCrypter is stored per Wallet and hence the keys must be homogenous.
+                if (!key.getKeyCrypter().equals(getKeyCrypter())) {
+                    throw new KeyCrypterException("Cannot add key " + key.toString() + " because the KeyCrypter does not match the wallets");
                 }
             }
 
@@ -1740,9 +1748,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
             toStringHelper(builder, dead);
         }
 
-        // Add the EncrypterDecrypter so that any setup parameters are in the wallet toString.
-        if (this.encrypterDecrypter != null) {
-            builder.append("\n EncrypterDecrypter: " + encrypterDecrypter.toString());
+        // Add the keyCrypter so that any setup parameters are in the wallet toString.
+        if (this.keyCrypter != null) {
+            builder.append("\n KeyCrypter: " + keyCrypter.toString());
         }
         return builder.toString();
     }
@@ -2225,11 +2233,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     public EncryptionType getEncryptionType() {
-        if (encryptionType == null) {
-            // By default, wallets are unencrypted.
-            return EncryptionType.UNENCRYPTED;
-        }
-
         return encryptionType;
     }
 
@@ -2239,10 +2242,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      * Encrypt the wallet with the supplied AES key.
-     * @param aesKey The AES key to use to encrypt the wallet
-     * @throws EncrypterDecrypterException 
+     * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey)
+     * @throws KeyCrypterException 
      */
-    synchronized public void encrypt(KeyParameter aesKey) throws EncrypterDecrypterException {
+    synchronized public void encrypt(KeyParameter aesKey) throws KeyCrypterException {
         if (getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             throw new WalletIsAlreadyEncryptedException("Wallet is already encrypted");
         }
@@ -2258,7 +2261,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
             // Clone the key before encrypting.
             // (note that only the EncryptedPrivateKey is deep copied).
             ECKey clonedECKey = new ECKey(key.getPrivKeyBytes(), new EncryptedPrivateKey(key.getEncryptedPrivateKey()),
-                    key.getPubKey(), encrypterDecrypter);
+                    key.getPubKey(), keyCrypter);
             clonedECKey.encrypt(aesKey);
             encryptedKeyChain.add(clonedECKey);
         }
@@ -2271,10 +2274,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
     /**
      * Decrypt the wallet with the supplied AES key.
      * 
-     * @param aesKey The AES key to use to decrypt the wallet
-     * @throws EncrypterDecrypterException 
+     * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey)
+     * @throws KeyCrypterException 
      */
-    synchronized public void decrypt(KeyParameter aesKey) throws EncrypterDecrypterException {
+    synchronized public void decrypt(KeyParameter aesKey) throws KeyCrypterException {
         if (getEncryptionType() == EncryptionType.UNENCRYPTED) {
             throw new WalletIsAlreadyDecryptedException("Wallet is already decrypted");
         }
@@ -2290,7 +2293,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
             // Clone the key before decrypting.
             // (note that only the EncryptedPrivateKey is deep copied).
             ECKey clonedECKey = new ECKey(new EncryptedPrivateKey(key.getEncryptedPrivateKey()), key.getPubKey(),
-                    encrypterDecrypter);
+                    keyCrypter);
             clonedECKey.decrypt(aesKey);
             decryptedKeyChain.add(clonedECKey);
         }
@@ -2302,16 +2305,16 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      *  Check whether the password can decrypt the first key in the wallet.
-     *  @throws EncrypterDecrypterException 
+     *  @throws KeyCrypterException 
      *
      *  @returns boolean True if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) throws EncrypterDecrypterException {
-        if (encrypterDecrypter == null) {
-            // The password cannot decrypt anything as the encrypterDecrypter is null.
+    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) throws KeyCrypterException {
+        if (keyCrypter == null) {
+            // The password cannot decrypt anything as the keyCrypter is null.
             return false;
         }
-        return checkAESKeyCanDecryptFirstPrivateKey(encrypterDecrypter.deriveKey(password));
+        return checkAESKeyCanDecryptFirstPrivateKey(keyCrypter.deriveKey(password));
     }
 
     /**
@@ -2330,11 +2333,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
         if (firstECKey != null && firstECKey.getEncryptedPrivateKey() != null) {
             try {
                 EncryptedPrivateKey clonedPrivateKey  = new EncryptedPrivateKey(firstECKey.getEncryptedPrivateKey());
-                encrypterDecrypter.decrypt(clonedPrivateKey, aesKey);
+                keyCrypter.decrypt(clonedPrivateKey, aesKey);
 
                 // Success.
                 return true;
-            } catch (EncrypterDecrypterException ede) {
+            } catch (KeyCrypterException ede) {
                 // The AES key supplied is incorrect.
                 return false;
             }
@@ -2343,12 +2346,12 @@ public class Wallet implements Serializable, IsMultiBitClass {
         return false;
     }
 
-    public EncrypterDecrypter getEncrypterDecrypter() {
-        return encrypterDecrypter;
+    public KeyCrypter getKeyCrypter() {
+        return keyCrypter;
     }
 
-    public void setEncrypterDecrypter(EncrypterDecrypter encrypterDecrypter) {
-        this.encrypterDecrypter = encrypterDecrypter;
+    public void setKeyCrypter(KeyCrypter keyCrypter) {
+        this.keyCrypter = keyCrypter;
     }
 
     public WalletVersion getVersion() {

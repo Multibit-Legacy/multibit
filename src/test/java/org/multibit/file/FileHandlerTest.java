@@ -39,8 +39,8 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
@@ -80,7 +80,7 @@ public class FileHandlerTest extends TestCase {
     private MultiBitController controller;
     private FileHandler fileHandler;
     
-    private EncrypterDecrypter encrypterDecrypter;
+    private KeyCrypter keyCrypter;
 
     @Before
     @Override
@@ -90,7 +90,7 @@ public class FileHandlerTest extends TestCase {
         byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
         secureRandom.nextBytes(salt);
         ScryptParameters scryptParameters = new ScryptParameters(salt);
-        encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+        keyCrypter = new KeyCrypterScrypt(scryptParameters);
         
         controller = new MultiBitController();
         Localiser localiser = new Localiser();
@@ -119,7 +119,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WALLET_SERIALISED1_BALANCE, perWalletModelData.getWallet().getBalance());
         
         // Check wallet type.
-        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
+        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() != EncryptionType.UNENCRYPTED);
     }
 
     @Test
@@ -142,7 +142,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WALLET_SERIALISED2_BALANCE, perWalletModelData.getWallet().getBalance());
         
         // Check wallet type.
-        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
+        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() != EncryptionType.UNENCRYPTED);
     }
     
     @Test
@@ -248,7 +248,7 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), encrypterDecrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
 
@@ -264,7 +264,7 @@ public class FileHandlerTest extends TestCase {
         System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes2, 0, 32);
         System.out.println("EncryptableECKeyTest - Original private key 2 = " + Utils.bytesToHexString(originalPrivateKeyBytes2));
 
-        newWallet.encrypt(newWallet.getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
+        newWallet.encrypt(newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
@@ -313,7 +313,7 @@ public class FileHandlerTest extends TestCase {
         }
         
         // Decrypt the reborn wallet.
-        perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
+        perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
 
         // Get the keys out the reborn wallet and check that all the keys match.
         Collection<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
@@ -352,11 +352,11 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), encrypterDecrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
 
-        newWallet.encrypt(newWallet.getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
+        newWallet.encrypt(newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
@@ -378,12 +378,12 @@ public class FileHandlerTest extends TestCase {
         PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         
-        EncrypterDecrypter rebornEncrypterDecrypter = perWalletModelDataReborn.getWallet().getEncrypterDecrypter();
+        KeyCrypter rebornEncrypterDecrypter = perWalletModelDataReborn.getWallet().getKeyCrypter();
         assertNotNull("There was no encrypterDecrypter after round trip", rebornEncrypterDecrypter);
 
-        assertTrue("EncrypterDecrypter was not an EncrypterDecrypterScrypt", rebornEncrypterDecrypter instanceof EncrypterDecrypterScrypt);
+        assertTrue("EncrypterDecrypter was not an EncrypterDecrypterScrypt", rebornEncrypterDecrypter instanceof KeyCrypterScrypt);
         
-        EncrypterDecrypterScrypt rebornEncrypterDecrypterScrypt = (EncrypterDecrypterScrypt)rebornEncrypterDecrypter;
+        KeyCrypterScrypt rebornEncrypterDecrypterScrypt = (KeyCrypterScrypt)rebornEncrypterDecrypter;
         assertEquals("Wrong N parameter", ScryptParameters.DEFAULT_N, rebornEncrypterDecrypterScrypt.getScryptParameters().getN());
         assertEquals("Wrong R parameter", ScryptParameters.DEFAULT_R, rebornEncrypterDecrypterScrypt.getScryptParameters().getR());
         assertEquals("Wrong P parameter", ScryptParameters.DEFAULT_P, rebornEncrypterDecrypterScrypt.getScryptParameters().getP());
@@ -401,7 +401,7 @@ public class FileHandlerTest extends TestCase {
         byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
         secureRandom.nextBytes(salt);
         ScryptParameters scryptParameters = new ScryptParameters(salt, n, r, p);
-        EncrypterDecrypter testEncrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+        KeyCrypter testKeyCrypter = new KeyCrypterScrypt(scryptParameters);
         
         // Create an encrypted wallet with nondefault scrypt parameters.
         File temporaryWallet = File.createTempFile(TEST_SCRYPT_PARAMETERS + "2", ".wallet");
@@ -409,11 +409,11 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testEncrypterDecrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testKeyCrypter);
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
 
-        newWallet.encrypt(newWallet.getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
+        newWallet.encrypt(newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
@@ -435,15 +435,15 @@ public class FileHandlerTest extends TestCase {
         PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         
-        EncrypterDecrypter rebornEncrypterDecrypter = perWalletModelDataReborn.getWallet().getEncrypterDecrypter();
-        assertNotNull("There was no encrypterDecrypter after round trip", rebornEncrypterDecrypter);
+        KeyCrypter rebornKeyCrypter = perWalletModelDataReborn.getWallet().getKeyCrypter();
+        assertNotNull("There was no keyCrypter after round trip", rebornKeyCrypter);
 
-        assertTrue("EncrypterDecrypter was not an EncrypterDecrypterScrypt", rebornEncrypterDecrypter instanceof EncrypterDecrypterScrypt);
+        assertTrue("EncrypterDecrypter was not an KeyCrypterScrypt", rebornKeyCrypter instanceof KeyCrypterScrypt);
         
-        EncrypterDecrypterScrypt rebornEncrypterDecrypterScrypt = (EncrypterDecrypterScrypt)rebornEncrypterDecrypter;
-        assertEquals("Wrong N parameter", n, rebornEncrypterDecrypterScrypt.getScryptParameters().getN());
-        assertEquals("Wrong R parameter", r, rebornEncrypterDecrypterScrypt.getScryptParameters().getR());
-        assertEquals("Wrong P parameter", p, rebornEncrypterDecrypterScrypt.getScryptParameters().getP());
+        KeyCrypterScrypt rebornKeyCrypterScrypt = (KeyCrypterScrypt)rebornKeyCrypter;
+        assertEquals("Wrong N parameter", n, rebornKeyCrypterScrypt.getScryptParameters().getN());
+        assertEquals("Wrong R parameter", r, rebornKeyCrypterScrypt.getScryptParameters().getR());
+        assertEquals("Wrong P parameter", p, rebornKeyCrypterScrypt.getScryptParameters().getP());
         
         deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
     }

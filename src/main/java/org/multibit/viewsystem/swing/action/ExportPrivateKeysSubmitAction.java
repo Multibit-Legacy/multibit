@@ -39,7 +39,7 @@ import org.spongycastle.util.Arrays;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import com.google.bitcoin.core.MultiBitBlockChain;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} exports the active wallets private keys.
@@ -106,7 +106,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     exportPrivateKeysPanel.setMessage2(" ");
                     return;
                 }
-            } catch (EncrypterDecrypterException ede) {
+            } catch (KeyCrypterException kce) {
                 exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                         "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                 exportPrivateKeysPanel.setMessage2(" ");

@@ -32,7 +32,7 @@ import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.spongycastle.crypto.params.ParametersWithIV;
 
 import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This class encrypts and decrypts a string in a manner that is compatible with
@@ -51,8 +51,8 @@ import com.google.bitcoin.crypto.EncrypterDecrypterException;
  * @author jim
  * 
  */
-public class EncrypterDecrypterOpenSSL {
-    private Logger log = LoggerFactory.getLogger(EncrypterDecrypterOpenSSL.class);
+public class KeyCrypterOpenSSL {
+    private Logger log = LoggerFactory.getLogger(KeyCrypterOpenSSL.class);
 
     /**
      * The string encoding to use when converting strings to bytes
@@ -100,13 +100,13 @@ public class EncrypterDecrypterOpenSSL {
 
     private static SecureRandom secureRandom = new SecureRandom();
 
-    public EncrypterDecrypterOpenSSL()  {
+    public KeyCrypterOpenSSL()  {
         try {
             openSSLSaltedBytes = OPENSSL_SALTED_TEXT.getBytes(STRING_ENCODING);
 
             openSSLMagicText = Base64.encodeBase64String(
-                    EncrypterDecrypterOpenSSL.OPENSSL_SALTED_TEXT.getBytes(EncrypterDecrypterOpenSSL.STRING_ENCODING)).substring(0,
-                    EncrypterDecrypterOpenSSL.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
+                    KeyCrypterOpenSSL.OPENSSL_SALTED_TEXT.getBytes(KeyCrypterOpenSSL.STRING_ENCODING)).substring(0,
+                    KeyCrypterOpenSSL.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
 
         } catch (UnsupportedEncodingException e) {
             log.error("Could not construct EncrypterDecrypter", e.getMessage());
@@ -123,7 +123,7 @@ public class EncrypterDecrypterOpenSSL {
      * @return The CipherParameters containing the created key
      * @throws Exception
      */
-    private CipherParameters getAESPasswordKey(char[] password, byte[] salt) throws EncrypterDecrypterException {
+    private CipherParameters getAESPasswordKey(char[] password, byte[] salt) throws KeyCrypterException {
         try {
             PBEParametersGenerator generator = new OpenSSLPBEParametersGenerator();
             generator.init(PBEParametersGenerator.PKCS5PasswordToBytes(password), salt, NUMBER_OF_ITERATIONS);
@@ -132,7 +132,7 @@ public class EncrypterDecrypterOpenSSL {
 
             return key;
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not generate key from password of length " + password.length
+            throw new KeyCrypterException("Could not generate key from password of length " + password.length
                     + " and salt '" + Utils.bytesToHexString(salt), e);
         }
     }
@@ -147,7 +147,7 @@ public class EncrypterDecrypterOpenSSL {
      * @return The encrypted string
      * @throws EncrypterDecrypterException
      */
-    public String encrypt(String plainText, char[] password) throws EncrypterDecrypterException {
+    public String encrypt(String plainText, char[] password) throws KeyCrypterException {
         try {
             byte[] plainTextAsBytes;
             if (plainText == null) {
@@ -163,7 +163,7 @@ public class EncrypterDecrypterOpenSSL {
             
             return Base64.encodeBase64String(encryptedBytesPlusSaltedText);
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not encrypt string '" + plainText + "'", e);
+            throw new KeyCrypterException("Could not encrypt string '" + plainText + "'", e);
         }
     }
 
@@ -177,7 +177,7 @@ public class EncrypterDecrypterOpenSSL {
      * @return SALT_LENGTH bytes of salt followed by the encrypted bytes.
      * @throws EncrypterDecrypterException
      */
-    public byte[] encrypt(byte[] plainTextAsBytes, char[] password) throws EncrypterDecrypterException {
+    public byte[] encrypt(byte[] plainTextAsBytes, char[] password) throws KeyCrypterException {
         try {
             // Generate salt - each encryption call has a different salt.
             byte[] salt = new byte[SALT_LENGTH];
@@ -196,7 +196,7 @@ public class EncrypterDecrypterOpenSSL {
             // The result bytes are the SALT_LENGTH bytes followed by the encrypted bytes.
             return concat(salt, encryptedBytes);
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not encrypt bytes '" + Utils.bytesToHexString(plainTextAsBytes) + "'", e);
+            throw new KeyCrypterException("Could not encrypt bytes '" + Utils.bytesToHexString(plainTextAsBytes) + "'", e);
         }
     }
 
@@ -210,7 +210,7 @@ public class EncrypterDecrypterOpenSSL {
      * @return The decrypted text
      * @throws EncrypterDecrypterException
      */
-    public String decrypt(String textToDecode, char[] password) throws EncrypterDecrypterException {
+    public String decrypt(String textToDecode, char[] password) throws KeyCrypterException {
         try {
             final byte[] decodeTextAsBytes = Base64.decodeBase64(textToDecode.getBytes(STRING_ENCODING));
             
@@ -225,7 +225,7 @@ public class EncrypterDecrypterOpenSSL {
             
             return new String(decryptedBytes, STRING_ENCODING).trim();
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not decrypt input string", e); 
+            throw new KeyCrypterException("Could not decrypt input string", e); 
         }
     }
 
@@ -239,7 +239,7 @@ public class EncrypterDecrypterOpenSSL {
      * @return The decrypted bytes
      * @throws EncrypterDecrypterException
      */
-    public byte[] decrypt(byte[] bytesToDecode, char[] password) throws EncrypterDecrypterException {
+    public byte[] decrypt(byte[] bytesToDecode, char[] password) throws KeyCrypterException {
         try {
             // separate the salt and bytes to decrypt
             byte[] salt = new byte[SALT_LENGTH];
@@ -262,7 +262,7 @@ public class EncrypterDecrypterOpenSSL {
 
             return decryptedBytes;
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not decrypt input string", e);
+            throw new KeyCrypterException("Could not decrypt input string", e);
         }
     }
 
@@ -309,7 +309,7 @@ public class EncrypterDecrypterOpenSSL {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof EncrypterDecrypterOpenSSL))
+        if (!(obj instanceof KeyCrypterOpenSSL))
             return false;
         return true;
     }

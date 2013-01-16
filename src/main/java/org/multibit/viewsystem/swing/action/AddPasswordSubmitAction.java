@@ -25,9 +25,9 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
-import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
@@ -121,15 +121,15 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
 
                     controller.fireWalletBusyChange(true);
 
-                    if (wallet.getEncrypterDecrypter() == null) {
+                    if (wallet.getKeyCrypter() == null) {
                         byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
                         controller.getMultiBitService().getSecureRandom().nextBytes(salt);
                         ScryptParameters scryptParameters = new ScryptParameters(salt);
-                        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
-                        wallet.setEncrypterDecrypter(encrypterDecrypter);
+                        KeyCrypter encrypterDecrypter = new KeyCrypterScrypt(scryptParameters);
+                        wallet.setKeyCrypter(encrypterDecrypter);
                     }
 
-                    wallet.encrypt(wallet.getEncrypterDecrypter().deriveKey(passwordToUse));
+                    wallet.encrypt(wallet.getKeyCrypter().deriveKey(passwordToUse));
                     controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF_ENCRYPTED);
                     controller.getModel().getActivePerWalletModelData().setDirty(true);
                     FileHandler fileHandler = new FileHandler(controller);
@@ -138,7 +138,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                     privateKeysBackupFile = fileHandler.backupPrivateKeys(passwordToUse);
 
                 }
-            } catch (EncrypterDecrypterException ede) {
+            } catch (KeyCrypterException ede) {
                 ede.printStackTrace();
                 addPasswordPanel.setMessage1(controller.getLocaliser().getString("addPasswordPanel.addPasswordFailed",
                         new String[] { ede.getMessage() }));

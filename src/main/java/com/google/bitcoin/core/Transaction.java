@@ -17,7 +17,7 @@
 package com.google.bitcoin.core;
 
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.common.base.Preconditions;
 import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
@@ -661,7 +661,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized void signInputs(SigHash hashType, Wallet wallet, KeyParameter aesKey) throws ScriptException, IllegalStateException, EncrypterDecrypterException {
+    public synchronized void signInputs(SigHash hashType, Wallet wallet, KeyParameter aesKey) throws ScriptException, IllegalStateException, KeyCrypterException {
         Preconditions.checkState(inputs.size() > 0);
         Preconditions.checkState(outputs.size() > 0);
 

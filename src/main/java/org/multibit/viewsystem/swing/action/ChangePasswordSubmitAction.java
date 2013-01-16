@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} action decrypts private keys with the old password and then encrypts the private keys with the new password.
@@ -118,12 +118,12 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
 
                 boolean decryptSuccess = false;
                 try {
-                    wallet.decrypt(wallet.getEncrypterDecrypter().deriveKey(currentPasswordToUse));
+                    wallet.decrypt(wallet.getKeyCrypter().deriveKey(currentPasswordToUse));
                     decryptSuccess = true;
-                } catch (EncrypterDecrypterException ede) {
+                } catch (KeyCrypterException kce) {
                     // Notify the user that the decrypt failed.
                     changePasswordPanel.setMessage1(controller.getLocaliser().getString("changePasswordPanel.changePasswordFailed",
-                            new String[] { ede.getMessage() }));
+                            new String[] { kce.getMessage() }));
 
                     // Declare that wallet is no longer busy with the task.
                     perWalletModelData.setBusyTask(null);
@@ -135,15 +135,15 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
 
                 if (decryptSuccess) {
                     try {
-                        wallet.encrypt(wallet.getEncrypterDecrypter().deriveKey(newPasswordToUse));
+                        wallet.encrypt(wallet.getKeyCrypter().deriveKey(newPasswordToUse));
                         FileHandler fileHandler = new FileHandler(controller);
                         fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
                         
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(newPasswordToUse);
-                    } catch (EncrypterDecrypterException ede) {
+                    } catch (KeyCrypterException kce) {
                         // Notify the user that the encrypt failed.
                         changePasswordPanel.setMessage1(controller.getLocaliser().getString(
-                                "changePasswordPanel.changePasswordFailed", new String[] { ede.getMessage() }));
+                                "changePasswordPanel.changePasswordFailed", new String[] { kce.getMessage() }));
                         return;
                     } catch (IOException ede) {
                         // Notify the user that the private key backup failed.

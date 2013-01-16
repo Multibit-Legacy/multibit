@@ -45,7 +45,7 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncrypterDecrypterOpenSSL;
+import org.multibit.crypto.KeyCrypterOpenSSL;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
@@ -64,7 +64,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
@@ -112,7 +112,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
     
     private ImportPrivateKeysSubmitAction importPrivateKeysSubmitAction;
 
-    private EncrypterDecrypterOpenSSL encrypterDecrypter;
+    private KeyCrypterOpenSSL encrypterDecrypter;
 
     public FileFilter multiBitFileChooser;
     public FileFilter myWalletPlainFileChooser;
@@ -146,7 +146,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         }
         enableWalletPassword(walletPasswordRequired);
         
-        encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+        encrypterDecrypter = new KeyCrypterOpenSSL();
         multiBitFileChooser = new PrivateKeyFileFilter(controller);
         myWalletPlainFileChooser = new MyWalletPlainKeyFileFilter();
         myWalletEncryptedFileChooser = new MyWalletEncryptedKeyFileFilter();
@@ -740,7 +740,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                 setMessageText1(" ");
                 try {
                     readInImportFileAndUpdateDetails();
-                } catch (EncrypterDecrypterException ede) {
+                } catch (KeyCrypterException ede) {
                     setMessageText1(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysUnlockFailure",
                             new Object[] { ede.getMessage() }));
                 }
@@ -876,7 +876,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                             setMessageText1(controller.getLocaliser().getString(
                                     "importPrivateKeysSubmitAction.privateKeysImportFailure",
                                     new Object[] { e.getClass().getName() + " " + e.getMessage() }));
-                        } catch (EncrypterDecrypterException e) {
+                        } catch (KeyCrypterException e) {
                             // TODO User may not have entered a password yet so
                             // password incorrect is ok at this stage.
                             // Other errors indicate a more general problem with
@@ -894,7 +894,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                         enableImportFilePasswordPanel(false);
                         try {
                             readInImportFileAndUpdateDetails();
-                        } catch (EncrypterDecrypterException e) {
+                        } catch (KeyCrypterException e) {
                             setMessageText1(controller.getLocaliser().getString(
                                     "importPrivateKeysSubmitAction.privateKeysImportFailure",
                                     new Object[] { e.getClass().getName() + " " + e.getMessage() }));
@@ -948,7 +948,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
      * @throws EncrypterDecrypterException 
      * @throws PrivateKeysHandlerException 
      */
-    private void readInImportFileAndUpdateDetails() throws PrivateKeysHandlerException, EncrypterDecrypterException {
+    private void readInImportFileAndUpdateDetails() throws PrivateKeysHandlerException, KeyCrypterException {
         // Update number of keys and earliest date.
 
         try {
@@ -1004,7 +1004,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
                     }
                 } catch (Exception e) {
-                    throw new com.google.bitcoin.crypto.EncrypterDecrypterException("Error Decrypting Wallet");
+                    throw new KeyCrypterException("Error Decrypting Wallet");
                 }
             } else if (myWalletPlainFileChooser.accept(file)) {
                 try {
@@ -1021,7 +1021,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                     replayDateLabel.setText(controller.getLocaliser().getString(
                             "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
                 } catch (Exception e) {
-                    throw new EncrypterDecrypterException("Error Opening Wallet");
+                    throw new KeyCrypterException("Error Opening Wallet");
                 }
             }
         } finally {

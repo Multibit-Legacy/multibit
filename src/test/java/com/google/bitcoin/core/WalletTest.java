@@ -34,9 +34,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
-import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
 import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
@@ -72,7 +72,7 @@ public class WalletTest {
         byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
         secureRandom.nextBytes(salt);
         ScryptParameters scryptParameters = new ScryptParameters(salt);
-        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+        KeyCrypter encrypterDecrypter = new KeyCrypterScrypt(scryptParameters);
         
         wallet = new Wallet(params);
         encryptedWallet = new Wallet(params, encrypterDecrypter);
@@ -643,8 +643,8 @@ public void encryptionDecryptionBadPassword() throws Exception {
     try {
         encryptedWallet.decrypt(wrongAesKey);
         fail("Incorrectly decoded wallet with wrong password");
-    } catch (EncrypterDecrypterException ede) {
-        assertTrue("Wrong message in EncrypterDecrypterException", ede.getMessage().indexOf("Could not decrypt bytes") > -1);
+    } catch (KeyCrypterException ede) {
+        assertTrue("Wrong message in KeyCrypterException", ede.getMessage().indexOf("Could not decrypt bytes") > -1);
     }
 }
 
@@ -690,17 +690,17 @@ public void encryptionDecryptionHomogenousKeys() throws Exception {
     byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
     secureRandom.nextBytes(salt);
     ScryptParameters scryptParameters = new ScryptParameters(salt);
-    EncrypterDecrypter encrypterDecrypterDifferent = new EncrypterDecrypterScrypt(scryptParameters);
+    KeyCrypter keyCrypterDifferent = new KeyCrypterScrypt(scryptParameters);
 
-    ECKey ecKeyDifferent = new ECKey(encrypterDecrypterDifferent);
+    ECKey ecKeyDifferent = new ECKey(keyCrypterDifferent);
 
     int numberOfKeys = encryptedWallet.getKeychain().size();
     assertTrue("Wrong number of keys in wallet before key addition", numberOfKeys == 1);
 
     try {
         encryptedWallet.addKey(ecKeyDifferent);
-        fail("AddKey should have thrown an EncrypterDecrypterException but did not.");
-    } catch (EncrypterDecrypterException ede) {
+        fail("AddKey should have thrown an KeyCrypterException but did not.");
+    } catch (KeyCrypterException kce) {
         // Expected behaviour.
     }
 

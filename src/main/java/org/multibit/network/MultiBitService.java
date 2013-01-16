@@ -64,9 +64,9 @@ import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
-import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
@@ -313,7 +313,7 @@ public class MultiBitService {
                 byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
                 secureRandom.nextBytes(salt);
                 ScryptParameters scryptParameters = new ScryptParameters(salt);
-                EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+                KeyCrypter encrypterDecrypter = new KeyCrypterScrypt(scryptParameters);
                 wallet = new Wallet(networkParameters, encrypterDecrypter);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
@@ -547,17 +547,17 @@ public class MultiBitService {
      */
 
     public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee, char[] password)
-            throws java.io.IOException, AddressFormatException, EncrypterDecrypterException {
+            throws java.io.IOException, AddressFormatException, KeyCrypterException {
         // Send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
         KeyParameter aesKey = null;
         if (perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
-            if (perWalletModelData.getWallet().getEncrypterDecrypter() == null) {
-                throw new EncrypterDecrypterException("The wallet is of type ENCRYPTED_SCRYPT_AES but there is no EncrypterDecrypter to use.");
+            if (perWalletModelData.getWallet().getKeyCrypter() == null) {
+                throw new KeyCrypterException("The wallet is of type ENCRYPTED_SCRYPT_AES but there is no EncrypterDecrypter to use.");
             } else {
-                aesKey = perWalletModelData.getWallet().getEncrypterDecrypter().deriveKey(password);
+                aesKey = perWalletModelData.getWallet().getKeyCrypter().deriveKey(password);
             }
         }
         Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,

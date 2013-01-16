@@ -23,7 +23,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
@@ -93,15 +93,15 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
 
                             controller.fireWalletBusyChange(true);
 
-                            wallet.decrypt(wallet.getEncrypterDecrypter().deriveKey(passwordToUse));
+                            wallet.decrypt(wallet.getKeyCrypter().deriveKey(passwordToUse));
                             controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
                             controller.getModel().getActivePerWalletModelData().setDirty(true);
                             FileHandler fileHandler = new FileHandler(controller);
                             fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
                         }
-                    } catch (EncrypterDecrypterException ede) {
+                    } catch (KeyCrypterException kce) {
                         removePasswordPanel.setMessage1(controller.getLocaliser()
-                                .getString("removePasswordPanel.removePasswordFailed", new String[]{ede.getMessage()}));
+                                .getString("removePasswordPanel.removePasswordFailed", new String[]{kce.getMessage()}));
                         return;
                     } finally {
                         // Declare that wallet is no longer busy with the task.

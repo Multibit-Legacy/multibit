@@ -6,8 +6,8 @@ import java.util.Locale;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 
 import org.multibit.exchange.CurrencyConverter;
@@ -52,9 +52,9 @@ public class ActionTestUtils {
          byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
          secureRandom.nextBytes(salt);
          ScryptParameters scryptParameters = new ScryptParameters(salt);
-         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+         KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
 
-         Wallet wallet = new Wallet(NetworkParameters.prodNet(), encrypterDecrypter);
+         Wallet wallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
          wallet.getKeychain().add(new ECKey());
   
          PerWalletModelData perWalletModelData = new PerWalletModelData();
@@ -77,7 +77,7 @@ public class ActionTestUtils {
          PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
              
          if (encrypt) {
-             loadedPerWalletModelData.getWallet().encrypt(encrypterDecrypter.deriveKey(walletPassword));
+             loadedPerWalletModelData.getWallet().encrypt(keyCrypter.deriveKey(walletPassword));
          }
          
          controller.getModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());
