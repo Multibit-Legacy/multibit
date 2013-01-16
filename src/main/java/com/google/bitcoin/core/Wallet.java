@@ -1202,8 +1202,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
-        return createSend(address, nanocoins, fee, getChangeAddress(), decryptBeforeSigning, aesKey);
+    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+        return createSend(address, nanocoins, fee, getChangeAddress(), aesKey);
     }
 
     /**
@@ -1217,8 +1217,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
-        Transaction tx = createSend(to, nanocoins, fee, decryptBeforeSigning, aesKey);
+    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+        Transaction tx = createSend(to, nanocoins, fee, aesKey);
         if (tx == null)   // Not enough money! :-(
             return null;
         try {
@@ -1245,9 +1245,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey)
+    public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey)
             throws IOException, IllegalStateException, EncrypterDecrypterException {
-        Transaction tx = sendCoinsOffline(to, nanocoins, fee, decryptBeforeSigning, aesKey);
+        Transaction tx = sendCoinsOffline(to, nanocoins, fee, aesKey);
         if (tx == null)
             return null;  // Not enough money.
         // Just throw away the Future here. If the user wants it, they can call sendCoinsOffline/broadcastTransaction
@@ -1268,8 +1268,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
-        Transaction tx = sendCoinsOffline(to, nanocoins, fee, decryptBeforeSigning, aesKey);
+    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+        Transaction tx = sendCoinsOffline(to, nanocoins, fee, aesKey);
         if (tx == null)
             return null;  // Not enough money.
         try {
@@ -1294,12 +1294,12 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IOException, IllegalStateException, EncrypterDecrypterException {
+    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IOException, IllegalStateException, EncrypterDecrypterException {
         // TODO: This API is fairly questionable and the function isn't tested. If anything goes wrong during sending
         // on the peer you don't get access to the created Transaction object and must fish it out of the wallet then
         // do your own retry later.
 
-        Transaction tx = createSend(to, nanocoins, fee, decryptBeforeSigning, aesKey);
+        Transaction tx = createSend(to, nanocoins, fee, aesKey);
         if (tx == null)   // Not enough money! :-(
             return null;
         try {
@@ -1328,14 +1328,14 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
         log.info("Creating send tx to " + address.toString() + " for " +
                 bitcoinValueToFriendlyString(nanocoins));
 
         Transaction sendTx = new Transaction(params);
         sendTx.addOutput(nanocoins, address);
 
-        if (completeTx(sendTx, changeAddress, fee, decryptBeforeSigning, aesKey)) {
+        if (completeTx(sendTx, changeAddress, fee, aesKey)) {
             return sendTx;
         } else {
             return null;
@@ -1352,7 +1352,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
         // Calculate the transaction total
         BigInteger nanocoins = BigInteger.ZERO;
         for(TransactionOutput output : sendTx.getOutputs()) {
@@ -1430,7 +1430,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
         // Now sign the inputs, thus proving that we are entitled to redeem the connected outputs.
         try {
-            sendTx.signInputs(Transaction.SigHash.ALL, this, decryptBeforeSigning, aesKey);
+            sendTx.signInputs(Transaction.SigHash.ALL, this, aesKey);
         } catch (ScriptException e) {
             // If this happens it means an output script in a wallet tx could not be understood. That should never
             // happen, if it does it means the wallet has got into an inconsistent state.
@@ -1495,8 +1495,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws EncrypterDecrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
-        return completeTx(sendTx, getChangeAddress(), fee, decryptBeforeSigning, aesKey);
+    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
+        return completeTx(sendTx, getChangeAddress(), fee, aesKey);
     }
 
     synchronized Address getChangeAddress() {

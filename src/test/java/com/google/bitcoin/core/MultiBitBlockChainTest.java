@@ -282,7 +282,7 @@ public class MultiBitBlockChainTest {
         assertTrue(!coinbaseTransaction.isMature());
 
         // Attempt to spend the coinbase - this should fail as the coinbase is not mature yet.
-        Transaction coinbaseSpend = wallet.createSend(addressToSendTo, Utils.toNanoCoins(49, 0), BigInteger.ZERO, false, null);
+        Transaction coinbaseSpend = wallet.createSend(addressToSendTo, Utils.toNanoCoins(49, 0), BigInteger.ZERO, null);
         assertNull(coinbaseSpend);
 
         // Check that the coinbase is unavailable to spend for the next spendableCoinbaseDepth - 2 blocks.
@@ -302,7 +302,7 @@ public class MultiBitBlockChainTest {
             assertTrue(!coinbaseTransaction.isMature());
 
             // Attempt to spend the coinbase - this should fail.
-            coinbaseSpend = wallet.createSend(addressToSendTo, Utils.toNanoCoins(49, 0), BigInteger.ZERO, false, null);
+            coinbaseSpend = wallet.createSend(addressToSendTo, Utils.toNanoCoins(49, 0), BigInteger.ZERO, null);
             assertNull(coinbaseSpend);
         }
 
@@ -320,7 +320,7 @@ public class MultiBitBlockChainTest {
         assertTrue(coinbaseTransaction.isMature());
 
         // Create a spend with the coinbase BTC to the address in the second wallet - this should now succeed.
-        coinbaseSpend = wallet.createSend(addressToSendTo, Utils.toNanoCoins(49, 0), BigInteger.ZERO, false, null);
+        coinbaseSpend = wallet.createSend(addressToSendTo, Utils.toNanoCoins(49, 0), BigInteger.ZERO, null);
         assertNotNull(coinbaseSpend);
 
         // Commit the coinbaseSpend to the first wallet and check the balances decrement.

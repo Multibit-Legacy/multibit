@@ -203,7 +203,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                     log.debug("Using test parameters - saying send failed");  
                 }
             } else {
-                transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee, decryptBeforeSigning, walletPassword);
+                transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
                 if (transaction == null) {
                     // a null transaction returned indicates there was not
                     // enough money (in spite of our validation)

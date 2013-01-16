@@ -52,6 +52,7 @@ import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
@@ -532,30 +533,34 @@ public class MultiBitService {
 
     /**
      * Send bitcoins from the active wallet.
-     * 
      * @param sendAddressString
      *            the address to send to, as a String
-     * @param fee
-     *            fee to pay in nanocoin
      * @param amount
      *            the amount to send to, in BTC, as a String
+     * @param fee
+     *            fee to pay in nanocoin
+     * 
      * @return The sent transaction (may be null if there were insufficient
      *         funds for send)
      * @throws EncrypterDecrypterException 
      */
 
-    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee, boolean decryptBeforeSigning, char[] password)
+    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee, char[] password)
             throws java.io.IOException, AddressFormatException, EncrypterDecrypterException {
         // Send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
         KeyParameter aesKey = null;
-        if (decryptBeforeSigning && perWalletModelData.getWallet().getEncrypterDecrypter() != null) {
-            aesKey = perWalletModelData.getWallet().getEncrypterDecrypter().deriveKey(password);
+        if (perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+            if (perWalletModelData.getWallet().getEncrypterDecrypter() == null) {
+                throw new EncrypterDecrypterException("The wallet is of type ENCRYPTED_SCRYPT_AES but there is no EncrypterDecrypter to use.");
+            } else {
+                aesKey = perWalletModelData.getWallet().getEncrypterDecrypter().deriveKey(password);
+            }
         }
         Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
-                Utils.toNanoCoins(amount), fee, decryptBeforeSigning, aesKey);
+                Utils.toNanoCoins(amount), fee, aesKey);
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
         assert sendTransaction != null; 
