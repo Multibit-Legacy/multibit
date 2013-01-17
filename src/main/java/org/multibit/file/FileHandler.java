@@ -45,6 +45,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import com.google.bitcoin.core.WalletVersion;
 import org.multibit.network.MultiBitService;
+import org.multibit.store.MultiBitWalletProtobufSerializer;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class FileHandler {
     private Date dateForBackupName = null;
     
     private DateFormat dateFormat;
-    private WalletProtobufSerializer walletProtobufSerializer;
+    private MultiBitWalletProtobufSerializer walletProtobufSerializer;
     
     // Nonsense bytes to fill up deleted files - these have no meaning.
     private static byte[] NONSENSE_BYTES = new byte[]{(byte)0xF0, (byte)0xA6, (byte)0x55, (byte)0xAA, (byte)0x33, (byte)0x77, (byte)0x33, (byte)0x37,
@@ -102,7 +103,7 @@ public class FileHandler {
         this.controller = controller;
         
         dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
-        walletProtobufSerializer = new WalletProtobufSerializer();
+        walletProtobufSerializer = new MultiBitWalletProtobufSerializer();
     }
 
     public PerWalletModelData loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {

@@ -28,9 +28,9 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
     // Early version of name-value value for use in protecting encrypted wallets from being loaded
     // into earlier versions of MultiBit. Unfortunately I merged this into the MultiBit v0.4 code by mistake.
     // @deprecated replaced by ORG_MULTIBIT_WALLET_PROTECT_2
-    static final String ORG_MULTIBIT_WALLET_PROTECT = "org.multibit.walletProtect";
+    public static final String ORG_MULTIBIT_WALLET_PROTECT = "org.multibit.walletProtect";
 
-    static final String ORG_MULTIBIT_WALLET_PROTECT_2 = "org.multibit.walletProtect.2";
+    public static final String ORG_MULTIBIT_WALLET_PROTECT_2 = "org.multibit.walletProtect.2";
 
     public MultiBitWalletProtobufSerializer() {
         super();

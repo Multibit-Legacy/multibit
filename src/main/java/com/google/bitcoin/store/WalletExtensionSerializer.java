@@ -16,13 +16,15 @@
 
 package com.google.bitcoin.store;
 
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
-import org.bitcoinj.wallet.Protos;
-import org.multibit.IsMultiBitClass;
-
 import java.util.Collection;
 import java.util.Collections;
+
+import org.bitcoinj.wallet.Protos;
+import org.multibit.IsMultiBitClass;
+import org.multibit.store.MultiBitWalletProtobufSerializer;
+
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * Optional helper for WalletProtobufSerializer that allows for serialization and deserialization of Wallet objects
@@ -43,8 +45,8 @@ public class WalletExtensionSerializer implements IsMultiBitClass {
             // so it could load encrypted wallets mistakenly.
             
             // Hence the v0.5 code now writes ORG_MULTIBIT_WALLET_PROTECT_2.
-            if (!(extProto.getId().equals(WalletProtobufSerializer.ORG_MULTIBIT_WALLET_PROTECT) || 
-                    extProto.getId().equals(WalletProtobufSerializer.ORG_MULTIBIT_WALLET_PROTECT_2))) {
+            if (!(extProto.getId().equals(MultiBitWalletProtobufSerializer.ORG_MULTIBIT_WALLET_PROTECT) || 
+                    extProto.getId().equals(MultiBitWalletProtobufSerializer.ORG_MULTIBIT_WALLET_PROTECT_2))) {
                 throw new IllegalArgumentException("Did not understand a mandatory extension in the wallet of '" + extProto.getId() + "'");
             }
         }
