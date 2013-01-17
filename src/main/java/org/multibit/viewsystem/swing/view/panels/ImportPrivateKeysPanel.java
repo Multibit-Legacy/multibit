@@ -66,10 +66,12 @@ import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
 
+import org.multibit.viewsystem.Viewable;
+
 /**
  * The import private keys view
  */
-public class ImportPrivateKeysPanel extends JPanel implements View {
+public class ImportPrivateKeysPanel extends JPanel implements Viewable {
 
     private static final long serialVersionUID = 444992294329957705L;
 
@@ -959,7 +961,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
     }
 

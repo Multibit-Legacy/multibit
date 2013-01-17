@@ -30,13 +30,13 @@ public interface ViewSystem extends WalletEventListener {
      * display the view specified
      * @param view to display - one of the View constants
      */   
-    public void displayView(int viewToDisplay);
+    public void displayView(View viewToDisplay);
     
     /**
      * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
      * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
      */   
-    public void navigateAwayFromView(int viewToNavigateAwayFrom);
+    public void navigateAwayFromView(View viewToNavigateAwayFrom);
            
     /**
      * tells the view system that the model data has changed (but the wallet is still the same)

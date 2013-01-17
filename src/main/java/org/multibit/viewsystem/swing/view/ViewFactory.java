@@ -15,11 +15,14 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.*;
 
@@ -30,7 +33,7 @@ import org.multibit.viewsystem.swing.view.panels.*;
  * 
  */
 public class ViewFactory {
-    private Map<Integer, View> viewMap;
+    private Map<View, Viewable> viewMap;
 
     MultiBitController controller;
     MultiBitFrame mainFrame;
@@ -41,12 +44,12 @@ public class ViewFactory {
         initialise();
     }
     
-    public void initialise() {
-        viewMap = new HashMap<Integer, View>();        
+    public final void initialise() {
+        viewMap = new EnumMap<View, Viewable>(View.class);        
     }
 
-    public View getView(int viewNumber) {
-        View viewToReturn = viewMap.get(viewNumber);
+    public Viewable getView(View viewNumber) {
+        Viewable viewToReturn = viewMap.get(viewNumber);
 
         if (viewToReturn == null) {
             viewToReturn = createView(viewNumber);
@@ -55,81 +58,77 @@ public class ViewFactory {
         return viewToReturn;
     }
 
-    public void addView(int viewNumber, View view) {
+    public void addView(View viewNumber, Viewable view) {
         viewMap.put(viewNumber, view);
     }
     
-    private View createView(int viewNumber) {
-        View viewToReturn = null;
+    private Viewable createView(View viewNumber) {
+        Viewable viewToReturn = null;
 
         switch (viewNumber) {
 
-        case View.SAME_VIEW: {
+        case SAME_VIEW: {
             assert false;
             break;
         }
 
-        case View.WELCOME_VIEW: {
+        case WELCOME_VIEW: {
             viewToReturn = new WelcomePanel(controller, mainFrame);
             break;
         }
 
-        case View.TRANSACTIONS_VIEW: {
+        case TRANSACTIONS_VIEW: {
             viewToReturn = new ShowTransactionsPanel(mainFrame, controller);
             break;
         }
 
-        case View.HELP_ABOUT_VIEW: {
+        case HELP_ABOUT_VIEW: {
             viewToReturn = new HelpAboutPanel(controller, mainFrame);
             break;
         }
 
-        case View.HELP_CONTENTS_VIEW: {
+        case HELP_CONTENTS_VIEW: {
             viewToReturn = new HelpContentsPanel(controller, mainFrame);
             break;
         }
                
-        case View.RECEIVE_BITCOIN_VIEW: {
+        case RECEIVE_BITCOIN_VIEW: {
             viewToReturn = new ReceiveBitcoinPanel(mainFrame, controller);
             break;
         }
         
-        case View.SEND_BITCOIN_VIEW: {
+        case SEND_BITCOIN_VIEW: {
             viewToReturn = new SendBitcoinPanel(mainFrame, controller);
             break;
         }
         
-        case View.PREFERENCES_VIEW: {
+        case PREFERENCES_VIEW: {
             viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
             break;
         }
 
-        case View.RESET_TRANSACTIONS_VIEW: {
+        case RESET_TRANSACTIONS_VIEW: {
             viewToReturn = new ResetTransactionsPanel(controller, mainFrame);
             break;
         }
 
-        case View.SHOW_OPEN_URI_DIALOG_VIEW: {
+        case SHOW_OPEN_URI_DIALOG_VIEW: {
             viewToReturn = new ShowOpenUriDialog(controller, mainFrame);
             break;
         }
 
-        case View.SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
+        case SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
             viewToReturn = new ImportPrivateKeysPanel(controller, mainFrame);
             break;
         }
 
-        case View.SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ExportPrivateKeysPanel(controller, mainFrame);
-            break;
-        }
-
-        case View.MESSAGES_VIEW: {
+        case MESSAGES_VIEW: {
             viewToReturn = new MessagesPanel(controller, mainFrame);
             break;
         }
         
-        case View.CHARTS_VIEW: {
+        case CHARTS_VIEW: {
+
             viewToReturn = new ChartsPanel(controller, mainFrame);
             break;
         }

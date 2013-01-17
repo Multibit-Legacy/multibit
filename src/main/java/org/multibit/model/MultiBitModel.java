@@ -69,6 +69,7 @@ public class MultiBitModel {
 
     // User preferences.
     public static final String SELECTED_VIEW = "selectedView";
+    public static final String SELECTED_VIEW_ENUM = "selectedViewEnum";
     public static final String PREVIOUSLY_SELECTED_VIEW = "previousView";
 
     public static final String USER_LANGUAGE_CODE = "languageCode";
@@ -209,7 +210,7 @@ public class MultiBitModel {
     /**
      * The currently displayed view. One of the View constants.
      */
-    private int currentView;
+    private View currentView = null;
     
     /**
      * Holds exchange Data.
@@ -237,29 +238,33 @@ public class MultiBitModel {
         perWalletModelDataList.add(activeWalletModelData);
         
 
-        // initialize everything to look at the stored opened view
-        // if no properties passed in just initialize to the default view
-        int initialView = View.DEFAULT_VIEW;
+        // Initialize everything to look at the stored opened view.
+        // If no properties passed in just initialize to the default view.
+        // We will ignore the old SELECTED_VIEW string.
+        
         if (userPreferences != null) {
-            String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
+            String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW_ENUM);
             if (viewString != null) {
+                View initialViewInProperties = null;
                 try {
-                    int initialViewInProperties = Integer.parseInt(viewString);
-
-                    // do not open obsolete views
-                    if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties
-                            && View.SEND_BITCOIN_CONFIRM_VIEW != initialViewInProperties) {
-                        initialView = initialViewInProperties;
+                    View view = View.valueOf(viewString);
+                    
+                    // Do not open obsolete views.
+                    if (!view.isObsolete()) {
+                        initialViewInProperties = view;
                     }
-                } catch (NumberFormatException nfe) {
-                    // carry on
+
+                } catch (IllegalArgumentException nfe) {
+                    // do nothing.
+                } finally {
+                    View initialView = null != initialViewInProperties ? initialViewInProperties : View.DEFAULT_VIEW();
+
+                    setCurrentView(initialView);
+                    log.debug("Initial view from properties file is '" + getCurrentView().toString() + "'");
                 }
             }
         }
 
-        setCurrentView(initialView);
-        log.debug("Initial view from properties file is '" + getCurrentView() + "'");
-        
         controller.setModel(this);
     }
 
@@ -795,13 +800,13 @@ public class MultiBitModel {
         return null;
     }
 
-    public int getCurrentView() {
+    public View getCurrentView() {
         return currentView;
     }
 
-    public void setCurrentView(int view) {
+    public void setCurrentView(View view) {
         this.currentView = view;
-        setUserPreference(MultiBitModel.SELECTED_VIEW, "" + view);
+        setUserPreference(MultiBitModel.SELECTED_VIEW_ENUM, view.name());
     }
 
 	public ExchangeData getExchangeData() {
