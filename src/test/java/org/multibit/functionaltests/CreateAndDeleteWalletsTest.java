@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
+import org.multibit.Constants;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * functional test to check that wallets can be created and deleted ok
-
+ * 
  * @author jim
  * 
  */
@@ -46,70 +47,82 @@ public class CreateAndDeleteWalletsTest extends TestCase {
     private static final Logger log = LoggerFactory.getLogger(CreateAndDeleteWalletsTest.class);
 
     private static File multiBitDirectory;
-    
+
     private static MultiBitController controller;
-    
-    private static SimpleViewSystem simpleViewSystem ;
-    
+
+    private static SimpleViewSystem simpleViewSystem;
+
     @Before
     @Override
-    public void setUp() throws IOException {  
-        multiBitDirectory = createMultiBitRuntime();
+    public void setUp() throws IOException {
+        // Get the system property runFunctionalTest to see if the functional
+        // tests need running.
+        String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
+        if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
 
-        // set the application data directory to be the one we just created
-        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
+            multiBitDirectory = createMultiBitRuntime();
 
-        // create the controller
-        controller = new MultiBitController(applicationDataDirectoryLocator);
+            // set the application data directory to be the one we just created
+            ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-        assertNotNull("Controller is null", controller);
-        MultiBit.setController(controller);
-        
-        // create the model - gets hooked up to controller automatically
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+            // create the controller
+            controller = new MultiBitController(applicationDataDirectoryLocator);
 
-        log.debug("Creating Bitcoin service");
-        // create the MultiBitService that connects to the bitcoin network
-        MultiBitService multiBitService = new MultiBitService(controller);
-        controller.setMultiBitService(multiBitService);
+            assertNotNull("Controller is null", controller);
+            MultiBit.setController(controller);
 
-        // add the simple view system (no Swing)
-        simpleViewSystem = new SimpleViewSystem();
-        controller.registerViewSystem(simpleViewSystem);
+            // create the model - gets hooked up to controller automatically
+            @SuppressWarnings("unused")
+            MultiBitModel model = new MultiBitModel(controller);
 
-        // MultiBit runtime is now setup and running
+            log.debug("Creating Bitcoin service");
+            // create the MultiBitService that connects to the bitcoin network
+            MultiBitService multiBitService = new MultiBitService(controller);
+            controller.setMultiBitService(multiBitService);
+
+            // add the simple view system (no Swing)
+            simpleViewSystem = new SimpleViewSystem();
+            controller.registerViewSystem(simpleViewSystem);
+
+            // MultiBit runtime is now setup and running
+        }
     }
-    
+
     @Test
     public void testCreateAndDeleteWalletsWithActions() throws Exception {
-        String test1WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest1.wallet";
-        String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest2.wallet";
+        // Get the system property runFunctionalTest to see if the functional
+        // tests need running.
+        String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
+        if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
 
-        // initially there is a blank PerWalletModelData
-        assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
-       
-        // create test1 wallet
-        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, null);     
-        createNewWalletAction.createNewWallet(test1WalletPath);
-        Thread.sleep(1000);
-        assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+            String test1WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest1.wallet";
+            String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest2.wallet";
 
-        // create test2 wallet
-        createNewWalletAction.createNewWallet(test2WalletPath);
-        Thread.sleep(1000);
-        assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
+            // initially there is a blank PerWalletModelData
+            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
-        // delete the test1wallet
-        DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null);
-        deleteWalletSubmitAction.deleteWallet(test1WalletPath);
-        Thread.sleep(1000);
-        assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+            // create test1 wallet
+            CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, null);
+            createNewWalletAction.createNewWallet(test1WalletPath);
+            Thread.sleep(1000);
+            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
-        // delete the test2wallet - a default one should then be created
-        deleteWalletSubmitAction.deleteWallet(test2WalletPath);
-        Thread.sleep(1000);
-        assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+            // create test2 wallet
+            createNewWalletAction.createNewWallet(test2WalletPath);
+            Thread.sleep(1000);
+            assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
+
+            // delete the test1wallet
+            DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null);
+            deleteWalletSubmitAction.deleteWallet(test1WalletPath);
+            Thread.sleep(1000);
+            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+
+            // delete the test2wallet - a default one should then be created
+            deleteWalletSubmitAction.deleteWallet(test2WalletPath);
+            Thread.sleep(1000);
+            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+        }
     }
 
     /**
@@ -128,11 +141,12 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
-        // copy in the blockchain stored in git - this is in source/main/resources/
+        // copy in the blockchain stored in git - this is in
+        // source/main/resources/
         File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
         FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
         multibitBlockchain.deleteOnExit();
-        
+
         return multiBitDirectory;
     }
 }

@@ -62,7 +62,7 @@ import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
 import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
-import com.google.bitcoin.store.WalletProtobufSerializer;
+import com.google.bitcoin.store.MultiBitWalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -331,7 +331,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * {@link WalletProtobufSerializer}.
      */
     public synchronized void saveToFileStream(OutputStream f) throws IOException {
-        new WalletProtobufSerializer().writeWallet(this, f);
+        new MultiBitWalletProtobufSerializer().writeWallet(this, f);
     }
 
     /** Returns the parameters this wallet was created with. */
@@ -381,7 +381,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 if (ois != null) ois.close();
             }
         } else {
-            WalletProtobufSerializer walletProtobufSerializer = new WalletProtobufSerializer();
+            MultiBitWalletProtobufSerializer walletProtobufSerializer = new MultiBitWalletProtobufSerializer();
             if (MultiBit.getController() != null && MultiBit.getController().getMultiBitService() != null 
                     && MultiBit.getController().getMultiBitService().getChain() != null) {
                 walletProtobufSerializer.setChainHeight(MultiBit.getController().getMultiBitService().getChain().getBestChainHeight());
