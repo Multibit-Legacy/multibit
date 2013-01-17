@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
 import org.multibit.IsMultiBitClass;
@@ -2051,7 +2052,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         boolean isDead = false;
         // The transactions that we connected inputs to, so we can go back later and move them into the right
         // bucket if all their outputs got spent.
-        Set<Transaction> connectedTransactions = new HashSet<Transaction>();
+        Set<Transaction> connectedTransactions = new TreeSet<Transaction>();
         for (TransactionInput input : tx.getInputs()) {
             TransactionInput.ConnectionResult result = input.connect(pool, TransactionInput.ConnectMode.ABORT_ON_CONFLICT);
             if (result == TransactionInput.ConnectionResult.SUCCESS) {

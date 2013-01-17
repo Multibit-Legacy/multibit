@@ -150,6 +150,7 @@
                                     <excludes> **/Sha256Hash.class,
                                         **/Transaction.class, **/Transaction$*.class,
                                         **/TransactionConfidence.class, **/TransactionConfidence$*.class,
+                                        **/TransactionInput.class,                                        
                                         **/TransactionOutput.class,
                                         **/Wallet.class, **/Wallet$*.class,
                                         **/WalletExtensionSerializer.class

@@ -547,9 +547,12 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             String script2;
             try {
                 script = inputs.get(0).getScriptSig().toString();
-                script2 = outputs.get(0).getScriptPubKey().toString();
             } catch (ScriptException e) {
                 script = "???";
+            }
+            try {
+                script2 = outputs.get(0).getScriptPubKey().toString();
+            } catch (ScriptException e) {
                 script2 = "???";
             }
             return "     == COINBASE TXN (scriptSig " + script + ")  (scriptPubKey " + script2 + ")\n";

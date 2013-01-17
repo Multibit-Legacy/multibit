@@ -84,6 +84,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
@@ -102,11 +103,13 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
     private static final String SPACER = "   "; // 3 spaces
     
-    private static final int STATUS_WIDTH_DELTA = 4;
+    private static final int STATUS_WIDTH_DELTA = 6;
 
     private static final int TABLE_BORDER = 3;
 
     private static final int MINIMUM_ICON_HEIGHT = 18;
+    
+    public static final int HEIGHT_DELTA = 3;
 
     public static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
     private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
@@ -120,6 +123,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private static final String RTL_PROGRESS_4_ICON_FILE = "/images/circleProgress4.png";
     private static final String RTL_PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
     private static final String TICK_ICON_FILE = "/images/tick.png";
+    private static final String PICKAXE_ICON_FILE = "/images/pickaxe.png";
+    private static final String SMALL_EXCLAMATION_MARK_ICON_FILE = "/images/smallExclamationMark.png";
 
     private int selectedRow = -1;
     
@@ -170,7 +175,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         table.setOpaque(false);
         table.setBorder(BorderFactory.createEmptyBorder());
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        table.setRowHeight(Math.max(MINIMUM_ICON_HEIGHT, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
+        table.setRowHeight(Math.max(MINIMUM_ICON_HEIGHT, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()) + HEIGHT_DELTA);
 
         // Use status icons.
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
@@ -366,12 +371,19 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     class ImageRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 154545L;
 
-        JLabel label = new JLabel();
+        JLabel primaryLabel = new JLabel();
+
+        // If the component is a doubleIcon the next fields are used.
+        JLabel extraLabel = new JLabel();
+        boolean doubleIcon = false;
+        JPanel combinationPanel = new JPanel();
 
         ImageIcon shapeTriangleIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_TRIANGLE_ICON_FILE);
         ImageIcon shapeSquareIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_SQUARE_ICON_FILE);
         ImageIcon shapeHeptagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_PENTAGON_ICON_FILE);
         ImageIcon shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
+        ImageIcon pickaxeIcon = ImageLoader.createImageIcon(PICKAXE_ICON_FILE);
+        ImageIcon smallExclamationMarkIcon = ImageLoader.createImageIcon(SMALL_EXCLAMATION_MARK_ICON_FILE);
         ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
         ImageIcon progress0Icon = ImageLoader.createImageIcon(PROGRESS_0_ICON_FILE);
         ImageIcon progress1Icon = ImageLoader.createImageIcon(PROGRESS_1_ICON_FILE);
@@ -388,11 +400,45 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setOpaque(true);
+            
+            // Prepare the primary icon (used always), and an extra icon and containing panel for use as required.
+            primaryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            primaryLabel.setVerticalAlignment(SwingConstants.CENTER);
+            primaryLabel.setOpaque(true);
+            extraLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            extraLabel.setVerticalAlignment(SwingConstants.CENTER);
+            extraLabel.setOpaque(true);
+            combinationPanel.setOpaque(true);
+            combinationPanel.setLayout(new GridBagLayout());
 
-            TransactionConfidence confidence = (TransactionConfidence) value;
+            GridBagConstraints constraints = new GridBagConstraints();
 
+            // Prepare a double icon panel for use as required.
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_END;
+            combinationPanel.add(primaryLabel, constraints);
+
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 1;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_START;
+
+            combinationPanel.add(extraLabel, constraints); 
+            
+            
+            // Get the transaction and transaction confidence
+            Transaction transaction = (Transaction)value;
+     
+            TransactionConfidence confidence = null;
+            if (transaction != null) {
+                confidence = transaction.getConfidence();
+            }            
             ConfidenceType confidenceType = null;
             if (confidence != null) {
                 confidenceType = confidence.getConfidenceType();
@@ -400,76 +446,136 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             if (confidenceType == null) {
                 confidenceType = ConfidenceType.UNKNOWN;
             }
+ 
+   
+            // Coinbase transactions have an extra pickaxe icon.
+            if (transaction != null && transaction.isCoinBase()) {
+                extraLabel.setIcon(pickaxeIcon);
+                doubleIcon = true;
+            } else {
+                doubleIcon = false;
+            }
+
+            // Work out the primary icon.
             switch (confidenceType) {
             case UNKNOWN: {
-                label.setText("?");
-                label.setIcon(null);
-                // label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
+                primaryLabel.setText("?");
+                primaryLabel.setIcon(null);
                 break;
             }
             case BUILDING: {
                 if (controller.getMultiBitService().getChain() == null) {
-                    label.setText("?");
-                    label.setIcon(null);
+                    primaryLabel.setText("?");
+                    primaryLabel.setIcon(null);
                 } else {
                     int numberOfBlocksEmbedded = controller.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
-                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, confidence);
-                    label.setIcon(buildingIcon);
-                    label.setText("");
+                    if (transaction != null && transaction.isCoinBase()) {
+                        // Coinbase tx mature slower than regular blocks
+                        numberOfBlocksEmbedded = numberOfBlocksEmbedded / 20;
+                    }
+                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, transaction);
+                    primaryLabel.setIcon(buildingIcon);
+                    primaryLabel.setText("");
                     if (numberOfBlocksEmbedded >= 6) {
-                        label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
+                        primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
                     } else {
-                        label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                        if (transaction != null && transaction.isCoinBase()) {
+                            primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmedAndCoinbase"));                            
+                        } else {
+                            primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                        }
                     }
                 }
                 break;
             }
             case NOT_SEEN_IN_CHAIN: {
-                label.setIcon(getConfidenceIcon(confidence));
-                label.setText("");
+                primaryLabel.setIcon(getConfidenceIcon(confidence));
+                primaryLabel.setText("");
                 
-                label.setToolTipText(getConfidenceToolTip(confidence) );
-
-                // label.setText("NSIC");
+                primaryLabel.setToolTipText(getUnconfirmedConfidenceToolTip(transaction) );
+                
+                if (transaction != null) {
+                    if (transaction.getLockTime() > 0) {
+                        extraLabel.setIcon(smallExclamationMarkIcon);
+                        doubleIcon = true;
+                    } else {
+                        doubleIcon = false;
+                    }
+                }
                 break;
             }
             case NOT_IN_BEST_CHAIN: {
-                label.setIcon(getConfidenceIcon(confidence));
-                label.setText("");
-                label.setToolTipText(getConfidenceToolTip(confidence) );
-                // label.setText("NSIBC");
+                primaryLabel.setIcon(getConfidenceIcon(confidence));
+                primaryLabel.setText("");
+                primaryLabel.setToolTipText(getUnconfirmedConfidenceToolTip(transaction) );
+                
+                if (transaction != null) {
+                    if (transaction.getLockTime() > 0) {
+                        extraLabel.setIcon(smallExclamationMarkIcon);
+                        doubleIcon = true;
+                    } else {
+                        doubleIcon = false;
+                    }
+                }
+
                 break;
             }
             case DEAD: {
-                label.setIcon(null);
-                label.setText("DS");
+                primaryLabel.setIcon(smallExclamationMarkIcon);
+                primaryLabel.setText(controller.getLocaliser().getString("multiBitFrame.status.dead"));
                 break;
             }
             default: {
-                label.setIcon(null);
-                label.setText("?");
+                primaryLabel.setIcon(null);
+                primaryLabel.setText("?");
                 break;
             }
             }
+           
+            // Propagate the tooltip text.
+            extraLabel.setToolTipText(primaryLabel.getToolTipText());
+            combinationPanel.setToolTipText(primaryLabel.getToolTipText());
 
+            // Set foreground and background colors.
             if (isSelected) {
                 selectedRow = row;
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
+                primaryLabel.setBackground(table.getSelectionBackground());
+                primaryLabel.setForeground(table.getSelectionForeground());
+                extraLabel.setBackground(table.getSelectionBackground());
+                extraLabel.setForeground(table.getSelectionForeground());
+                combinationPanel.setBackground(table.getSelectionBackground());
             } else {
-                label.setForeground(table.getForeground());
+                primaryLabel.setForeground(table.getForeground());
+                extraLabel.setForeground(table.getForeground());
+                combinationPanel.setForeground(table.getForeground());
                 if (row % 2 == 0) {
-                    label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    primaryLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    extraLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    combinationPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
-                    label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
-                    label.setOpaque(true);
+                    primaryLabel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    extraLabel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    combinationPanel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    primaryLabel.setOpaque(true);
+                    extraLabel.setOpaque(true);
+                    combinationPanel.setOpaque(true);
                 }
             }
 
-            return label;
+            // Return either a single icon or a double icon panel.
+            if (doubleIcon) {
+                return combinationPanel;
+            } else {
+                return primaryLabel;
+            }
         }
 
-        private ImageIcon getBuildingIcon(int numberOfBlocksEmbedded, TransactionConfidence confidence) {
+        private ImageIcon getBuildingIcon(int numberOfBlocksEmbedded, Transaction transaction) {
+            TransactionConfidence confidence = null;
+            if (transaction != null) {
+                confidence = transaction.getConfidence();
+            }
+            
             if (numberOfBlocksEmbedded < 0) {
                 numberOfBlocksEmbedded = 0;
             }
@@ -526,7 +632,29 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             }
         }
         
-        private String getConfidenceToolTip(TransactionConfidence confidence) {
+        private String getUnconfirmedConfidenceToolTip(Transaction transaction) {
+            TransactionConfidence confidence = null;
+            if (transaction != null) {
+                confidence = transaction.getConfidence();
+            }
+
+            // Work out the line describing the is the transaction is standard or not.
+            String transactionTrustfulness = "";
+            if (transaction != null) {
+                if (transaction.getLockTime() > 0) {
+                    // Non standard transaction.
+                    transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ".";
+                } else {
+                    // Normal transaction.
+                    if (transaction != null && transaction.isCoinBase()) {
+                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndCoinbase") + ".";  
+                    } else {
+                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".";  
+                    }
+                }
+            }
+            
+            // Work out the line describing the number of peers.
             int peers = 0;
             if (confidence != null && confidence.getBroadcastBy() != null) {
                 peers = confidence.getBroadcastBy().size();
@@ -545,13 +673,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             }
 
             return HelpContentsPanel.createMultilineTooltipText(new String[] {
-                    controller.getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".", builder.toString() });
+                    transactionTrustfulness, builder.toString() });
         }
         
         private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
             // By default return a triangle which indicates the least known.
             ImageIcon iconToReturn = shapeTriangleIcon;
-            
             
             if (confidence != null) {
                 if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {
@@ -591,7 +718,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+            label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText(value + SPACER);
 
@@ -639,7 +766,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+            label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText(value + SPACER);
 
@@ -682,7 +809,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+            label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
 
             String formattedDate = "";
             if (value != null) {
@@ -733,7 +860,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
             label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+            label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
             label.setText((String) value);
 
             if (isSelected) {
@@ -760,21 +887,22 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
         private final TabSet tabSet = new TabSet(new TabStop[] { tabStopRight, tabStopLeft });
 
-        private AttributeSet attributeSet;
+        private AttributeSet paragraphAttributeSet;
         private JTextPane pane;
         private Style style;
-
+        
         public DecimalAlignRenderer() {
             pane = new JTextPane();
 
             StyleContext styleContext = StyleContext.getDefaultStyleContext();
-            attributeSet = styleContext.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.TabSet, tabSet);
-            pane.setParagraphAttributes(attributeSet, true);
+            paragraphAttributeSet = styleContext.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.TabSet, tabSet);
+            pane.setParagraphAttributes(paragraphAttributeSet, true);
+            
             style = pane.addStyle("number", null);
 
             pane.setOpaque(true);
-            pane.setBorder(BorderFactory.createEmptyBorder());
-        }
+            pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,  ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
+         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
@@ -832,19 +960,19 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             if (isSelected) {
                 selectedRow = row;
                 pane.setBackground(table.getSelectionBackground());
-                // outerPanel.setBackground(table.getSelectionBackground());
+                outerPanel.setBackground(table.getSelectionBackground());
                 filler.setBackground(table.getSelectionBackground());
-                pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, table.getSelectionBackground()));
+                pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, table.getSelectionBackground()));
             } else {
                 if (row % 2 == 0) {
                     pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-                    pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
+                    pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     filler.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     outerPanel.setOpaque(true);
                 } else {
                     pane.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
-                    pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, ColorAndFontConstants.ALTERNATE_TABLE_COLOR));
+                    pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.ALTERNATE_TABLE_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                     filler.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                     pane.setOpaque(true);
@@ -862,6 +990,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             StyleConstants.setBold(style, false);
             StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
             StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
+            StyleConstants.setSpaceBelow(style, 10);
 
             pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);
 

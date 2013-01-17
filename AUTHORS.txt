@@ -18,12 +18,16 @@ Baltar              - Polish
 Beetle              - Russian
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
+blackarrow          - Hindi
 btctalk             - Persian
+corentingc          - French
 corn3               - Portuguese
 CD1                 - Dutch
 D4CH                - Danish
 damnek              - Dutch
-druhy               - Slovak, French, German
+darpho              - Spanish
+dr-nix              - Dutch
+druhy               - Slovak, Czech, French, German
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
 eqawasmi            - Arabic
@@ -78,6 +82,7 @@ robsned             - Hindi
 ronimo              - French
 samer               - Arabic
 sasha               - Russian
+shelart             - Russian
 spiccioli           - Italian
 stlucifer           - Hindi
 techmix             - Persian
@@ -85,6 +90,7 @@ Technomage          - Finnish
 teknomunk           - Japanese
 tengo               - Russian
 tesla               - Russian
+thaven              - Dutch
 tpantlik            - Czech
 viboracecata        - Chinese Simplified
 welyoe              - Bahasa Indonesia
