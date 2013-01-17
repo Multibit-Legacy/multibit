@@ -35,6 +35,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -42,7 +43,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 /**
  * The messages view.
  */
-public class MessagesPanel extends JPanel implements View, MessageListener {
+public class MessagesPanel extends JPanel implements Viewable, MessageListener {
     private static final long serialVersionUID = 191662512399957705L;
 
     private MultiBitController controller;
@@ -121,7 +122,7 @@ public class MessagesPanel extends JPanel implements View, MessageListener {
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.MESSAGES_VIEW;
     }
 

@@ -49,6 +49,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExportPrivateKeysSubmitAction;
@@ -58,14 +59,15 @@ import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
+
 
 /**
  * The export private keys panel.
  */
-public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyListener {
+public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBusyListener {
 
     private static final long serialVersionUID = 444992298119957705L;
 
@@ -1000,7 +1002,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
     }
 

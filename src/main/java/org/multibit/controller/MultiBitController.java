@@ -146,7 +146,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * @param viewToDisplay
      *            View to display. Must be one of the View constants
      */
-    public void displayView(int viewToDisplay) {
+    public void displayView(View viewToDisplay) {
         // log.debug("Displaying view '" + viewToDisplay + "'");
 
         // tell all views to close the current view
@@ -232,7 +232,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
         localiser.setLocale(newLocale);
 
-        int viewToDisplay = getCurrentView();
+        View viewToDisplay = getCurrentView();
 
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
@@ -422,15 +422,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         return applicationDataDirectoryLocator;
     }
 
-    public int getCurrentView() {
-        if (getModel() != null) {
-            return getModel().getCurrentView();
-        } else {
-            return View.DEFAULT_VIEW;
-        }
+    public View getCurrentView() {
+        View view = (null == getModel()) ? null : getModel().getCurrentView();
+        
+        return (null == view) ? View.DEFAULT_VIEW() : view;
     }
 
-    public void setCurrentView(int view) {
+    public void setCurrentView(View view) {
         // log.debug("setCurrentView = " + view);
         if (getModel() != null) {
             getModel().setCurrentView(view);

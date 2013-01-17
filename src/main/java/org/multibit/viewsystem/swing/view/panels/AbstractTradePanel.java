@@ -86,7 +86,7 @@ import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -95,7 +95,6 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.action.ZoomAction;
-import org.multibit.viewsystem.swing.view.ImageSelection;
 import org.multibit.viewsystem.swing.view.components.DashedBorder;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
@@ -104,11 +103,13 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
+import org.multibit.viewsystem.swing.view.ImageSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.uri.BitcoinURI;
+
 
 /**
  * Abstract parent class for SendBitcoinPanel and ReceiveBitcoinPanel
@@ -116,7 +117,7 @@ import com.google.bitcoin.uri.BitcoinURI;
  * @author jim
  * 
  */
-public abstract class AbstractTradePanel extends JPanel implements View, CopyQRCodeImageDataProvider, BitcoinFormDataProvider, CurrencyConverterListener {
+public abstract class AbstractTradePanel extends JPanel implements Viewable, CopyQRCodeImageDataProvider, BitcoinFormDataProvider, CurrencyConverterListener {
 
     public boolean isShowSidePanel() {
         return showSidePanel;
