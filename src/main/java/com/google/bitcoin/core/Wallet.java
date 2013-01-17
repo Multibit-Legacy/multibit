@@ -49,8 +49,10 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
+import org.multibit.store.MultiBitWalletProtobufSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -62,13 +64,11 @@ import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
 import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
-import com.google.bitcoin.store.MultiBitWalletProtobufSerializer;
+import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 // To do list:
 //

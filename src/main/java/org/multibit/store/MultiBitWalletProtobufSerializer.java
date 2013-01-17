@@ -1,5 +1,7 @@
-package com.google.bitcoin.store;
+package org.multibit.store;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Date;
 
@@ -13,6 +15,8 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutPoint;
 import com.google.bitcoin.core.TransactionOutput;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 
@@ -20,6 +24,13 @@ import com.google.protobuf.ByteString;
 public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitWalletProtobufSerializer.class);
+
+    // Early version of name-value value for use in protecting encrypted wallets from being loaded
+    // into earlier versions of MultiBit. Unfortunately I merged this into the MultiBit v0.4 code by mistake.
+    // @deprecated replaced by ORG_MULTIBIT_WALLET_PROTECT_2
+    static final String ORG_MULTIBIT_WALLET_PROTECT = "org.multibit.walletProtect";
+
+    static final String ORG_MULTIBIT_WALLET_PROTECT_2 = "org.multibit.walletProtect.2";
 
     public MultiBitWalletProtobufSerializer() {
         super();
@@ -77,6 +88,20 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
             }
         }
         txMap.put(txProto.getHash(), tx);
+    }
+    
+    /**
+     * Formats the given Wallet to the given output stream in protocol buffer format.
+     * Add a mandatory extension so that it will not be loaded by older versions.
+     */
+    public void writeWalletWithMandatoryExtension(Wallet wallet, OutputStream output) throws IOException {
+        Protos.Wallet walletProto = walletToProto(wallet);
+        Protos.Wallet.Builder walletBuilder = Protos.Wallet.newBuilder(walletProto);
+        Protos.Extension.Builder extensionBuilder = Protos.Extension.newBuilder().setId(ORG_MULTIBIT_WALLET_PROTECT_2).setData(ByteString.copyFrom(new byte[0x01])).setMandatory(true);
+        walletBuilder.addExtension(extensionBuilder);
+
+        Protos.Wallet walletProtoWithMandatory = walletBuilder.build();
+        walletProtoWithMandatory.writeTo(output);
     }
 
 }
