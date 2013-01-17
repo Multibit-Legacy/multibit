@@ -312,13 +312,8 @@ public class MultiBitService {
 
                 newWalletCreated = true;
             } else {
-                // Create a brand new wallet - by default protobuf and scrypt encryptable with random salt.
-                byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
-                secureRandom.nextBytes(salt);
-                Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
-                ScryptParameters scryptParameters = scryptParametersBuilder.build();
-                KeyCrypter encrypterDecrypter = new KeyCrypterScrypt(scryptParameters);
-                wallet = new Wallet(networkParameters, encrypterDecrypter);
+                // Create a brand new wallet - by default unencrypted.
+                wallet = new Wallet(networkParameters);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 

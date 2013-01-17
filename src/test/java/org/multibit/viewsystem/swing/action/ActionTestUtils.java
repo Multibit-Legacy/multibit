@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import com.google.bitcoin.crypto.KeyCrypter;
@@ -58,12 +59,16 @@ public class ActionTestUtils {
          ScryptParameters scryptParameters = scryptParametersBuilder.build();
          KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
 
-         Wallet wallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
-         wallet.getKeychain().add(new ECKey());
-         
-         // Encrypt wallet if required.
+         Wallet wallet;
          if (encrypt) {
-             wallet.encrypt(keyCrypter.deriveKey(walletPassword));
+             wallet = new Wallet(NetworkParameters.prodNet(), EncryptionType.ENCRYPTED_SCRYPT_AES, keyCrypter);
+             ECKey ecKey = new ECKey();
+             ecKey.encrypt(keyCrypter, keyCrypter.deriveKey(walletPassword));
+             wallet.addKey(ecKey);
+         } else {
+             wallet = new Wallet(NetworkParameters.prodNet());
+             ECKey ecKey = new ECKey();
+             wallet.addKey(ecKey);             
          }
          
          PerWalletModelData perWalletModelData = new PerWalletModelData();

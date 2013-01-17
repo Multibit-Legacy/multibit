@@ -188,8 +188,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             ECKey newKey;
                             if (encryptNewKeys) {
                                 // Use the wallet KeyCrypter.
-                                newKey = new ECKey(walletKeyCrypter);
-                                newKey.encrypt(aesKey);
+                                newKey = new ECKey();
+                                newKey.encrypt(walletKeyCrypter, aesKey);
                             } else {
                                 newKey = new ECKey();
                             }

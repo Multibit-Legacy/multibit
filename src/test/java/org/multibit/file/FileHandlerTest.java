@@ -252,24 +252,26 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), EncryptionType.ENCRYPTED_SCRYPT_AES, new KeyCrypterScrypt());
         ECKey newKey = new ECKey();
-        newWallet.keychain.add(newKey);
-
+ 
         // Copy the private key bytes for checking later.
         byte[] originalPrivateKeyBytes1 = new byte[32];
         System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes1, 0, 32);
         System.out.println("EncryptableECKeyTest - Original private key 1 = " + Utils.bytesToHexString(originalPrivateKeyBytes1));
-        
-        newKey = new ECKey();
-        newWallet.keychain.add(newKey);
+ 
+        newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newWallet.addKey(newKey);
 
+        newKey = new ECKey();
+ 
         byte[] originalPrivateKeyBytes2 = new byte[32];
         System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes2, 0, 32);
         System.out.println("EncryptableECKeyTest - Original private key 2 = " + Utils.bytesToHexString(originalPrivateKeyBytes2));
 
-        newWallet.encrypt(newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
-        
+        newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newWallet.addKey(newKey);
+       
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
         
@@ -317,7 +319,7 @@ public class FileHandlerTest extends TestCase {
         }
         
         // Decrypt the reborn wallet.
-        perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        perWalletModelDataReborn.getWallet().decrypt(keyCrypter, perWalletModelDataReborn.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
 
         // Get the keys out the reborn wallet and check that all the keys match.
         Collection<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
@@ -356,12 +358,13 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
-        ECKey newKey = new ECKey();
-        newWallet.keychain.add(newKey);
-
-        newWallet.encrypt(newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        KeyCrypter testKeyCrypter = new KeyCrypterScrypt();
         
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), EncryptionType.ENCRYPTED_SCRYPT_AES, testKeyCrypter);
+        ECKey newKey = new ECKey();
+        newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newWallet.addKey(newKey);
+       
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
         
@@ -416,11 +419,10 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testKeyCrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), EncryptionType.ENCRYPTED_SCRYPT_AES, testKeyCrypter);
         ECKey newKey = new ECKey();
-        newWallet.keychain.add(newKey);
-
-        newWallet.encrypt(newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newWallet.addKey(newKey);
         
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
@@ -552,7 +554,7 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        // Create a new protobuf wallet with minor wallet set.
+        // Create a new protobuf wallet.
         Wallet newWallet = new Wallet(NetworkParameters.prodNet());
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);

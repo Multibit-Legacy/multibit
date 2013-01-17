@@ -124,16 +124,18 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
 
                     controller.fireWalletBusyChange(true);
 
+                    KeyCrypter keyCrypterToUse;
                     if (wallet.getKeyCrypter() == null) {
                         byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
                         controller.getMultiBitService().getSecureRandom().nextBytes(salt);
                         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
                         ScryptParameters scryptParameters = scryptParametersBuilder.build();
-                        KeyCrypter encrypterDecrypter = new KeyCrypterScrypt(scryptParameters);
-                        wallet.setKeyCrypter(encrypterDecrypter);
+                        keyCrypterToUse = new KeyCrypterScrypt(scryptParameters);
+                    } else {
+                        keyCrypterToUse = wallet.getKeyCrypter();
                     }
 
-                    wallet.encrypt(wallet.getKeyCrypter().deriveKey(passwordToUse));
+                    wallet.encrypt(keyCrypterToUse, wallet.getKeyCrypter().deriveKey(passwordToUse));
                     controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF_ENCRYPTED);
                     controller.getModel().getActivePerWalletModelData().setDirty(true);
                     FileHandler fileHandler = new FileHandler(controller);
