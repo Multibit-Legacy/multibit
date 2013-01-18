@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
@@ -37,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.crypto.KeyCrypterException;
 

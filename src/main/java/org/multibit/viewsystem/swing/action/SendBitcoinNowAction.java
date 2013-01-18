@@ -24,8 +24,8 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -42,8 +42,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} actually spends bitcoin.
@@ -131,33 +130,30 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             
             char[] walletPassword = walletPasswordField.getPassword();
  
-            if (controller.getModel().getActiveWallet() != null) {
-                if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
-                    // Encrypted wallet.
-                    if (walletPassword == null || walletPassword.length == 0) {
-                        // User needs to enter password.
-                        sendBitcoinConfirmPanel.setMessageText(
-                                controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"),
-                                "");
-                        return;
-                    }
+            if (controller.getModel().getActiveWallet() != null
+                    && controller.getModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
+                // Encrypted wallet.
+                if (walletPassword == null || walletPassword.length == 0) {
+                    // User needs to enter password.
+                    sendBitcoinConfirmPanel.setMessageText(
+                            controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
+                    return;
+                }
 
-                    try {
-                        if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
-                            // The password supplied is incorrect.
-                            sendBitcoinConfirmPanel.setMessageText(
-                                    controller.getLocaliser()
-                                            .getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
-                            return;
-                        }
-                    } catch (KeyCrypterException kce) {
-                        log.debug(kce.getClass().getCanonicalName() + " " + kce.getMessage());
-                        // The password supplied is probably incorrect.
+                try {
+                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
+                        // The password supplied is incorrect.
                         sendBitcoinConfirmPanel.setMessageText(
                                 controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"),
                                 "");
                         return;
                     }
+                } catch (KeyCrypterException kce) {
+                    log.debug(kce.getClass().getCanonicalName() + " " + kce.getMessage());
+                    // The password supplied is probably incorrect.
+                    sendBitcoinConfirmPanel.setMessageText(
+                            controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
+                    return;
                 }
             }
             
@@ -182,14 +178,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         String message = null;
         
         boolean sendWasSuccessful = Boolean.FALSE;
-        boolean decryptBeforeSigning = false;
-        Wallet wallet = perWalletModelData.getWallet();
-        try {
-            // Work out if keys need decrypting before signing occurs.
-            if (wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
-                decryptBeforeSigning = true;
-            }
-            
+        try {            
             log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
                     + fee + " to address = " + sendAddress);
             

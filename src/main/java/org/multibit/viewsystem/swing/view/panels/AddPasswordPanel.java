@@ -664,32 +664,34 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
     }
 
     @Override
-    public void walletBusyChange(boolean newWalletIsBusy) { 
-        boolean unencryptedWalletType = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.UNENCRYPTED;
-
-        if (!unencryptedWalletType) {
-            // Is already an encrypted wallet so cannot add a password regardless.
-            addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
-                    controller.getLocaliser().getString("addPasswordSubmitAction.text"));
-            addPasswordSubmitAction.setEnabled(false);
-        } else {
-            // Update the enable status of the action to match the wallet busy
-            // status.
-            if (controller.getModel().getActivePerWalletModelData().isBusy()) {
-                // Wallet is busy with another operation that may change the
-                // private keys - Action is disabled.
-                addPasswordSubmitAction.putValue(
-                        Action.SHORT_DESCRIPTION,
-                        controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
-                                new Object[] { controller.getModel().getActivePerWalletModelData().getBusyOperation() }));
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        if (controller.getModel().getActiveWallet() != null) {
+            if (controller.getModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
+                // Is already an encrypted wallet so cannot add a password
+                // regardless.
+                addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
+                        controller.getLocaliser().getString("addPasswordSubmitAction.text"));
                 addPasswordSubmitAction.setEnabled(false);
             } else {
-                // Enable unless wallet has been modified by another process.
-                if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                    addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
-                            controller.getLocaliser().getString("addPasswordSubmitAction.text"));
+                // Update the enable status of the action to match the wallet
+                // busy status.
+                if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+                    // Wallet is busy with another operation that may change the
+                    // private keys - Action is disabled.
+                    addPasswordSubmitAction.putValue(
+                            Action.SHORT_DESCRIPTION,
+                            controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
+                                    new Object[] { controller.getModel().getActivePerWalletModelData().getBusyOperation() }));
+                    addPasswordSubmitAction.setEnabled(false);
+                } else {
+                    // Enable unless wallet has been modified by another
+                    // process.
+                    if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                        addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
+                                controller.getLocaliser().getString("addPasswordSubmitAction.text"));
 
-                    addPasswordSubmitAction.setEnabled(true);
+                        addPasswordSubmitAction.setEnabled(true);
+                    }
                 }
             }
         }

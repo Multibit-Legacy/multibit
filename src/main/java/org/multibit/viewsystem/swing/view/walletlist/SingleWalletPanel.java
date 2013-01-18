@@ -43,6 +43,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
@@ -62,8 +63,6 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.WalletVersion;
-
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 

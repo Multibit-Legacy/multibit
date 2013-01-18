@@ -123,7 +123,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WALLET_SERIALISED1_BALANCE, perWalletModelData.getWallet().getBalance());
         
         // Check wallet type.
-        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() != EncryptionType.UNENCRYPTED);
+        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WALLET_SERIALISED2_BALANCE, perWalletModelData.getWallet().getBalance());
         
         // Check wallet type.
-        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() != EncryptionType.UNENCRYPTED);
+        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
     }
     
     @Test
@@ -252,7 +252,10 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), EncryptionType.ENCRYPTED_SCRYPT_AES, new KeyCrypterScrypt());
+        KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
+        System.out.println("InitialKeyCrypter = " + initialKeyCrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), initialKeyCrypter);
+        
         ECKey newKey = new ECKey();
  
         // Copy the private key bytes for checking later.
@@ -318,8 +321,10 @@ public class FileHandlerTest extends TestCase {
             assertTrue("Key is not encrypted when it should be", key.isEncrypted());
         }
         
+        System.out.println("Reborn KeyCrypter = " + perWalletModelDataReborn.getWallet().getKeyCrypter());
+        
         // Decrypt the reborn wallet.
-        perWalletModelDataReborn.getWallet().decrypt(keyCrypter, perWalletModelDataReborn.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getKeyCrypter(), perWalletModelDataReborn.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
 
         // Get the keys out the reborn wallet and check that all the keys match.
         Collection<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
@@ -360,7 +365,7 @@ public class FileHandlerTest extends TestCase {
 
         KeyCrypter testKeyCrypter = new KeyCrypterScrypt();
         
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), EncryptionType.ENCRYPTED_SCRYPT_AES, testKeyCrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testKeyCrypter);
         ECKey newKey = new ECKey();
         newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
@@ -419,7 +424,7 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), EncryptionType.ENCRYPTED_SCRYPT_AES, testKeyCrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testKeyCrypter);
         ECKey newKey = new ECKey();
         newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);

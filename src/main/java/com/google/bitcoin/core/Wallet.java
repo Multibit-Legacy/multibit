@@ -221,23 +221,18 @@ public class Wallet implements Serializable, IsMultiBitClass {
     private transient HashSet<Sha256Hash> ignoreNextNewBlock;
 
     /**
-     * The type of encryption used in the wallet.
-     */
-    private EncryptionType encryptionType;
-
-    /**
-     * The keyCrypter for the wallet.
+     * The keyCrypter for the wallet. This specifies the algorithm used for encrypting and decrypting the private keys.
      */
     private KeyCrypter keyCrypter;
 
     /**
-     * The wallet version. This is an ordinal used to detect breaking changes
+     * The wallet version. This is an ordinal used to detect breaking changes.
      * in the wallet format.
      */
     WalletVersion version;
 
     /**
-     * A description for the wallet
+     * A description for the wallet.
      */
     String description;
 
@@ -246,7 +241,16 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * see loadFromFile.
      */
     public Wallet(NetworkParameters params) {
+        this(params, null);
+    }
+
+    /**
+     * Create a wallet with a keyCrypter to use in encrypting and decrypting keys.
+     */
+    public Wallet(NetworkParameters params, KeyCrypter keyCrypter) {
         this.params = params;
+        this.keyCrypter = keyCrypter;
+
         keychain = new ArrayList<ECKey>();
         unspent = new HashMap<Sha256Hash, Transaction>();
         spent = new HashMap<Sha256Hash, Transaction>();
@@ -254,17 +258,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
         pending = new HashMap<Sha256Hash, Transaction>();
         dead = new HashMap<Sha256Hash, Transaction>();
         createTransientState();
-        
-        encryptionType = EncryptionType.UNENCRYPTED;
-    }
-
-    /**
-     * Create a wallet with a specified EncryptionType (e.g. Scrypt + AES) and a keyCrypter to use in encrypting keys.
-     */
-    public Wallet(NetworkParameters params, EncryptionType encryptionType, KeyCrypter keyCrypter) {
-        this(params);
-        this.encryptionType = encryptionType;
-        this.keyCrypter = keyCrypter;
     }
 
     private void createTransientState() {
@@ -1542,9 +1535,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
             // If the key has a keyCrypter that does not match the Wallet's then a KeyCrypterException is thrown.
             // This is done because only one keyCrypter is persisted per Wallet and hence all the keys must be homogenous.
-            if (getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES &&
-                    (key.getKeyCrypter() == null || !key.getKeyCrypter().equals(getKeyCrypter()))) {
-                throw new KeyCrypterException("Cannot add key " + key.toString() + " because the keyCrypter does not match the wallets");
+            if (keyCrypter != null && keyCrypter.getEncryptionType() != EncryptionType.UNENCRYPTED &&
+                    !keyCrypter.equals(key.getKeyCrypter())) {
+                throw new KeyCrypterException("Cannot add key " + key.toString() + " because the keyCrypter does not match the wallets. Keys must be homogenous.");
             }
 
             keychain.add(key);
@@ -2230,17 +2223,21 @@ public class Wallet implements Serializable, IsMultiBitClass {
     /**
      * Encrypt the wallet using the KeyCrypter and the AES key.
      * @param keyCrypter The KeyCrypter that specifies how to encrypt/ decrypt a key
-     * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey)
+     * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
      * @throws KeyCrypterException 
      */
     synchronized public void encrypt(KeyCrypter keyCrypter, KeyParameter aesKey) throws KeyCrypterException {
-        if (getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (keyCrypter == null) {
+            throw new KeyCrypterException("A keyCrypter must be specified to encrypt a wallet.");
+        }
+        
+        /**
+         * If the wallet is already encrypted then you cannot encrypt it again.
+         */
+        if (this.keyCrypter != null && this.keyCrypter.getEncryptionType() != EncryptionType.UNENCRYPTED) {
             throw new WalletIsAlreadyEncryptedException("Wallet is already encrypted");
         }
 
-        // TODO check if keyCrypter already set - can be identical.
-        this.keyCrypter = keyCrypter;
-        
         // Create a new arraylist that will contain the encrypted keys
         ArrayList<ECKey> encryptedKeyChain = new ArrayList<ECKey>();
 
@@ -2259,25 +2256,31 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
         // Replace the old keychain with the encrypted one.
         keychain = encryptedKeyChain;
-        encryptionType = EncryptionType.ENCRYPTED_SCRYPT_AES;
+        
+        // The wallet is now encrypted.
+        this.keyCrypter = keyCrypter;
     }
 
     /**
      * Decrypt the wallet with the keyCrypter and AES key.
      * 
      * @param keyCrypter The KeyCrypter that specifies how to encrypt/ decrypt a key
-     * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey)
+    * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
      * @throws KeyCrypterException 
      */
     synchronized public void decrypt(KeyCrypter keyCrypter, KeyParameter aesKey) throws KeyCrypterException {
-        if (getEncryptionType() == EncryptionType.UNENCRYPTED) {
+        // Check the wallet is already encrypted - you cannot decrypt an unencrypted wallet.
+        if (this.keyCrypter == null || this.keyCrypter.getEncryptionType() == EncryptionType.UNENCRYPTED) {
             throw new WalletIsAlreadyDecryptedException("Wallet is already decrypted");
         }
 
-       // TODO check if keyCrypter already set - can be identical.
-        this.keyCrypter = keyCrypter;
-
-         // Create a new arraylist that will contain the decrypted keys
+        // Check that this.keyCrypter is identical to the one passed in otherwise there is risk of data loss.
+        // (This is trying to decrypt a wallet with a different algorithm to that used to encrypt it.)
+        if (!keyCrypter.equals(this.keyCrypter)) {
+            throw new KeyCrypterException("You are trying to decrypt a wallet with a different keyCrypter to the one used to encrypt it. Aborting.");
+        }
+        
+        // Create a new arraylist that will contain the decrypted keys
         ArrayList<ECKey> decryptedKeyChain = new ArrayList<ECKey>();
 
         for (ECKey key : keychain) {
@@ -2295,7 +2298,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
         // Replace the old keychain with the unencrypted one.
         keychain = decryptedKeyChain;
-        encryptionType = EncryptionType.UNENCRYPTED;
+        
+        // The wallet is now unencrypted.
+        this.keyCrypter = null;
     }
 
     /**
@@ -2341,18 +2346,30 @@ public class Wallet implements Serializable, IsMultiBitClass {
         return false;
     }
 
-    public EncryptionType getEncryptionType() {
-        return encryptionType;
-    }
-
     /**
      * Get the wallet's KeyCrypter.
-     * (Typically used in encrypting/ decrypting an ECKey).
+     * (Used in encrypting/ decrypting an ECKey).
      */
     public KeyCrypter getKeyCrypter() {
         return keyCrypter;
     }
+    
+    /**
+     * Get the type of encryption used for this wallet.
+     */
+    public EncryptionType getEncryptionType() {
+        if (keyCrypter == null) {
+            // Unencrypted wallet.
+            return EncryptionType.UNENCRYPTED;
+        } else {
+            return keyCrypter.getEncryptionType();
+        }
+    }
 
+    /**
+     * Get the wallet version number.
+     * (This version number increases whenever the wallet format has a breaking change.)
+     */
     public WalletVersion getVersion() {
         return version;
     }
@@ -2361,9 +2378,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
         this.version = version;
     }
 
+
     /**
      * Set the text decription of the Wallet.
-     * This is persisted in the wallet protobuf.
+     * (This is persisted in the wallet protobuf.)
      */
     public void setDescription(String description) {
         this.description = description;

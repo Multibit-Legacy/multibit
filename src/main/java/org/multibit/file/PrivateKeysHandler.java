@@ -272,7 +272,7 @@ public class PrivateKeysHandler {
             if (wallet != null) {
                 if (walletPassword != null && walletPassword.length > 0) {
                     // Wallet keys need to be decrypted before output.
-                    if (wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+                    if (wallet.getEncryptionType() != EncryptionType.UNENCRYPTED) {
                         decryptionRequired = true;
                     }
                 }

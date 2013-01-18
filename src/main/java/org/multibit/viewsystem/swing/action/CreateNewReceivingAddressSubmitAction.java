@@ -97,31 +97,29 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean encryptNewKeys = false;
         
-        if (controller.getModel().getActiveWallet() != null) {
-            if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
-                if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
-                    // User needs to enter password.
-                    createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
-                            "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
-                    return;
-                }
-                encryptNewKeys = true;
+        if (controller.getModel().getActiveWallet() != null
+                && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+            if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
+                // User needs to enter password.
+                createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
+                        "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                return;
+            }
+            encryptNewKeys = true;
 
-                try {
-                    if (!controller.getModel().getActiveWallet()
-                            .checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
-                        // The password supplied is incorrect.
-                        createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
-                                "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                        return;
-                    }
-                } catch (KeyCrypterException ede) {
-                    log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
-                    // The password supplied is probably incorrect.
+            try {
+                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                    // The password supplied is incorrect.
                     createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
                             "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                     return;
                 }
+            } catch (KeyCrypterException ede) {
+                log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
+                // The password supplied is probably incorrect.
+                createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
+                        "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                return;
             }
         }
 

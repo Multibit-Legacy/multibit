@@ -112,32 +112,34 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         }
 
         // See if a wallet password is required and present.
-        if (controller.getModel().getActiveWallet() != null
-                && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
-            if (walletPasswordField.getPassword() == null || walletPasswordField.getPassword().length == 0) {
-                importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
-                        "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
-                importPrivateKeysPanel.setMessageText2(" ");
-                return;
-            }
+        if (controller.getModel().getActiveWallet() != null) {
+            KeyCrypter keyCrypter = controller.getModel().getActiveWallet().getKeyCrypter();
+            if (keyCrypter != null && keyCrypter.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+                if (walletPasswordField.getPassword() == null || walletPasswordField.getPassword().length == 0) {
+                    importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
+                            "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                    importPrivateKeysPanel.setMessageText2(" ");
+                    return;
+                }
 
-            try {
-                // See if the password is the correct wallet password.
-                if (!controller.getModel().getActiveWallet()
-                        .checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
-                    // The password supplied is incorrect.
+                try {
+                    // See if the password is the correct wallet password.
+                    if (!controller.getModel().getActiveWallet()
+                            .checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
+                        // The password supplied is incorrect.
+                        importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
+                                "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                        importPrivateKeysPanel.setMessageText2(" ");
+                        return;
+                    }
+                } catch (KeyCrypterException ede) {
+                    log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
+                    // The password supplied is probably incorrect.
                     importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                             "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                     importPrivateKeysPanel.setMessageText2(" ");
                     return;
                 }
-            } catch (KeyCrypterException ede) {
-                log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
-                // The password supplied is probably incorrect.
-                importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
-                        "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                importPrivateKeysPanel.setMessageText2(" ");
-                return;
             }
         }
 
@@ -253,9 +255,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     Collection<byte[]> unencryptedWalletPrivateKeys = new ArrayList<byte[]>();
                     Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
 
-                    // Work out if the keys need to be encrypted when added to
-                    // the wallet.
-                    if (finalPerWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+                    if (walletToAddKeysTo.getEncryptionType() != EncryptionType.UNENCRYPTED) {
                         keyEncryptionRequired = true;
                     }
 

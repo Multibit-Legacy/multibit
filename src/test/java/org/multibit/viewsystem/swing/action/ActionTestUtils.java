@@ -61,7 +61,7 @@ public class ActionTestUtils {
 
          Wallet wallet;
          if (encrypt) {
-             wallet = new Wallet(NetworkParameters.prodNet(), EncryptionType.ENCRYPTED_SCRYPT_AES, keyCrypter);
+             wallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
              ECKey ecKey = new ECKey();
              ecKey.encrypt(keyCrypter, keyCrypter.deriveKey(walletPassword));
              wallet.addKey(ecKey);

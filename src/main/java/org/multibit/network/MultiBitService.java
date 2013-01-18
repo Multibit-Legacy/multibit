@@ -33,6 +33,7 @@ import java.util.Stack;
 
 import javax.swing.SwingWorker;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandlerException;
@@ -57,7 +58,6 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -65,16 +65,9 @@ import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
-import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
-import com.google.protobuf.ByteString;
-
-import org.bitcoinj.wallet.Protos;
-import org.bitcoinj.wallet.Protos.ScryptParameters;
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
  * <p>
@@ -552,12 +545,8 @@ public class MultiBitService {
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
         KeyParameter aesKey = null;
-        if (perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
-            if (perWalletModelData.getWallet().getKeyCrypter() == null) {
-                throw new KeyCrypterException("The wallet is of type ENCRYPTED_SCRYPT_AES but there is no EncrypterDecrypter to use.");
-            } else {
-                aesKey = perWalletModelData.getWallet().getKeyCrypter().deriveKey(password);
-            }
+        if (perWalletModelData.getWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
+            aesKey = perWalletModelData.getWallet().getKeyCrypter().deriveKey(password);
         }
         Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
                 Utils.toNanoCoins(amount), fee, aesKey);

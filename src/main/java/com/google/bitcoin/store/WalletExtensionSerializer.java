@@ -38,8 +38,8 @@ public class WalletExtensionSerializer implements IsMultiBitClass {
         return new Wallet(params);
     }
 
-    public Wallet newWallet(NetworkParameters params, EncryptionType encryptionType, KeyCrypter keyCrypter) {
-        return new Wallet(params, encryptionType, keyCrypter);
+    public Wallet newWallet(NetworkParameters params, KeyCrypter keyCrypter) {
+        return new Wallet(params, keyCrypter);
     }
 
     public void readExtension(Wallet wallet, Protos.Extension extProto) {

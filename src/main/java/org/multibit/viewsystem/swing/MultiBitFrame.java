@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -56,6 +55,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.text.DefaultEditorKit;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
@@ -81,16 +81,15 @@ import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
@@ -103,8 +102,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
-
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import com.google.bitcoin.crypto.KeyCrypter;
 
 /*
  * JFrame displaying Swing version of MultiBit

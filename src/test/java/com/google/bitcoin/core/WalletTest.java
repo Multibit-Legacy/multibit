@@ -81,7 +81,7 @@ public class WalletTest {
         keyCrypter = new KeyCrypterScrypt(scryptParameters);
 
         wallet = new Wallet(params);
-        encryptedWallet = new Wallet(params, EncryptionType.ENCRYPTED_SCRYPT_AES, keyCrypter);
+        encryptedWallet = new Wallet(params, keyCrypter);
 
         aesKey = keyCrypter.deriveKey(PASSWORD1);
         wrongAesKey = keyCrypter.deriveKey(WRONG_PASSWORD);
