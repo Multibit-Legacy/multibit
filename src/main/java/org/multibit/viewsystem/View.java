@@ -70,5 +70,49 @@ public enum View {
         return OBSOLETE.contains(this);
     }
     
+    /**
+     * Finds the view from the old view name system.
+     * @param viewNumber
+     * @return view, or null if no view found
+     * @deprecated (this feature may be removed in a future release)
+     */
+    @Deprecated
+    public static View parseOldView(Integer viewNumber)
+    {
+        if (null == viewNumber) {
+            return null;
+        }
+        
+        switch (viewNumber) {
+            case 1  : return TRANSACTIONS_VIEW;
+            case 2  : return SEND_BITCOIN_VIEW;
+          //case 3  : return SEND_BITCOIN_CONFIRM_VIEW; (obsolete)
+            case 4  : return RECEIVE_BITCOIN_VIEW;
+            case 5  : return HELP_CONTENTS_VIEW;
+            case 6  : return HELP_ABOUT_VIEW;
+            case 7  : return PREFERENCES_VIEW;
+          //case 8  : return OPEN_WALLET_VIEW; (obsolete)
+          //case 9  : return SAVE_WALLET_AS_VIEW; (obsolete)
+          //case 10 : return VALIDATION_ERROR_VIEW; (obsolete)
+            case 11 : return YOUR_WALLETS_VIEW;
+          //case 12 : return CREATE_BULK_ADDRESSES_VIEW;  (obsolete)
+            case 13 : return RESET_TRANSACTIONS_VIEW;
+            case 14 : return SHOW_OPEN_URI_DIALOG_VIEW;
+            case 15 : return SHOW_IMPORT_PRIVATE_KEYS_VIEW;
+            case 16 : return SHOW_EXPORT_PRIVATE_KEYS_VIEW;
+            case 17 : return WELCOME_VIEW;
+            case 18 : return MESSAGES_VIEW;
+            case 19 : return ADD_PASSWORD_VIEW;
+            case 20 : return CHANGE_PASSWORD_VIEW;
+            case 21 : return REMOVE_PASSWORD_VIEW;
+            case 22 : return CHARTS_VIEW;
+                
+            case 3 : case 8 : case 9 : case 10 : case 12 :
+                return TRANSACTIONS_VIEW;
+                
+            default : return null;
+        }
+    }
+    
 
 }

@@ -249,33 +249,47 @@ public class MultiBitModel {
 
         // Initialize everything to look at the stored opened view.
         // If no properties passed in just initialize to the default view.
-        // We will ignore the old SELECTED_VIEW string.
-        
+
         if (userPreferences != null) {
-            String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW_ENUM);
-            if (viewString != null) {
 
-                View initialViewInProperties = null;
+            // first try and find a old view setting.
+            View initialViewInProperties = null;
+            Object oldViewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW);
+
+            String oldViewString = (null != oldViewObject) ? (String) oldViewObject : null;
+
+            if (null != oldViewString) {
+                Integer oldViewInt = null;
                 try {
-                    View view = View.valueOf(viewString);
-                    
-                    // Do not open obsolete views.
-                    if (!view.isObsolete()) {
-                        initialViewInProperties = view;
-                    }
-
-                } catch (IllegalArgumentException nfe) {
-                    // do nothing.
+                    oldViewInt = Integer.parseInt(oldViewString);
+                } catch (NumberFormatException nfe) {
+                    // do nothing
                 } finally {
-                    View initialView = null != initialViewInProperties ? initialViewInProperties : View.DEFAULT_VIEW();
-
-                    setCurrentView(initialView);
-                    log.debug("Initial view from properties file is '" + getCurrentView().toString() + "'");
+                    initialViewInProperties = View.parseOldView(oldViewInt);
+                    // reset the old view property to an empty string.
+                    userPreferences.setProperty(MultiBitModel.SELECTED_VIEW, "");
                 }
             }
+
+            // if oldViewInProperties is still null, lest try and find the view.
+            if (null == initialViewInProperties) {
+                Object viewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW_ENUM);
+
+                String viewString = (null != viewObject) ? (String) viewObject : null;
+
+                if (viewString != null) {
+                    try {
+                        View viewEnum = View.valueOf(viewString);
+                        initialViewInProperties = (!viewEnum.isObsolete()) ? viewEnum : null;
+
+                    } catch (IllegalArgumentException nfe) {
+                        // do nothing.
+                    }
+                }
+            }
+            setCurrentView((null != initialViewInProperties) ? initialViewInProperties : View.DEFAULT_VIEW());
+            log.debug("Initial view from properties file is '" + getCurrentView().toString() + "'");
         }
-
-
 
         controller.setModel(this);
     }
@@ -823,7 +837,7 @@ public class MultiBitModel {
         return currentView;
     }
 
-    public void setCurrentView(View view) {
+    public final void setCurrentView(View view) {
         this.currentView = view;
         setUserPreference(MultiBitModel.SELECTED_VIEW_ENUM, view.name());
     }
