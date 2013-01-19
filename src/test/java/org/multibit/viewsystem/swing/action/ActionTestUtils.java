@@ -6,23 +6,21 @@ import java.util.Locale;
 
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
-
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletVersion;
+import org.multibit.store.MultiBitWalletVersion;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
 
 /**
@@ -79,7 +77,7 @@ public class ActionTestUtils {
          String walletFile = multiBitDirectoryPath + File.separator + descriptor + ".wallet";
          
          // Put the wallet in the model as the active wallet.
-         perWalletModelData.setWalletInfo(new WalletInfo(walletFile, WalletVersion.PROTOBUF_ENCRYPTED));
+         perWalletModelData.setWalletInfo(new WalletInfo(walletFile, MultiBitWalletVersion.PROTOBUF_ENCRYPTED));
          perWalletModelData.setWalletFilename(walletFile);
          perWalletModelData.setWalletDescription(descriptor);
          

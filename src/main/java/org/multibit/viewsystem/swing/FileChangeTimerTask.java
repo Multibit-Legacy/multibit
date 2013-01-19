@@ -23,10 +23,9 @@ import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.bitcoin.core.WalletVersionException;
 
 /**
  * TimerTask to detect whether wallet files have been changed by some external

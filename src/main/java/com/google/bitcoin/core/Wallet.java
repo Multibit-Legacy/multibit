@@ -53,6 +53,7 @@ import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
 import org.multibit.store.MultiBitWalletProtobufSerializer;
+import org.multibit.store.MultiBitWalletVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -229,7 +230,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
     /**
      * The wallet version. This is an ordinal used to detect breaking changes in the wallet format.
      */
-    WalletVersion version;
+    MultiBitWalletVersion version;
 
     /**
      * A description for the wallet. This is persisted in the wallet file.
@@ -2267,7 +2268,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Check that it is possible to decrypt the key with the keyCrypter and that the original key is returned.
      * This is done to avoid the possibility of data loss due to a faulty keyCrypter.
      * 
-     * @throws KeyCrypterException An exception is thrown if the encryptedKEy cannot be decrypted back to the original
+     * @throws KeyCrypterException An exception is thrown if the encryptedKey cannot be decrypted back to the original
      */
     private void checkEncryptionIsReversible(ECKey originalKey, ECKey encryptedKey, KeyCrypter keyCrypter, KeyParameter aesKey) throws KeyCrypterException { 
         String genericErrorText = "The check that encryption could be reversed failed for key " + originalKey.toString() + ". ";
@@ -2335,9 +2336,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      *  Check whether the password can decrypt the first key in the wallet.
-     *  @throws KeyCrypterException 
-     *
-     *  @returns boolean True if password supplied can decrypt the first private key in the wallet, false otherwise.
+     *  This can be used to check the validity of an entered password.
+     *  
+     *  @throws KeyCrypterException An exception is thrown if the AES key could not be derived from the password.
+     *  @returns boolean true if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
     public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) throws KeyCrypterException {
         if (keyCrypter == null) {
@@ -2349,9 +2351,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      *  Check whether the AES key can decrypt the first key in the wallet.
-     *  This can be used to check the validity of an entered password.
      *
-     *  @returns boolean True if AES key supplied can decrypt the first private key in the wallet, false otherwise.
+     *  @returns boolean true if AES key supplied can decrypt the first private key in the wallet, false otherwise.
      */
     public boolean checkAESKeyCanDecryptFirstPrivateKey(KeyParameter aesKey) {
         if (getKeychain() == null || getKeychain().size() == 0) {
@@ -2386,6 +2387,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
     
     /**
      * Get the type of encryption used for this wallet.
+     * 
+     * (This is a convenience method - the encryption type is actually stored in the keyCrypter).
      */
     public EncryptionType getEncryptionType() {
         if (keyCrypter == null) {
@@ -2396,21 +2399,14 @@ public class Wallet implements Serializable, IsMultiBitClass {
         }
     }
 
-    /**
-     * Get the wallet version number.
-     */
-    public WalletVersion getVersion() {
+    public MultiBitWalletVersion getVersion() {
         return version;
     }
 
-    public void setVersion(WalletVersion version) {
+    public void setVersion(MultiBitWalletVersion version) {
         this.version = version;
     }
 
-
-    /**
-     * Set the text decription of the Wallet.
-     */
     public void setDescription(String description) {
         this.description = description;
     }

@@ -27,13 +27,10 @@ import javax.swing.SwingUtilities;
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import com.google.bitcoin.core.WalletVersion;
+import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +38,9 @@ import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
 
 /**
@@ -105,7 +105,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
         if (wallet != null) {
             if (controller.getModel().getActiveWalletWalletInfo() != null) {
                 // Only an unencrypted protobuf wallet can have a password added to it.
-                if (controller.getModel().getActiveWalletWalletInfo().getWalletVersion() != WalletVersion.PROTOBUF) {
+                if (controller.getModel().getActiveWalletWalletInfo().getWalletVersion() != MultiBitWalletVersion.PROTOBUF) {
                     addPasswordPanel.setMessage1(controller.getLocaliser().getString(
                             "addPasswordPanel.addPasswordFailed", new String[]{"Wallet is not protobuf.2"}));
                     return;
@@ -135,8 +135,8 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                         keyCrypterToUse = wallet.getKeyCrypter();
                     }
 
-                    wallet.encrypt(keyCrypterToUse, wallet.getKeyCrypter().deriveKey(passwordToUse));
-                    controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF_ENCRYPTED);
+                    wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(passwordToUse));
+                    controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
                     controller.getModel().getActivePerWalletModelData().setDirty(true);
                     FileHandler fileHandler = new FileHandler(controller);
                     fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);

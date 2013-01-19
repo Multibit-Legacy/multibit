@@ -44,7 +44,9 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletInfo;
+import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.ReplayableBlockStore;
+import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -63,8 +65,6 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletVersion;
-import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
@@ -313,7 +313,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
                 // Create a wallet info.
-                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletVersion.PROTOBUF);
+                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), MultiBitWalletVersion.PROTOBUF);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // Set a default description.

@@ -30,13 +30,13 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
-import com.google.bitcoin.core.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletVersion;
+import org.multibit.store.MultiBitWalletVersion;
+import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
 import org.slf4j.Logger;
@@ -153,7 +153,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);
                 PerWalletModelData perWalletModelData = new PerWalletModelData();
-                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF));
+                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, MultiBitWalletVersion.PROTOBUF));
                 perWalletModelData.setWallet(newWallet);
                 perWalletModelData.setWalletFilename(newWalletFilename);
                 perWalletModelData.setWalletDescription(controller.getLocaliser().getString(

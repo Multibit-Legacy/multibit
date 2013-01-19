@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
@@ -117,8 +118,9 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                 controller.fireWalletBusyChange(true);
 
                 boolean decryptSuccess = false;
+                KeyCrypter keyCrypterToUse = wallet.getKeyCrypter();
                 try {
-                    wallet.decrypt(wallet.getKeyCrypter(), wallet.getKeyCrypter().deriveKey(currentPasswordToUse));
+                    wallet.decrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(currentPasswordToUse));
                     decryptSuccess = true;
                 } catch (KeyCrypterException kce) {
                     // Notify the user that the decrypt failed.
@@ -135,7 +137,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
 
                 if (decryptSuccess) {
                     try {
-                        wallet.encrypt(wallet.getKeyCrypter(), wallet.getKeyCrypter().deriveKey(newPasswordToUse));
+                        wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(newPasswordToUse));
                         FileHandler fileHandler = new FileHandler(controller);
                         fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
                         

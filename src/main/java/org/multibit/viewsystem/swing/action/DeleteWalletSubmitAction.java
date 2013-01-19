@@ -15,10 +15,10 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.util.List;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -28,10 +28,10 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
-import com.google.bitcoin.core.WalletVersionException;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import com.google.bitcoin.core.WalletVersion;
+import org.multibit.store.MultiBitWalletVersion;
+import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,13 +142,13 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         boolean newWalletCreated = false;
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         
-        WalletVersion walletMajorVersion = perWalletModelData.getWalletInfo().getWalletVersion();
+        MultiBitWalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
         String backupFilename = perWalletModelData.getWalletInfo().getProperty(MultiBitModel.WALLET_BACKUP_FILE);
 
         newWalletCreated = deleteWallet(controller.getModel().getActivePerWalletModelData());
     
         if (backupFilename != null && !"".equals(backupFilename)) {
-            if (WalletVersion.PROTOBUF == walletMajorVersion || WalletVersion.PROTOBUF_ENCRYPTED == walletMajorVersion) {
+            if (MultiBitWalletVersion.PROTOBUF == walletVersion || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletVersion) {
 
                 // Delete the backupFile unless the user has manually opened it.
                 boolean userHasOpenedBackupFile = false;

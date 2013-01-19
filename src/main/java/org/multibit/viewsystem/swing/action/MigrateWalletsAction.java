@@ -40,26 +40,25 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
-import com.google.bitcoin.core.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import com.google.bitcoin.core.WalletVersion;
+import org.multibit.store.MultiBitWalletVersion;
+import org.multibit.store.WalletVersionException;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.VersionComparator;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet.BalanceType;
-
 /**
  * This {@link Action} migrates wallets from serialised to protobuf formats
  */
@@ -278,8 +277,8 @@ public class MigrateWalletsAction extends AbstractAction {
         PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
         
         // Change wallet to protobuf.
-        perWalletModelData.getWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
-        perWalletModelData.getWallet().setVersion(WalletVersion.PROTOBUF);
+        perWalletModelData.getWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
+        perWalletModelData.getWallet().setVersion(MultiBitWalletVersion.PROTOBUF);
         
         // Try to save it. This should save it in protobuf format
         fileHandler.savePerWalletModelData(perWalletModelData, true);
@@ -292,7 +291,7 @@ public class MigrateWalletsAction extends AbstractAction {
         }
         
         // The new wallet should be protobuf.
-        if (WalletVersion.PROTOBUF != protobuf.getWalletInfo().getWalletVersion()) {
+        if (MultiBitWalletVersion.PROTOBUF != protobuf.getWalletInfo().getWalletVersion()) {
             return controller.getLocaliser().getString("migrateWalletsAction.theWalletWasStillSerialised");
         }
         
@@ -379,7 +378,7 @@ public class MigrateWalletsAction extends AbstractAction {
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             // Is it a serialized wallet ?
             if (loopPerWalletModelData.getWalletInfo() != null) {
-                if (WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
+                if (MultiBitWalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
                     // Have we already tried to migrate it with this version of MultiBit and failed ?
                     String lastMigrateVersion = loopPerWalletModelData.getWalletInfo().getProperty(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
                     VersionComparator versionComparator = new VersionComparator();

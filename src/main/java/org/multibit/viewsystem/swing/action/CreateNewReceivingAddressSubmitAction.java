@@ -25,9 +25,8 @@ import javax.swing.Action;
 import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -37,7 +36,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletVersion;
+import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
 import org.multibit.viewsystem.swing.view.panels.CreateNewReceivingAddressPanel;
@@ -46,7 +45,8 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.ECKey;
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} represents an action to actually create receiving
@@ -125,7 +125,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
         

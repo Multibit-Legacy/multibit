@@ -23,17 +23,17 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import com.google.bitcoin.core.WalletVersion;
+import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} action removes the encryption of private keys in a wallet.
@@ -94,7 +94,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                             controller.fireWalletBusyChange(true);
 
                             wallet.decrypt(wallet.getKeyCrypter(), wallet.getKeyCrypter().deriveKey(passwordToUse));
-                            controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
+                            controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
                             controller.getModel().getActivePerWalletModelData().setDirty(true);
                             FileHandler fileHandler = new FileHandler(controller);
                             fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);

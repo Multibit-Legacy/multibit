@@ -70,6 +70,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.platform.GenericApplication;
+import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
@@ -101,8 +102,6 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletVersion;
-import com.google.bitcoin.crypto.KeyCrypter;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -1119,7 +1118,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     removePasswordAction.setEnabled(true);
                 } else {
                     if (controller.getModel().getActiveWalletWalletInfo() == null ||
-                            controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == WalletVersion.SERIALIZED) {
+                            controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == MultiBitWalletVersion.SERIALIZED) {
                         addPasswordAction.setEnabled(false);
                     } else {
                         addPasswordAction.setEnabled(true);

@@ -35,9 +35,9 @@ import java.util.StringTokenizer;
 
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
+import org.multibit.store.MultiBitWalletVersion;
+import org.multibit.store.WalletVersionException;
 
-import com.google.bitcoin.core.WalletVersion;
-import com.google.bitcoin.core.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public class WalletInfo {
     public static final String DATE_LAST_MODIFED_PROPERTY = "walletLastModified";
 
     private String walletFilename;
-    private WalletVersion walletVersion;
+    private MultiBitWalletVersion walletVersion;
 
     private Properties walletPreferences;
     
@@ -101,7 +101,7 @@ public class WalletInfo {
      * @param walletFilename
      *            the filename for the wallet this is the info for
      */
-    public WalletInfo(String walletFilename, WalletVersion walletVersion) {
+    public WalletInfo(String walletFilename, MultiBitWalletVersion walletVersion) {
         this.walletFilename = walletFilename;
         this.walletVersion = walletVersion;
 
@@ -295,7 +295,7 @@ public class WalletInfo {
      * @throws WalletSaveException
      *             Exception if write is unsuccessful
      */
-    public void writeToFile(String walletInfoFilename, WalletVersion walletVersion) throws WalletSaveException {
+    public void writeToFile(String walletInfoFilename, MultiBitWalletVersion walletVersion) throws WalletSaveException {
         BufferedWriter out = null;
         try {
             // We write out the union of the candidate and actual receiving addresses.
@@ -412,21 +412,21 @@ public class WalletInfo {
                 String walletVersionMarker = walletVersionTokenizer.nextToken();
                 String walletVersionString = walletVersionTokenizer.nextToken();
                 if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) 
-                                || !(WalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString) 
-                                || WalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString)
-                                || WalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionString().equals(walletVersionString))) {
+                                || !(MultiBitWalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString) 
+                                || MultiBitWalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString)
+                                || MultiBitWalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionString().equals(walletVersionString))) {
                     // This refers to a version of the wallet we do not know about.
                     throw new WalletVersionException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
                 } else {
                     // The wallet version passed in the file is used rather than the value in the constructor
                     if (!walletVersion.getWalletVersionString().equals(walletVersionString)) {
                         log.debug("The wallet version in the constructor was '" + walletVersion + "'. In the wallet info file it was '" + walletVersionString + "'. Using the latter.");
-                        if (WalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString)) {
-                            walletVersion = WalletVersion.SERIALIZED;
-                        } else if (WalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString)) {
-                            walletVersion = WalletVersion.PROTOBUF;
-                        }  else if (WalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionString().equals(walletVersionString)) {
-                            walletVersion = WalletVersion.PROTOBUF_ENCRYPTED;
+                        if (MultiBitWalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString)) {
+                            walletVersion = MultiBitWalletVersion.SERIALIZED;
+                        } else if (MultiBitWalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString)) {
+                            walletVersion = MultiBitWalletVersion.PROTOBUF;
+                        }  else if (MultiBitWalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionString().equals(walletVersionString)) {
+                            walletVersion = MultiBitWalletVersion.PROTOBUF_ENCRYPTED;
                         }
                     }
                 }
@@ -637,11 +637,11 @@ public class WalletInfo {
         return walletFilename;
     }
 
-    public WalletVersion getWalletVersion() {
+    public MultiBitWalletVersion getWalletVersion() {
         return walletVersion;
     }
 
-    public void setWalletVersion(WalletVersion walletVersion) {
+    public void setWalletVersion(MultiBitWalletVersion walletVersion) {
         this.walletVersion = walletVersion;
     }
 }

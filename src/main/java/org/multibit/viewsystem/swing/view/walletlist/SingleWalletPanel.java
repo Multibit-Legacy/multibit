@@ -48,6 +48,7 @@ import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -62,7 +63,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.core.WalletVersion;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
@@ -640,7 +640,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
     
             if (walletFormatButton != null) {
-                WalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
+                MultiBitWalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
                 if (walletVersion != null) {
                     walletFormatButton.setText(controller.getLocaliser().getString(walletVersion.getLocalisationKey()));
                 }
@@ -738,7 +738,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         innerDetailPanel.add(walletFilenameLabel, constraints);
 
-        WalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
+        MultiBitWalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
         
         Action walletFormatHelpAction = new HelpContextAction(controller, null, walletVersion.getLocalisationKey(),
                 walletVersion.getLocalisationKey(), walletVersion.getLocalisationKey(), HelpContentsPanel.HELP_WALLET_FORMATS_URL);

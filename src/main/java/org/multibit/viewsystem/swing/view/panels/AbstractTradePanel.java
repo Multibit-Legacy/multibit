@@ -83,6 +83,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.QRCodeGenerator;
+import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
@@ -94,6 +95,7 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.action.ZoomAction;
+import org.multibit.viewsystem.swing.view.ImageSelection;
 import org.multibit.viewsystem.swing.view.components.DashedBorder;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
@@ -101,14 +103,12 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.uri.BitcoinURI;
-import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
-import org.multibit.viewsystem.swing.view.ImageSelection;
 
 /**
  * Abstract parent class for SendBitcoinPanel and ReceiveBitcoinPanel
@@ -1435,7 +1435,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
             WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
                 controller.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);

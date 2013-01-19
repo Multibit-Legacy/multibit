@@ -34,8 +34,8 @@ import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletVersion;
 import org.multibit.network.MultiBitService;
+import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +115,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
             miningWallet.keychain.add(miningPrivateKey.getKey());
             PerWalletModelData perWalletModelData = new PerWalletModelData();
-            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath, WalletVersion.PROTOBUF));
+            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath, MultiBitWalletVersion.PROTOBUF));
             perWalletModelData.setWallet(miningWallet);
             perWalletModelData.setWalletFilename(miningWalletPath);
             perWalletModelData.setWalletDescription("testReplayMiningTransaction test");
