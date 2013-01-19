@@ -58,12 +58,13 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.Viewable;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Utils;
 
-public class SendBitcoinPanel extends AbstractTradePanel implements View {
+public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
     private static final long serialVersionUID = -2065108865497111662L;
 
@@ -480,7 +481,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.SEND_BITCOIN_VIEW;
     }
     
