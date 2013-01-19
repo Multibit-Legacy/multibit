@@ -77,7 +77,7 @@ public class PrivateKeysHandler {
     private NetworkParameters networkParameters;
     private static final String SEPARATOR = " ";
 
-    private KeyCrypterOpenSSL encrypterDecrypter;
+    private KeyCrypterOpenSSL keyCrypter;
 
     public PrivateKeysHandler(NetworkParameters networkParameters) {
         // Date format is UTC with century, T time separator and Z for UTC timezone.
@@ -89,7 +89,7 @@ public class PrivateKeysHandler {
         }
         this.networkParameters = networkParameters;
 
-        encrypterDecrypter = new KeyCrypterOpenSSL();
+        keyCrypter = new KeyCrypterOpenSSL();
     }
 
     public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile, char[] exportPassword, char[] walletPassword)
@@ -219,7 +219,7 @@ public class PrivateKeysHandler {
             // Read in the file.
             String importFileContents = readFile(importFile);
 
-            if (importFileContents != null && importFileContents.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
+            if (importFileContents != null && importFileContents.startsWith(keyCrypter.getOpenSSLMagicText())) {
                 // Decryption required.
                 KeyCrypterOpenSSL keyCrypter = new KeyCrypterOpenSSL();
                 importFileContents = keyCrypter.decrypt(importFileContents, password);
@@ -270,11 +270,9 @@ public class PrivateKeysHandler {
 
         synchronized (keychain) {
             if (wallet != null) {
-                if (walletPassword != null && walletPassword.length > 0) {
-                    // Wallet keys need to be decrypted before output.
-                    if (wallet.getEncryptionType() != EncryptionType.UNENCRYPTED) {
-                        decryptionRequired = true;
-                    }
+                // Wallet keys need to be decrypted before output.
+                if (wallet.getEncryptionType() != EncryptionType.UNENCRYPTED) {
+                    decryptionRequired = true;
                 }
             }
 
@@ -358,8 +356,7 @@ public class PrivateKeysHandler {
                     }
                     if (decryptionRequired) {
                         // Create a new decrypted key holding the private key.
-                        ECKey decryptedKey = new ECKey(walletKeyCrypter.decrypt(ecKey.getEncryptedPrivateKey(),
-                                aesKey), ecKey.getPubKey());
+                        ECKey decryptedKey = ecKey.decrypt(walletKeyCrypter, aesKey);
                         keyAndDates.add(new PrivateKeyAndDate(decryptedKey, earliestUsageDate));
                     } else {
                         keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));

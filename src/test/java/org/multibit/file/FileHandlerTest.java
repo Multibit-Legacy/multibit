@@ -263,7 +263,7 @@ public class FileHandlerTest extends TestCase {
         System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes1, 0, 32);
         System.out.println("EncryptableECKeyTest - Original private key 1 = " + Utils.bytesToHexString(originalPrivateKeyBytes1));
  
-        newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
 
         newKey = new ECKey();
@@ -272,7 +272,7 @@ public class FileHandlerTest extends TestCase {
         System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes2, 0, 32);
         System.out.println("EncryptableECKeyTest - Original private key 2 = " + Utils.bytesToHexString(originalPrivateKeyBytes2));
 
-        newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
        
         PerWalletModelData perWalletModelData = new PerWalletModelData();
@@ -367,7 +367,7 @@ public class FileHandlerTest extends TestCase {
         
         Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testKeyCrypter);
         ECKey newKey = new ECKey();
-        newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
        
         PerWalletModelData perWalletModelData = new PerWalletModelData();
@@ -426,7 +426,7 @@ public class FileHandlerTest extends TestCase {
 
         Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testKeyCrypter);
         ECKey newKey = new ECKey();
-        newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
         
         PerWalletModelData perWalletModelData = new PerWalletModelData();
@@ -584,5 +584,4 @@ public class FileHandlerTest extends TestCase {
         WalletInfo rebornWalletInfo = perWalletModelDataReborn.getWalletInfo();
         assertEquals("Wallet version was not roundtripped", WalletVersion.PROTOBUF_ENCRYPTED, rebornWalletInfo.getWalletVersion());;
     }
-
 }

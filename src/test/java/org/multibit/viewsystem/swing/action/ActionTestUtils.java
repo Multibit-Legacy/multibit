@@ -62,8 +62,7 @@ public class ActionTestUtils {
          Wallet wallet;
          if (encrypt) {
              wallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
-             ECKey ecKey = new ECKey();
-             ecKey.encrypt(keyCrypter, keyCrypter.deriveKey(walletPassword));
+             ECKey ecKey = (new ECKey()).encrypt(keyCrypter, keyCrypter.deriveKey(walletPassword));
              wallet.addKey(ecKey);
          } else {
              wallet = new Wallet(NetworkParameters.prodNet());
@@ -90,7 +89,6 @@ public class ActionTestUtils {
          fileHandler.savePerWalletModelData(perWalletModelData, true);
          PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
          
-         controller.getModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());
-         
+         controller.getModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());         
      }
 }

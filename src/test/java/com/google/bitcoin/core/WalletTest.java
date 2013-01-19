@@ -88,8 +88,7 @@ public class WalletTest {
 
         wallet.addKey(myKey);
         
-        myEncryptedKey = new ECKey();
-        myEncryptedKey.encrypt(keyCrypter, aesKey);
+        myEncryptedKey = (new ECKey()).encrypt(keyCrypter, aesKey);
         encryptedWallet.addKey(myEncryptedKey);
 
         blockStore = new MemoryBlockStore(params);

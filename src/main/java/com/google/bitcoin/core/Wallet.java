@@ -2246,12 +2246,14 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 throw new WalletIsAlreadyEncryptedException("Key '" + key.toString() + "' is already encrypted.");
             }
 
-            // Clone the key before encrypting.
-            // (note that only the EncryptedPrivateKey is deep copied).
-            ECKey clonedECKey = new ECKey(key.getPrivKeyBytes(), new EncryptedPrivateKey(key.getEncryptedPrivateKey()),
-                    key.getPubKey(), keyCrypter);
-            clonedECKey.encrypt(keyCrypter, aesKey);
-            encryptedKeyChain.add(clonedECKey);
+            // Encrypt the key.
+            ECKey encryptedKey = key.encrypt(keyCrypter, aesKey);
+            
+            // Check that the encrypted key can be successfully decrypted.
+            // If this fails it throws a KeyCrypterException and aborts the encrypt.
+            checkEncryptionIsReversible(key, encryptedKey, keyCrypter, aesKey);
+   
+            encryptedKeyChain.add(encryptedKey);
         }
 
         // Replace the old keychain with the encrypted one.
@@ -2259,6 +2261,37 @@ public class Wallet implements Serializable, IsMultiBitClass {
         
         // The wallet is now encrypted.
         this.keyCrypter = keyCrypter;
+    }
+    
+    /**
+     * Check that it is possible to decrypt the key with the keyCrypter and that the original key is returned.
+     * This is done to avoid the possibility of data loss due to a faulty keyCrypter.
+     * 
+     * @throws KeyCrypterException An exception is thrown if the encryptedKEy cannot be decrypted back to the original
+     */
+    private void checkEncryptionIsReversible(ECKey originalKey, ECKey encryptedKey, KeyCrypter keyCrypter, KeyParameter aesKey) throws KeyCrypterException { 
+        String genericErrorText = "The check that encryption could be reversed failed for key " + originalKey.toString() + ". ";
+        ECKey rebornUnencryptedKey = encryptedKey.decrypt(keyCrypter, aesKey);
+        if (rebornUnencryptedKey == null) {
+            throw new KeyCrypterException(genericErrorText + "The test decrypted key was missing.");
+        }
+        
+        byte[] originalPrivateKeyBytes = originalKey.getPrivKeyBytes();
+        if (originalPrivateKeyBytes != null) {
+            if (rebornUnencryptedKey.getPrivKeyBytes() == null) {
+                throw new KeyCrypterException(genericErrorText + "The test decrypted key was missing.");
+            } else {
+                if (originalPrivateKeyBytes.length != rebornUnencryptedKey.getPrivKeyBytes().length) {
+                    throw new KeyCrypterException(genericErrorText + "The test decrypted private key was a different length to the original.");                                             
+                } else {
+                    for (int i = 0; i < originalPrivateKeyBytes.length; i++) {
+                        if (originalPrivateKeyBytes[i] != rebornUnencryptedKey.getPrivKeyBytes()[i]) {
+                            throw new KeyCrypterException(genericErrorText + "Byte " + i + " of the private key did not match the original.");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -2276,7 +2309,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
         // Check that this.keyCrypter is identical to the one passed in otherwise there is risk of data loss.
         // (This is trying to decrypt a wallet with a different algorithm to that used to encrypt it.)
-        if (!keyCrypter.equals(this.keyCrypter)) {
+        if (this.keyCrypter != null && !this.keyCrypter.equals(keyCrypter)) {
             throw new KeyCrypterException("You are trying to decrypt a wallet with a different keyCrypter to the one used to encrypt it. Aborting.");
         }
         
@@ -2288,12 +2321,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 throw new WalletIsAlreadyDecryptedException("Key '" + key.toString() + "' is already decrypted.");
             }
 
-            // Clone the key before decrypting.
-            // (note that only the EncryptedPrivateKey is deep copied).
-            ECKey clonedECKey = new ECKey(new EncryptedPrivateKey(key.getEncryptedPrivateKey()), key.getPubKey(),
-                    keyCrypter);
-            clonedECKey.decrypt(keyCrypter, aesKey);
-            decryptedKeyChain.add(clonedECKey);
+            // Decrypt the key.
+            ECKey decryptedECKey = key.decrypt(keyCrypter, aesKey);
+            decryptedKeyChain.add(decryptedECKey);
         }
 
         // Replace the old keychain with the unencrypted one.
