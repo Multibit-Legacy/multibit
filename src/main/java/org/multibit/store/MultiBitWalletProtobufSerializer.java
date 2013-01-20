@@ -98,6 +98,7 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
             // The wallet is encrypted.
             walletBuilder.setEncryptionType(keyCrypter.getEncryptionType());
             if (keyCrypter instanceof KeyCrypterScrypt) {
+                walletBuilder.setEncryptionType(EncryptionType.ENCRYPTED_SCRYPT_AES);
                 KeyCrypterScrypt keyCrypterScrypt = (KeyCrypterScrypt) keyCrypter;
                 walletBuilder.setEncryptionParameters(keyCrypterScrypt.getScryptParameters());
             } else {
@@ -134,14 +135,26 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
 
         // System.out.println(TextFormat.printToString(walletProto));
 
-        // Read the scrypt parameters that specify how encryption and decryption is performed.
+        // Read the encryption type to see if the wallet is encrypted or not.
+        // If not specified it is unencrypted.
+        EncryptionType walletEncryptionType = EncryptionType.UNENCRYPTED;
+        
+        if (walletProto.hasEncryptionType()) {
+            walletEncryptionType = walletProto.getEncryptionType();
+        }
         KeyCrypter keyCrypter = null;
-        if (walletProto.hasEncryptionParameters()) {
-            Protos.ScryptParameters encryptionParameters = walletProto.getEncryptionParameters();
-            keyCrypter = new KeyCrypterScrypt(encryptionParameters);
+        
+        if (walletEncryptionType == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+            // Read the scrypt parameters that specify how encryption and decryption is performed.
+            if (walletProto.hasEncryptionParameters()) {
+                Protos.ScryptParameters encryptionParameters = walletProto.getEncryptionParameters();
+                keyCrypter = new KeyCrypterScrypt(encryptionParameters);
+            }
         }
 
         NetworkParameters params = NetworkParameters.fromID(walletProto.getNetworkIdentifier());
+        
+        // Create the wallet - note an unencrypted wallet is passed in a null keyCrypter to indicate this.
         Wallet wallet = helper.newWallet(params, keyCrypter);
         
         if (walletProto.hasDescription()) {
