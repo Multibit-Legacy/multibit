@@ -58,11 +58,13 @@ import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.Viewable;
 
 /**
  * The export private keys panel.
  */
-public class ExportPrivateKeysPanel extends JPanel implements View {
+public class ExportPrivateKeysPanel extends JPanel implements Viewable {
+
 
     private static final long serialVersionUID = 444992298119957705L;
 
@@ -916,7 +918,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
     }
 

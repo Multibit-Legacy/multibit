@@ -31,6 +31,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowOpenUriCancelAction;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The show open uri view.
  */
-public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDialogDataProvider {
+public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowUriDialogDataProvider {
 
     private Logger log = LoggerFactory.getLogger(ShowOpenUriDialog.class);
 
@@ -274,7 +275,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDi
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.SHOW_OPEN_URI_DIALOG_VIEW;
     }
 

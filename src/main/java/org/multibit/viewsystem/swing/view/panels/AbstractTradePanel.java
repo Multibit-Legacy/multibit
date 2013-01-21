@@ -104,6 +104,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.Viewable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +118,7 @@ import com.google.bitcoin.uri.BitcoinURI;
  * @author jim
  * 
  */
-public abstract class AbstractTradePanel extends JPanel implements View, CopyQRCodeImageDataProvider, BitcoinFormDataProvider, CurrencyConverterListener {
+public abstract class AbstractTradePanel extends JPanel implements Viewable, CopyQRCodeImageDataProvider, BitcoinFormDataProvider, CurrencyConverterListener {
 
     public boolean isShowSidePanel() {
         return showSidePanel;

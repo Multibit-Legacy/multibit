@@ -9,6 +9,7 @@ import org.multibit.viewsystem.ViewSystem;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+import org.multibit.viewsystem.View;
 
 /**
  * A very simple implementation of a view system
@@ -52,12 +53,12 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void displayView(int viewToDisplay) {
+    public void displayView(View viewToDisplay) {
         System.out.println("SIMPLE. Displaying view : " + viewToDisplay);
     }
 
     @Override
-    public void navigateAwayFromView(int viewToNavigateAwayFrom) {
+    public void navigateAwayFromView(View viewToNavigateAwayFrom) {
     }
 
     @Override
