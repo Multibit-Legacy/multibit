@@ -45,6 +45,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
@@ -63,7 +64,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
+public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable {
 
     static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinPanel.class);
 
@@ -476,7 +477,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.RECEIVE_BITCOIN_VIEW;
     }
     

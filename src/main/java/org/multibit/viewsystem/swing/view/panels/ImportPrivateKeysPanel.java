@@ -53,6 +53,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
@@ -73,7 +74,7 @@ import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 /**
  * The import private keys view.
  */
-public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyListener {
+public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBusyListener {
 
     private static final long serialVersionUID = 444992294329957705L;
 
@@ -1095,7 +1096,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
     }
     
