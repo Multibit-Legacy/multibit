@@ -1,13 +1,26 @@
 MultiBit release notes.
 
 Version 0.5.8beta
-+ Forward port everything from 0.4.18
-+ Now only hits currency server if ticker is shown or currency conversions are on
-+ Fiat currency fields only shown on Send and Request if fiat currency successfully found from remote server
-+ Fixed help borking MultiBit if no network present
 + Removed cacheManager code - no longer supported
 + Backward compatible wallet changes (description added, minor version dropped).
++ Refactoring of encryption code in response to review comments.
 
+
+14 Jan 2013 Version 0.4.19
+
+Please note: this version does NOT include a full fix for the zero-confirmation vulnerability
+announced by Retep on 10 Jan 2013. (This is still being worked on).
+ 
+Improvements
++ Improved status notifications for transactions
++ Update to bitcoinj 0.6.1
++ Coinbase transactions now have a pickaxe icon and the status icon fills more slowly
++ Now only hits currency server if ticker is shown or currency conversions are on
++ Fiat currency fields only shown on Send and Request if fiat currency successfully found from remote server
++ Small increase in table row height for visual clarity.
+
+Bug fixes
++ Fixed help tab borking MultiBit if no network present
 
 7 Jan 2013 Version 0.4.18
 Bug fixes

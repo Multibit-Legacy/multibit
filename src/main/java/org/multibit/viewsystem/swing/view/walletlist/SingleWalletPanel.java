@@ -118,15 +118,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private boolean selected = false;
 
-    private static final int DETAILS_LEFT_BORDER = 12;
-    private static final int DETAILS_TOP_BORDER = 3;
-
     private static final int WALLET_TYPE_LEFT_BORDER = 6;
     private static final int WALLET_TYPE_TOP_BORDER = 3;
-
-    private JLabel showDetailLabel;
-    private Icon detailsPanelOffIcon;
-    private Icon detailsPanelOnIcon;
      
     private static final int TWISTY_LEFT_OR_RIGHT_BORDER = 8;
     private static final int TWISTY_TOP_BORDER = 3;
@@ -166,9 +159,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         expanded = false;
         selected = false;
 
-        detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_RIGHT_ICON_FILE);
-        detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
-        
         twistyLeftIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_LEFT_ICON_FILE);
         twistyRightIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_RIGHT_ICON_FILE);
         twistyDownIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
