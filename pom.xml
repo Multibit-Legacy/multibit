@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.4.19</version>
+  <version>0.4.20</version>
   <name>MultiBit</name>
   <description>A Java Swing client for Bitcoin</description>
   <url>http://www.multibit.org</url>

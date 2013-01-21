@@ -257,8 +257,8 @@ public class MultiBitModel {
                     // do nothing
                 } finally {
                     initialViewInProperties = View.parseOldView(oldViewInt);
-                    // reset the old view property to an empty string.
-                    userPreferences.setProperty(MultiBitModel.SELECTED_VIEW, "");
+                    // Remove the old view property.
+                    userPreferences.remove(MultiBitModel.SELECTED_VIEW);
                 }
             }
 

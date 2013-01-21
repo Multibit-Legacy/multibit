@@ -1,5 +1,11 @@
 MultiBit release notes.
 
+Version 0.4.2
+
++ Refactoring of how initial view to display is stored. Forward compatible but
+  minor regression going to an older version (shows welcome screen).
+  
+
 14 Jan 2013 Version 0.4.19
 
 Please note: this version does NOT include a full fix for the zero-confirmation vulnerability
