@@ -32,11 +32,12 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.browser.Browser;
 
-public class HelpContentsPanel extends JPanel implements View {
+public class HelpContentsPanel extends JPanel implements Viewable {
 
     public static final String HELP_BASE_URL = "http://www.multibit.org/v0.5/";
     
@@ -146,7 +147,7 @@ public class HelpContentsPanel extends JPanel implements View {
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.HELP_CONTENTS_VIEW;
     }
 }

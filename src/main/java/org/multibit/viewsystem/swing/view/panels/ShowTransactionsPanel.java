@@ -87,8 +87,9 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
+import org.multibit.viewsystem.Viewable;
 
-public class ShowTransactionsPanel extends JPanel implements View, CurrencyConverterListener {
+public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
 
     private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
@@ -1067,7 +1068,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.TRANSACTIONS_VIEW;
     }
 

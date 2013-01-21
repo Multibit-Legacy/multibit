@@ -103,6 +103,8 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
+import org.multibit.viewsystem.Viewable;
+
 /*
  * JFrame displaying Swing version of MultiBit
  */
@@ -206,7 +208,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitWalletBusyAction showExportPrivateKeysAction;
 
     @SuppressWarnings("deprecation")
-    public MultiBitFrame(MultiBitController controller, GenericApplication application, int initialView) {
+    public MultiBitFrame(MultiBitController controller, GenericApplication application, View initialView) {
         this.controller = controller;
         this.model = controller.getModel();
         this.localiser = controller.getLocaliser();
@@ -289,7 +291,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
         
-        displayView(initialView);
+        displayView(null != initialView ? initialView : View.DEFAULT_VIEW());
 
         pack();
 
@@ -364,21 +366,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Add the send bitcoin tab.
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        View sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
+        Viewable sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
         sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
         viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinView.getViewTooltip(),
                 sendBitcoinOutlinePanel);
 
         // Add the receive bitcoin tab.
         JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        View receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
+        Viewable receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
         receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
         viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(),
                 receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
 
         // Add the transactions tab.
         JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
-        View transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
+        Viewable transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
         transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
         viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
                 transactionsOutlinePanel);
@@ -945,7 +947,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         ColorAndFontConstants.init();
 
         // Close down current view.
-        if (controller.getCurrentView() != 0) {
+        if (controller.getCurrentView() != View.UNKNOWN_VIEW) {
             navigateAwayFromView(controller.getCurrentView());
         }
 
@@ -978,8 +980,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
                 JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
                 Component[] components = tabComponent.getComponents();
-                if (components != null && components.length > 0 && components[0] instanceof View) {
-                    View loopView = ((View) components[0]);
+                if (components != null && components.length > 0 && components[0] instanceof Viewable) {
+                    Viewable loopView = ((Viewable) components[0]);
                     loopView.displayView();
                     if (loopView.getViewId() == controller.getCurrentView()) {
                         viewTabbedPane.setSelectedIndex(i);
@@ -993,7 +995,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Display next view on Swing event dispatch thread.
      */
     @Override
-    public void displayView(int viewToDisplay) {
+    public void displayView(View viewToDisplay) {
+
         //log.debug("Displaying view '" + viewToDisplay + "'");
         // Open wallet view obselete - show transactions
         if (View.OPEN_WALLET_VIEW == viewToDisplay) {
@@ -1012,7 +1015,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         controller.setCurrentView(viewToDisplay);
 
-        final View nextViewFinal = viewFactory.getView(viewToDisplay);
+        final Viewable nextViewFinal = viewFactory.getView(viewToDisplay);
 
         if (nextViewFinal == null) {
             log.debug("Cannot display view " + viewToDisplay);
@@ -1032,8 +1035,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         if (tabComponent != null) {
                             Component[] childComponents = tabComponent.getComponents();
                             String tabTitle = null;
-                            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-                                tabTitle = ((View) childComponents[0]).getViewTitle();
+                            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof Viewable) {
+                                tabTitle = ((Viewable) childComponents[0]).getViewTitle();
                             }
                             if (viewTitle != null && viewTitle.equals(tabTitle)) {
                                 foundTab = true;
@@ -1065,13 +1068,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * SwingUtilities.invokeLater.
      */
     @Override
-    public void navigateAwayFromView(int viewToNavigateAwayFrom) {
+    public void navigateAwayFromView(View viewToNavigateAwayFrom) {
         if (View.YOUR_WALLETS_VIEW == viewToNavigateAwayFrom) {
             // Do nothing
             return;
         }
 
-        final View viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
+        final Viewable viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
 
         if (viewToNavigateAwayFromFinal != null) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -1203,13 +1206,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 }
 
                 // Tell the current view to update itself.
-                View currentViewView = viewFactory.getView(controller.getCurrentView());
+                Viewable currentViewView = viewFactory.getView(controller.getCurrentView());
                 if (currentViewView != null) {
                     currentViewView.displayView();
                 }
 
                 // Tell the tab to refresh (gets round bug on replay for transactions panel)
-                View tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
+                Viewable tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
                 if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
                     //log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
                     tabbedPaneCurrentView.displayView();

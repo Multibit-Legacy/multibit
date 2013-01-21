@@ -34,6 +34,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
@@ -44,7 +45,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 /**
  * The reset blockchain and transactions view
  */
-public class WelcomePanel extends JPanel implements View {
+public class WelcomePanel extends JPanel implements Viewable {
 
     private static final int TEXT_WIDTH = 48;
 
@@ -310,7 +311,7 @@ public class WelcomePanel extends JPanel implements View {
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.WELCOME_VIEW;
     }
 }
