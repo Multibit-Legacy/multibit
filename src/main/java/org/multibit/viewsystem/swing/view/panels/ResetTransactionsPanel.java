@@ -60,11 +60,12 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 import com.toedter.calendar.JCalendar;
+import org.multibit.viewsystem.Viewable;
 
 /**
  * The reset blockchain and transactions view
  */
-public class ResetTransactionsPanel extends JPanel implements View, ResetTransactionsDataProvider {
+public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTransactionsDataProvider {
 
     private static final long serialVersionUID = 199992298245057705L;
 
@@ -536,7 +537,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.RESET_TRANSACTIONS_VIEW;
     }
 

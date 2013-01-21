@@ -22,6 +22,7 @@ import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.View;
 
 /**
  * This {@link Action} represents a localised MultiBit action that just displays a view
@@ -31,7 +32,7 @@ public class MultiBitAction extends AbstractAction {
     private static final long serialVersionUID = 191948235465057705L;
 
     private MultiBitController controller;
-    private int viewToDisplay;
+    private View viewToDisplay;
 
     /**
      * Creates a new {@link MultiBitAction}.
@@ -42,7 +43,7 @@ public class MultiBitAction extends AbstractAction {
      * @param mnemonicKey The localisation key for the mnemonic of the action
      * @param viewToDisplay The view to display on action activation.  One of the View constants
      */
-    public MultiBitAction(MultiBitController controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, int viewToDisplay) {
+    public MultiBitAction(MultiBitController controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, View viewToDisplay) {
         super(textKey == null ? "" : controller.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
         this.controller = controller;
         this.viewToDisplay = viewToDisplay;

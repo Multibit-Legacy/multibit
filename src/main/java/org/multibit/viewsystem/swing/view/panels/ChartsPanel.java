@@ -56,11 +56,12 @@ import com.xeiam.xchart.SeriesColor;
 import com.xeiam.xchart.SeriesLineStyle;
 import com.xeiam.xchart.SeriesMarker;
 import com.xeiam.xchart.XChartPanel;
+import org.multibit.viewsystem.Viewable;
 
 /**
  * The Charts view.
  */
-public class ChartsPanel extends JPanel implements View, ComponentListener {
+public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
 
     private Logger log = LoggerFactory.getLogger(ChartsPanel.class);
 
@@ -395,7 +396,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
 
         return View.CHARTS_VIEW;
     }

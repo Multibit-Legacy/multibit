@@ -43,6 +43,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.MultiBitTabbedPane;
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The wallet list view.
  */
-public class WalletListPanel extends JPanel implements View, WalletBusyListener, ComponentListener, CurrencyConverterListener {
+public class WalletListPanel extends JPanel implements Viewable, WalletBusyListener, ComponentListener, CurrencyConverterListener {
 
     private static final long serialVersionUID = 191352298245057705L;
 
@@ -394,7 +395,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
     }
 
     @Override
-    public int getViewId() {
+    public View getViewId() {
         return View.YOUR_WALLETS_VIEW;
     }
 
