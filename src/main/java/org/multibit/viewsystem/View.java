@@ -16,18 +16,16 @@
 package org.multibit.viewsystem;
 
 import java.util.EnumSet;
-import javax.swing.Icon;
 
 /**
- * an interface describing the views that are being presented in this MVC
+ * An interface describing the views that are being presented in this MVC.
  *
- * views are used to track the view being presented to the user
+ * Views are used to track the view being presented to the user.
  *
  * @author jim
  *
  */
 public enum View {
-
     SAME_VIEW, // Not a real view - used to forward to the same view as calling
     UNKNOWN_VIEW,
     TRANSACTIONS_VIEW,
@@ -60,13 +58,11 @@ public enum View {
             VALIDATION_ERROR_VIEW,
             CREATE_BULK_ADDRESSES_VIEW);
     
-    
     public static View DEFAULT_VIEW() {
         return WELCOME_VIEW;
     }
     
-    public final boolean isObsolete()
-    {
+    public final boolean isObsolete() {
         return OBSOLETE.contains(this);
     }
     
@@ -77,8 +73,7 @@ public enum View {
      * @deprecated (this feature may be removed in a future release)
      */
     @Deprecated
-    public static View parseOldView(Integer viewNumber)
-    {
+    public static View parseOldView(Integer viewNumber) {
         if (null == viewNumber) {
             return null;
         }
@@ -113,6 +108,4 @@ public enum View {
             default : return null;
         }
     }
-    
-
 }

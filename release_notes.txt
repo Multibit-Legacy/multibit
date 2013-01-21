@@ -6,6 +6,7 @@ Version 0.5.8beta
 + Refactoring of encryption code in response to review comments.
 
 
+
 14 Jan 2013 Version 0.4.19
 
 Please note: this version does NOT include a full fix for the zero-confirmation vulnerability
