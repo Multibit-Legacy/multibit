@@ -1,9 +1,13 @@
 MultiBit release notes.
 
 Version 0.5.8beta
++ No longer opens in 'local mode' - it picks up your other MultiBit wallets.
 + Removed cacheManager code - no longer supported
 + Backward compatible wallet changes (description added, minor version dropped).
-+ Refactoring of encryption code in response to review comments.
++ Refactoring of encryption code in response to review comments
++ Refactoring of the initial view being remembered. Forward compatible but
+  there is a minor regression fail in that if you open an earlier MultiBit it will
+  open the Welcome page.
 
 
 
