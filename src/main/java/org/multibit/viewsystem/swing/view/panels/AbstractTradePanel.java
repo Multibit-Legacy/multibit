@@ -335,6 +335,9 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         constraints.weighty = 2.0;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createAddressesPanel(), constraints);
+        
+        CurrencyConverter.INSTANCE.updateFormatters();
+        updateFiatAmount();
     }
 
     protected void createFormPanelStentsAndForcers(JPanel panel, GridBagConstraints constraints) {

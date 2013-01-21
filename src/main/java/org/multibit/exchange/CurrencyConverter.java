@@ -113,12 +113,16 @@ public enum CurrencyConverter {
         currencyCodeToInfoMap.put("DKK", new CurrencyInfo("DKK", "\u006B\u0072.", true));
         currencyCodeToInfoMap.put("THB", new CurrencyInfo("THB", "\u0E3F", true));
         currencyCodeToInfoMap.put("PLN", new CurrencyInfo("PLN", "\u007A\u0142", false));
-        
+        updateFormatters();
+   
+    }
+    
+    public void updateFormatters() {
         moneyFormatter = getMoneyFormatter(false);
         moneyFormatterWithCurrencyCode = getMoneyFormatter(true);
         
         DecimalFormat fiatFormatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
-        groupingSeparator = String.valueOf(fiatFormatter.getDecimalFormatSymbols().getGroupingSeparator());
+        groupingSeparator = String.valueOf(fiatFormatter.getDecimalFormatSymbols().getGroupingSeparator());     
     }
 
     /**
