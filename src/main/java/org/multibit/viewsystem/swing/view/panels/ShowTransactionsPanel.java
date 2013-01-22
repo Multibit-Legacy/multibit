@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Timer;
 
 import javax.swing.Action;
@@ -84,6 +85,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
@@ -658,8 +660,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             // Work out the line describing the number of peers.
             int peers = 0;
             if (confidence != null && confidence.getBroadcastBy() != null) {
-                peers = confidence.getBroadcastBy().size();
-            }
+                ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
+                while(iterator.hasNext()) {
+                    peers++;
+                }            }
             StringBuilder builder = new StringBuilder();
             if (peers == 0) {
                 builder.append(MultiBit.getController().getLocaliser()
@@ -687,7 +691,11 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 }
             
                 if (confidence.getBroadcastBy() != null) {
-                    int numberOfPeers = confidence.getBroadcastBy().size();
+                    int numberOfPeers = 0;
+                    ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
+                    while(iterator.hasNext()) {
+                        numberOfPeers++;
+                    }
                     if (numberOfPeers >= 4) {
                         return progress0Icon;
                     } else {

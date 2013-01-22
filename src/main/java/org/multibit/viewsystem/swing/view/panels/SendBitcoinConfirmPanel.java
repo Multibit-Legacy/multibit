@@ -20,6 +20,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ListIterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -43,6 +44,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
+import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 
@@ -641,7 +643,10 @@ public class SendBitcoinConfirmPanel extends JPanel {
     private String getConfidenceToolTip(TransactionConfidence confidence) {
         int peers = 0;
         if (confidence != null && confidence.getBroadcastBy() != null) {
-            peers = confidence.getBroadcastBy().size();
+            ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
+            while(iterator.hasNext()) {
+                peers++;
+            }
         }
         StringBuilder builder = new StringBuilder("");
         if (peers == 0) {
@@ -664,7 +669,11 @@ public class SendBitcoinConfirmPanel extends JPanel {
         ImageIcon iconToReturn = shapeTriangleIcon;
 
         if (confidence != null && confidence.getBroadcastBy() != null) {
-            int numberOfPeers = confidence.getBroadcastBy().size();
+            int numberOfPeers = 0;
+            ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
+            while(iterator.hasNext()) {
+                numberOfPeers++;
+            }
             if (numberOfPeers >= 4) {
                 return progress0Icon;
             } else {

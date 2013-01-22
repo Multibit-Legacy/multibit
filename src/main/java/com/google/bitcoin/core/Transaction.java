@@ -26,6 +26,8 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.google.bitcoin.core.Utils.*;
@@ -54,12 +56,8 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     // These are serialized in both bitcoin and java serialization.
     private long version;
     private ArrayList<TransactionInput> inputs;
-    //a cached copy to prevent constantly rewrapping
-    //private transient List<TransactionInput> immutableInputs;
 
     private ArrayList<TransactionOutput> outputs;
-    //a cached copy to prevent constantly rewrapping
-    //private transient List<TransactionOutput> immutableOutputs;
 
     private long lockTime;
 
@@ -82,6 +80,13 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     //
     // If this transaction is not stored in the wallet, appearsInHashes is null.
     private Set<Sha256Hash> appearsInHashes;
+    
+    // Transactions can be encoded in a way that will use more bytes than is optimal
+    // (due to VarInts having multiple encodings)
+    // MAX_BLOCK_SIZE must be compared to the optimal encoding, not the actual encoding, so when parsing, we keep track
+    // of the size of the ideal encoding in addition to the actual message size (which Message needs) so that Blocks
+    // can properly keep track of optimal encoded size
+    private transient int optimalEncodingMessageSize;
 
     public Transaction(NetworkParameters params) {
         super(params);
@@ -450,27 +455,27 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
         varint = new VarInt(buf, cursor);
         long txInCount = varint.value;
-        cursor += varint.getSizeInBytes();
+        cursor += varint.getOriginalSizeInBytes();
 
         for (i = 0; i < txInCount; i++) {
-        	// 36 = length of previous_outpoint
+            // 36 = length of previous_outpoint
             cursor += 36;
             varint = new VarInt(buf, cursor);
             scriptLen = varint.value;
             // 4 = length of sequence field (unint32)
-            cursor += scriptLen + 4 + varint.getSizeInBytes();
+            cursor += scriptLen + 4 + varint.getOriginalSizeInBytes();
         }
 
         varint = new VarInt(buf, cursor);
         long txOutCount = varint.value;
-        cursor += varint.getSizeInBytes();
+        cursor += varint.getOriginalSizeInBytes();
 
         for (i = 0; i < txOutCount; i++) {
             // 8 = length of tx value field (uint64)
-        	cursor += 8;
+            cursor += 8;
             varint = new VarInt(buf, cursor);
             scriptLen = varint.value;
-            cursor += scriptLen + varint.getSizeInBytes();
+            cursor += scriptLen + varint.getOriginalSizeInBytes();
         }
         // 4 = length of lock_time field (uint32)
         return cursor - offset + 4;
@@ -485,25 +490,43 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         cursor = offset;
 
         version = readUint32();
+        optimalEncodingMessageSize = 4;
 
         // First come the inputs.
         long numInputs = readVarInt();
+        optimalEncodingMessageSize += VarInt.sizeOf(numInputs);
         inputs = new ArrayList<TransactionInput>((int) numInputs);
         for (long i = 0; i < numInputs; i++) {
             TransactionInput input = new TransactionInput(params, this, bytes, cursor, parseLazy, parseRetain);
             inputs.add(input);
-            cursor += input.getMessageSize();
+            long scriptLen = readVarInt(TransactionOutPoint.MESSAGE_LENGTH);
+            optimalEncodingMessageSize += TransactionOutPoint.MESSAGE_LENGTH + VarInt.sizeOf(scriptLen) + scriptLen + 4;
+            cursor += scriptLen + 4;
         }
         // Now the outputs
         long numOutputs = readVarInt();
+        optimalEncodingMessageSize += VarInt.sizeOf(numOutputs);
         outputs = new ArrayList<TransactionOutput>((int) numOutputs);
         for (long i = 0; i < numOutputs; i++) {
             TransactionOutput output = new TransactionOutput(params, this, bytes, cursor, parseLazy, parseRetain);
             outputs.add(output);
-            cursor += output.getMessageSize();
+            long scriptLen = readVarInt(8);
+            optimalEncodingMessageSize += 8 + VarInt.sizeOf(scriptLen) + scriptLen;
+            cursor += scriptLen;
         }
         lockTime = readUint32();
+        optimalEncodingMessageSize += 4;
         length = cursor - offset;
+    }
+    
+    public int getOptimalEncodingMessageSize() {
+        if (optimalEncodingMessageSize != 0)
+            return optimalEncodingMessageSize;
+        maybeParse();
+        if (optimalEncodingMessageSize != 0)
+            return optimalEncodingMessageSize;
+        optimalEncodingMessageSize = getMessageSize();
+        return optimalEncodingMessageSize;
     }
 
     /**
@@ -1056,14 +1079,39 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      */
     public boolean isFinal(int height, long blockTimeSeconds) {
         // Time based nLockTime implemented in 0.1.6
-        if (lockTime == 0)
+        long time = getLockTime();
+        if (time == 0)
             return true;
-        if (lockTime < (lockTime < LOCKTIME_THRESHOLD ? height : blockTimeSeconds))
+        if (time < (time < LOCKTIME_THRESHOLD ? height : blockTimeSeconds))
             return true;
         for (TransactionInput in : inputs)
             if (in.hasSequence())
                 return false;
         return true;
+    }
+
+    /**
+     * Parses the string either as a whole number of blocks, or if it contains slashes as a YYYY/MM/DD format date
+     * and returns the lock time in wire format.
+     */
+    public static long parseLockTimeStr(String lockTimeStr) throws ParseException {
+        if (lockTimeStr.indexOf("/") != -1) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = format.parse(lockTimeStr);
+            return date.getTime() / 1000;
+        }
+        return Long.parseLong(lockTimeStr);
+    }
+
+    /**
+     * Returns either the lock time as a date, if it was specified in seconds, or an estimate based on the time in
+     * the current head block if it was specified as a block time.
+     */
+    public Date estimateLockTime(AbstractBlockChain chain) {
+        if (lockTime < LOCKTIME_THRESHOLD)
+            return chain.estimateBlockTime((int)getLockTime());
+        else
+            return new Date(getLockTime()*1000);
     }
 
     /**

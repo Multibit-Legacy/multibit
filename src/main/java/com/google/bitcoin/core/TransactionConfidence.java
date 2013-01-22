@@ -23,7 +23,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.ListIterator;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
@@ -64,7 +66,8 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      * IP address as an approximation. It's obviously vulnerable to being gamed if we allow arbitrary people to connect
      * to us, so only peers we explicitly connected to should go here.
      */
-    private Set<PeerAddress> broadcastBy;
+    private CopyOnWriteArrayList<PeerAddress> broadcastBy;
+
     /** The Transaction that this confidence object is associated with. */
     private Transaction transaction;
     // Lazily created listeners array.
@@ -82,15 +85,14 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      */
     private BigInteger workDone = BigInteger.ZERO;
 
-    // TODO: The advice below is a mess. There should be block chain listeners, see issue 94.
     /**
      * <p>Adds an event listener that will be run when this confidence object is updated. The listener will be locked and
      * is likely to be invoked on a peer thread.</p>
      * 
      * <p>Note that this is NOT called when every block arrives. Instead it is called when the transaction
      * transitions between confidence states, ie, from not being seen in the chain to being seen (not necessarily in 
-     * the best chain). If you want to know when the transaction gets buried under another block, listen for new block
-     * events using {@link PeerEventListener#onBlocksDownloaded(Peer, Block, int)} and then use the getters on the
+     * the best chain). If you want to know when the transaction gets buried under another block, implement a
+     * {@link BlockChainListener}, attach it to a {@link BlockChain} and then use the getters on the
      * confidence object to determine the new depth.</p>
      */
     public synchronized void addEventListener(Listener listener) {
@@ -184,7 +186,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
 
     public TransactionConfidence(Transaction tx) {
         // Assume a default number of peers for our set.
-        broadcastBy = new HashSet<PeerAddress>(10);
+        broadcastBy = new CopyOnWriteArrayList<PeerAddress>();
         transaction = tx;
     }
 
@@ -237,28 +239,34 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      *
      * @param address IP address of the peer, used as a proxy for identity.
      */
-    public synchronized void markBroadcastBy(PeerAddress address) {
-        broadcastBy.add(address);
-        if (getConfidenceType() == ConfidenceType.UNKNOWN) {
-            setConfidenceType(ConfidenceType.NOT_SEEN_IN_CHAIN);
-            // Listeners are already run by setConfidenceType.
-        } else {
-            runListeners();
+    public void markBroadcastBy(PeerAddress address) {
+        if (!broadcastBy.addIfAbsent(address))
+            return;  // Duplicate.
+        synchronized (this) {
+            if (getConfidenceType() == ConfidenceType.UNKNOWN) {
+                this.confidenceType = ConfidenceType.NOT_SEEN_IN_CHAIN;
+            }
         }
+        runListeners();
     }
 
     /**
      * Returns how many peers have been passed to {@link TransactionConfidence#markBroadcastBy}.
      */
-    public synchronized int numBroadcastPeers() {
+    public int numBroadcastPeers() {
         return broadcastBy.size();
     }
 
     /**
      * Returns a synchronized set of {@link PeerAddress}es that announced the transaction.
      */
-    public synchronized Set<PeerAddress> getBroadcastBy() {
-        return broadcastBy;
+    public ListIterator<PeerAddress> getBroadcastBy() {
+        return broadcastBy.listIterator();
+    }
+
+    /** Returns true if the given address has been seen via markBroadcastBy() */
+    public boolean wasBroadcastBy(PeerAddress address) {
+        return broadcastBy.contains(address);
     }
 
     @Override

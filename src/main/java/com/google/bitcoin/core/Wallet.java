@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -1454,9 +1455,16 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     private boolean transactionSpendsFromThisWalletAndHasBoomerangedBack(Transaction tx) {
         boolean seenByEnoughPeers = false;
         TransactionConfidence confidence = tx.getConfidence();
-        if (confidence != null && confidence.getBroadcastBy() != null 
-                && confidence.getBroadcastBy().size() >= MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND) {
-            seenByEnoughPeers = true;
+        if (confidence != null && confidence.getBroadcastBy() != null) {
+            int count = 0;
+            ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
+            while(iterator.hasNext()) {
+                count++;
+            }
+            
+            if (count >= MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND) {
+                seenByEnoughPeers = true;
+            }
         }
         
         if (!seenByEnoughPeers) return false;
