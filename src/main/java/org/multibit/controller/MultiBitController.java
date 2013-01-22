@@ -350,7 +350,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             try {
-                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
+                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction)) {
                     loopPerWalletModelData.setDirty(true);
                     //log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
                 }
@@ -574,7 +574,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                     for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                         Wallet loopWallet = perWalletModelData.getWallet();
                         if (loopWallet != null) {
-                            if (loopWallet.isTransactionRelevant(transaction, true)) {
+                            if (loopWallet.isTransactionRelevant(transaction)) {
                                 // The perWalletModelData is marked as dirty.
                                 if (perWalletModelData.getWalletInfo() != null) {
                                     synchronized(perWalletModelData.getWalletInfo()) {
@@ -623,7 +623,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                             for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                                 Wallet loopWallet = perWalletModelData.getWallet();
                                 if (loopWallet != null) {
-                                    if (loopWallet.isTransactionRelevant(transaction, true)) {
+                                    if (loopWallet.isTransactionRelevant(transaction)) {
                                         // the perWalletModelData is marked as dirty
                                         if (perWalletModelData.getWalletInfo() != null) {
                                             synchronized(perWalletModelData.getWalletInfo()) {

@@ -700,7 +700,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             try {
                 // Usually 71-73 bytes.
                 ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(73);
-                bos.write(key.sign(hash.getBytes(), aesKey));
+                bos.write(key.sign(hash, aesKey).encodeToDER());
                 bos.write((hashType.ordinal() + 1) | (anyoneCanPay ? 0x80 : 0));
                 signatures[i] = bos.toByteArray();
                 bos.close();

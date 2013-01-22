@@ -577,7 +577,7 @@ public class MultiBitService {
                     for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                         if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
                             Wallet loopWallet = loopPerWalletModelData.getWallet();
-                            if (loopWallet.isTransactionRelevant(sendTransaction, true)) {
+                            if (loopWallet.isTransactionRelevant(sendTransaction)) {
                                 // The loopPerWalletModelData is marked as dirty.
                                 if (loopPerWalletModelData.getWalletInfo() != null) {
                                     synchronized(loopPerWalletModelData.getWalletInfo()) {

@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingWorker;
 
@@ -83,7 +84,7 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
     }
 
     @Override
-    public InetSocketAddress[] getPeers() throws PeerDiscoveryException {
+    public InetSocketAddress[] getPeers(long timeoutValue, TimeUnit timeoutUnit) throws PeerDiscoveryException {
         if (canReturnCache && !haveReturnedCurrentCache) {
             InetSocketAddress[] addressesToReturn;
             

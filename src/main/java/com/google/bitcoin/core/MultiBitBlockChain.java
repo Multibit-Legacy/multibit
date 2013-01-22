@@ -35,7 +35,7 @@ public class MultiBitBlockChain extends BlockChain {
         super(params, blockStore);
     }
 
-    public MultiBitBlockChain(NetworkParameters params, List<Wallet> wallets, BlockStore blockStore) throws BlockStoreException {
+    public MultiBitBlockChain(NetworkParameters params, List<BlockChainListener> wallets, BlockStore blockStore) throws BlockStoreException {
         super(params, wallets, blockStore);
     }
     

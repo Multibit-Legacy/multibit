@@ -859,9 +859,9 @@ public class MultiBitModel {
             userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
         }
         if (MultiBitModel.TEST_NETWORK_VALUE.equalsIgnoreCase(testOrProduction)) {
-            return NetworkParameters.testNet();
+            return NetworkParameters.oldTestNet();
         } else if (MultiBitModel.TESTNET3_VALUE.equalsIgnoreCase(testOrProduction)) {
-            return NetworkParameters.testNet3();
+            return NetworkParameters.testNet();
         } else {
             return NetworkParameters.prodNet();
         }

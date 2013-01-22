@@ -102,7 +102,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * {@link Wallet#autosaveToFile(java.io.File, long, java.util.concurrent.TimeUnit, com.google.bitcoin.core.Wallet.AutosaveEventListener)}
  * for more information about this.</p>
  */
-public class Wallet implements Serializable, IsMultiBitClass {
+public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(Wallet.class);
     private static final long serialVersionUID = 2L;
     
@@ -439,7 +439,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // We only care about transactions that:
         //   - Send us coins
         //   - Spend our coins
-        if (!isTransactionRelevant(tx, true)) {
+        if (!isTransactionRelevant(tx)) {
             log.debug("Received tx that isn't relevant to this wallet, discarding.");
             return;
         }
@@ -490,17 +490,17 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      * Returns true if the given transaction sends coins to any of our keys, or has inputs spending any of our outputs,
-     * and if includeDoubleSpending is true, also returns true if tx has inputs that are spending outputs which are
+     * and also returns true if tx has inputs that are spending outputs which are
      * not ours but which are spent by pending transactions.<p>
      *
      * Note that if the tx has inputs containing one of our keys, but the connected transaction is not in the wallet,
      * it will not be considered relevant.
      */
-    public synchronized boolean isTransactionRelevant(Transaction tx, 
-            boolean includeDoubleSpending) throws ScriptException {
+    @Override
+    public synchronized boolean isTransactionRelevant(Transaction tx) throws ScriptException {
         return tx.isMine(this) || tx.getValueSentFromMe(this).compareTo(BigInteger.ZERO) > 0
                 || tx.getValueSentToMe(this).compareTo(BigInteger.ZERO) > 0
-                || (includeDoubleSpending && (findDoubleSpendAgainstPending(tx) != null));
+                || (findDoubleSpendAgainstPending(tx) != null);
     }
 
     /**
@@ -1769,7 +1769,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      *
      * The oldBlocks/newBlocks lists are ordered height-wise from top first to bottom last.
      */
-    synchronized void reorganize(StoredBlock splitPoint, List<StoredBlock> oldBlocks, List<StoredBlock> newBlocks) throws VerificationException {
+    public synchronized void reorganize(StoredBlock splitPoint, List<StoredBlock> oldBlocks, List<StoredBlock> newBlocks) throws VerificationException {
         // This runs on any peer thread with the block chain synchronized.
         //
         // The reorganize functionality of the wallet is tested in ChainSplitTests.

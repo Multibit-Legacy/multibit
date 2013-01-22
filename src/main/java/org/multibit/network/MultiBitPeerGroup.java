@@ -28,8 +28,9 @@ public class MultiBitPeerGroup extends PeerGroup {
     private static int CONNECTION_DELAY_TIME = 2500; // milliseconds
     
     public MultiBitPeerGroup(MultiBitController controller, NetworkParameters params, BlockChain chain) {
-        super(params, chain, CONNECTION_DELAY_TIME);
+        super(params, chain);
         this.controller = controller;
+        bootstrap.setOption(PeerGroup.CONNECT_TIMEOUT_MILLIS_OPTION, CONNECTION_DELAY_TIME);
     }
     
     /**
