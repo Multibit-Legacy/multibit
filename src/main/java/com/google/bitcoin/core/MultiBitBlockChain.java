@@ -23,7 +23,7 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
- * Extension of bitcoinj BlockChain for use with block chain replay
+ * Extension of bitcoinj BlockChain for use with block chain replay.
  */
 public class MultiBitBlockChain extends BlockChain {
 
@@ -40,8 +40,8 @@ public class MultiBitBlockChain extends BlockChain {
     }
     
     /**
-     * set the chainhead, clear any cached blocks and truncate the blockchain 
-     * (used for blockchain replay)
+     * Set the chainhead, clear any cached blocks and truncate the blockchain .
+     * (Used for blockchain replay).
      * @param chainHead
      * @throws BlockStoreException
      */
@@ -54,10 +54,5 @@ public class MultiBitBlockChain extends BlockChain {
         }
         
         super.setChainHead(chainHead);
-//        // this synchronized probably needs to enclude the truncate
-//        synchronized (chainHeadLock) {
-//            this.chainHead = chainHead;
-//        }
     }
-
 }

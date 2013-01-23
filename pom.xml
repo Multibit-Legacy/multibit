@@ -152,8 +152,7 @@
                                         **/TransactionConfidence.class, **/TransactionConfidence$*.class,
                                         **/TransactionInput.class,                                        
                                         **/TransactionOutput.class,
-                                        **/Wallet.class, **/Wallet$*.class,
-                                        **/WalletExtensionSerializer.class
+                                        **/Wallet.class, **/Wallet$*.class
                                     </excludes>
                                 </artifactItem>
                             </artifactItems>

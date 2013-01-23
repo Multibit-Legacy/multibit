@@ -120,7 +120,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                 boolean decryptSuccess = false;
                 KeyCrypter keyCrypterToUse = wallet.getKeyCrypter();
                 try {
-                    wallet.decrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(currentPasswordToUse));
+                    wallet.decrypt(keyCrypterToUse.deriveKey(currentPasswordToUse));
                     decryptSuccess = true;
                 } catch (KeyCrypterException kce) {
                     // Notify the user that the decrypt failed.

@@ -93,7 +93,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
 
                             controller.fireWalletBusyChange(true);
 
-                            wallet.decrypt(wallet.getKeyCrypter(), wallet.getKeyCrypter().deriveKey(passwordToUse));
+                            wallet.decrypt(wallet.getKeyCrypter().deriveKey(passwordToUse));
                             controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
                             controller.getModel().getActivePerWalletModelData().setDirty(true);
                             FileHandler fileHandler = new FileHandler(controller);

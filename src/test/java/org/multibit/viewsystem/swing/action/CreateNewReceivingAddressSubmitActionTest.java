@@ -157,6 +157,6 @@ System.out.println("ping 1");
 
         // The added private keys should be encrypted with the same password as the wallet password.
         // Thus a decrypt should work fine.
-        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getKeyCrypter(), controller.getModel().getActiveWallet().getKeyCrypter().deriveKey(TEST_PASSWORD1));
+        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getKeyCrypter().deriveKey(TEST_PASSWORD1));
     }
 }

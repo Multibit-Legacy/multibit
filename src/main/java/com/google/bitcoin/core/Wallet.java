@@ -234,7 +234,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     MultiBitWalletVersion version;
 
     /**
-     * A description for the wallet. This is persisted in the wallet file.
+     * A description for the wallet.
      */
     String description;
 
@@ -1535,6 +1535,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * has been called, triggers an auto save bypassing the normal coalescing delay and event handlers.
      * Returns the number of keys added, after duplicates are ignored. The onKeyAdded event will be called for each key
      * in the list that was not already present.
+     * @throws KeyCrypterException 
      */
     public synchronized int addKeys(final List<ECKey> keys) throws KeyCrypterException {
         // TODO: Consider making keys a sorted list or hashset so membership testing is faster.
@@ -2181,7 +2182,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     public void setLastBlockSeenHash(Sha256Hash lastBlockSeenHash) {
         this.lastBlockSeenHash = lastBlockSeenHash;
     }
-    
+
     public Collection<ECKey> getKeychain() {
         return keychain;
     }
@@ -2231,6 +2232,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
     /**
      * Encrypt the wallet using the KeyCrypter and the AES key.
+     *
      * @param keyCrypter The KeyCrypter that specifies how to encrypt/ decrypt a key
      * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
      * @throws KeyCrypterException Thrown if the wallet encryption fails. If so, the wallet state is unchanged.
@@ -2275,22 +2277,21 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
 
     /**
-     * Decrypt the wallet with the keyCrypter and AES key.
+     * Decrypt the wallet with the wallets keyCrypter and AES key.
      * 
-     * @param keyCrypter The KeyCrypter that specifies how to encrypt/ decrypt a key
      * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
      * @throws KeyCrypterException Thrown if the wallet decryption fails. If so, the wallet state is unchanged.
      */
-    synchronized public void decrypt(KeyCrypter keyCrypter, KeyParameter aesKey) throws KeyCrypterException {
+    synchronized public void decrypt(KeyParameter aesKey) throws KeyCrypterException {
         // Check the wallet is already encrypted - you cannot decrypt an unencrypted wallet.
         if (getEncryptionType() == EncryptionType.UNENCRYPTED) {
             throw new WalletIsAlreadyDecryptedException("Wallet is already decrypted");
         }
-
-        // Check that this.keyCrypter is identical to the one passed in otherwise there is risk of data loss.
-        // (This is trying to decrypt a wallet with a different algorithm to that used to encrypt it.)
-        if (this.keyCrypter != null && !this.keyCrypter.equals(keyCrypter)) {
-            throw new KeyCrypterException("You are trying to decrypt a wallet with a different keyCrypter to the one used to encrypt it. Aborting.");
+        
+        // Check that the wallet keyCrypter is non-null. 
+        // This is set either at construction (if an encrypted wallet is created) or by wallet encryption. 
+        if (keyCrypter == null) {
+            throw new KeyCrypterException("The wallet keyCrypter is null so cannot decrypt.");
         }
         
         // Create a new arraylist that will contain the decrypted keys
@@ -2310,7 +2311,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         keychain = decryptedKeyChain;
         
         // The wallet is now unencrypted.
-        this.keyCrypter = null;
+        keyCrypter = null;
     }
 
     /**

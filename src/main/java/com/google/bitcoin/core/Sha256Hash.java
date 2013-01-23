@@ -17,6 +17,8 @@
 package com.google.bitcoin.core;
 
 import com.google.common.io.ByteStreams;
+
+import org.multibit.IsMultiBitClass;
 import org.spongycastle.util.encoders.Hex;
 
 import java.io.File;
@@ -29,8 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
-
-import org.multibit.IsMultiBitClass;
 
 /**
  * A Sha256Hash just wraps a byte[] so that equals and hashcode work correctly, allowing it to be used as keys in a
@@ -78,12 +78,7 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
      */
     public static Sha256Hash hashFileContents(File f) throws IOException {
         // Lame implementation that just reads the entire file into RAM. Can be made more efficient later.
-        // Lame implementation that just reads the entire file into RAM. Can be made more efficient later.
-        FileInputStream fileInputStream = new FileInputStream(f);
-        Sha256Hash sha256Hash = create(ByteStreams.toByteArray(fileInputStream));
-        fileInputStream.close();
-        fileInputStream = null;
-        return sha256Hash;
+        return create(ByteStreams.toByteArray(new FileInputStream(f)));
     }
 
     /**
@@ -91,9 +86,7 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
      */
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof Sha256Hash)) {
-            return false;
-        }
+        if (!(other instanceof Sha256Hash)) return false;
         return Arrays.equals(bytes, ((Sha256Hash) other).bytes);
     }
 

@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package com.google.bitcoin.store;
+package org.multibit.store;
 
 import java.util.Collection;
 import java.util.Collections;
 
 import org.bitcoinj.wallet.Protos;
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.IsMultiBitClass;
 import org.multibit.store.MultiBitWalletProtobufSerializer;
 
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.store.WalletExtensionSerializer;
 
 /**
  * Optional helper for WalletProtobufSerializer that allows for serialization and deserialization of Wallet objects
  * with extensions and corresponding extended Wallet classes. If you want to store proprietary data into the wallet,
  * this is how to do it.
  */
-public class WalletExtensionSerializer implements IsMultiBitClass {
+public class MultiBitWalletExtensionSerializer extends WalletExtensionSerializer implements IsMultiBitClass {
     public Wallet newWallet(NetworkParameters params) {
         return new Wallet(params);
     }

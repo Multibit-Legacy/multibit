@@ -4,6 +4,7 @@ Version 0.5.8beta
 + No longer opens in 'local mode' - it picks up your other MultiBit wallets.
 + Removed cacheManager code - no longer supported
 + Backward compatible wallet changes (description added, minor version dropped).
++ Serialised wallets now no longer load - you will have to use an older version of MultiBit and migrate them to protobuf format.
 + Refactoring of encryption code in response to review comments
 + Refactoring of the initial view being remembered. Forward compatible but
   there is a minor regression fail in that if you open an earlier MultiBit it will

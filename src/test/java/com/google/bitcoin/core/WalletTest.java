@@ -615,7 +615,7 @@ public class WalletTest {
         assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.3", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
 
         // Decrypt wallet.
-        encryptedWallet.decrypt(keyCrypter, aesKey);
+        encryptedWallet.decrypt(aesKey);
 
         // Wallet should now be of type WalletType.UNENCRYPTED.
         assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
@@ -640,7 +640,7 @@ public class WalletTest {
 
         // Chek that the wrong password does not decrypt the wallet.
         try {
-            encryptedWallet.decrypt(keyCrypter, wrongAesKey);
+            encryptedWallet.decrypt(wrongAesKey);
             fail("Incorrectly decoded wallet with wrong password");
         } catch (KeyCrypterException ede) {
             assertTrue("Wrong message in EncrypterDecrypterException", ede.getMessage().indexOf("Could not decrypt bytes") > -1);
@@ -653,11 +653,11 @@ public class WalletTest {
         assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
 
         // Decrypt wallet.
-        encryptedWallet.decrypt(keyCrypter, aesKey);
+        encryptedWallet.decrypt(aesKey);
 
         // Try decrypting it again
         try {
-            encryptedWallet.decrypt(keyCrypter, aesKey);
+            encryptedWallet.decrypt(aesKey);
             fail("Should not be able to decrypt a decrypted wallet");
         } catch (WalletIsAlreadyDecryptedException e) {
             assertTrue("Expected behaviour", true);

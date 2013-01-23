@@ -111,17 +111,6 @@ public class TransactionOutput extends ChildMessage implements Serializable, IsM
         length = 8 + VarInt.sizeOf(scriptBytes.length) + scriptBytes.length;
     }
 
-    /**
-     * Used only in creation of the genesis blocks and in unit tests.
-     */
-    TransactionOutput(NetworkParameters params, Transaction parent, byte[] scriptBytes) {
-        super(params);
-        this.scriptBytes = scriptBytes;
-        this.value = Utils.toNanoCoins(50, 0);
-        parentTransaction = parent;
-        availableForSpending = true;
-    }
-
     public Script getScriptPubKey() throws ScriptException {
         if (scriptPubKey == null) {
             maybeParse();

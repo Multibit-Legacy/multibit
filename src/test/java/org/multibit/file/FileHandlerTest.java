@@ -324,7 +324,7 @@ public class FileHandlerTest extends TestCase {
         System.out.println("Reborn KeyCrypter = " + perWalletModelDataReborn.getWallet().getKeyCrypter());
         
         // Decrypt the reborn wallet.
-        perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getKeyCrypter(), perWalletModelDataReborn.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
 
         // Get the keys out the reborn wallet and check that all the keys match.
         Collection<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();

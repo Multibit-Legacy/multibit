@@ -37,7 +37,6 @@ public class IsMultiBitClassTest extends TestCase {
         checkClass("core.TransactionInput");
         checkClass("core.TransactionOutput");
         checkClass("core.Wallet");
-        checkClass("store.WalletExtensionSerializer");
     }
 
     private void checkClass(String className) throws ClassNotFoundException {

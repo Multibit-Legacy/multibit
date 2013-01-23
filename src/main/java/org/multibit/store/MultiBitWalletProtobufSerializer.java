@@ -43,6 +43,7 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
 
     public MultiBitWalletProtobufSerializer() {
         super();
+        this.setWalletExtensionSerializer(new MultiBitWalletExtensionSerializer());
     }
     
     /**
@@ -298,5 +299,4 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
         Protos.Wallet walletProtoWithMandatory = walletBuilder.build();
         walletProtoWithMandatory.writeTo(output);
     }
-
 }
