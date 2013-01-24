@@ -1453,22 +1453,12 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
 
     private boolean transactionSpendsFromThisWalletAndHasBoomerangedBack(Transaction tx) {
-        boolean seenByEnoughPeers = false;
         TransactionConfidence confidence = tx.getConfidence();
-        if (confidence != null && confidence.getBroadcastBy() != null) {
-            int count = 0;
-            ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
-            while(iterator.hasNext()) {
-                count++;
-            }
-            
-            if (count >= MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND) {
-                seenByEnoughPeers = true;
-            }
+        if (confidence == null || confidence.getBroadcastByCount() < MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND) {
+            // Transaction has not been seen by enough peers.
+            return false;
         }
-        
-        if (!seenByEnoughPeers) return false;
-        
+         
         boolean wasSentFromMyWallet = true;
         // Check all transaction inputs are from your own wallet
         for (TransactionInput input : tx.getInputs()) {

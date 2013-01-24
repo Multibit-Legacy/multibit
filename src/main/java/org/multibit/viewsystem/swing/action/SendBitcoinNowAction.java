@@ -172,7 +172,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     }
 
     /**
-     * send the transaction directly
+     * Send the transaction directly.
      */
     private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, char[] walletPassword) {
         String message = null;

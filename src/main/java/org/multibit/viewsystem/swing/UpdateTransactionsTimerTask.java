@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing;
 
+import java.math.BigInteger;
 import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
@@ -24,6 +25,10 @@ public class UpdateTransactionsTimerTask extends TimerTask {
 
     @Override
     public void run() {
+        final BigInteger finalEstimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
+        final BigInteger finalAvailableToSpend = controller.getModel().getActiveWalletAvailableBalanceWithBoomerangChange();
+        final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
+ 
         // If viewing transactions, refresh the screen so that transaction
         // confidence icons can update.
         SwingUtilities.invokeLater(new Runnable() {
@@ -36,7 +41,7 @@ public class UpdateTransactionsTimerTask extends TimerTask {
                 }
 
                 if (updateThisTime) {
-                    mainFrame.updateHeader();
+                    mainFrame.updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend);
                     if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
                         // log.debug("Updating transaction view");
                         transactionsPanel.displayView();

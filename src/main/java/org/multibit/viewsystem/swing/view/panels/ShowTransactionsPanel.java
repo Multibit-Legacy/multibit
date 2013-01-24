@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Timer;
 
 import javax.swing.Action;
@@ -75,6 +74,7 @@ import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
@@ -85,11 +85,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
-import org.multibit.viewsystem.Viewable;
 
 public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
@@ -659,11 +657,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             
             // Work out the line describing the number of peers.
             int peers = 0;
-            if (confidence != null && confidence.getBroadcastBy() != null) {
-                ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
-                while(iterator.hasNext()) {
-                    peers++;
-                }            }
+            if (confidence != null) {
+                peers = confidence.getBroadcastByCount();
+            }
             StringBuilder builder = new StringBuilder();
             if (peers == 0) {
                 builder.append(MultiBit.getController().getLocaliser()
@@ -691,11 +687,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 }
             
                 if (confidence.getBroadcastBy() != null) {
-                    int numberOfPeers = 0;
-                    ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
-                    while(iterator.hasNext()) {
-                        numberOfPeers++;
-                    }
+                    int numberOfPeers = confidence.getBroadcastByCount();
                     if (numberOfPeers >= 4) {
                         return progress0Icon;
                     } else {

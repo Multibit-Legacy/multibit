@@ -16,19 +16,17 @@
 
 package com.google.bitcoin.core;
 
-import com.google.bitcoin.utils.EventListenerInvoker;
-import com.google.common.base.Preconditions;
-
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.ListIterator;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
+
+import com.google.bitcoin.utils.EventListenerInvoker;
+import com.google.common.base.Preconditions;
 
 /**
  * <p>A TransactionConfidence object tracks data you can use to make a confidence decision about a transaction.
@@ -67,6 +65,8 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      * to us, so only peers we explicitly connected to should go here.
      */
     private CopyOnWriteArrayList<PeerAddress> broadcastBy;
+    
+    private int broadcastByCount;
 
     /** The Transaction that this confidence object is associated with. */
     private Transaction transaction;
@@ -187,6 +187,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     public TransactionConfidence(Transaction tx) {
         // Assume a default number of peers for our set.
         broadcastBy = new CopyOnWriteArrayList<PeerAddress>();
+        broadcastByCount = 0;
         transaction = tx;
     }
 
@@ -242,6 +243,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     public void markBroadcastBy(PeerAddress address) {
         if (!broadcastBy.addIfAbsent(address))
             return;  // Duplicate.
+        broadcastByCount++;
         synchronized (this) {
             if (getConfidenceType() == ConfidenceType.UNKNOWN) {
                 this.confidenceType = ConfidenceType.NOT_SEEN_IN_CHAIN;
@@ -397,6 +399,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
         // There is no point in this sync block, it's just to help FindBugs.
         synchronized (c) {
             c.broadcastBy.addAll(broadcastBy);
+            c.broadcastByCount = broadcastByCount;
             c.confidenceType = confidenceType;
             c.overridingTransaction = overridingTransaction;
             c.appearedAtChainHeight = appearedAtChainHeight;
@@ -411,5 +414,9 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
                 listener.onConfidenceChanged(transaction);
             }
         });
+    }
+
+    public int getBroadcastByCount() {
+        return broadcastByCount;
     }
 }

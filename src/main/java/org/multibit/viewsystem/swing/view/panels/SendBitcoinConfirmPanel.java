@@ -641,20 +641,17 @@ public class SendBitcoinConfirmPanel extends JPanel {
     }
 
     private String getConfidenceToolTip(TransactionConfidence confidence) {
-        int peers = 0;
-        if (confidence != null && confidence.getBroadcastBy() != null) {
-            ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
-            while(iterator.hasNext()) {
-                peers++;
-            }
+        int numberOfPeers = 0;
+        if (confidence != null) {
+            numberOfPeers = confidence.getBroadcastByCount();
         }
         StringBuilder builder = new StringBuilder("");
-        if (peers == 0) {
+        if (numberOfPeers == 0) {
             builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
         } else {
             builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
-            builder.append(peers);
-            if (peers > 1)
+            builder.append(numberOfPeers);
+            if (numberOfPeers > 1)
                 builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ".");
             else
                 builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ".");
@@ -668,12 +665,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
         // By default return a triangle which indicates the least known.
         ImageIcon iconToReturn = shapeTriangleIcon;
 
-        if (confidence != null && confidence.getBroadcastBy() != null) {
-            int numberOfPeers = 0;
-            ListIterator<PeerAddress> iterator = confidence.getBroadcastBy();
-            while(iterator.hasNext()) {
-                numberOfPeers++;
-            }
+        if (confidence != null) {
+            int numberOfPeers = confidence.getBroadcastByCount();
             if (numberOfPeers >= 4) {
                 return progress0Icon;
             } else {

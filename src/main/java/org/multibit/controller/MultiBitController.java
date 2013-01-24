@@ -46,14 +46,11 @@ import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.GetDataMessage;
-import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
@@ -70,7 +67,7 @@ import com.google.bitcoin.uri.BitcoinURIParseException;
  * 
  * @author jim
  */
-public class MultiBitController implements PeerEventListener, GenericOpenURIEventListener, GenericPreferencesEventListener,
+public class MultiBitController implements GenericOpenURIEventListener, GenericPreferencesEventListener,
         GenericAboutEventListener, GenericQuitEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
@@ -106,7 +103,12 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * Class encapsulating File IO.
      */
     private FileHandler fileHandler;
-
+    
+    /**
+     * The listener handling Peer events.
+     */
+    private PeerEventListener peerEventListener;
+    
     /**
      * Class encapsulating the location of the Application Data Directory.
      */
@@ -136,6 +138,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         fileHandler = new FileHandler(this);
 
+        peerEventListener = new MultiBitPeerEventListener(this);
+        
         // by default localise to English
         localiser = new Localiser(Locale.ENGLISH);
     }
@@ -269,8 +273,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         fireDataChanged();
     }
-    
-    
+       
     /**
      * Fire that a wallet has changed its busy state.
      */
@@ -288,46 +291,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         this.localiser = localiser;
     }
 
-    /**
-     * The controller listens for PeerGroup events and notifies interested
-     * parties
-     */
-    @Override
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {   
-        onBlocksDownloaded(peer, block, blocksLeft, true);
-    }
     
+    // CAN DELETE CACHE MANAGER
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft, boolean checkIfBlockNeedsWriting) {   
         fireBlockDownloaded();
-    }
-
-    @Override
-    public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-        // log.debug("onChainDownloadStarted called");
-        fireBlockDownloaded();
-    }
-
-    @Override
-    public void onPeerConnected(Peer peer, int peerCount) {
-        //log.debug("Peer '" + peer.toString() + "' connected . PeerCount = " + peerCount);
-        if (peerCount >= 1) {
-            setOnlineStatus(StatusEnum.ONLINE);
-        }
-        if (getModel() != null) {
-            getModel().setNumberOfConnectedPeers(peerCount);
-        }   
-        SendBitcoinConfirmPanel.updatePanel(null);    }
-
-    @Override
-    public void onPeerDisconnected(Peer peer, int peerCount) {
-        //log.debug("Peer '" + peer.toString() + "' disconnected . PeerCount = " + peerCount);
-        if (peerCount == 0) {
-           setOnlineStatus(StatusEnum.CONNECTING);
-        }
-        if (getModel() != null) {
-            getModel().setNumberOfConnectedPeers(peerCount);
-        } 
-        SendBitcoinConfirmPanel.updatePanel(null);
     }
 
     public void setOnlineStatus(StatusEnum statusEnum) {
@@ -555,55 +522,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private boolean isOKToQuit() {
         return true;
     }
-
-    @Override
-    public Message onPreMessageReceived(Peer peer, Message message) {
-        return message;
-    }
-
-    @Override
-    public void onTransaction(Peer peer, Transaction transaction) { 
-        // Loop through all the wallets, seeing if the transaction is relevant
-        // and adding them as pending if so.
-        // (As of 25 Oct 2012, intrawallet zero confirmation tx are not seen if this code is removed)
-        if (transaction != null) {
-            try {
-                java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-
-                if (perWalletModelDataList != null) {
-                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                        Wallet loopWallet = perWalletModelData.getWallet();
-                        if (loopWallet != null) {
-                            if (loopWallet.isTransactionRelevant(transaction)) {
-                                // The perWalletModelData is marked as dirty.
-                                if (perWalletModelData.getWalletInfo() != null) {
-                                    synchronized(perWalletModelData.getWalletInfo()) {
-                                        perWalletModelData.setDirty(true);
-                                    }
-                                } else {
-                                    perWalletModelData.setDirty(true);
-                                }
-                                if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                                    log.debug("MultiBit adding a new pending transaction for the wallet '"
-                                            + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
-                                    loopWallet.receivePending(transaction);
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (ScriptException e) {
-                log.error(e.getMessage(), e);
-            } catch (VerificationException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    @Override
-    public List<Message> getData(Peer peer, GetDataMessage m) {
-        return null;
-    }
     
     /**
      * Called from replay when a block is replayed from cache.
@@ -649,5 +567,9 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                 }            
             }
         }
+    }
+
+    public PeerEventListener getPeerEventListener() {
+        return peerEventListener;
     }
 }

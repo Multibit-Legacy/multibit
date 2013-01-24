@@ -241,7 +241,7 @@ public class MultiBitService {
             }
         }
         // Add the controller as a PeerEventListener.
-        peerGroup.addEventListener(controller);
+        peerGroup.addEventListener(controller.getPeerEventListener());
         return peerGroup;
     }
 
@@ -502,7 +502,7 @@ public class MultiBitService {
         peerGroup.stop();
 
         // Reset UI to zero peers.
-        controller.onPeerDisconnected(null, 0);
+        controller.getPeerEventListener().onPeerDisconnected(null, 0);
  
         peerGroup = createNewPeerGroup();
         peerGroup.start();
