@@ -5,6 +5,7 @@ Version 0.4.20
 + Refactoring of how initial view to display is stored. Forward compatible but
   minor regression going to an older version (shows welcome screen).
 + Fixed bug on fiat amount display in Send/ Request on language change.
++ Less flicky when changing language, font and look-and-feel.
 
 14 Jan 2013 Version 0.4.19
 

@@ -59,6 +59,7 @@ public class TickerTablePanel extends JPanel {
 
     private JTable table;
     private TickerTableModel tickerTableModel;
+    private JScrollPane scrollPane;
 
     private static final String SPACER = "  "; // 2 spaces
 
@@ -136,10 +137,6 @@ public class TickerTablePanel extends JPanel {
         
         int tableHeaderVerticalInsets = table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom;
 
-        TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
-        JLabel label = (JLabel) renderer;
-        label.setHorizontalAlignment(JLabel.CENTER);
-
         // column widths
         String[] columnVariables = tickerTableModel.getColumnVariables();
 
@@ -166,23 +163,9 @@ public class TickerTablePanel extends JPanel {
             }
             tickerWidth += columnWidth;
             table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);
-
-            TableCellRenderer columnRenderer;
-            if (i == numberOfColumns - 1) {
-                columnRenderer = new CurrencyCenterJustifiedWithRightBorderRenderer();
-                
-            } else {
-                columnRenderer = new CurrencyCenterJustifiedRenderer();
-            }
-            if (TickerTableModel.TICKER_COLUMN_CURRENCY.equals(columnVariables[i])) {
-                table.getColumnModel().getColumn(i).setCellRenderer(columnRenderer);
-            } else if (TickerTableModel.TICKER_COLUMN_EXCHANGE.equals(columnVariables[i])) {
-                table.getColumnModel().getColumn(i).setCellRenderer(columnRenderer);
-            } else {
-                table.getColumnModel().getColumn(i).setCellRenderer(columnRenderer);
-            }
-
         }
+        
+        setupTableHeaders();
 
         int idealHeight =  (fontMetrics.getHeight() + table.getRowMargin()) * tickerTableModel.getRowCount() 
             + fontMetrics.getHeight() + tableHeaderVerticalInsets + tickerTableModel.getRowCount() + 8;
@@ -190,13 +173,10 @@ public class TickerTablePanel extends JPanel {
 
         setPreferredSize(new Dimension(tickerWidth, idealHeight));
 
-        JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        scrollPane.setOpaque(false);
-        scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        setupScrollPane();
         scrollPane.getViewport().setPreferredSize(
                 new Dimension(tickerWidth, idealHeight));
         scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, MultiBitFrame.HEIGHT_OF_HEADER)));
@@ -215,8 +195,37 @@ public class TickerTablePanel extends JPanel {
 
         add(scrollPane, constraints);
     }
+    
+    private void setupTableHeaders() {
+        // Column justification.
+        String[] columnVariables = tickerTableModel.getColumnVariables();
+
+        int numberOfColumns = Math.min(table.getColumnCount(), columnVariables.length);
+        for (int i = 0; i < numberOfColumns; i++) {
+            TableCellRenderer columnRenderer;
+            if (i == numberOfColumns - 1) {
+                columnRenderer = new CurrencyCenterJustifiedWithRightBorderRenderer();
+            } else {
+                columnRenderer = new CurrencyCenterJustifiedRenderer();
+            }
+            table.getColumnModel().getColumn(i).setCellRenderer(columnRenderer);
+        }
+
+        TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
+        JLabel label = (JLabel) renderer;
+        label.setHorizontalAlignment(JLabel.CENTER);
+    }
+    
+    private void setupScrollPane() {
+        scrollPane.setOpaque(false);
+        scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    }
 
     public void update() {
+        setupTableHeaders();
+        setupScrollPane();
         table.invalidate();
         table.validate();
         table.repaint();
@@ -228,7 +237,6 @@ public class TickerTablePanel extends JPanel {
         mainFrame.getHeaderPanel().invalidate();
         mainFrame.getHeaderPanel().validate();
         mainFrame.getHeaderPanel().repaint();
-
     }
 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {

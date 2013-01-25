@@ -201,11 +201,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedDateRenderer());
 
         // Justify column headers.
-        TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
-        JLabel label = (JLabel) renderer;
-        label.setHorizontalAlignment(JLabel.CENTER);
-        table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-
+        justifyColumnHeaders();
+ 
         // Description leading justified (set explicitly as it does not seem to work otherwise).
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
             table.getColumnModel().getColumn(2).setCellRenderer(new LeadingJustifiedRenderer());
@@ -217,7 +214,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer();
         table.getColumnModel().getColumn(3).setCellRenderer(decimalAlignRenderer);
  
-
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
         int statusWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.statusText"));
@@ -329,15 +325,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        scrollPane.setOpaque(true);
-        scrollPane.getViewport().setOpaque(true);
+        scrollPaneSetup();
         
-
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -348,6 +337,23 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         add(scrollPane, constraints);
     }
 
+    private void justifyColumnHeaders() {
+        TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
+        JLabel label = (JLabel) renderer;
+        label.setHorizontalAlignment(JLabel.CENTER);
+        table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());       
+    }
+    
+    private void scrollPaneSetup() {
+        scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.setOpaque(true);
+        scrollPane.getViewport().setOpaque(true);
+    }
+ 
     @Override
     public void displayView() {
         //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
@@ -355,6 +361,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         if (controller.getModel().getActiveWallet() == null) {
             return;
         }
+        justifyColumnHeaders();
+        scrollPaneSetup();
+        
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {

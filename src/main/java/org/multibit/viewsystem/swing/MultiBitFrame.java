@@ -940,6 +940,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         statusBar.refreshOnlineStatusText();
 
         updateHeader();
+        if (tickerTablePanel != null) {
+            tickerTablePanel.update();
+        }
 
         // Tell the wallets list to display.
         if (walletsView != null) {
