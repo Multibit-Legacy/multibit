@@ -65,6 +65,9 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      * to us, so only peers we explicitly connected to should go here.
      */
     private Set<PeerAddress> broadcastBy;
+        
+    private int broadcastByCount;
+
     /** The Transaction that this confidence object is associated with. */
     private Transaction transaction;
     // Lazily created listeners array.
@@ -183,6 +186,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     public TransactionConfidence(Transaction tx) {
         // Assume a default number of peers for our set.
         broadcastBy = new HashSet<PeerAddress>(10);
+        broadcastByCount = 0;
         transaction = tx;
     }
 
@@ -236,6 +240,9 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      * @param address IP address of the peer, used as a proxy for identity.
      */
     public synchronized void markBroadcastBy(PeerAddress address) {
+        if (!broadcastBy.contains(address)) {
+            broadcastByCount++;
+        }
         broadcastBy.add(address);
         if (getConfidenceType() == ConfidenceType.UNKNOWN) {
             setConfidenceType(ConfidenceType.NOT_SEEN_IN_CHAIN);
@@ -259,12 +266,17 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
         return broadcastBy;
     }
 
+    /** Returns true if the given address has been seen via markBroadcastBy() */
+    public boolean wasBroadcastBy(PeerAddress address) {
+        return broadcastBy.contains(address);
+    }
+
     @Override
     public synchronized String toString() {
         StringBuilder builder = new StringBuilder();
 
         if (MultiBit.getController() != null && MultiBit.getController().getLocaliser() != null) {
-            int peers = numBroadcastPeers();
+            int peers = getBroadcastByCount();
             if (peers > 0) {
                 builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
                 builder.append(peers);
@@ -386,6 +398,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
         // There is no point in this sync block, it's just to help FindBugs.
         synchronized (c) {
             c.broadcastBy.addAll(broadcastBy);
+            c.broadcastByCount = broadcastByCount;
             c.confidenceType = confidenceType;
             c.overridingTransaction = overridingTransaction;
             c.appearedAtChainHeight = appearedAtChainHeight;
@@ -400,5 +413,9 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
                 listener.onConfidenceChanged(transaction);
             }
         });
+    }
+
+    public int getBroadcastByCount() {
+        return broadcastByCount;
     }
 }

@@ -665,8 +665,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             
             // Work out the line describing the number of peers.
             int peers = 0;
-            if (confidence != null && confidence.getBroadcastBy() != null) {
-                peers = confidence.getBroadcastBy().size();
+            if (confidence != null) {
+                peers = confidence.getBroadcastByCount();
             }
             StringBuilder builder = new StringBuilder();
             if (peers == 0) {
@@ -695,7 +695,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 }
             
                 if (confidence.getBroadcastBy() != null) {
-                    int numberOfPeers = confidence.getBroadcastBy().size();
+                    int numberOfPeers = confidence.getBroadcastByCount();
                     if (numberOfPeers >= 4) {
                         return progress0Icon;
                     } else {

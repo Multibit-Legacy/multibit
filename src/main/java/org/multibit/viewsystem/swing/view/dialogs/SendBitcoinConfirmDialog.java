@@ -585,8 +585,8 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
     private String getConfidenceToolTip(TransactionConfidence confidence) {
         int peers = 0;
-        if (confidence != null && confidence.getBroadcastBy() != null) {
-            peers = confidence.getBroadcastBy().size();
+        if (confidence != null) {
+            peers = confidence.getBroadcastByCount();
         }
         StringBuilder builder = new StringBuilder();
         if (peers == 0) {
@@ -608,8 +608,8 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         // By default return a triangle which indicates the least known.
         ImageIcon iconToReturn = shapeTriangleIcon;
 
-        if (confidence != null && confidence.getBroadcastBy() != null) {
-            int numberOfPeers = confidence.getBroadcastBy().size();
+        if (confidence != null) {
+            int numberOfPeers = confidence.getBroadcastByCount();
             if (numberOfPeers >= 4) {
                 return progress0Icon;
             } else {

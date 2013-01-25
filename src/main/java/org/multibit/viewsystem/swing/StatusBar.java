@@ -39,6 +39,7 @@ import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.LayoutManager2;
@@ -263,46 +264,59 @@ public class StatusBar extends JPanel implements MessageListener {
     }
 
     /**
-     * update online status text with new value
+     * Update online status text with new value.
      * 
-     * @param isOnline
-     *            True if online, false if offline
+     * @param statusEnum
      */
-    public void updateOnlineStatusText(StatusEnum statusEnum) {
-        this.statusEnum = statusEnum;
-        final StatusEnum finalStatusEnum = statusEnum;
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                String onlineStatus = controller.getLocaliser().getString(finalStatusEnum.getLocalisationKey());
-                if (finalStatusEnum == StatusEnum.ONLINE) {
-                    onlineLabel.setForeground(new Color(0, 100, 0));
-                    if (mainFrame != null) {
-                        BlinkLabel estimatedBalanceBTCLabel = mainFrame.getEstimatedBalanceBTCLabel();
-                        if (estimatedBalanceBTCLabel != null) {
-                            estimatedBalanceBTCLabel.setBlinkEnabled(true);
-                        }
-                        BlinkLabel estimatedBalanceFiatLabel = mainFrame.getEstimatedBalanceFiatLabel();
-                        if (estimatedBalanceFiatLabel != null) {
-                            estimatedBalanceFiatLabel.setBlinkEnabled(true);
-                        }
-                    }
-                } else {
-                    onlineLabel.setForeground(new Color(180, 0, 0));
+    public void updateOnlineStatusText(final StatusEnum finalStatusEnum) {
+        if (EventQueue.isDispatchThread()) {
+            updateOnlineStatusTextOnSwingThread(finalStatusEnum);
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    updateOnlineStatusTextOnSwingThread(finalStatusEnum);
                 }
-                onlineLabel.setText(onlineStatus);
-                if (finalStatusEnum == StatusEnum.ERROR) {
-                    // Set tooltip to look at Messages view
-                    String toolTip = HelpContentsPanel.createMultilineTooltipText(
-                            new String[] {controller.getLocaliser().getString("multiBitFrame.statusBar.error1"), 
-                                    controller.getLocaliser().getString("multiBitFrame.statusBar.error2")});
-                    onlineLabel.setToolTipText(toolTip);
+            });
+        }
+    }
+
+    /**
+     * Update online status text with new value.
+     * 
+     * @param statusEnum
+     */
+    public void updateOnlineStatusTextOnSwingThread(final StatusEnum finalStatusEnum) {
+        this.statusEnum = finalStatusEnum;
+        String onlineStatus = controller.getLocaliser().getString(finalStatusEnum.getLocalisationKey());
+        if (finalStatusEnum == StatusEnum.ONLINE) {
+            onlineLabel.setForeground(new Color(0, 100, 0));
+            if (mainFrame != null) {
+                BlinkLabel estimatedBalanceBTCLabel = mainFrame.getEstimatedBalanceBTCLabel();
+                if (estimatedBalanceBTCLabel != null) {
+                    estimatedBalanceBTCLabel.setBlinkEnabled(true);
+                }
+                BlinkLabel estimatedBalanceFiatLabel = mainFrame.getEstimatedBalanceFiatLabel();
+                if (estimatedBalanceFiatLabel != null) {
+                    estimatedBalanceFiatLabel.setBlinkEnabled(true);
                 }
             }
-        });
+        } else {
+            onlineLabel.setForeground(new Color(180, 0, 0));
+        }
+        onlineLabel.setText(onlineStatus);
+        if (finalStatusEnum == StatusEnum.ERROR) {
+            // Set tooltip to look at Messages view
+            String toolTip = HelpContentsPanel.createMultilineTooltipText(new String[] {
+                    controller.getLocaliser().getString("multiBitFrame.statusBar.error1"),
+                    controller.getLocaliser().getString("multiBitFrame.statusBar.error2") });
+            onlineLabel.setToolTipText(toolTip);
+        }
     }
 
     synchronized private void startSync() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 syncProgressBar.setValue(0);
                 syncProgressBar.setVisible(true);
@@ -312,6 +326,7 @@ public class StatusBar extends JPanel implements MessageListener {
     
     synchronized private void finishSync() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 syncProgressBar.setValue(100);
                 syncProgressBar.setVisible(false);
@@ -321,6 +336,7 @@ public class StatusBar extends JPanel implements MessageListener {
     
     synchronized private void updateSync(final int percent, final String syncMessage) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 syncProgressBar.setValue(percent);
                 syncProgressBar.setToolTipText(syncMessage);
@@ -354,6 +370,7 @@ public class StatusBar extends JPanel implements MessageListener {
     private void updateStatusLabel(final String newStatusLabel, Boolean clearAutomatically) {
         StatusBar.clearAutomatically = clearAutomatically;
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 if (statusLabel != null) {
                     statusLabel.setText(newStatusLabel);
@@ -595,6 +612,7 @@ class PercentLayout implements LayoutManager2 {
         }
     }
 
+    @Override
     public void addLayoutComponent(Component component, Object constraints) {
         setConstraint(component, constraints);
     }
@@ -606,6 +624,7 @@ class PercentLayout implements LayoutManager2 {
      * origin, 1 is aligned the furthest away from the origin, 0.5 is centered,
      * etc.
      */
+    @Override
     public float getLayoutAlignmentX(Container target) {
         return 1.0f / 2.0f;
     }
@@ -617,6 +636,7 @@ class PercentLayout implements LayoutManager2 {
      * origin, 1 is aligned the furthest away from the origin, 0.5 is centered,
      * etc.
      */
+    @Override
     public float getLayoutAlignmentY(Container target) {
         return 1.0f / 2.0f;
     }
@@ -625,6 +645,7 @@ class PercentLayout implements LayoutManager2 {
      * Invalidates the layout, indicating that if the layout manager has cached
      * information it should be discarded.
      */
+    @Override
     public void invalidateLayout(Container target) {
     }
 
@@ -636,6 +657,7 @@ class PercentLayout implements LayoutManager2 {
      * @param comp
      *            the component to be added
      */
+    @Override
     public void addLayoutComponent(String name, Component comp) {
     }
 
@@ -645,6 +667,7 @@ class PercentLayout implements LayoutManager2 {
      * @param comp
      *            the component ot be removed
      */
+    @Override
     public void removeLayoutComponent(Component comp) {
         m_ComponentToConstraint.remove(comp);
     }
@@ -657,6 +680,7 @@ class PercentLayout implements LayoutManager2 {
      *            the component to be laid out
      * @see #preferredLayoutSize
      */
+    @Override
     public Dimension minimumLayoutSize(Container parent) {
         return preferredLayoutSize(parent);
     }
@@ -668,10 +692,12 @@ class PercentLayout implements LayoutManager2 {
      * @see java.awt.Component#getPreferredSize()
      * @see java.awt.LayoutManager
      */
+    @Override
     public Dimension maximumLayoutSize(Container parent) {
         return new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
     }
 
+    @Override
     public Dimension preferredLayoutSize(Container parent) {
         Component[] components = parent.getComponents();
         Insets insets = parent.getInsets();
@@ -704,6 +730,7 @@ class PercentLayout implements LayoutManager2 {
         return new Dimension(width + insets.right + insets.left, height + insets.top + insets.bottom);
     }
 
+    @Override
     public void layoutContainer(Container parent) {
         Insets insets = parent.getInsets();
         Dimension d = parent.getSize();
@@ -819,6 +846,7 @@ class StatusClearTask extends TimerTask {
                     && currentStatusLabelText.equals(previousStatusLabelText)) {
                 if (StatusBar.clearAutomatically) {
                     SwingUtilities.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             // clear label
                             statusLabel.setText("");

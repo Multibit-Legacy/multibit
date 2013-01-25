@@ -1266,14 +1266,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
     
     private boolean transactionSpendsFromThisWalletAndHasBoomerangedBack(Transaction tx) {
-        boolean seenByEnoughPeers = false;
         TransactionConfidence confidence = tx.getConfidence();
-        if (confidence != null && confidence.getBroadcastBy() != null 
-                && confidence.getBroadcastBy().size() >= MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND) {
-            seenByEnoughPeers = true;
+        if (confidence == null 
+                || confidence.getBroadcastByCount() < MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND) {
+            return false;
         }
-        
-        if (!seenByEnoughPeers) return false;
         
         boolean wasSentFromMyWallet = true;
         // Check all transaction inputs are from your own wallet
