@@ -62,11 +62,6 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void recreateAllViews(boolean initUI) {
-        System.out.println("SIMPLE. All views were recreated");
-    }
-
-    @Override
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
         System.out.println("SIMPLE. Files have been changed by another process");
     }
@@ -94,5 +89,10 @@ public class SimpleViewSystem implements ViewSystem {
     @Override
     public void onWalletChanged(Wallet wallet) {
         System.out.println("SIMPLE. onWalletChanged");        
+    }
+
+    @Override
+    public void recreateAllViews(boolean initUI, View initialView) {
+        System.out.println("SIMPLE. All views were recreated");
     }
 }

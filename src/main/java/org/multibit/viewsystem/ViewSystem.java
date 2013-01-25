@@ -47,7 +47,7 @@ public interface ViewSystem extends WalletEventListener {
      * tells the view system to recreate all views e.g. after a language change or wallet change
      * @param initUI Completely redraw everything on all screens = true
      */   
-    public void recreateAllViews(boolean initUI);
+    public void recreateAllViews(boolean initUI, View initialView);
        
      /**
      * tells the view system that an external process has modified one of the wallets

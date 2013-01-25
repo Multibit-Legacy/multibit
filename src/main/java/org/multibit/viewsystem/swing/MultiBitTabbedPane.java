@@ -21,7 +21,6 @@ import javax.swing.plaf.TabbedPaneUI;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
@@ -239,6 +238,13 @@ public class MultiBitTabbedPane extends JTabbedPane {
         return null;
     }
 
+    public void removeAllTabs() {
+        int tabCount = this.getTabCount();
+        for (int i = 0; i < tabCount; i++) {
+            this.removeTabAt(0);
+        }
+    }
+    
     public static boolean isEnableUpdates() {
         return enableUpdates;
     }
