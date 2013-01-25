@@ -209,6 +209,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     private final AbstractTradePanel thisAbstractTradePanel;
 
     private QRCodeGenerator qrCodeGenerator;
+    
+    private JScrollPane addressesScrollPane;
 
     /**
      * map that maps one of the key constants in this class to the actual key to
@@ -706,12 +708,9 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         constraints.anchor = GridBagConstraints.LINE_START;
         addressPanel.add(createAddressesHeaderPanel(), constraints);
 
-        JScrollPane scrollPane = new JScrollPane(addressesTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        addressesScrollPane = new JScrollPane(addressesTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        setupScrollPane();
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -719,13 +718,21 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
-        addressPanel.add(scrollPane, constraints);
+        addressPanel.add(addressesScrollPane, constraints);
 
         // add on a selection listener
         addressesListener = new SelectionListener();
         addressesTable.getSelectionModel().addListSelectionListener(addressesListener);
 
         return addressPanel;
+    }
+    
+    private void setupScrollPane() {
+        addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
+        addressesScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        addressesScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+
     }
 
     protected void setQRCodePanelVisible(boolean visible) {
@@ -1298,6 +1305,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     @Override
     public void displayView() {
         loadForm();
+        setupScrollPane();
         getAddressesTableModel().fireTableDataChanged();
         selectRows();
 
