@@ -983,7 +983,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 Viewable currentView = viewFactory.getView(initialView);
                 currentTabPanel.add((JPanel) currentView, BorderLayout.CENTER);
                 viewTabbedPane.addTab(currentView.getViewTitle(), currentView.getViewIcon(), currentView.getViewTooltip(),
-                        currentTabPanel);
+                        currentTabPanel, true);
             }
  
             try {
