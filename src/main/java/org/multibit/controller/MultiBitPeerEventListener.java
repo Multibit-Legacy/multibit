@@ -109,5 +109,4 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     public List<Message> getData(Peer peer, GetDataMessage m) {
         return null;
     }
-
 }

@@ -39,6 +39,7 @@ import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.LayoutManager2;
@@ -263,63 +264,54 @@ public class StatusBar extends JPanel implements MessageListener {
     }
 
     /**
-     * update online status text with new value
+     * Update online status text with new value.
      * 
      * @param statusEnum
      */
-    public void updateOnlineStatusText(StatusEnum statusEnum) {
-        this.statusEnum = statusEnum;
-        final StatusEnum finalStatusEnum = statusEnum;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                String onlineStatus = controller.getLocaliser().getString(finalStatusEnum.getLocalisationKey());
-                if (finalStatusEnum == StatusEnum.ONLINE) {
-                    onlineLabel.setForeground(new Color(0, 100, 0));
-                    if (mainFrame != null) {
-                        BlinkLabel estimatedBalanceBTCLabel = mainFrame.getEstimatedBalanceBTCLabel();
-                        if (estimatedBalanceBTCLabel != null) {
-                            estimatedBalanceBTCLabel.setBlinkEnabled(true);
-                        }
-                        BlinkLabel estimatedBalanceFiatLabel = mainFrame.getEstimatedBalanceFiatLabel();
-                        if (estimatedBalanceFiatLabel != null) {
-                            estimatedBalanceFiatLabel.setBlinkEnabled(true);
-                        }
-                    }
-                } else {
-                    onlineLabel.setForeground(new Color(180, 0, 0));
+    public void updateOnlineStatusText(final StatusEnum finalStatusEnum) {
+        if (EventQueue.isDispatchThread()) {
+            updateOnlineStatusTextOnSwingThread(finalStatusEnum);
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    updateOnlineStatusTextOnSwingThread(finalStatusEnum);
                 }
-                onlineLabel.setText(onlineStatus);
-                if (finalStatusEnum == StatusEnum.ERROR) {
-                    // Set tooltip to look at Messages view
-                    String toolTip = HelpContentsPanel.createMultilineTooltipText(new String[] {
-                            controller.getLocaliser().getString("multiBitFrame.statusBar.error1"),
-                            controller.getLocaliser().getString("multiBitFrame.statusBar.error2") });
-                    onlineLabel.setToolTipText(toolTip);
-                }
+            });
+        }
+    }
 
-                // Highlight the border of the online status according to how
-                // many peers are connected
-//                int peerCount = controller.getModel().getNumberOfConnectedPeers();
-//                switch (peerCount) {
-//                case 0:
-//                    onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 2, 1, 1), BorderFactory.createMatteBorder(1, 1, 1, 1, Color.LIGHT_GRAY)));
-//                    break;
-//                case 1:
-//                    onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 1, 1), BorderFactory.createMatteBorder(2, 1, 1, 1, Color.BLACK)));
-//                    break;
-//                case 2:
-//                    onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 1, 0), BorderFactory.createMatteBorder(2, 1, 1, 2, Color.BLACK)));
-//                   break;
-//                case 3:
-//                     onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), BorderFactory.createMatteBorder(2, 1, 2, 2, Color.BLACK)));
-//                    break;
-//                default:
-//                    // 4 or more
-//                    onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 1, 0, 0), BorderFactory.createMatteBorder(2, 2, 2, 2, Color.LIGHT_GRAY)));
-//                }
+    /**
+     * Update online status text with new value.
+     * 
+     * @param statusEnum
+     */
+    public void updateOnlineStatusTextOnSwingThread(final StatusEnum finalStatusEnum) {
+        this.statusEnum = finalStatusEnum;
+        String onlineStatus = controller.getLocaliser().getString(finalStatusEnum.getLocalisationKey());
+        if (finalStatusEnum == StatusEnum.ONLINE) {
+            onlineLabel.setForeground(new Color(0, 100, 0));
+            if (mainFrame != null) {
+                BlinkLabel estimatedBalanceBTCLabel = mainFrame.getEstimatedBalanceBTCLabel();
+                if (estimatedBalanceBTCLabel != null) {
+                    estimatedBalanceBTCLabel.setBlinkEnabled(true);
+                }
+                BlinkLabel estimatedBalanceFiatLabel = mainFrame.getEstimatedBalanceFiatLabel();
+                if (estimatedBalanceFiatLabel != null) {
+                    estimatedBalanceFiatLabel.setBlinkEnabled(true);
+                }
             }
-        });
+        } else {
+            onlineLabel.setForeground(new Color(180, 0, 0));
+        }
+        onlineLabel.setText(onlineStatus);
+        if (finalStatusEnum == StatusEnum.ERROR) {
+            // Set tooltip to look at Messages view
+            String toolTip = HelpContentsPanel.createMultilineTooltipText(new String[] {
+                    controller.getLocaliser().getString("multiBitFrame.statusBar.error1"),
+                    controller.getLocaliser().getString("multiBitFrame.statusBar.error2") });
+            onlineLabel.setToolTipText(toolTip);
+        }
     }
 
     synchronized private void startSync() {

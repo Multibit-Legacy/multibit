@@ -21,6 +21,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -944,6 +945,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     @Override
     public void recreateAllViews(final boolean initUI) {
+        if (EventQueue.isDispatchThread()) {
+            recreateAllViewsOnSwingThread(initUI);
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    recreateAllViewsOnSwingThread(initUI);
+                }
+            });
+        }
+    }
+
+    private void recreateAllViewsOnSwingThread(final boolean initUI) {
         ColorAndFontConstants.init();
 
         // Close down current view.
@@ -992,11 +1006,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     /**
-     * Display next view on Swing event dispatch thread.
+     * Display next view.
      */
     @Override
     public void displayView(View viewToDisplay) {
-
         //log.debug("Displaying view '" + viewToDisplay + "'");
         // Open wallet view obselete - show transactions
         if (View.OPEN_WALLET_VIEW == viewToDisplay) {
@@ -1021,46 +1034,52 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             log.debug("Cannot display view " + viewToDisplay);
             return;
         }
-        final MultiBitFrame thisFrame = this;
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @SuppressWarnings("deprecation")
-            @Override
-            public void run() {
-                String viewTitle = nextViewFinal.getViewTitle();
-                boolean foundTab = false;
-                if (viewTabbedPane.getTabCount() > 0) {
-                    for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
-                        JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
-                        if (tabComponent != null) {
-                            Component[] childComponents = tabComponent.getComponents();
-                            String tabTitle = null;
-                            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof Viewable) {
-                                tabTitle = ((Viewable) childComponents[0]).getViewTitle();
-                            }
-                            if (viewTitle != null && viewTitle.equals(tabTitle)) {
-                                foundTab = true;
-                                ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
-                                ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
-                                viewTabbedPane.setSelectedIndex(i);
-                            }
-                        }
+        if (EventQueue.isDispatchThread()) {
+            displayViewOnSwingThread(nextViewFinal);
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    displayViewOnSwingThread(nextViewFinal);
+                }
+            });
+        }
+    }
+    
+    private void displayViewOnSwingThread(final Viewable nextViewFinal) {
+        String viewTitle = nextViewFinal.getViewTitle();
+        boolean foundTab = false;
+        if (viewTabbedPane.getTabCount() > 0) {
+            for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
+                JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
+                if (tabComponent != null) {
+                    Component[] childComponents = tabComponent.getComponents();
+                    String tabTitle = null;
+                    if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof Viewable) {
+                        tabTitle = ((Viewable) childComponents[0]).getViewTitle();
+                    }
+                    if (viewTitle != null && viewTitle.equals(tabTitle)) {
+                        foundTab = true;
+                        ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
+                        ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
+                        viewTabbedPane.setSelectedIndex(i);
                     }
                 }
-
-                if (!foundTab && nextViewFinal instanceof JPanel) {
-                    JPanel tabOutlinePanel = new JPanel(new BorderLayout());
-                    tabOutlinePanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
-                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),
-                            nextViewFinal.getViewTooltip(), tabOutlinePanel, true);
-                    viewTabbedPane.setSelectedComponent(tabOutlinePanel);
-                }
-
-                nextViewFinal.displayView();
-
-                thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
             }
-        });
+        }
+
+        if (!foundTab && nextViewFinal instanceof JPanel) {
+            JPanel tabOutlinePanel = new JPanel(new BorderLayout());
+            tabOutlinePanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
+            viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),
+                    nextViewFinal.getViewTooltip(), tabOutlinePanel, true);
+            viewTabbedPane.setSelectedComponent(tabOutlinePanel);
+        }
+
+        nextViewFinal.displayView();
+
+        thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
     }
 
     /**
@@ -1077,12 +1096,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         final Viewable viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
 
         if (viewToNavigateAwayFromFinal != null) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    viewToNavigateAwayFromFinal.navigateAwayFromView();
-                }
-            });
+            if (EventQueue.isDispatchThread()) {
+                viewToNavigateAwayFromFinal.navigateAwayFromView();
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewToNavigateAwayFromFinal.navigateAwayFromView();
+                    }
+                });
+            }
         }
     }
 
@@ -1097,10 +1120,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
-        updateMenuItemsOnWalletChange();
+        if (EventQueue.isDispatchThread()) {
+            updateMenuItemsOnWalletChange();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    updateMenuItemsOnWalletChange();
+                }
+            });
+        }
     }
     
-    public void updateMenuItemsOnWalletChange() {
+    private void updateMenuItemsOnWalletChange() {
         showImportPrivateKeysAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
         showExportPrivateKeysAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
 
@@ -1193,31 +1225,39 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void fireDataChanged() {
         updateHeader();
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                // Update the password related menu items.
-                updateMenuItemsOnWalletChange();
-                
-                // Tell the wallets list to display.
-                if (walletsView != null) {
-                    walletsView.displayView();
+        if (EventQueue.isDispatchThread()) {
+            fireDataChangedOnSwingThread();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    fireDataChangedOnSwingThread();
                 }
+            });
+        }
+    }
+    
+    private void fireDataChangedOnSwingThread() {
+        // Update the password related menu items.
+        updateMenuItemsOnWalletChange();
+        
+        // Tell the wallets list to display.
+        if (walletsView != null) {
+            walletsView.displayView();
+        }
 
-                // Tell the current view to update itself.
-                Viewable currentViewView = viewFactory.getView(controller.getCurrentView());
-                if (currentViewView != null) {
-                    currentViewView.displayView();
-                }
+        // Tell the current view to update itself.
+        Viewable currentViewView = viewFactory.getView(controller.getCurrentView());
+        if (currentViewView != null) {
+            currentViewView.displayView();
+        }
 
-                // Tell the tab to refresh (gets round bug on replay for transactions panel)
-                Viewable tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
-                if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
-                    //log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
-                    tabbedPaneCurrentView.displayView();
-                }
-            }
-        });
+        // Tell the tab to refresh (gets round bug on replay for transactions panel)
+        Viewable tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
+        if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
+            //log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
+            tabbedPaneCurrentView.displayView();
+        }
     }
 
     /**
@@ -1225,6 +1265,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     public void fireExchangeDataChanged() {
         updateHeader();
+
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -1233,19 +1274,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
 
-    void updateHeader() {
+    public void updateHeader() {
         final BigInteger finalEstimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
         final BigInteger finalAvailableToSpend = model.getActiveWalletAvailableBalanceWithBoomerangChange();
         final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend);
-            }
-        });
+        if (EventQueue.isDispatchThread()) {
+            updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend);
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend);
+                }
+            });
+        }
     }
         
-    void updateHeaderOnSwingThread(final boolean filesHaveBeenChangedByAnotherProcess, final BigInteger estimatedBalance, final BigInteger availableToSpend) {
+    private void updateHeaderOnSwingThread(final boolean filesHaveBeenChangedByAnotherProcess, final BigInteger estimatedBalance, final BigInteger availableToSpend) {
         if (filesHaveBeenChangedByAnotherProcess) {
             // Files have been changed by another process - blank totals
             // and put 'Updates stopped' message.

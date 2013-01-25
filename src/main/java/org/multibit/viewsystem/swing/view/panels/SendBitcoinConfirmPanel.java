@@ -656,9 +656,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
             else
                 builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ".");
         }
-
         return builder.toString();
-
     }
 
     private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
@@ -690,24 +688,24 @@ public class SendBitcoinConfirmPanel extends JPanel {
         }
         return iconToReturn;
     }
-    
+
     public MultiBitButton getCancelButton() {
         return cancelButton;
     }
-    
+
     // Used in testing.
     public SendBitcoinNowAction getSendBitcoinNowAction() {
         return sendBitcoinNowAction;
     }
-    
+
     public String getMessageText1() {
         return confirmText1.getText();
     }    
-    
+
     public String getMessageText2() {
         return confirmText2.getText();
     }
-    
+
     public void setWalletPassword(char[] password) {
         walletPasswordField.setText(new String(password));
     }

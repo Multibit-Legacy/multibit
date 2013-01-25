@@ -9,6 +9,7 @@ Version 0.5.8beta
 + Refactoring of the initial view being remembered. Forward compatible but
   there is a minor regression fail in that if you open an earlier MultiBit it will
   open the Welcome page.
++ Display less flicky when changing languages, fonts and look-and-feel.
 
 
 
