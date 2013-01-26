@@ -108,7 +108,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private static final int TABLE_BORDER = 3;
 
-    private static final int MINIMUM_ICON_HEIGHT = 18;
+    private static final int MINIMUM_ICON_HEIGHT = 16;
     
     public static final int HEIGHT_DELTA = 3;
 
