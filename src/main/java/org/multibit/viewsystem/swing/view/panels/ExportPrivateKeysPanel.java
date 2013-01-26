@@ -17,9 +17,12 @@ package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -105,6 +108,8 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
     public static final int STENT_HEIGHT = 12;
     public static final int STENT_DELTA = 20;
+    
+    private Font adjustedFont;
 
     /**
      * Creates a new {@link ExportPrivateKeysPanel}.
@@ -833,6 +838,10 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
         fileChooser = new JFileChooser();
         fileChooser.setLocale(controller.getLocaliser().getLocale());
+        adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
+        if (adjustedFont != null) {
+            setFileChooserFont(new Container[] {fileChooser});
+        }
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(new PrivateKeyFileFilter(controller));
         fileChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -1053,6 +1062,17 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                 exportPrivateKeySubmitAction.putValue(Action.SHORT_DESCRIPTION, controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip"));
                 exportPrivateKeySubmitAction.setEnabled(true);
             }
+        }
+    }
+  
+    private void setFileChooserFont(Component[] comp) {
+        for (int x = 0; x < comp.length; x++) {
+            if (comp[x] instanceof Container)
+                setFileChooserFont(((Container) comp[x]).getComponents());
+            try {
+                comp[x].setFont(adjustedFont);
+            } catch (Exception e) {
+            }// do nothing
         }
     }
 }
