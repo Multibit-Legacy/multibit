@@ -41,6 +41,7 @@ import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
@@ -337,7 +338,6 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
             if (fontHasChanged) {
                 Font newFont = dataProvider.getSelectedFont();
-                FontSizer.INSTANCE.initialise(controller);
                 if (newFont != null) {
                     UIManager.put("ToolTip.font", newFont);
                 }
@@ -373,6 +373,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 }
 
                 ColorAndFontConstants.init();
+                FontSizer.INSTANCE.initialise(controller);
+                HelpContentsPanel.clearBrowser();
+
                 controller.fireDataStructureChanged();
                 SwingUtilities.updateComponentTreeUI(mainFrame);
             }

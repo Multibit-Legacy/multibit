@@ -68,7 +68,7 @@ public class Browser extends javax.swing.JEditorPane {
            
             setEditable(false);
             setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-
+            
             String fontName = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
             if (fontName == null || "".equals(fontName)) {
                 fontName = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
@@ -77,16 +77,31 @@ public class Browser extends javax.swing.JEditorPane {
             fontName = fontName + ", san-serif";
 
             int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
+            boolean isItalic = false;
+            boolean isBold = false;
+            FontSizer.INSTANCE.initialise(controller);
             Font adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
             if (adjustedFont != null) {
-                this.setFont(adjustedFont);
+                setFont(adjustedFont);
                 fontSize = adjustedFont.getSize();
+                isItalic = adjustedFont.isItalic();
+                isBold = adjustedFont.isBold();
+            }
+            
+            String fontCSS = "font-size:" + fontSize + "pt; font-family:" + fontName + ";";
+            if (isItalic) {
+                fontCSS = fontCSS + "font-style:italic;";
+            }            
+            if (isBold) {
+                fontCSS = fontCSS + "font-weight:bold;";
+            } else {
+                fontCSS = fontCSS + "font-weight:normal;";
             }
         
             HTMLEditorKit kit = new HTMLEditorKit();
             setEditorKit(kit);
             javax.swing.text.html.StyleSheet styleSheet = kit.getStyleSheet();
-            styleSheet.addRule("body {font-size:" + fontSize + "pt; font-family:" + fontName + ";}");
+            styleSheet.addRule("body {" + fontCSS + "}");
             Document doc = kit.createDefaultDocument();
             setDocument(doc);
 
