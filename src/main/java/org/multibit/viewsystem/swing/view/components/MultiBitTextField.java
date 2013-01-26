@@ -29,15 +29,20 @@ public class MultiBitTextField extends JTextField {
    
     private static final int HEIGHT_DELTA = 4;
     private static final int WIDTH_DELTA = 4;
-    
+
     public MultiBitTextField(String text, int width, MultiBitController controller) {
+        this(text, width, controller, HEIGHT_DELTA);
+    }
+
+    public MultiBitTextField(String text, int width, MultiBitController controller, int heightDelta) {
         super(text, width);
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         setFont(font);
         
         FontMetrics fontMetrics = getFontMetrics(font);
         
-        int preferredHeight = fontMetrics.getHeight() + HEIGHT_DELTA;
+        int preferredHeight = fontMetrics.getHeight() + heightDelta
+        ;
         int preferredWidth = fontMetrics.getMaxAdvance() * width + WIDTH_DELTA;
         
         setPreferredSize(new Dimension(preferredWidth, preferredHeight));

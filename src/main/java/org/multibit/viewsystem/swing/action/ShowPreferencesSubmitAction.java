@@ -346,6 +346,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             }
 
             if (wantToFireDataStructureChanged) {
+                ColorAndFontConstants.init();
+                FontSizer.INSTANCE.initialise(controller);
+                HelpContentsPanel.clearBrowser();
+
                 // Redo everything.
                 controller.fireDataStructureChanged();
             }

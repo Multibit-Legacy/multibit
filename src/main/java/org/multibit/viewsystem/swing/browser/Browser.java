@@ -91,7 +91,9 @@ public class Browser extends javax.swing.JEditorPane {
             String fontCSS = "font-size:" + fontSize + "pt; font-family:" + fontName + ";";
             if (isItalic) {
                 fontCSS = fontCSS + "font-style:italic;";
-            }            
+            } else {
+                fontCSS = fontCSS + "font-style:normal;";
+            }
             if (isBold) {
                 fontCSS = fontCSS + "font-weight:bold;";
             } else {
@@ -108,7 +110,8 @@ public class Browser extends javax.swing.JEditorPane {
             log.debug("Trying to load '" + currentHref + "'...");
             Message message = new Message(getLoadingMessage(currentHref, loadingMessage), true);
             MessageManager.INSTANCE.addMessage(message);
-            visit(currentHref, true);
+            setPage(currentHref);
+            MessageManager.INSTANCE.addMessage(new Message(" "));
         } catch (Exception ex) { 
             showUnableToLoadMessage(ex.getClass().getCanonicalName() + " " + ex.getMessage());
         } 
@@ -162,9 +165,6 @@ public class Browser extends javax.swing.JEditorPane {
             protected Boolean doInBackground() throws Exception {
                 try {
                     browser.setLoading(true);
-                    if (forceLoad) {
-                        setPage(url);
-                    }
                     
                     InputStream in = url.openStream();
 
