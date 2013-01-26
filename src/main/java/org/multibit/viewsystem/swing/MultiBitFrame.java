@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -26,6 +27,7 @@ import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -54,6 +56,9 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.DefaultEditorKit;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
@@ -117,15 +122,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.82D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
-    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical phrase 0.12345678 BTC ($0.01)";
+    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 0.12345678 BTC ($0.01)";
 
     public static final int WIDTH_OF_LONG_FIELDS = 300;
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;
-    public static final int WALLET_WIDTH_DELTA = 30;
+    public static final int WALLET_WIDTH_DELTA = 25;
 
     public static final int SCROLL_BAR_DELTA = 20;
 
     public static final int HEIGHT_OF_HEADER = 70;
+    
+    public static final int WIDTH_OF_SPLIT_PANE_DIVIDER = 9;
 
     public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 50;
     
@@ -362,9 +369,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         walletsView = new WalletListPanel(controller, this);
 
         // Create the tabbedpane that holds the views.
-        //if (viewTabbedPane == null) {
-            viewTabbedPane = new MultiBitTabbedPane(controller);
-        //}
+        viewTabbedPane = new MultiBitTabbedPane(controller);
         viewTabbedPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         // Add the send bitcoin tab.
@@ -400,6 +405,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         
+        BasicSplitPaneDivider divider = ( ( javax.swing.plaf.basic.BasicSplitPaneUI)splitPane.getUI()).getDivider();
+        divider.setDividerSize(WIDTH_OF_SPLIT_PANE_DIVIDER);
+//        splitPane.setUI(new BasicSplitPaneUI() {
+//            @SuppressWarnings("serial")
+//            public BasicSplitPaneDivider createDefaultDivider() {
+//                return new BasicSplitPaneDivider(this) {
+//                    public void setBorder(Border border) {
+//                        super.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+//                    }
+//                };
+//            }
+//        });
+       
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;

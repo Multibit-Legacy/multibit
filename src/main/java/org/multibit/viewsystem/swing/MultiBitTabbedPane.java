@@ -1,14 +1,17 @@
 package org.multibit.viewsystem.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
+import javax.swing.border.Border;
 import javax.swing.plaf.TabbedPaneUI;
 
 import org.multibit.controller.MultiBitController;
@@ -132,10 +136,11 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     public void addTab(String title, Icon icon, String tooltip, Component component, boolean isCloseable) {
         final Component finalComponent = component;
-
+       
         // Create a panel that represents the tab and ensure that it is
         // transparent.
         JPanel tab = new JPanel(new GridBagLayout());
+
         tab.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -215,8 +220,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // Add the tab to the tabbed pane. Note that the first
         // parameter, which would ordinarily be a String that
         // represents the tab title, is null.
-        addTab(null, component);      
-
+        addTab(null, component);    
+        
         // Instead of using a String/Icon combination for the tab,
         // use our panel instead.
         ToolTipManager.sharedInstance().unregisterComponent(tab);
@@ -251,5 +256,9 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     public static void setEnableUpdates(boolean enableUpdates) {
         MultiBitTabbedPane.enableUpdates = enableUpdates;
+    }
+
+    public Insets getInsets() {
+        return new Insets(0, 0, 0, 0);
     }
 }

@@ -79,6 +79,7 @@ public class Browser extends javax.swing.JEditorPane {
             int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
             Font adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
             if (adjustedFont != null) {
+                this.setFont(adjustedFont);
                 fontSize = adjustedFont.getSize();
             }
         
@@ -92,7 +93,7 @@ public class Browser extends javax.swing.JEditorPane {
             log.debug("Trying to load '" + currentHref + "'...");
             Message message = new Message(getLoadingMessage(currentHref, loadingMessage), true);
             MessageManager.INSTANCE.addMessage(message);
-            setPage(currentHref);
+            visit(currentHref, true);
         } catch (Exception ex) { 
             showUnableToLoadMessage(ex.getClass().getCanonicalName() + " " + ex.getMessage());
         } 
@@ -113,7 +114,7 @@ public class Browser extends javax.swing.JEditorPane {
                 message.setShowInMessagesTab(false);
                 MessageManager.INSTANCE.addMessage(message);
                 // Load and display the URL.
-                getUrlContentInBackground(this, new URL(newHref));
+                getUrlContentInBackground(this, new URL(newHref), forceLoad);
                 currentHref = newHref;
                 
                 // Remember the new helpContext.
@@ -135,7 +136,7 @@ public class Browser extends javax.swing.JEditorPane {
     /**
      * Get the URL contents in a background thread.
      */
-    private void getUrlContentInBackground(final Browser browser, final URL url) {
+    private void getUrlContentInBackground(final Browser browser, final URL url, final boolean forceLoad) {
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             
             private String message = null;
@@ -146,6 +147,9 @@ public class Browser extends javax.swing.JEditorPane {
             protected Boolean doInBackground() throws Exception {
                 try {
                     browser.setLoading(true);
+                    if (forceLoad) {
+                        setPage(url);
+                    }
                     
                     InputStream in = url.openStream();
 
