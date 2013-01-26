@@ -360,6 +360,11 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         }
         justifyColumnHeaders();
         scrollPaneSetup();
+        
+        // Amount decimal aligned
+        DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer();
+        table.getColumnModel().getColumn(3).setCellRenderer(decimalAlignRenderer);
+
 
         walletTableModel.recreateWalletData();
 
@@ -995,7 +1000,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             } else {
                 StyleConstants.setBackground(style, ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
             }
-            StyleConstants.setBold(style, false);
+            StyleConstants.setBold(style, FontSizer.INSTANCE.getAdjustedDefaultFont().isBold());
+            StyleConstants.setItalic(style, FontSizer.INSTANCE.getAdjustedDefaultFont().isItalic());
             StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
             StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
             StyleConstants.setSpaceBelow(style, 10);

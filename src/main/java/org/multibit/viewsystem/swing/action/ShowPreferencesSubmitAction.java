@@ -345,14 +345,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 wantToFireDataStructureChanged = true;
             }
 
-            if (wantToFireDataStructureChanged) {
-                ColorAndFontConstants.init();
-                FontSizer.INSTANCE.initialise(controller);
-                HelpContentsPanel.clearBrowser();
-
-                // Redo everything.
-                controller.fireDataStructureChanged();
-            }
+//            if (wantToFireDataStructureChanged) {
+//                ColorAndFontConstants.init();
+//                FontSizer.INSTANCE.initialise(controller);
+//                HelpContentsPanel.clearBrowser();
+//
+//                // Redo everything.
+//                controller.fireDataStructureChanged();
+//            }
 
             if (lookAndFeelHasChanged) {
                 try {
@@ -375,7 +375,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 } catch (UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
                 }
+            }
 
+            if (wantToFireDataStructureChanged || lookAndFeelHasChanged) {
                 ColorAndFontConstants.init();
                 FontSizer.INSTANCE.initialise(controller);
                 HelpContentsPanel.clearBrowser();
@@ -383,9 +385,6 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.fireDataStructureChanged();
                 SwingUtilities.updateComponentTreeUI(mainFrame);
             }
-
-            // Return to the preferences view.
-            //controller.displayView(View.PREFERENCES_VIEW);
 
             if (feeValidationError) {
                 MessageManager.INSTANCE.addMessage(new Message(updateStatusText));
