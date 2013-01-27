@@ -62,27 +62,6 @@
             <snapshots />
             <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
         </repository>
-        <!-- xeiam repo -->
-        <repository>
-            <id>xeiam-release</id>
-            <releases />
-            <url>http://nexus.xeiam.com/content/repositories/releases/</url>
-        </repository>
-        <repository>
-            <id>xeiam-snapshot</id>
-            <snapshots />
-            <url>http://nexus.xeiam.com/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>xchange-release</id>
-            <releases />
-            <url>http://nexus.xeiam.com/content/repositories/releases/</url>
-        </repository>
-        <repository>
-            <id>xchange-snapshot</id>
-            <snapshots />
-            <url>http://nexus.xeiam.com/content/repositories/snapshots/</url>
-        </repository>
         <!-- zxing repo -->
         <repository>
             <id>mvn-adamgent</id>
@@ -593,18 +572,18 @@
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange</artifactId>
-            <version>1.1.0</version>
+            <artifactId>xchange-core</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-mtgox</artifactId>
-            <version>1.1.0</version>
+            <version>1.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.xeiam</groupId>
+            <groupId>com.xeiam.xchart</groupId>
             <artifactId>xchart</artifactId>
-            <version>1.2.0</version>
+            <version>1.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.izpack</groupId>
