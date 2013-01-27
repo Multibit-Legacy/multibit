@@ -17,10 +17,13 @@ package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -57,6 +60,7 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ImportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -111,6 +115,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
     public FileFilter multiBitFileChooser;
     public FileFilter myWalletPlainFileChooser;
     public FileFilter myWalletEncryptedFileChooser;
+    
+    private Font adjustedFont;
 
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
@@ -746,6 +752,10 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
         fileChooser = new JFileChooser();
         fileChooser.setLocale(controller.getLocaliser().getLocale());
+        adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
+        if (adjustedFont != null) {
+            setFileChooserFont(new Container[] {fileChooser});
+        }
         fileChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
@@ -967,5 +977,16 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
 
     public ImportPrivateKeysSubmitAction getImportPrivateKeysSubmitAction() {
         return importPrivateKeysSubmitAction;
+    }
+    
+    private void setFileChooserFont(Component[] comp) {
+        for (int x = 0; x < comp.length; x++) {
+            if (comp[x] instanceof Container)
+                setFileChooserFont(((Container) comp[x]).getComponents());
+            try {
+                comp[x].setFont(adjustedFont);
+            } catch (Exception e) {
+            }// do nothing
+        }
     }
 }

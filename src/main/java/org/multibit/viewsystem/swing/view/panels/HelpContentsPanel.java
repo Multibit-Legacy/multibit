@@ -52,7 +52,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
 
     private static final long serialVersionUID = 4921443778446348403L;
 
-    private Browser browser;
+    private static Browser browser;
     private String helpContext;
 
     private MultiBitController controller;
@@ -114,6 +114,10 @@ public class HelpContentsPanel extends JPanel implements Viewable {
 
     @Override
     public void displayView() {
+        if (browser == null) {
+            browser = new Browser(controller, mainFrame, HELP_BASE_URL + helpContext);
+        }
+        
         helpContext = mainFrame.getHelpContext();
         if (helpContext == null || "".equals(helpContext)) {
             helpContext = "help_contents.html";
@@ -127,6 +131,10 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         firstTimeLoaded = false;
     }
 
+    public static void clearBrowser() {
+        browser = null;
+    }
+    
     @Override
     public Icon getViewIcon() {
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {

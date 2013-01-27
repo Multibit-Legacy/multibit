@@ -74,6 +74,7 @@ import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
@@ -87,7 +88,6 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
-import org.multibit.viewsystem.Viewable;
 
 public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
@@ -108,7 +108,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private static final int TABLE_BORDER = 3;
 
-    private static final int MINIMUM_ICON_HEIGHT = 18;
+    private static final int MINIMUM_ICON_HEIGHT = 16;
     
     public static final int HEIGHT_DELTA = 3;
 
@@ -131,9 +131,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 333; // milliseconds
     
-    public static final int DISPLAY_COUNT_LIMIT = 6;
-    private int displayCount;
-    
     private JScrollPane scrollPane;
     
     /**
@@ -143,7 +140,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private static UpdateTransactionsTimerTask updateTransactionsTimerTask;
     
-    public ShowTransactionsPanel(MultiBitFrame mainFrame, MultiBitController controller) {
+    public ShowTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -156,8 +153,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
-        
-        displayCount = 0;;
     }
 
     private void initUI() {
@@ -202,7 +197,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
         // Justify column headers.
         justifyColumnHeaders();
- 
+
         // Description leading justified (set explicitly as it does not seem to work otherwise).
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
             table.getColumnModel().getColumn(2).setCellRenderer(new LeadingJustifiedRenderer());
@@ -214,6 +209,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer();
         table.getColumnModel().getColumn(3).setCellRenderer(decimalAlignRenderer);
  
+
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
         int statusWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.statusText"));
@@ -253,6 +249,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         sortKeys.add(new TableRowSorter.SortKey(1, SortOrder.DESCENDING));
         rowSorter.setSortKeys(sortKeys);
         Comparator<Date> comparator = new Comparator<Date>() {
+            @Override
             public int compare(Date o1, Date o2) {
                 if (o1 == null) {
                     if (o2 == null) {
@@ -287,6 +284,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         rowSorter.setComparator(1, comparator);
 
         Comparator<String> comparatorNumber = new Comparator<String>() {
+            @Override
             public int compare(String o1, String o2) {
                 try {
                     if (o1 == null) {
@@ -325,8 +323,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        scrollPaneSetup();
-        
+        scrollPaneSetup();   
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -336,7 +334,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
         add(scrollPane, constraints);
     }
-
+    
     private void justifyColumnHeaders() {
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
@@ -353,29 +351,27 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         scrollPane.setOpaque(true);
         scrollPane.getViewport().setOpaque(true);
     }
- 
+
     @Override
     public void displayView() {
         //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
-        
         if (controller.getModel().getActiveWallet() == null) {
             return;
         }
         justifyColumnHeaders();
         scrollPaneSetup();
         
+        // Amount decimal aligned
+        DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer();
+        table.getColumnModel().getColumn(3).setCellRenderer(decimalAlignRenderer);
+
+
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
 
-        // If it is the first showing - schedule to redisplay.
-        // This is to get rid of the bug on the first row amount (BTC) display.
-        if (displayCount < DISPLAY_COUNT_LIMIT) {
-            displayCount++;
-            ShowTransactionsPanel.updateTransactions();
-        }
         //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
@@ -396,14 +392,14 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         JLabel extraLabel = new JLabel();
         boolean doubleIcon = false;
         JPanel combinationPanel = new JPanel();
-        
+
         ImageIcon shapeTriangleIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_TRIANGLE_ICON_FILE);
         ImageIcon shapeSquareIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_SQUARE_ICON_FILE);
         ImageIcon shapeHeptagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_PENTAGON_ICON_FILE);
         ImageIcon shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
-        ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
         ImageIcon pickaxeIcon = ImageLoader.createImageIcon(PICKAXE_ICON_FILE);
         ImageIcon smallExclamationMarkIcon = ImageLoader.createImageIcon(SMALL_EXCLAMATION_MARK_ICON_FILE);
+        ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
         ImageIcon progress0Icon = ImageLoader.createImageIcon(PROGRESS_0_ICON_FILE);
         ImageIcon progress1Icon = ImageLoader.createImageIcon(PROGRESS_1_ICON_FILE);
         ImageIcon progress2Icon = ImageLoader.createImageIcon(PROGRESS_2_ICON_FILE);
@@ -416,6 +412,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         ImageIcon rtlProgress4Icon = ImageLoader.createImageIcon(RTL_PROGRESS_4_ICON_FILE);
         ImageIcon rtlProgress5Icon = ImageLoader.createImageIcon(RTL_PROGRESS_5_ICON_FILE);
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             
@@ -447,8 +444,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             constraints.weighty = 1;
             constraints.anchor = GridBagConstraints.LINE_START;
 
-            combinationPanel.add(extraLabel, constraints); 
-            
+            combinationPanel.add(extraLabel, constraints);           
             
             // Get the transaction and transaction confidence
             Transaction transaction = (Transaction)value;
@@ -464,7 +460,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             if (confidenceType == null) {
                 confidenceType = ConfidenceType.UNKNOWN;
             }
- 
    
             // Coinbase transactions have an extra pickaxe icon.
             if (transaction != null && transaction.isCoinBase()) {
@@ -809,7 +804,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             return label;
         }
     }
-    
+
     class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
@@ -822,6 +817,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
         }
         
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -872,6 +868,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             label = new MultiBitLabel("");
         }
         
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
@@ -1003,7 +1000,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             } else {
                 StyleConstants.setBackground(style, ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
             }
-            StyleConstants.setBold(style, false);
+            StyleConstants.setBold(style, FontSizer.INSTANCE.getAdjustedDefaultFont().isBold());
+            StyleConstants.setItalic(style, FontSizer.INSTANCE.getAdjustedDefaultFont().isItalic());
             StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
             StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
             StyleConstants.setSpaceBelow(style, 10);
@@ -1035,11 +1033,13 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     }
 
     class PopClickListener extends MouseAdapter {
+        @Override
         public void mousePressed(MouseEvent e) {
             if (e.isPopupTrigger())
                 doPop(e);
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
             if (e.isPopupTrigger())
                 doPop(e);

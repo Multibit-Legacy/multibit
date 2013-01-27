@@ -78,7 +78,7 @@ public class ViewFactory {
         }
 
         case TRANSACTIONS_VIEW: {
-            viewToReturn = new ShowTransactionsPanel(mainFrame, controller);
+            viewToReturn = new ShowTransactionsPanel(controller, mainFrame);
             break;
         }
 
@@ -119,6 +119,11 @@ public class ViewFactory {
 
         case SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
             viewToReturn = new ImportPrivateKeysPanel(controller, mainFrame);
+            break;
+        }
+
+        case SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
+            viewToReturn = new ExportPrivateKeysPanel(controller, mainFrame);
             break;
         }
 

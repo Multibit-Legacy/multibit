@@ -380,7 +380,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             if (wantToFireDataStructureChanged || lookAndFeelHasChanged) {
                 ColorAndFontConstants.init();
                 FontSizer.INSTANCE.initialise(controller);
-                //HelpContentsPanel.clearBrowser();
+                HelpContentsPanel.clearBrowser();
 
                 controller.fireDataStructureChanged();
                 SwingUtilities.updateComponentTreeUI(mainFrame);

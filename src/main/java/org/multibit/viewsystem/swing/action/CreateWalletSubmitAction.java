@@ -15,8 +15,11 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +42,7 @@ import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +60,8 @@ public class CreateWalletSubmitAction extends AbstractAction {
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
+    
+    private Font adjustedFont;
 
     /**
      * Creates a new {@link CreateWalletSubmitAction}.
@@ -85,6 +91,10 @@ public class CreateWalletSubmitAction extends AbstractAction {
             JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setLocale(controller.getLocaliser().getLocale());
+            adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
+            if (adjustedFont != null) {
+                setFileChooserFont(new Container[] {fileChooser});
+            }
             fileChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
             
             if (controller.getModel().getActiveWalletFilename() != null) {
@@ -206,6 +216,17 @@ public class CreateWalletSubmitAction extends AbstractAction {
                     loopData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
                 }
             }
+        }
+    }
+    
+    private void setFileChooserFont(Component[] comp) {
+        for (int x = 0; x < comp.length; x++) {
+            if (comp[x] instanceof Container)
+                setFileChooserFont(((Container) comp[x]).getComponents());
+            try {
+                comp[x].setFont(adjustedFont);
+            } catch (Exception e) {
+            }// do nothing
         }
     }
 }
