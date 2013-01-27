@@ -202,8 +202,8 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
             
             chart.setBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
             chart.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
-            chart.setAxisLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-            chart.setTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
+            chart.setAxisTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            chart.setTickLabelFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
             chart.setDateFormatter(DATE_FORMAT);
 
             chart.setTitle(chartTitle);
