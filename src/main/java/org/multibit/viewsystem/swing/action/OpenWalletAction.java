@@ -88,6 +88,7 @@ public class OpenWalletAction extends AbstractAction {
             if (fileChooser == null) {
                 fileChooser = new JFileChooser();
                 fileChooser.setLocale(controller.getLocaliser().getLocale());
+                fileChooser.setDialogTitle(controller.getLocaliser().getString("openWalletAction.tooltip"));
                 adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
                 if (adjustedFont != null) {
                     setFileChooserFont(new Container[] {fileChooser});
