@@ -72,7 +72,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewWalletAction.text"));
+        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewWalletAction.tooltip"));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createNewWalletAction.text"));
     }
 
@@ -92,6 +92,8 @@ public class CreateWalletSubmitAction extends AbstractAction {
             JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setLocale(controller.getLocaliser().getLocale());
+            fileChooser.setDialogTitle(controller.getLocaliser().getString("createNewWalletAction.tooltip"));
+
             adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
             if (adjustedFont != null) {
                 setFileChooserFont(new Container[] {fileChooser});

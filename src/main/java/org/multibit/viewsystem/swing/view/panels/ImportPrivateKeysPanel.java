@@ -826,6 +826,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
         fileChooser = new JFileChooser();
         fileChooser.setLocale(controller.getLocaliser().getLocale());
+        fileChooser.setDialogTitle(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
         adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
         if (adjustedFont != null) {
             setFileChooserFont(new Container[] {fileChooser});
