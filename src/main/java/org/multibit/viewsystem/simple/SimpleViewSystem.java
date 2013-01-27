@@ -67,7 +67,7 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void recreateAllViews(boolean initUI) {
+    public void recreateAllViews(boolean initUI, View initialView) {
         System.out.println("SIMPLE. All views were recreated");
     }
 

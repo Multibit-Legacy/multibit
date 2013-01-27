@@ -40,8 +40,8 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
@@ -75,15 +75,16 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
     /**
      * Change preferences.
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
+        boolean feeValidationError = false;
+
+        boolean wantToFireDataStructureChanged = false;
+
         try {
             if (mainFrame != null) {
                 mainFrame.setCursor(Cursor.WAIT_CURSOR);
             }
-
-            boolean feeValidationError = false;
-
-            boolean wantToFireDataStructureChanged = false;
 
             String updateStatusText = "";
 
@@ -337,7 +338,6 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
             if (fontHasChanged) {
                 Font newFont = dataProvider.getSelectedFont();
-                FontSizer.INSTANCE.initialise(controller);
                 if (newFont != null) {
                     UIManager.put("ToolTip.font", newFont);
                 }
@@ -345,10 +345,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 wantToFireDataStructureChanged = true;
             }
 
-            if (wantToFireDataStructureChanged) {
-                // Redo everything.
-                controller.fireDataStructureChanged();
-            }
+//            if (wantToFireDataStructureChanged) {
+//                ColorAndFontConstants.init();
+//                FontSizer.INSTANCE.initialise(controller);
+//                HelpContentsPanel.clearBrowser();
+//
+//                // Redo everything.
+//                controller.fireDataStructureChanged();
+//            }
 
             if (lookAndFeelHasChanged) {
                 try {
@@ -371,14 +375,16 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 } catch (UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
                 }
+            }
 
+            if (wantToFireDataStructureChanged || lookAndFeelHasChanged) {
                 ColorAndFontConstants.init();
+                FontSizer.INSTANCE.initialise(controller);
+                //HelpContentsPanel.clearBrowser();
+
                 controller.fireDataStructureChanged();
                 SwingUtilities.updateComponentTreeUI(mainFrame);
             }
-
-            // Return to the same view.
-            controller.displayView(controller.getCurrentView());
 
             if (feeValidationError) {
                 MessageManager.INSTANCE.addMessage(new Message(updateStatusText));

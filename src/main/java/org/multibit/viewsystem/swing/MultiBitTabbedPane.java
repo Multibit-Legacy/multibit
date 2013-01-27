@@ -5,6 +5,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -21,15 +22,12 @@ import javax.swing.plaf.TabbedPaneUI;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MultiBitTabbedPane extends JTabbedPane {
-
-    private static final Logger log = LoggerFactory.getLogger(MultiBitTabbedPane.class);
 
     private static final long serialVersionUID = 6530125716859367873L;
 
@@ -43,6 +41,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
     private final MultiBitTabbedPane thisTabbedPane;
     
     private static boolean enableUpdates = false;
+
+    private static final Logger log = LoggerFactory.getLogger(MultiBitTabbedPane.class);
 
     public MultiBitTabbedPane(final MultiBitController controller) {
         thisTabbedPane = this;
@@ -60,6 +60,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
         ToolTipManager.sharedInstance().registerComponent(this);
     }
     
+    @Override
     public void setSelectedIndex(int index) {
         super.setSelectedIndex(index);
 
@@ -132,10 +133,11 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     public void addTab(String title, Icon icon, String tooltip, Component component, boolean isCloseable) {
         final Component finalComponent = component;
-
+       
         // Create a panel that represents the tab and ensure that it is
         // transparent.
         JPanel tab = new JPanel(new GridBagLayout());
+
         tab.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -167,6 +169,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
             JButton tabCloseButton = new JButton(closeTabIcon);
             tabCloseButton.setPreferredSize(closeButtonSize);
             tabCloseButton.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     int closeTabNumber = thisTabbedPane.indexOfComponent(finalComponent);
 
@@ -214,13 +217,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // Add the tab to the tabbed pane. Note that the first
         // parameter, which would ordinarily be a String that
         // represents the tab title, is null.
-        addTab(null, component);      
-
+        addTab(null, component);    
+        
         // Instead of using a String/Icon combination for the tab,
         // use our panel instead.
         ToolTipManager.sharedInstance().unregisterComponent(tab);
         setTabComponentAt(getTabCount() - 1, tab);
-        //tab.setToolTipText(tooltip);
     }
     
     @Override
@@ -238,11 +240,22 @@ public class MultiBitTabbedPane extends JTabbedPane {
         return null;
     }
 
+    public void removeAllTabs() {
+        int tabCount = this.getTabCount();
+        for (int i = 0; i < tabCount; i++) {
+            this.removeTabAt(0);
+        }
+    }
+    
     public static boolean isEnableUpdates() {
         return enableUpdates;
     }
 
     public static void setEnableUpdates(boolean enableUpdates) {
         MultiBitTabbedPane.enableUpdates = enableUpdates;
+    }
+
+    public Insets getInsets() {
+        return new Insets(0, 0, 0, 0);
     }
 }

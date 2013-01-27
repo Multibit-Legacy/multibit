@@ -220,7 +220,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(true);
+            viewSystem.recreateAllViews(true, viewToDisplay);
         }
 
         setCurrentView(viewToDisplay);
@@ -233,7 +233,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public void fireRecreateAllViews(boolean initUI) {
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(initUI);
+            viewSystem.recreateAllViews(initUI, getCurrentView());
         }
     }
 

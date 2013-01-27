@@ -54,6 +54,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.text.DefaultEditorKit;
 
 import org.joda.money.Money;
@@ -112,15 +113,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.82D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
-    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical phrase 0.12345678 BTC ($0.01)";
+    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 0.12345678 BTC ($0.01)";
     
     public static final int WIDTH_OF_LONG_FIELDS = 300;
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;
-    public static final int WALLET_WIDTH_DELTA = 30;
+    public static final int WALLET_WIDTH_DELTA = 25;
 
     public static final int SCROLL_BAR_DELTA = 20;
 
     public static final int HEIGHT_OF_HEADER = 70;
+
+    public static final int WIDTH_OF_SPLIT_PANE_DIVIDER = 9;
 
     public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 50;
 
@@ -383,7 +386,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         splitPane.setOneTouchExpandable(false);
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-
+        BasicSplitPaneDivider divider = ( ( javax.swing.plaf.basic.BasicSplitPaneUI)splitPane.getUI()).getDivider();
+        divider.setDividerSize(WIDTH_OF_SPLIT_PANE_DIVIDER);
+        
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -901,21 +906,25 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         return;
     }
 
+    /**
+     * Recreate all views.
+     */
     @Override
-    public void recreateAllViews(final boolean initUI) {
-        if (EventQueue.isDispatchThread()) {
-            recreateAllViewsOnSwingThread(initUI);
+    public void recreateAllViews(final boolean initUI, final View initialView) {
+        // if initUI set, do an invokeLater or else it can sometimes leave the menu items in the Mac header row.
+        if (EventQueue.isDispatchThread() && !initUI) {
+            recreateAllViewsOnSwingThread(initUI, initialView);
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    recreateAllViewsOnSwingThread(initUI);
+                    recreateAllViewsOnSwingThread(initUI, initialView);
                 }
             });
         }
     }
-
-    private void recreateAllViewsOnSwingThread(final boolean initUI) {
+    
+    private void recreateAllViewsOnSwingThread(final boolean initUI, View initialView) {
         ColorAndFontConstants.init();
 
         // Close down current view.
@@ -927,9 +936,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             thisFrame.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
             contentPane.removeAll();
-            viewTabbedPane.removeAll();
+            viewTabbedPane.removeAllTabs();
             viewFactory.initialise();
             initUI();
+            
+            //String current = controller.getCurrentView().toString();
+            if (initialView != null && !initialView.toString().equals(View.TRANSACTIONS_VIEW.toString()) && !initialView.toString().equals(View.SEND_BITCOIN_VIEW.toString())
+                    && !initialView.toString().equals(View.RECEIVE_BITCOIN_VIEW)) {
+                JPanel currentTabPanel = new JPanel(new BorderLayout());
+                Viewable currentView = viewFactory.getView(initialView);
+                currentTabPanel.add((JPanel) currentView, BorderLayout.CENTER);
+                viewTabbedPane.addTab(currentView.getViewTitle(), currentView.getViewIcon(), currentView.getViewTooltip(),
+                        currentTabPanel, true);
+            }
+ 
             try {
                 applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
             } catch (ClassCastException cce) {
@@ -943,7 +963,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (tickerTablePanel != null) {
             tickerTablePanel.update();
         }
-
+        
         // Tell the wallets list to display.
         if (walletsView != null) {
             walletsView.initUI();
@@ -958,7 +978,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 if (components != null && components.length > 0 && components[0] instanceof Viewable) {
                     Viewable loopView = ((Viewable) components[0]);
                     loopView.displayView();
-                    if (loopView.getViewId() == controller.getCurrentView()) {
+                    if (initialView != null && loopView.getViewId().toString().equals(initialView.toString())) {
                         viewTabbedPane.setSelectedIndex(i);
                     }
                 }
@@ -1010,22 +1030,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
     
     private void displayViewOnSwingThread(final Viewable nextViewFinal) {
-        String viewTitle = nextViewFinal.getViewTitle();
+        String viewName = nextViewFinal.getViewId().toString();
         boolean foundTab = false;
         if (viewTabbedPane.getTabCount() > 0) {
+            log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " initally has " + viewTabbedPane.getTabCount() + " tabs.");
             for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
                 JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
                 if (tabComponent != null) {
                     Component[] childComponents = tabComponent.getComponents();
-                    String tabTitle = null;
+                    String tabName = null;
                     if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof Viewable) {
-                        tabTitle = ((Viewable) childComponents[0]).getViewTitle();
+                        tabName= ((Viewable) childComponents[0]).getViewId().toString();
                     }
-                    if (viewTitle != null && viewTitle.equals(tabTitle)) {
+                    if (viewName != null && viewName.equals(tabName)) {
                         foundTab = true;
                         ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
                         ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
                         viewTabbedPane.setSelectedIndex(i);
+//                        viewTabbedPane.invalidate();
+//                        viewTabbedPane.validate();
+//                        viewTabbedPane.repaint();
                     }
                 }
             }
@@ -1037,13 +1061,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),
                     nextViewFinal.getViewTooltip(), tabOutlinePanel, true);
             viewTabbedPane.setSelectedComponent(tabOutlinePanel);
+//            viewTabbedPane.invalidate();
+//            viewTabbedPane.validate();
+//            viewTabbedPane.repaint();
         }
 
         nextViewFinal.displayView();
 
+        log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
         thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
     }
-
     /**
      * navigate away from view - this may be on another thread hence the
      * SwingUtilities.invokeLater
@@ -1106,7 +1133,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void onReorganize(Wallet wallet) {
         log.info("Wallet has been reorganised.");
-        recreateAllViews(false);
+        recreateAllViews(false, controller.getCurrentView());
     }
 
     @Override
