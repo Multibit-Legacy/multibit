@@ -23,42 +23,20 @@
  */
 package org.multibit.viewsystem;
 
-import javax.swing.Icon;
+import org.multibit.controller.MultiBitController;
 
 /**
  *
+ * This defines a extention that can extend a View
+ * 
+ * 
  * @author Cameron Garnham
  */
-public interface Viewable { 
-
-    /**
-     * display the view
-     */
+public interface Extension<P extends BasePanel> {
+    
+    
+    void Init(P panel);
+    
     void displayView();
-
-    /**
-     * @returns the icon for the view
-     */
-    Icon getViewIcon();
-
-    /**
-     * @returns the view identifier for the view
-     */
-    View getViewId();
-
-    /**
-     * @returns the title for the view
-     */
-    String getViewTitle();
-
-    /**
-     * @returns the tooltip for the view
-     */
-    String getViewTooltip();
-
-    /**
-     * Navigate away from the view (including releasing any resources used)
-     */
-    void navigateAwayFromView();
     
 }

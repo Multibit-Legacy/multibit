@@ -14,5 +14,6 @@
 /bin
 /multibit-testnet.info
 /swatch.png
-
+.project
 .idea/.name
+/nb-configuration.xml
