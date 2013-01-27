@@ -86,6 +86,7 @@ public class OpenWalletAction extends AbstractAction {
 
         try {
             if (fileChooser == null) {
+                JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
                 fileChooser = new JFileChooser();
                 fileChooser.setLocale(controller.getLocaliser().getLocale());
                 fileChooser.setDialogTitle(controller.getLocaliser().getString("openWalletAction.tooltip"));
