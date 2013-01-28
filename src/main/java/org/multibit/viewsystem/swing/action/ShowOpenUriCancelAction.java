@@ -27,7 +27,7 @@ import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
 
 /**
- * This {@link Action} represents a cancel action to go back to the parent view for the open uri command
+ * This {@link Action} represents a cancel action to go back to the parent view for the open uri command.
  */
 public class ShowOpenUriCancelAction extends AbstractAction {
 
@@ -54,20 +54,20 @@ public class ShowOpenUriCancelAction extends AbstractAction {
     }
 
     /**
-     * return to the transactions view
+     * Return to the transactions view.
      */
-    public void actionPerformed(ActionEvent e) {
-//        Item showDialogItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-             
+    public void actionPerformed(ActionEvent e) {             
         if (dataProvider != null) {
             String openUriDialogAsString = (new Boolean(dataProvider.isShowUriDialog())).toString();
             controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, openUriDialogAsString);                
         }
         
-        // we do not want to use the uri as the user clicked cancel
+        // We do not want to use the uri as the user clicked cancel.
         controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "false");   
         
         showOpenUriDialog.setVisible(false);
+
+        // TODO return to previously shown view.
         controller.displayView(View.TRANSACTIONS_VIEW);      
     }
 }
