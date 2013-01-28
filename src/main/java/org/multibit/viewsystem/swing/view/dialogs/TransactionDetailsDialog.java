@@ -33,7 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -401,7 +400,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(filler2, constraints);
   
         if (isBrowserSupported()) {
-            JButton openInBlockExplorerButton = new JButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockExplorer"));
+            MultiBitButton openInBlockExplorerButton = new MultiBitButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockExplorer"));
             openInBlockExplorerButton.addActionListener(new ActionListener() {
 
                 @Override
@@ -425,7 +424,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             constraints.anchor = GridBagConstraints.LINE_END;
             detailPanel.add(openInBlockExplorerButton, constraints);
 
-            JButton openInBlockChainInfoButton = new JButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockChainInfo"));
+            MultiBitButton openInBlockChainInfoButton = new MultiBitButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockChainInfo"));
             openInBlockChainInfoButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
@@ -481,11 +480,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
     /**
      * Create a description for a transaction.
-     * 
-     * @param transactionInputs
-     * @param transactionOutputs
-     * @param credit
-     * @param debit
+     *
      * @return A description of the transaction
      */
     private String createTransactionDescription(Transaction transaction) {
@@ -583,7 +578,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
 
         if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
-
             return false;
         }
 

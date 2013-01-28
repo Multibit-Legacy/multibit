@@ -36,7 +36,6 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -337,22 +336,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             }
 
             if (fontHasChanged) {
-                Font newFont = dataProvider.getSelectedFont();
-                if (newFont != null) {
-                    UIManager.put("ToolTip.font", newFont);
-                }
-
                 wantToFireDataStructureChanged = true;
             }
-
-//            if (wantToFireDataStructureChanged) {
-//                ColorAndFontConstants.init();
-//                FontSizer.INSTANCE.initialise(controller);
-//                HelpContentsPanel.clearBrowser();
-//
-//                // Redo everything.
-//                controller.fireDataStructureChanged();
-//            }
 
             if (lookAndFeelHasChanged) {
                 try {
@@ -375,6 +360,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 } catch (UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
                 }
+            }
+            
+            Font newFont = dataProvider.getSelectedFont();
+            if (newFont != null) {
+                UIManager.put("ToolTip.font", newFont);
             }
 
             if (wantToFireDataStructureChanged || lookAndFeelHasChanged) {

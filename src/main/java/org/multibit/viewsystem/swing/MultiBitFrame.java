@@ -1047,9 +1047,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
                         ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
                         viewTabbedPane.setSelectedIndex(i);
-//                        viewTabbedPane.invalidate();
-//                        viewTabbedPane.validate();
-//                        viewTabbedPane.repaint();
                     }
                 }
             }
@@ -1061,9 +1058,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),
                     nextViewFinal.getViewTooltip(), tabOutlinePanel, true);
             viewTabbedPane.setSelectedComponent(tabOutlinePanel);
-//            viewTabbedPane.invalidate();
-//            viewTabbedPane.validate();
-//            viewTabbedPane.repaint();
         }
 
         nextViewFinal.displayView();
