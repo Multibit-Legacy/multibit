@@ -24,6 +24,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
 import org.multibit.viewsystem.swing.view.panels.*;
 
 /**

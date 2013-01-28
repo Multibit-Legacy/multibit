@@ -1,4 +1,5 @@
 Linux readme.txt
 
-MultiBit is experimental software.
-Do not use it with large amounts of bitcoin.
+Please make sure all your wallets are backed up.
+You can do this by exporting your private keys
+using 'Tools | Export Private Keys'.

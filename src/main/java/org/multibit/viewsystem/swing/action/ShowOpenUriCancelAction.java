@@ -24,7 +24,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
-import org.multibit.viewsystem.swing.view.ShowOpenUriDialog;
+import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
 
 /**
  * This {@link Action} represents a cancel action to go back to the parent view for the open uri command
