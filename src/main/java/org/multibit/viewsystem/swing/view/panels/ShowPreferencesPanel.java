@@ -26,9 +26,12 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -87,6 +90,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int COMBO_HEIGHT_DELTA = 5;
 
     private static final int EXCHANGE_COMBO_HEIGHT_DELTA = 15;
+    private static final int COMBO_WIDTH_DELTA = 50;
 
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
     private static final int FEE_TEXT_FIELD_WIDTH = 200;
@@ -109,7 +113,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private MultiBitLabel fontNameTextLabel;
     private MultiBitLabel fontStyleTextLabel;
     private MultiBitLabel fontSizeTextLabel;
-    
+
     private MultiBitLabel exchangeInformationLabel;
 
     private String originalFontName;
@@ -151,11 +155,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private JComboBox exchangeComboBox2;
     private JComboBox currencyComboBox2;
     private static final int TICKER_COMBO_WIDTH_DELTA = 80;
-    
+
     private String originalLookAndFeel;
     private JComboBox lookAndFeelComboBox;
     private String localisedSystemLookAndFeelName;
- 
+
     private Font selectedFont;
 
     private static final int STENT_DELTA = 0;
@@ -181,17 +185,19 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     public void displayView() {
         originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
-        
-        originalShowBitcoinConvertedToFiat =  !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
+
+        originalShowBitcoinConvertedToFiat = !Boolean.FALSE.toString().equals(
+                controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
         showBitcoinConvertedToFiat.setSelected(originalShowBitcoinConvertedToFiat);
-        
+
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = controller.getLocaliser().bitcoinValueToStringNotLocalised(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            sendFeeString = controller.getLocaliser()
+                    .bitcoinValueToStringNotLocalised(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
-        
+
         String sendFeeStringLocalised;
         CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
 
@@ -285,7 +291,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         mainPanel.setOpaque(false);
 
         String[] keys = new String[] { "showPreferencesPanel.feeLabel.text", "fontChooser.fontName", "fontChooser.fontStyle",
-                "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency", "showPreferencesPanel.lookAndFeel" };
+                "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency",
+                "showPreferencesPanel.lookAndFeel" };
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -518,7 +525,9 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     }
 
     private JPanel createFeePanel(int stentWidth) {
-        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("showPreferencesPanel.feeTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(
+                controller.getLocaliser().getString("showPreferencesPanel.feeTitle"),
+                ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -572,7 +581,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             // BTC did not parse - just use the original text
             sendFeeStringLocalised = sendFeeString;
         }
-        
+
         feeTextField = new MultiBitTextField("", 10, controller);
         feeTextField.setHorizontalAlignment(JLabel.TRAILING);
         feeTextField.setMinimumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
@@ -620,7 +629,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     }
 
     private JPanel createAppearancePanel(int stentWidth) {
-        MultiBitTitledPanel appearancePanel= new MultiBitTitledPanel(controller.getLocaliser().getString(
+        MultiBitTitledPanel appearancePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showPreferencesPanel.appearanceTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -734,7 +743,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        appearancePanel.add(MultiBitTitledPanel.createStent(1,30), constraints);
+        appearancePanel.add(MultiBitTitledPanel.createStent(1, 30), constraints);
 
         MultiBitLabel lookAndFeelLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.lookAndFeel"));
         constraints.fill = GridBagConstraints.NONE;
@@ -759,17 +768,19 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                 }
             }
         }
-        
-        if (originalLookAndFeel == null || originalLookAndFeel.equals("") || MultiBitModel.SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
+
+        if (originalLookAndFeel == null || originalLookAndFeel.equals("")
+                || MultiBitModel.SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
             lookAndFeelComboBox.setSelectedItem(localisedSystemLookAndFeelName);
         }
-        
+
         lookAndFeelComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         lookAndFeelComboBox.setOpaque(false);
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         int textWidth = Math.max(fontMetrics.stringWidth("CDE/Motif"), fontMetrics.stringWidth("Windows classic"));
-        Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + EXCHANGE_COMBO_HEIGHT_DELTA);
+        Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight()
+                + EXCHANGE_COMBO_HEIGHT_DELTA);
         lookAndFeelComboBox.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -821,43 +832,43 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         String showTickerText = controller.getLocaliser().getString("multiBitFrame.ticker.show.text");
         if (showTickerText != null && showTickerText.length() >= 1) {
             // Capitalise text (this is to save adding a new I18n term.
-            showTickerText =  Character.toUpperCase(showTickerText.charAt(0)) + showTickerText.toLowerCase().substring(1);
+            showTickerText = Character.toUpperCase(showTickerText.charAt(0)) + showTickerText.toLowerCase().substring(1);
         }
         showTicker = new JCheckBox(showTickerText);
         showTicker.setOpaque(false);
         showTicker.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         showTicker.setSelected(originalShowTicker);
-        
-        exchangeInformationLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.exchangeInformation"));
+
+        exchangeInformationLabel = new MultiBitLabel(controller.getLocaliser().getString(
+                "showPreferencesPanel.ticker.exchangeInformation"));
         exchangeInformationLabel.setVisible(originalShowBitcoinConvertedToFiat);
-        
-        showBitcoinConvertedToFiat = new JCheckBox(controller.getLocaliser().getString("showPreferencesPanel.ticker.showBitcoinConvertedToFiat"));
+
+        showBitcoinConvertedToFiat = new JCheckBox(controller.getLocaliser().getString(
+                "showPreferencesPanel.ticker.showBitcoinConvertedToFiat"));
         showBitcoinConvertedToFiat.setOpaque(false);
         showBitcoinConvertedToFiat.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         showBitcoinConvertedToFiat.setSelected(originalShowBitcoinConvertedToFiat);
 
-        showBitcoinConvertedToFiat.addItemListener(
-                new ItemListener() {
+        showBitcoinConvertedToFiat.addItemListener(new ItemListener() {
             @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        boolean selectedChange = (e.getStateChange() == ItemEvent.SELECTED);
-                        boolean unSelectedChange = (e.getStateChange() == ItemEvent.DESELECTED);
-                        if (exchangeInformationLabel != null) {
-                            if (selectedChange) {
-                                exchangeInformationLabel.setVisible(true);
-                            }
-                            if (unSelectedChange) {
-                                exchangeInformationLabel.setVisible(false);
-                            }
-                        }
+            public void itemStateChanged(ItemEvent e) {
+                boolean selectedChange = (e.getStateChange() == ItemEvent.SELECTED);
+                boolean unSelectedChange = (e.getStateChange() == ItemEvent.DESELECTED);
+                if (exchangeInformationLabel != null) {
+                    if (selectedChange) {
+                        exchangeInformationLabel.setVisible(true);
+                    }
+                    if (unSelectedChange) {
+                        exchangeInformationLabel.setVisible(false);
                     }
                 }
-            );
-         
+            }
+        });
+
         showExchange = new JCheckBox(controller.getLocaliser().getString("tickerTableModel.exchange"));
         showExchange.setOpaque(false);
         showExchange.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        
+
         showCurrency = new JCheckBox(controller.getLocaliser().getString("tickerTableModel.currency"));
         showCurrency.setOpaque(false);
         showCurrency.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -923,7 +934,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
                 controller.getLocaliser().getString("showPreferencesPanel.ticker.columnsToShow"), 7, tickerPanel);
-        
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 8;
@@ -1007,15 +1018,17 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             exchangeToUse2 = originalExchange2;
         }
 
-        exchangeComboBox1 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
+        exchangeComboBox1 = new JComboBox(ExchangeData.getAvailableExchanges());
         exchangeComboBox1.setSelectedItem(exchangeToUse1);
 
         exchangeComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         exchangeComboBox1.setOpaque(false);
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        int textWidth = Math.max(fontMetrics.stringWidth(ExchangeData.MT_GOX_EXCHANGE_NAME), fontMetrics.stringWidth("USD"));
-        Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + EXCHANGE_COMBO_HEIGHT_DELTA);
+        int textWidth = Math.max(fontMetrics.stringWidth(ExchangeData.MT_GOX_EXCHANGE_NAME), fontMetrics.stringWidth("USD"))
+                + COMBO_WIDTH_DELTA;
+        Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight()
+                + EXCHANGE_COMBO_HEIGHT_DELTA);
         exchangeComboBox1.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -1048,26 +1061,32 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(currencyLabel1, constraints);
-        
-        // Make sure the exchange has initialised the list of currencies.
+
+        // Make sure the exchange1 has been created and initialised the list of
+        // currencies.
         if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
             TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
-            synchronized(tickerTimerTask) {
-                if (tickerTimerTask.getMtGox() == null) {
-                    tickerTimerTask.createExchange();
+            synchronized (tickerTimerTask) {
+                if (tickerTimerTask.getExchange1() == null) {
+                    tickerTimerTask.createExchange1(exchangeToUse1);
                 }
-            }  
+            }
         }
-        
-        currencyComboBox1 = new JComboBox(controller.getModel().getExchangeData()
-                .getAvailableCurrenciesForExchange(exchangeToUse1));
+
+        currencyComboBox1 = new JComboBox();
+        Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeToUse1);
+        if (currenciesToUse != null) {
+            for (String currency : currenciesToUse) {
+                currencyComboBox1.addItem(currency);
+            }
+        }
         if (originalCurrency1 == null | "".equals(originalCurrency1)) {
             currencyComboBox1.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
         } else {
             currencyComboBox1.setSelectedItem(originalCurrency1);
             // The currency may have disappeared if the exchange has removed it.
             // Add it back in, otherwise currency choice is lost.
-            if (!originalCurrency1.equals(((String)currencyComboBox1.getSelectedItem()))) {
+            if (!originalCurrency1.equals(((String) currencyComboBox1.getSelectedItem()))) {
                 currencyComboBox1.addItem(originalCurrency1);
                 currencyComboBox1.setSelectedItem(originalCurrency1);
             }
@@ -1075,6 +1094,31 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         currencyComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         currencyComboBox1.setOpaque(false);
         currencyComboBox1.setPreferredSize(preferredSize);
+
+        exchangeComboBox1.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    Object item = event.getItem();
+                    String exchangeShortName = item.toString();
+                    // Make sure the exchange1 has been created and initialised
+                    // the list of currencies.
+                    if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
+                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+                        synchronized (tickerTimerTask) {
+                            tickerTimerTask.createExchange1(exchangeShortName);
+                            currencyComboBox1.removeAllItems();
+                            Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeShortName);
+                            if (currenciesToUse != null) {
+                                for (String currency : currenciesToUse) {
+                                    currencyComboBox1.addItem(currency);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
@@ -1101,7 +1145,9 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.weighty = 0.6;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(MultiBitTitledPanel.createStent(fontMetrics.stringWidth(exchangeInformationLabel.getText()), fontMetrics.getHeight()), constraints);
+        tickerPanel.add(
+                MultiBitTitledPanel.createStent(fontMetrics.stringWidth(exchangeInformationLabel.getText()),
+                        fontMetrics.getHeight()), constraints);
         tickerPanel.add(exchangeInformationLabel, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -1112,7 +1158,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
-
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
                 controller.getLocaliser().getString("showPreferencesPanel.ticker.secondRow"), 20, tickerPanel);
@@ -1142,12 +1187,37 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(exchangeLabel2, constraints);
 
-        exchangeComboBox2 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
+        exchangeComboBox2 = new JComboBox(ExchangeData.getAvailableExchanges());
         exchangeComboBox2.setSelectedItem(exchangeToUse2);
 
         exchangeComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         exchangeComboBox2.setOpaque(false);
         exchangeComboBox2.setPreferredSize(preferredSize);
+
+        exchangeComboBox2.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    Object item = event.getItem();
+                    String exchangeShortName = item.toString();
+                    // Make sure the exchange2 has been created and initialised
+                    // the list of currencies.
+                    if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
+                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+                        synchronized (tickerTimerTask) {
+                            tickerTimerTask.createExchange2(exchangeShortName);
+                            currencyComboBox2.removeAllItems();
+                            Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeShortName);
+                            if (currenciesToUse != null) {
+                                for (String currency : currenciesToUse) {
+                                    currencyComboBox2.addItem(currency);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
@@ -1169,15 +1239,30 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(currencyLabel2, constraints);
 
-        currencyComboBox2 = new JComboBox(controller.getModel().getExchangeData()
-                .getAvailableCurrenciesForExchange(exchangeToUse2));
+        // Make sure the exchange2 has been created and initialised the list of
+        // currencies.
+        if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
+            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+            synchronized (tickerTimerTask) {
+                if (tickerTimerTask.getExchange2() == null) {
+                    tickerTimerTask.createExchange2(exchangeToUse2);
+                }
+            }
+        }
+        currencyComboBox2 = new JComboBox();
+        currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeToUse2);
+        if (currenciesToUse != null) {
+            for (String currency : currenciesToUse) {
+                currencyComboBox2.addItem(currency);
+            }
+        }
         if (originalCurrency2 == null | "".equals(originalCurrency2)) {
             currencyComboBox2.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
         } else {
             currencyComboBox2.setSelectedItem(originalCurrency2);
             // The currency may have disappeared if the exchange has removed it.
             // Add it back in, otherwise currency choice is lost.
-            if (!originalCurrency2.equals(((String)currencyComboBox2.getSelectedItem()))) {
+            if (!originalCurrency2.equals(((String) currencyComboBox2.getSelectedItem()))) {
                 currencyComboBox2.addItem(originalCurrency2);
                 currencyComboBox2.setSelectedItem(originalCurrency2);
             }
@@ -1224,7 +1309,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     private JPanel createBrowserIntegrationPanel(int stentWidth) {
         MultiBitTitledPanel browserIntegrationPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showPreferencesPanel.browserIntegrationTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+                "showPreferencesPanel.browserIntegrationTitle"), ComponentOrientation.getOrientation(controller.getLocaliser()
+                .getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -1520,7 +1606,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     public String getNewSendFee() {
         CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(feeTextField.getText());
         if (converterResult.isBtcMoneyValid()) {
-            return controller.getLocaliser().bitcoinValueToStringNotLocalised(converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
+            return controller.getLocaliser().bitcoinValueToStringNotLocalised(
+                    converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
         } else {
             // Return the unparsable fee for the action to deal with it.
             return feeTextField.getText();
@@ -1695,7 +1782,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     public boolean isTickerVisible() {
         return mainFrame.getTickerTablePanel().isVisible();
     }
-    
+
     @Override
     public boolean getPreviousShowBid() {
         return originalShowBid;
@@ -1725,15 +1812,15 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     public boolean getNewShowExchange() {
         return showExchange.isSelected();
     }
-    
+
     @Override
     public String getPreviousLookAndFeel() {
         return originalLookAndFeel;
     }
-    
+
     @Override
     public String getNewLookAndFeel() {
-        String lookAndFeel = (String)lookAndFeelComboBox.getSelectedItem();
+        String lookAndFeel = (String) lookAndFeelComboBox.getSelectedItem();
         if (localisedSystemLookAndFeelName.equals(lookAndFeel)) {
             lookAndFeel = MultiBitModel.SYSTEM_LOOK_AND_FEEL;
         }

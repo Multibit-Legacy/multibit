@@ -156,6 +156,11 @@ public class TickerTablePanel extends JPanel {
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
                         fontMetrics.stringWidth("XYZ")); // currency codes
                                                          // always 3 character
+            } else if (TickerTableModel.TICKER_COLUMN_EXCHANGE.equals(columnVariables[i])) {
+                columnWidth = PER_COLUMN_DELTA + Math.max(Math.max(
+                        fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
+                        fontMetrics.stringWidth((String)tickerTableModel.getValueAt(0, i))), 
+                        fontMetrics.stringWidth((String)tickerTableModel.getValueAt(1, i))); 
             } else {
                 columnWidth = PER_COLUMN_DELTA + Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),

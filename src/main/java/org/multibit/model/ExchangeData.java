@@ -15,10 +15,19 @@
  */
 package org.multibit.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.money.BigMoney;
+
+import com.xeiam.xchange.bitcoincentral.BitcoinCentralExchange;
+import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
+import com.xeiam.xchange.btce.BTCEExchange;
+import com.xeiam.xchange.campbx.CampBXExchange;
+import com.xeiam.xchange.oer.OERExchange;
+import com.xeiam.xchange.virtex.VirtExExchange;
 
 /**
  * 
@@ -27,30 +36,44 @@ import org.joda.money.BigMoney;
  */
 public class ExchangeData {
 
+    public static final String EXCHANGE_NOT_SET = "NoExchangeSetYet";
     public static final String MT_GOX_EXCHANGE_NAME = "MtGox";
+    public static final String BITCOIN_CHARTS_EXCHANGE_NAME = "BitcoinCharts";
+    public static final String VIRTEX_EXCHANGE_NAME = "VirtEx";
+    public static final String BTCE_EXCHANGE_NAME = "BTC-E";
+    public static final String OPEN_EXCHANGE_RATES_EXCHANGE_NAME = "OpenExchangeRates";
+    public static final String BITSTAMP_EXCHANGE_NAME = "Bitstamp";
+    public static final String BITCOIN_CENTRAL_EXCHANGE_NAME = "BitcoinCentral";
+    public static final String CAMPBX_EXCHANGE_NAME = "CampBx";
 
     public static final String DEFAULT_EXCHANGE = MT_GOX_EXCHANGE_NAME;
     
     public static final String DEFAULT_CURRENCY = "USD";
     
-    public static final String[] DEFAULT_CURRENCY_LIST = new String[] {"USD",  "EUR"};
+    public static final Collection<String> DEFAULT_CURRENCY_LIST = new ArrayList<String>();
+    
+    static {
+        DEFAULT_CURRENCY_LIST.add("USD");
+        DEFAULT_CURRENCY_LIST.add("EUR");
+    }
     
     public static final BigMoney DO_NOT_KNOW = null;
     
+    private String shortExchangeName;
     private Map<String, BigMoney> currencyToLastPriceMap;
     private Map<String, BigMoney> currencyToAskMap;
     private Map<String, BigMoney> currencyToBidMap;
     
-    private String[] currenciesWeAreInterestedIn;
+    private Collection<String> currenciesWeAreInterestedIn;
     
-    private Map<String, String[]> exchangeNameToAvailableCurrenciesMap;
+    private static Map<String,  Collection<String>> exchangeNameToAvailableCurrenciesMap  = new HashMap<String, Collection<String>>();
     
     public ExchangeData() {
+        setShortExchangeName(EXCHANGE_NOT_SET);
         currencyToLastPriceMap = new HashMap<String, BigMoney>();
         currencyToBidMap = new HashMap<String, BigMoney>();
         currencyToAskMap = new HashMap<String, BigMoney>();
         currenciesWeAreInterestedIn = DEFAULT_CURRENCY_LIST;
-        exchangeNameToAvailableCurrenciesMap = new HashMap<String, String[]>();
     }
     
     public BigMoney getLastPrice(String currency) {
@@ -92,20 +115,21 @@ public class ExchangeData {
         currencyToAskMap.put(currency, lastAsk);
     }
 
-    public String[] getAvailableExchanges() {
-        return new String[] { MT_GOX_EXCHANGE_NAME };
+    public static String[] getAvailableExchanges() {
+        return new String[] { MT_GOX_EXCHANGE_NAME, BITCOIN_CENTRAL_EXCHANGE_NAME, BITCOIN_CHARTS_EXCHANGE_NAME, BITSTAMP_EXCHANGE_NAME, BTCE_EXCHANGE_NAME,  
+                CAMPBX_EXCHANGE_NAME, OPEN_EXCHANGE_RATES_EXCHANGE_NAME, VIRTEX_EXCHANGE_NAME};
     }
 
-    public String[] getCurrenciesWeAreInterestedIn() {
+    public Collection<String> getCurrenciesWeAreInterestedIn() {
         return currenciesWeAreInterestedIn;
     }
 
-    public void setCurrenciesWeAreInterestedIn(String[] currenciesWeAreInterestedIn) {
+    public void setCurrenciesWeAreInterestedIn(Collection<String> currenciesWeAreInterestedIn) {
         this.currenciesWeAreInterestedIn = currenciesWeAreInterestedIn;
     }
 
-    public String[] getAvailableCurrenciesForExchange(String exchangeName) {
-        String[] availableCurrencies = exchangeNameToAvailableCurrenciesMap.get(exchangeName);
+    public static Collection<String>getAvailableCurrenciesForExchange(String shortExchangeName) {
+        Collection<String>availableCurrencies = exchangeNameToAvailableCurrenciesMap.get(shortExchangeName);
         if (availableCurrencies == null) {
             return DEFAULT_CURRENCY_LIST;
         } else {
@@ -113,7 +137,40 @@ public class ExchangeData {
         }
     }
 
-    public void setAvailableCurrenciesForExchange(String exchangeName, String[] currencies) {
+    public static void setAvailableCurrenciesForExchange(String exchangeName, Collection<String> currencies) {
         exchangeNameToAvailableCurrenciesMap.put(exchangeName, currencies);
+    }
+    
+    
+    /**
+     * Convert an exchange short name into a classname that can be used to create an Exchange.
+     */
+    public static String convertExchangeShortNameToClassname(String shortExchangeName) {
+        if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName)) {
+            return "com.xeiam.xchange.mtgox.v1.MtGoxExchange";
+        } else if (BITCOIN_CHARTS_EXCHANGE_NAME.equals(shortExchangeName)) {
+            return  BitcoinChartsExchange.class.getName();
+        } else if (VIRTEX_EXCHANGE_NAME.equals(shortExchangeName)) {
+            return  VirtExExchange.class.getName();
+        } else if (BTCE_EXCHANGE_NAME.equals(shortExchangeName)) {
+            return  BTCEExchange.class.getName();
+        } else if (OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(shortExchangeName)) {
+            return  OERExchange.class.getName();
+        } else if (BITCOIN_CENTRAL_EXCHANGE_NAME.equals(shortExchangeName)) {
+            return  BitcoinCentralExchange.class.getName();
+        } else if (CAMPBX_EXCHANGE_NAME.equals(shortExchangeName)) {
+            return  CampBXExchange.class.getName();
+        } else {
+            // Unidentified exchange.
+            return null;
+        }
+    }
+
+    public void setShortExchangeName(String shortExchangeName) {
+        this.shortExchangeName = shortExchangeName;
+    }
+
+    public String getShortExchangeName() {
+        return shortExchangeName;
     }
 }
