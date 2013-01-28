@@ -15,8 +15,12 @@
  */
 package org.multibit.viewsystem.swing.view.dialogs;
 
+import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -36,6 +40,7 @@ import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowOpenUriCancelAction;
 import org.multibit.viewsystem.swing.action.ShowOpenUriSubmitAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +62,14 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
     private JButton cancelButton;
     
     private JCheckBox rememberCheckBox;
+
+    private Font adjustedFont;
+    
+    private int DEFAULT_WIDTH = 640;
+    private int DEFAULT_HEIGHT = 200;
+    private int WIDTH_DELTA = 100;
+    private int HEIGHT_DELTA = 50;
+    private int NUMBER_OF_ROWS = 4;
 
     /**
      * Creates a new {@link ShowOpenUriDialog}.
@@ -84,14 +97,21 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
      * show open uri view
      */
     private void initUI() {
-        setMinimumSize(new Dimension(640, 200));
+        adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
+        int width = DEFAULT_WIDTH;
+        int height = DEFAULT_HEIGHT;
+        
+        if (adjustedFont != null) {
+            FontMetrics fontMetrics = this.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            int message1Width = fontMetrics.stringWidth(controller.getLocaliser().getString("showOpenUriView.message1"));
+            int message2Width = fontMetrics.stringWidth(controller.getLocaliser().getString("showOpenUriView.message2"));
+            width = Math.max(Math.max(message1Width, message2Width) + WIDTH_DELTA, width);
+            height = Math.max(height, NUMBER_OF_ROWS * fontMetrics.getHeight() + HEIGHT_DELTA);
+        }
+        setMinimumSize(new Dimension(width, height));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
 
         setLayout(new GridBagLayout());
-        // get the data out of the wallet preferences
-//        sendAddress = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
-//        sendLabel = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
-//        sendAmount = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
         GridBagConstraints constraints = new GridBagConstraints();
 
         JLabel filler00 = new JLabel();
@@ -203,37 +223,13 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
         log.debug("Navigate away from view called for ShowOpenUriDialog " + this.toString());
     }
 
-    // @Override
-    // public Data getData() {
-    // Data data = new Data();
-    // Item addressItem = new Item(MultiBitModel.OPEN_URI_ADDRESS);
-    // addressItem.setNewValue(sendAddress);
-    // data.addItem(MultiBitModel.OPEN_URI_ADDRESS, addressItem);
-    //
-    // Item labelItem = new Item(MultiBitModel.OPEN_URI_LABEL);
-    // labelItem.setNewValue(sendLabel);
-    // data.addItem(MultiBitModel.OPEN_URI_LABEL, labelItem);
-    //
-    // Item amountItem = new Item(MultiBitModel.OPEN_URI_AMOUNT);
-    // amountItem.setNewValue(sendAmount);
-    // data.addItem(MultiBitModel.OPEN_URI_AMOUNT, amountItem);
-    //
-    // Item showDialogItem = new Item(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-    // showDialogItem.setNewValue((new
-    // Boolean((!rememberCheckBox.isSelected()))).toString());
-    // data.addItem(MultiBitModel.OPEN_URI_SHOW_DIALOG, showDialogItem );
-    //
-    // return data;
-    // }
-
     @Override
     public void displayView() { 
         log.debug("display called for ShowOpenUriDialog " + this.toString());
-
-        // get the data out of the wallet preferences
-//        sendAddress = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
-//        sendLabel = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
-//        sendAmount = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
+        adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
+        if (adjustedFont != null) {
+            setFileChooserFont(new Container[] {this});
+        }
 
         String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
        
@@ -299,6 +295,17 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
     @Override
     public boolean isShowUriDialog() {
         return !rememberCheckBox.isSelected();
+    }
+      
+    private void setFileChooserFont(Component[] comp) {
+        for (int x = 0; x < comp.length; x++) {
+            if (comp[x] instanceof Container)
+                setFileChooserFont(((Container) comp[x]).getComponents());
+            try {
+                comp[x].setFont(adjustedFont);
+            } catch (Exception e) {
+            }// do nothing
+        }
     }
 
     @Override

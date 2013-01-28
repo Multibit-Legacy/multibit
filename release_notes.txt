@@ -6,12 +6,9 @@ Version 0.5.8beta
 + Backward compatible wallet changes (description added, minor version dropped).
 + Serialised wallets now no longer always load - you will have to use an older version of MultiBit and migrate them to protobuf format.
 + Refactoring of encryption code in response to review comments
-+ Refactoring of the initial view being remembered. Forward compatible but
-  there is a minor regression failure in that if you open an earlier MultiBit it will
-  open the Welcome page.
++ Refactoring of the initial view being remembered. Forward compatible. There is a minor regression failure in that if you open an earlier MultiBit it will open the Welcome page.
 + Display less flicky when changing languages, fonts and look-and-feel.
-+ User chosen font now set in New Wallet, Open Wallet and Help screens.
-
++ User chosen font now set properly in dialogs and Help screens.
 
 
 14 Jan 2013 Version 0.4.19

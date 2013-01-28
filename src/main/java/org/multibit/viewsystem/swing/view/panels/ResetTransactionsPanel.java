@@ -47,6 +47,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -60,10 +61,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 import com.toedter.calendar.JCalendar;
-import org.multibit.viewsystem.Viewable;
 
 /**
- * The reset blockchain and transactions view
+ * The reset blockchain and transactions view.
  */
 public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTransactionsDataProvider {
 
@@ -101,7 +101,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         setLayout(new BorderLayout());
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        // default reset date is the beginning of the day 2 weeks ago
+        // Default reset date is the beginning of the day 2 weeks ago.
         Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         now.add(Calendar.HOUR, -1 * NUMBER_OF_HOURS_IN_A_DAY * DEFAULT_NUMBER_OF_DAYS);
 
@@ -375,7 +375,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     }
 
     private JPanel createResetDatePanel(int stentWidth) {
-        // reset date radios
+        // Reset date radios.
         MultiBitTitledPanel resetDatePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.resetDate"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -447,7 +447,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_START;
         resetDatePanel.add(chooseResetDateRadioButton, constraints);
 
-        // Create a border for the calendar
+        // Create a border for the calendar.
         Border etchedBorder = BorderFactory.createEtchedBorder();
         Border emptyBorder = BorderFactory.createEmptyBorder(CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH,
                 CALENDAR_BORDER_WIDTH);
@@ -455,7 +455,9 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
 
         calendarChooser = new JCalendar(resetDate, controller.getLocaliser().getLocale(), true, false);
         calendarChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
+        if (FontSizer.INSTANCE.getAdjustedDefaultFont() != null) {
+            calendarChooser.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        }
         calendarChooser.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent e) {
@@ -512,8 +514,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     }
 
     /**
-     * show explanatory text for resetting blockchain and transactions and a
-     * button to do it
+     * Show explanatory text for resetting blockchain and transactions and a button to do it.
      */
     @Override
     public void displayView() {
@@ -560,7 +561,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         return resetTransactionsSubmitAction;
     }
     
-    // ResetTransactionDataProvider methods
+    // ResetTransactionDataProvider methods.
     @Override
     public Date getResetDate() {
         return resetDate;

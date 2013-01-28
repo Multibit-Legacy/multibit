@@ -1086,7 +1086,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         String viewName = nextViewFinal.getViewId().toString();
         boolean foundTab = false;
         if (viewTabbedPane.getTabCount() > 0) {
-            log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " initally has " + viewTabbedPane.getTabCount() + " tabs.");
+            //log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " initally has " + viewTabbedPane.getTabCount() + " tabs.");
             for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
                 JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
                 if (tabComponent != null) {
@@ -1100,9 +1100,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
                         ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
                         viewTabbedPane.setSelectedIndex(i);
-                        viewTabbedPane.invalidate();
-                        viewTabbedPane.validate();
-                        viewTabbedPane.repaint();
                     }
                 }
             }
@@ -1114,14 +1111,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),
                     nextViewFinal.getViewTooltip(), tabOutlinePanel, true);
             viewTabbedPane.setSelectedComponent(tabOutlinePanel);
-            viewTabbedPane.invalidate();
-            viewTabbedPane.validate();
-            viewTabbedPane.repaint();
         }
 
         nextViewFinal.displayView();
 
-        log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
+        //log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
         thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
     }
 

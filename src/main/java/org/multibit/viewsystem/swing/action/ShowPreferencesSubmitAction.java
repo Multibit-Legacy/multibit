@@ -337,22 +337,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             }
 
             if (fontHasChanged) {
-                Font newFont = dataProvider.getSelectedFont();
-                if (newFont != null) {
-                    UIManager.put("ToolTip.font", newFont);
-                }
-
                 wantToFireDataStructureChanged = true;
             }
-
-//            if (wantToFireDataStructureChanged) {
-//                ColorAndFontConstants.init();
-//                FontSizer.INSTANCE.initialise(controller);
-//                HelpContentsPanel.clearBrowser();
-//
-//                // Redo everything.
-//                controller.fireDataStructureChanged();
-//            }
 
             if (lookAndFeelHasChanged) {
                 try {
@@ -375,6 +361,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 } catch (UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
                 }
+            }
+            
+            Font newFont = dataProvider.getSelectedFont();
+            if (newFont != null) {
+                UIManager.put("ToolTip.font", newFont);
             }
 
             if (wantToFireDataStructureChanged || lookAndFeelHasChanged) {
