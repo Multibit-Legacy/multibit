@@ -23,7 +23,7 @@
  */
 package org.multibit.viewsystem;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.swing.JPanel;
 import org.multibit.controller.MultiBitController;
@@ -42,7 +42,7 @@ import org.multibit.controller.MultiBitController;
  * 
  * @author Cameron Garnham
  */
-public abstract class BasePanel<E extends Extension> extends JPanel implements Viewable{
+public abstract class BasePanel<E extends PanelModule> extends JPanel implements Viewable{
     
     
     protected Set<E> extentions;
@@ -52,41 +52,57 @@ public abstract class BasePanel<E extends Extension> extends JPanel implements V
     
     protected BasePanel()
     {
-        extentions = new HashSet<E>();
-    }
-    
-    
-    /**
-     * Call Before any Extentions are added.
-     */
-    protected void beginInit()
-    {
-      for (E extention : extentions)
-        {
-            extention.Init(this);
-        }
-    }
-    
-    /**
-     * Call after all Extentions have been added.
-     * Must be overridden.
-     */
-    abstract protected void finishInit();
-    
-    
-    
-    public void addExtention(E ext)
-    {
-        extentions.add(ext);
+        extentions = new LinkedHashSet<E>();
     }
     
     @Override
     public void displayView() {
-        
-        for (E extention : extentions)
-        {
+
+        for (E extention : extentions) {
             extention.displayView();
         }
+
+        this.enqueueRedraw();
+    }
+    
+
+    /**
+     * Call after all Extentions have been added.
+     * Must be overridden.
+     */
+    public void finishInit()
+    {
+      this.initUI();
+        
+      for (E extention : extentions)
+        {
+            extention.onFinishInit(this);
+        }
+      
+      this.applyComponentOrientation();
+      this.enqueueRedraw();
+    }
+    
+    abstract protected void initUI();
+    abstract protected void applyComponentOrientation();
+    
+    public void addModule(E ext)
+    {
+        extentions.add(ext);
+        ext.setParentView(this);
+        ext.onBegin(this);
+    }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
     }
     
     

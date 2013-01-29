@@ -612,6 +612,8 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
         }
     }
 
+
+
     class PasswordListener implements KeyListener {
         /** Handle the key typed event from the text field. */
         @Override
