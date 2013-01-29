@@ -19,12 +19,14 @@ import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -35,6 +37,7 @@ import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.browser.Browser;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 public class HelpContentsPanel extends JPanel implements Viewable {
 
@@ -92,7 +95,29 @@ public class HelpContentsPanel extends JPanel implements Viewable {
 
     public static String createMultilineTooltipText(String[] toolTips) {
         // Multiline tool tip text.
-        String toolTipText = "<html><font face=\"sansserif\">";
+        int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
+        boolean isItalic = false;
+        boolean isBold = false;
+        FontSizer.INSTANCE.initialise(MultiBit.getController());
+        Font adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
+        if (adjustedFont != null) {
+            fontSize = adjustedFont.getSize();
+            isItalic = adjustedFont.isItalic();
+            isBold = adjustedFont.isBold();
+        }
+        
+        String fontCSS = "font-size:" + fontSize + "pt; font-family:" + adjustedFont.getFamily() + ";";
+        if (isItalic) {
+            fontCSS = fontCSS + "font-style:italic;";
+        } else {
+            fontCSS = fontCSS + "font-style:normal;";
+        }
+        if (isBold) {
+            fontCSS = fontCSS + "font-weight:bold;";
+        } else {
+            fontCSS = fontCSS + "font-weight:normal;";
+        }
+        String toolTipText = "<html><font face=\"sansserif\" style= \"" + fontCSS + "\">";
 
         if (toolTips != null) {
             for (int i = 0; i < toolTips.length - 1; i++) {
