@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.Localiser;
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
@@ -33,7 +34,7 @@ public class ActionTestUtils {
     private static SecureRandom secureRandom;
 
     public static MultiBitController createController() {
-        MultiBitController controller = new MultiBitController();
+         MultiBitController controller = new MultiBitController();
          
          Localiser localiser = new Localiser(Locale.ENGLISH);
          MultiBitModel model = new MultiBitModel(controller);
@@ -43,6 +44,7 @@ public class ActionTestUtils {
          
          CurrencyConverter.INSTANCE.initialise(controller);
          
+         MultiBit.setController(controller);
          return controller;
      }
      

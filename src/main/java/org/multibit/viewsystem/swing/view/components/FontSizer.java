@@ -33,7 +33,10 @@ public enum FontSizer {
     }
 
     private Font createAdjustedDefaultFont() {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        String fontSizeString = null;
+        if (controller != null) {
+            fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        }
         int unadjustedFontSize =  ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
         
         if (fontSizeString != null && !"".equals(fontSizeString)) {

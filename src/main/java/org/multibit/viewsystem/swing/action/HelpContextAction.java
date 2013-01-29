@@ -22,6 +22,7 @@ import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * This {@link Action} represents an action thath displays a context specific help page
@@ -48,7 +49,7 @@ public class HelpContextAction extends AbstractAction {
         this.helpContextToDisplay = helpContextToDisplay;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString(tooltipKey));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString(tooltipKey)));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic(mnemonicKey));
     }
 

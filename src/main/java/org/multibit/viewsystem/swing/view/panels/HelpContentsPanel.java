@@ -92,7 +92,10 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         add(scrollPane, BorderLayout.CENTER);
     }
     
-
+    public static String createTooltipText(String toolTip) {
+        return  createMultilineTooltipText(new String[] {toolTip});
+    }
+    
     public static String createMultilineTooltipText(String[] toolTips) {
         // Multiline tool tip text.
         int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
