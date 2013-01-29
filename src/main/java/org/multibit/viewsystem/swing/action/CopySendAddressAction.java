@@ -22,6 +22,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
 /**
@@ -41,7 +42,7 @@ public class CopySendAddressAction extends AbstractAction {
         this.sendBitcoinPanel = sendBitcoinPanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyAddressAction.tooltip"));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("copyAddressAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("copyAddressAction.mnemonicKey"));
     }
 

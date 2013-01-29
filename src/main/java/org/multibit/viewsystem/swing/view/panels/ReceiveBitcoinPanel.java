@@ -133,7 +133,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         createFormPanelStentsAndForcers(formPanel,constraints);
 
         MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"));
-        addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
+        addressLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip")));
         addressLabel.setBorder(BorderFactory.createMatteBorder((int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, (int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.BOTH;
@@ -190,7 +190,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         formPanel.add(pasteButtonStent, constraints);
 
         MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
-        labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
+        labelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip")));
         labelLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -243,7 +243,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         formPanel.add(labelScrollPane, constraints);
 
         MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
-        amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
+        amountLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip")));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -345,7 +345,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            labelTextArea.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip")));
             mainFrame.setUpdatesStoppedTooltip(labelTextArea);
 
             labelTextArea.setEditable(false);

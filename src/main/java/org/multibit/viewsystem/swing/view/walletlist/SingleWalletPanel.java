@@ -472,7 +472,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // Update the tooltip.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            hourglassLabel.setToolTipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));           
+            hourglassLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()})));           
         } else {
             hourglassLabel.setToolTipText(null);
         }
@@ -486,7 +486,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
             if (expanded) {
                 twistyLabel.setIcon(twistyDownIcon);
-                twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText"));
+                twistyLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText")));
                 detailPanel.setVisible(true);
                 setPreferredSize(new Dimension(normalWidth, expandedHeight));
                 if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -501,7 +501,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 } else {
                     twistyLabel.setIcon(twistyLeftIcon);                    
                 }
-                twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
+                twistyLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText")));
                 detailPanel.setVisible(false);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
                 if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -712,9 +712,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             String walletFilenameFull = walletFile.getName();
             String walletFilenameShort = walletFilenameFull.replaceAll("\\.wallet", "");
             walletFilenameLabel.setText(walletFilenameShort);
-            walletFilenameLabel.setToolTipText(walletFilename);
-            filenameSeparator.setToolTipText(walletFilename);
-            filenameLabel.setToolTipText(walletFilename);
+            String tooltipText = HelpContentsPanel.createTooltipText(walletFilename);
+            walletFilenameLabel.setToolTipText(tooltipText);
+            filenameSeparator.setToolTipText(tooltipText);
+            filenameLabel.setToolTipText(tooltipText);
         }
 
         constraints.fill = GridBagConstraints.HORIZONTAL;

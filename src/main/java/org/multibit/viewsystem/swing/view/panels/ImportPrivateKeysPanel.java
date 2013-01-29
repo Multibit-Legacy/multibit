@@ -472,7 +472,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         outputFilenamePanel.add(MultiBitTitledPanel.createStent(stentWidth, ExportPrivateKeysPanel.STENT_HEIGHT), constraints);
 
         chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
-        chooseFilenameButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.tooltip"));
+        chooseFilenameButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.tooltip")));
         chooseFilenameButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         final MultiBitButton finalChooseFilenameButton = chooseFilenameButton;
@@ -541,8 +541,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
         MultiBitLabel numberOfKeysLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.numberOfKeys.text"));
-        numberOfKeysLabelLabel.setToolTipText(controller.getLocaliser()
-                .getString("showImportPrivateKeysPanel.numberOfKeys.tooltip"));
+        numberOfKeysLabelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser()
+                .getString("showImportPrivateKeysPanel.numberOfKeys.tooltip")));
         numberOfKeysLabelLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.NONE;
@@ -578,7 +578,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
         MultiBitLabel replayDateLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.replayDate.text"));
-        replayDateLabelLabel.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.replayDate.tooltip"));
+        replayDateLabelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.replayDate.tooltip")));
         replayDateLabelLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -753,7 +753,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                 }
             }
         });
-        unlockButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.unlock.tooltip"));
+        unlockButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.unlock.tooltip")));
         unlockButton.setEnabled(false);
         unlockButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -1143,12 +1143,12 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         // Update the enable status of the action to match the wallet busy status.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()})));
             importPrivateKeysSubmitAction.setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.
             if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip"));
+                importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip")));
                 importPrivateKeysSubmitAction.setEnabled(true);
             }
         }

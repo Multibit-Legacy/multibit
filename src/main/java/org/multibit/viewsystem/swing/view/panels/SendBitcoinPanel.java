@@ -140,7 +140,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         createFormPanelStentsAndForcers(formPanel, constraints);
 
         MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
-        addressLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel.tooltip"));
+        addressLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel.tooltip")));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -199,7 +199,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         formPanel.add(pasteAddressButton, constraints);
 
         MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
-        labelLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel.tooltip"));
+        labelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel.tooltip")));
         labelLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -249,7 +249,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         formPanel.add(labelScrollPane, constraints);
 
         MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
-        amountLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel.tooltip"));
+        amountLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel.tooltip")));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -457,11 +457,11 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
             if (sendButton != null) {
                 sendButton.setEnabled(true);
-                sendButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinAction.tooltip"));
+                sendButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinAction.tooltip")));
             }
             if (pasteAddressButton != null) {
                 pasteAddressButton.setEnabled(true);
-                pasteAddressButton.setToolTipText(controller.getLocaliser().getString("pasteAddressAction.tooltip"));
+                pasteAddressButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("pasteAddressAction.tooltip")));
             }
             titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
             titleLabel.setToolTipText(null);

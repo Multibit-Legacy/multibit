@@ -28,6 +28,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * This {@link Action} undoes the last language and font changes made to the
@@ -47,7 +48,7 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
         this.controller = controller;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.tooltip"));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("undoPreferencesChangesSubmitAction.mnemonicKey"));
     }
 

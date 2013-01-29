@@ -23,6 +23,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.JFontChooser;
 
@@ -45,7 +46,7 @@ public class ChooseFontAction extends AbstractAction {
         this.showPreferencesPanel = showPreferencesPanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("fontChooser.tooltip"));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("fontChooser.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("fontChooser.mnemonicKey"));
     }
 

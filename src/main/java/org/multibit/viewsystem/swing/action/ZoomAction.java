@@ -39,6 +39,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * This {@link Action} displays a QR code zoomed to the whole display.
@@ -64,7 +65,7 @@ public class ZoomAction extends AbstractAction {
         this.tradePanel = tradePanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("zoomAction.text"));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("zoomAction.text")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("zoomAction.text"));
         KeyStroke ctrlZ = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK); // controller.getLocaliser().getString("zoomAction.acceleratorKey")
         putValue(ACCELERATOR_KEY, ctrlZ);

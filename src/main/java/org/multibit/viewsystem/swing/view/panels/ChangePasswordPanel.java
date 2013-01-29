@@ -593,7 +593,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
 
         ImageIcon tickIcon = ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE);
         tickLabel = new JLabel(tickIcon);
-        tickLabel.setToolTipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch"));
+        tickLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch")));
         tickLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         tickLabel.setVisible(false);

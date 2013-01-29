@@ -71,7 +71,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showPreferencesSubmitAction.tooltip"));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesSubmitAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showPreferencesSubmitAction.mnemonicKey"));
     }
 

@@ -562,7 +562,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         feePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
-        feeLabel.setToolTipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip"));
+        feeLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip")));
         MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
 
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);

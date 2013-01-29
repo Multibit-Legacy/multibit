@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -27,7 +26,6 @@ import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -56,9 +54,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.DefaultEditorKit;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
@@ -80,6 +76,7 @@ import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.ExitAction;
@@ -108,8 +105,6 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-
-import org.multibit.viewsystem.Viewable;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -486,7 +481,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         int availableToSpendHeight = fontMetrics.getHeight();
 
         estimatedBalanceLabelLabel = new MultiBitLabel(controller.getLocaliser().getString("multiBitFrame.balanceLabel"), JTextField.RIGHT);
-        estimatedBalanceLabelLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceLabelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
         estimatedBalanceLabelLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
 
         constraints.gridx = 3;
@@ -507,7 +502,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
 
         estimatedBalanceBTCLabel = new BlinkLabel(controller, true);
-        estimatedBalanceBTCLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceBTCLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
         estimatedBalanceBTCLabel.setBorder(BorderFactory.createEmptyBorder());
         //estimatedBalanceBTCLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
 
@@ -521,7 +516,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(estimatedBalanceBTCLabel, constraints);
 
         estimatedBalanceFiatLabel = new BlinkLabel(controller, true);
-        estimatedBalanceFiatLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceFiatLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
         estimatedBalanceFiatLabel.setBorder(BorderFactory.createEmptyBorder());
         //estimatedBalanceFiatLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
         
@@ -1248,8 +1243,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
         if (controller.getModel().getActiveWalletFilename() != null
                 && controller.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
-            Message message = new Message(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
-                    + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"), true);
+            Message message = new Message(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
+                    + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2")), true);
             MessageManager.INSTANCE.addMessage(message);
         }
         fireDataChanged();
