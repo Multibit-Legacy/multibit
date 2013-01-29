@@ -1263,6 +1263,11 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         amountPanel.add(MultiBitTitledPanel.createStent(amountFiatTextField.getPreferredSize().width, amountFiatTextField.getPreferredSize().height), constraints2);
 
         CurrencyInfo currencyInfo = CurrencyConverter.INSTANCE.getCurrencyCodeToInfoMap().get(CurrencyConverter.INSTANCE.getCurrencyUnit().getCurrencyCode());
+        if (currencyInfo == null) {
+            // Create a default currency info with the raw currency code as a suffix, including a separator space
+            currencyInfo = new CurrencyInfo(CurrencyConverter.INSTANCE.getCurrencyUnit().getCurrencyCode(), CurrencyConverter.INSTANCE.getCurrencyUnit().getCurrencyCode(), false);
+            currencyInfo.setHasSeparatingSpace(true);
+        }
         amountUnitFiatLabel = new MultiBitLabel("");
         int fiatCurrencySymbolPosition = 4;   // Prefix is default.
         int stentPosition = 5;

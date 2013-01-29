@@ -122,7 +122,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.82D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
-    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 0.12345678 BTC ($0.01)";
+    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 00.12345678 BTC (000.01 XYZ)";
 
     public static final int WIDTH_OF_LONG_FIELDS = 300;
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;

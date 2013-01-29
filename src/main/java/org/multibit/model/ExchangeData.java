@@ -44,7 +44,7 @@ public class ExchangeData {
     public static final String OPEN_EXCHANGE_RATES_EXCHANGE_NAME = "OpenExchangeRates";
     public static final String BITSTAMP_EXCHANGE_NAME = "Bitstamp";
     public static final String BITCOIN_CENTRAL_EXCHANGE_NAME = "BitcoinCentral";
-    public static final String CAMPBX_EXCHANGE_NAME = "CampBx";
+    public static final String CAMPBX_EXCHANGE_NAME = "CampBX";
 
     public static final String DEFAULT_EXCHANGE = MT_GOX_EXCHANGE_NAME;
     

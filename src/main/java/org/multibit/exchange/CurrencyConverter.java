@@ -201,7 +201,9 @@ public enum CurrencyConverter {
         String currencyCode = currencyUnit.getCurrencyCode();
         CurrencyInfo currencyInfo = currencyCodeToInfoMap.get(currencyCode);
         if (currencyInfo == null) {
-            currencyInfo = new CurrencyInfo(currencyCode, currencyCode, true);
+            // Create a default currency info with the raw currency code as a suffix, including a separator space
+            currencyInfo = new CurrencyInfo(currencyCode, currencyCode, false);
+            currencyInfo.setHasSeparatingSpace(true);
         }
 
         DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
@@ -231,17 +233,23 @@ public enum CurrencyConverter {
             }
         }
         
+        String separator;
+        if (currencyInfo.hasSeparatingSpace) {
+            separator = " ";
+        } else {
+            separator = "";
+        }
         if (currencyInfo.isPrefix()) {
             // Prefix currency code.
             if (addCurrencySymbol) {
-                moneyFormatter = new MoneyFormatterBuilder().appendLiteral(currencyInfo.getCurrencySymbol()).appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
+                moneyFormatter = new MoneyFormatterBuilder().appendLiteral(currencyInfo.getCurrencySymbol()).appendLiteral(separator).appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
             } else {
                 moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
             }
         } else {
              // Postfix currency code.
             if (addCurrencySymbol) {
-                moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).appendLiteral(currencyInfo.getCurrencySymbol()).toFormatter(controller.getLocaliser().getLocale());
+                moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).appendLiteral(separator).appendLiteral(currencyInfo.getCurrencySymbol()).toFormatter(controller.getLocaliser().getLocale());
             } else {
                 moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
             }
