@@ -339,7 +339,7 @@ public class StatusBar extends JPanel implements MessageListener {
             @Override
             public void run() {
                 syncProgressBar.setValue(percent);
-                syncProgressBar.setToolTipText(syncMessage);
+                syncProgressBar.setToolTipText(HelpContentsPanel.createTooltipText(syncMessage));
         
                 // when a language changes the progress bar needs to be made visible
                 syncProgressBar.setVisible(true);
