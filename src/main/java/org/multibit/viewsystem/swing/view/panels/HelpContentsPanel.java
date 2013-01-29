@@ -161,6 +161,18 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         firstTimeLoaded = false;
     }
 
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+    
     public static void clearBrowser() {
         browser = null;
     }

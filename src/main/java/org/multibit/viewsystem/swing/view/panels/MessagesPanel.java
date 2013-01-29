@@ -109,6 +109,18 @@ public class MessagesPanel extends JPanel implements Viewable, MessageListener {
     }
        
     @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+       
+    @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.MESSAGES_ICON_FILE);
     }
