@@ -17,15 +17,29 @@ package org.multibit.viewsystem.swing.view;
 
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.multibit.controller.MultiBitController;
+
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.MessagesPanel;
+import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
+import org.multibit.viewsystem.swing.view.panels.HelpAboutPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
+import org.multibit.viewsystem.BasePanel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
-import org.multibit.viewsystem.swing.view.panels.*;
+import org.multibit.viewsystem.swing.preferences.modules.BitcoinPreferencesPanelModule;
+import org.multibit.viewsystem.swing.preferences.modules.CorePreferencesPanelModule;
+import org.multibit.viewsystem.swing.preferences.modules.TickerPreferencesPanelModule;
 
 /**
  * a factory class that lazy loads views
@@ -104,7 +118,14 @@ public class ViewFactory {
         }
         
         case PREFERENCES_VIEW: {
-            viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
+            BasePanel panel = new PreferencesPanel(controller, mainFrame);
+            panel.addModule(new CorePreferencesPanelModule(controller, mainFrame));
+            panel.addModule(new BitcoinPreferencesPanelModule(controller, mainFrame));
+            panel.addModule(new TickerPreferencesPanelModule(controller, mainFrame));
+            
+            panel.finishInit();
+            
+            viewToReturn = panel;
             break;
         }
 

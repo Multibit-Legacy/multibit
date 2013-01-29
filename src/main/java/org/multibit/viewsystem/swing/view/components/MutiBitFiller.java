@@ -21,22 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
+package org.multibit.viewsystem.swing.view.components;
 
-import org.multibit.controller.MultiBitController;
+import java.awt.Dimension;
+import javax.swing.Box.Filler;
 
 /**
  *
- * This defines a extention that can extend a View
- * 
- * 
  * @author Cameron Garnham
  */
-public interface Extension<P extends BasePanel> {
+public class MutiBitFiller extends Filler {
     
+    public MutiBitFiller()
+    {
+        super(new Dimension(0,0),new Dimension(0,0),new Dimension(32767, 32767));
+    }
     
-    void Init(P panel);
-    
-    void displayView();
-    
+    public MutiBitFiller(Dimension min, Dimension pref, Dimension max)
+    {
+        super(min,pref,max);
+    }
 }
