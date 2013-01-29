@@ -817,6 +817,18 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         messageLabel1.setText(" ");
         messageLabel2.setText(" ");
     }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
 
     @Override
     public void navigateAwayFromView() {

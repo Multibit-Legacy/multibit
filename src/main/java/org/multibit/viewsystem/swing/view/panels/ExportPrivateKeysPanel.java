@@ -814,6 +814,18 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         clearMessages();
     }
     
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+    
     private void enableWalletPassword(boolean enableWalletPassword) {
         if (enableWalletPassword) {
             // Enable the wallet password.

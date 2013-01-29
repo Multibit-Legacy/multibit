@@ -576,6 +576,18 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
         
         clearMessages();
     }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
 
     public void clearMessages() {
         setMessage1(" ");

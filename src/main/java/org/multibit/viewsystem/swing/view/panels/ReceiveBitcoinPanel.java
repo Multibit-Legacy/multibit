@@ -462,6 +462,18 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
     }
     
     @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+    
+    @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.RECEIVE_BITCOIN_ICON_FILE);
     }

@@ -110,6 +110,18 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         displayView(true);
     }
     
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+    
     public void displayView(boolean blinkEnabled) {
         if (walletPanels != null) {
             synchronized(walletPanels) {
