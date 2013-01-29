@@ -29,6 +29,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
@@ -69,6 +70,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
         // This action is a WalletBusyListener.
         controller.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        
     }
 
     /**

@@ -694,6 +694,8 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
         changePasswordSubmitAction = new ChangePasswordSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.CHANGE_PASSWORD_ICON_FILE), currentPasswordField, newPasswordField, repeatNewPasswordField);
         MultiBitButton submitButton = new MultiBitButton(changePasswordSubmitAction, controller);
+        submitButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("changePasswordSubmitAction.tooltip")));
+
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         buttonPanel.add(submitButton);
 
