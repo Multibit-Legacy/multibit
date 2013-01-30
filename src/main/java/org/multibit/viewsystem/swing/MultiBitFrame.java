@@ -91,6 +91,8 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesViewFactory;
+import org.multibit.viewsystem.swing.preferences.modules.PreferencesModule;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
@@ -106,6 +108,9 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+
+
+
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -192,6 +197,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public Logger logger = LoggerFactory.getLogger(MultiBitFrame.class.getName());
 
     private ViewFactory viewFactory;
+    private PreferencesViewFactory prefViewFactory;
 
     private Timer fileChangeTimer;
 
@@ -273,7 +279,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         sizeAndCenter();
 
-        viewFactory = new ViewFactory(controller, this);
+        prefViewFactory = new PreferencesViewFactory(controller, this);
+        
+        prefViewFactory.addModuleFromEnum(PreferencesModule.CORE);
+        prefViewFactory.addModuleFromEnum(PreferencesModule.BITCOIN);
+        prefViewFactory.addModuleFromEnum(PreferencesModule.TICKER);
+        
+        viewFactory = new ViewFactory(controller, this, prefViewFactory);
 
         initUI();
 
@@ -991,9 +1003,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (initUI) {
             thisFrame.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
-            viewFactory.initialise();
+            viewFactory.reset();
             contentPane.removeAll();
             viewTabbedPane.removeAllTabs();
+
             initUI();
             
             if (initialView != null && !initialView.toString().equals(View.TRANSACTIONS_VIEW.toString()) && !initialView.toString().equals(View.SEND_BITCOIN_VIEW.toString())

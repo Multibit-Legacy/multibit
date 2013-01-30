@@ -44,7 +44,7 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.BasePanel;
+import org.multibit.viewsystem.swing.AbstractModularPanel;
 import org.multibit.viewsystem.dataproviders.preferences.TickerPreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -58,7 +58,7 @@ import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
  *
  * @author Cameron Garnham
  */
-public class TickerPreferencesPanelModule  extends PreferencesPanelModule implements TickerPreferencesDataProvider {
+public class TickerPreferencesModule  extends AbstractPreferencesModule implements TickerPreferencesDataProvider {
 
     
     private static final int EXCHANGE_COMBO_HEIGHT_DELTA = 15;
@@ -105,7 +105,7 @@ public class TickerPreferencesPanelModule  extends PreferencesPanelModule implem
     private JComboBox currencyComboBox2;
 
     
-     public TickerPreferencesPanelModule(MultiBitController controller, MultiBitFrame mainFrame){
+     public TickerPreferencesModule(MultiBitController controller, MultiBitFrame mainFrame){
         this.controller = controller;
         this.mainFrame = mainFrame;
      }
@@ -133,6 +133,11 @@ public class TickerPreferencesPanelModule  extends PreferencesPanelModule implem
         panels.add(createTickerPanel(0));
         
         return panels;
+    }
+    
+    @Override
+    public PreferencesModule getModuleEnum() {
+        return PreferencesModule.TICKER;
     }
 
     

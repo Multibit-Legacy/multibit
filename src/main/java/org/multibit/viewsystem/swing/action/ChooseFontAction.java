@@ -26,8 +26,7 @@ import org.multibit.controller.MultiBitController;
 
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.preferences.modules.CorePreferencesPanelModule;
-
+import org.multibit.viewsystem.swing.preferences.modules.CorePreferencesModule;
 import org.multibit.viewsystem.swing.view.components.JFontChooser;
 
 /**
@@ -39,12 +38,12 @@ public class ChooseFontAction extends AbstractAction {
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
-    private CorePreferencesPanelModule corePreferencesPanelModule;
+    private CorePreferencesModule corePreferencesPanelModule;
 
     /**
      * Creates a new {@link ChooseFontAction}.
      */
-    public ChooseFontAction(MultiBitController controller, MultiBitFrame mainFrame, CorePreferencesPanelModule corePreferencesPanelModule, ImageIcon icon) {
+    public ChooseFontAction(MultiBitController controller, MultiBitFrame mainFrame, CorePreferencesModule corePreferencesPanelModule, ImageIcon icon) {
         super(controller.getLocaliser().getString("fontChooser.text"), icon);
         this.controller = controller;
         this.mainFrame = mainFrame;

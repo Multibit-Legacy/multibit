@@ -50,7 +50,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.BasePanel;
+import org.multibit.viewsystem.swing.AbstractModularPanel;
 import org.multibit.viewsystem.dataproviders.preferences.CorePreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -65,7 +65,7 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
  *
  * @author Cameron Garnham
  */
-public class CorePreferencesPanelModule  extends PreferencesPanelModule implements CorePreferencesDataProvider {
+public class CorePreferencesModule  extends AbstractPreferencesModule implements CorePreferencesDataProvider {
 
     
     private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
@@ -110,7 +110,7 @@ public class CorePreferencesPanelModule  extends PreferencesPanelModule implemen
 
     
     
-    public CorePreferencesPanelModule(MultiBitController controller, MultiBitFrame mainFrame){
+    public CorePreferencesModule(MultiBitController controller, MultiBitFrame mainFrame){
         this.controller = controller;
         this.mainFrame = mainFrame;
         
@@ -165,6 +165,10 @@ public class CorePreferencesPanelModule  extends PreferencesPanelModule implemen
         return panels;
     }
 
+    @Override
+    public PreferencesModule getModuleEnum() {
+        return PreferencesModule.CORE;
+    }
     
     
     @Override

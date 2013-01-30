@@ -29,19 +29,15 @@ import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
-import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
 import org.multibit.viewsystem.swing.view.panels.ChartsPanel;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import java.util.Map;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.BasePanel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.preferences.modules.BitcoinPreferencesPanelModule;
-import org.multibit.viewsystem.swing.preferences.modules.CorePreferencesPanelModule;
-import org.multibit.viewsystem.swing.preferences.modules.TickerPreferencesPanelModule;
+import org.multibit.viewsystem.swing.preferences.PreferencesViewFactory;
 
 /**
  * a factory class that lazy loads views
@@ -50,23 +46,25 @@ import org.multibit.viewsystem.swing.preferences.modules.TickerPreferencesPanelM
  * 
  */
 public class ViewFactory {
-    private Map<View, Viewable> viewMap;
+    
+    private final Map<View, Viewable> viewMap;
+    private final MultiBitController controller;
+    private final MultiBitFrame mainFrame;
+    private final PreferencesViewFactory prefViewFactory;
 
-    MultiBitController controller;
-    MultiBitFrame mainFrame;
-
-    public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame, PreferencesViewFactory prefViewFactory) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-        initialise();
+        this.prefViewFactory = prefViewFactory;
+        this.viewMap = new EnumMap<View, Viewable>(View.class);    
     }
     
-    public final void initialise() {
-        viewMap = new EnumMap<View, Viewable>(View.class);        
+    public void reset() {
+        this.viewMap.clear();
     }
 
     public Viewable getView(View viewNumber) {
-        Viewable viewToReturn = viewMap.get(viewNumber);
+        Viewable viewToReturn = this.viewMap.get(viewNumber);
 
         if (viewToReturn == null) {
             viewToReturn = createView(viewNumber);
@@ -76,7 +74,7 @@ public class ViewFactory {
     }
 
     public void addView(View viewNumber, Viewable view) {
-        viewMap.put(viewNumber, view);
+        this.viewMap.put(viewNumber, view);
     }
     
     private Viewable createView(View viewNumber) {
@@ -120,14 +118,7 @@ public class ViewFactory {
         }
         
         case PREFERENCES_VIEW: {
-            BasePanel panel = new PreferencesPanel(controller, mainFrame);
-            panel.addModule(new CorePreferencesPanelModule(controller, mainFrame));
-            panel.addModule(new BitcoinPreferencesPanelModule(controller, mainFrame));
-            panel.addModule(new TickerPreferencesPanelModule(controller, mainFrame));
-            
-            panel.finishInit();
-            
-            viewToReturn = panel;
+            viewToReturn = this.prefViewFactory.getModularView();
             break;
         }
 
