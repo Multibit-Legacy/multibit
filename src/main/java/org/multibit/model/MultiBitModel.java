@@ -214,9 +214,11 @@ public class MultiBitModel {
     
     /**
      * Holds exchange Data.
+     * Two simultaneous exchanges are supported.
      */
-    private ExchangeData exchangeData = new ExchangeData(); // new up an empty ExchangeData object
-  
+    private ExchangeData exchangeData1;
+    private ExchangeData exchangeData2;;
+
     public static final int UNKNOWN_NUMBER_OF_CONNECTD_PEERS = -1;
     
     /**
@@ -281,6 +283,12 @@ public class MultiBitModel {
             setCurrentView((null != initialViewInProperties) ? initialViewInProperties : View.DEFAULT_VIEW());
             log.debug("Initial view from properties file is '" + getCurrentView().toString() + "'");
         }
+        
+        exchangeData1 = new ExchangeData();
+        exchangeData2 = new ExchangeData();
+        exchangeData1.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
+        exchangeData2.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
+ 
         controller.setModel(this);
     }
 
@@ -825,13 +833,21 @@ public class MultiBitModel {
         setUserPreference(MultiBitModel.SELECTED_VIEW_ENUM, view.name());
     }
 
-	public ExchangeData getExchangeData() {
-		return exchangeData;
-	}
+    public ExchangeData getExchangeData1() {
+        return exchangeData1;
+    }
 
-	public void setExchangeData(ExchangeData exchangeData) {
-		this.exchangeData = exchangeData;
-	}
+    public void setExchangeData1(ExchangeData exchangeData) {
+        this.exchangeData1 = exchangeData;
+    }
+    
+    public ExchangeData getExchangeData2() {
+        return exchangeData2;
+    }
+
+    public void setExchangeData2(ExchangeData exchangeData) {
+        this.exchangeData2 = exchangeData;
+    }
 	
     public NetworkParameters getNetworkParameters() {
         // If test or production is not specified, default to production.

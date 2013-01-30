@@ -7,6 +7,8 @@ public class CurrencyInfo {
     String currencySymbol;
     
     boolean isPrefix;
+    
+    boolean hasSeparatingSpace = false;
 
     public CurrencyInfo(String currencyCode, String currencySymbol, boolean isPrefix) {
         super();
@@ -76,6 +78,14 @@ public class CurrencyInfo {
     @Override
     public String toString() {
         return "CurrencyInfo [currencyCode=" + currencyCode + ", currencySymbol=" + currencySymbol + ", isPrefix=" + isPrefix + "]";
+    }
+
+    public boolean isHasSeparatingSpace() {
+        return hasSeparatingSpace;
+    }
+
+    public void setHasSeparatingSpace(boolean hasSeparatingSpace) {
+        this.hasSeparatingSpace = hasSeparatingSpace;
     }
     
 }

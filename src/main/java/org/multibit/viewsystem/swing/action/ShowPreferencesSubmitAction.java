@@ -19,6 +19,8 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Timer;
 
 import javax.swing.AbstractAction;
@@ -35,7 +37,9 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -67,7 +71,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showPreferencesSubmitAction.tooltip"));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesSubmitAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showPreferencesSubmitAction.mnemonicKey"));
     }
 
@@ -271,6 +275,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String newExchange1 = dataProvider.getNewExchange1();
             if (newExchange1 != null && !newExchange1.equals(previousExchange1)) {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
+                ExchangeData newExchangeData = new ExchangeData();
+                newExchangeData.setShortExchangeName(newExchange1);
+                controller.getModel().setExchangeData1(newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -297,6 +304,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String newExchange2 = dataProvider.getNewExchange2();
             if (newExchange2 != null && !newExchange2.equals(previousExchange2)) {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
+                ExchangeData newExchangeData = new ExchangeData();
+                newExchangeData.setShortExchangeName(newExchange2);
+                controller.getModel().setExchangeData2(newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -310,12 +320,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             }
 
             // Set on the model the currencies we are interested in - only these
-            // get
-            // downloaded to save bandwidth/ server time.
+            // get downloaded to save bandwidth/ server time.
+            Collection<String> currencies1 = new ArrayList<String>();
+            currencies1.add(newCurrency1);
+            controller.getModel().getExchangeData1().setCurrenciesWeAreInterestedIn(currencies1);
             if (dataProvider.getNewShowSecondRow()) {
-                controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { newCurrency1, newCurrency2 });
-            } else {
-                controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { newCurrency1 });
+                Collection<String> currencies2 = new ArrayList<String>();
+                currencies2.add(newCurrency2);
+                controller.getModel().getExchangeData2().setCurrenciesWeAreInterestedIn(currencies2);
             }
 
             // Can undo.

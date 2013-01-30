@@ -1259,6 +1259,11 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         amountPanel.add(MultiBitTitledPanel.createStent(amountFiatTextField.getPreferredSize().width, amountFiatTextField.getPreferredSize().height), constraints2);
 
         CurrencyInfo currencyInfo = CurrencyConverter.INSTANCE.getCurrencyCodeToInfoMap().get(CurrencyConverter.INSTANCE.getCurrencyUnit().getCurrencyCode());
+        if (currencyInfo == null) {
+            // Create a default currency info with the raw currency code as a suffix, including a separator space
+            currencyInfo = new CurrencyInfo(CurrencyConverter.INSTANCE.getCurrencyUnit().getCurrencyCode(), CurrencyConverter.INSTANCE.getCurrencyUnit().getCurrencyCode(), false);
+            currencyInfo.setHasSeparatingSpace(true);
+        }
         amountUnitFiatLabel = new MultiBitLabel("");
         int fiatCurrencySymbolPosition = 4;   // Prefix is default.
         int stentPosition = 5;
@@ -1281,7 +1286,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         amountPanel.add(MultiBitTitledPanel.createStent(3), constraints2);
 
         amountUnitFiatLabel.setHorizontalTextPosition(SwingConstants.LEADING);
-        amountUnitFiatLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = fiatCurrencySymbolPosition;
         constraints2.gridy = 0;
@@ -1775,7 +1779,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             return true;
         }
     }
-
 
     /**
      * select the rows that correspond to the current data

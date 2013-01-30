@@ -113,7 +113,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.82D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
-    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 0.12345678 BTC ($0.01)";
+    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 00.12345678 BTC ($00.01)";
     
     public static final int WIDTH_OF_LONG_FIELDS = 300;
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;
@@ -1033,7 +1033,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         String viewName = nextViewFinal.getViewId().toString();
         boolean foundTab = false;
         if (viewTabbedPane.getTabCount() > 0) {
-            log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " initally has " + viewTabbedPane.getTabCount() + " tabs.");
+            //log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " initally has " + viewTabbedPane.getTabCount() + " tabs.");
             for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
                 JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
                 if (tabComponent != null) {
@@ -1062,7 +1062,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         nextViewFinal.displayView();
 
-        log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
+        //log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
         thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
     }
     /**

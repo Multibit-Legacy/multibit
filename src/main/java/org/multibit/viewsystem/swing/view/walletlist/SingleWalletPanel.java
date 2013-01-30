@@ -595,9 +595,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             String walletFilenameFull = walletFile.getName();
             String walletFilenameShort = walletFilenameFull.replaceAll("\\.wallet", "");
             walletFilenameLabel.setText(walletFilenameShort);
-            walletFilenameLabel.setToolTipText(walletFilename);
-            filenameSeparator.setToolTipText(walletFilename);
-            filenameLabel.setToolTipText(walletFilename);
+            String tooltipText = HelpContentsPanel.createTooltipText(walletFilename);
+            walletFilenameLabel.setToolTipText(tooltipText);
+            filenameSeparator.setToolTipText(tooltipText);
+            filenameLabel.setToolTipText(tooltipText);
         }
 
         constraints.fill = GridBagConstraints.HORIZONTAL;

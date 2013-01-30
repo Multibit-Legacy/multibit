@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.view.ticker;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.joda.money.BigMoney;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
@@ -45,9 +44,10 @@ public class TickerTableModel extends AbstractTableModel {
     private static final long serialVersionUID = -775886012854496208L;
 
     /**
-     * The exchange data
+     * The exchange data for each row
      */
-    private ExchangeData exchangeData;
+    private ExchangeData exchangeData1;
+    private ExchangeData exchangeData2;
 
     private boolean showSecondRow;
 
@@ -139,13 +139,16 @@ public class TickerTableModel extends AbstractTableModel {
             currency2 = ExchangeData.DEFAULT_CURRENCY;
         }
         
-        exchangeData = multiBitModel.getExchangeData();
+        exchangeData1 = multiBitModel.getExchangeData1();
+        exchangeData2 = multiBitModel.getExchangeData2();
     }
 
+    @Override
     public int getColumnCount() {
         return numberOfColumns;
     }
 
+    @Override
     public int getRowCount() {
         if (showSecondRow) {
             return 2;
@@ -154,10 +157,12 @@ public class TickerTableModel extends AbstractTableModel {
         }
     }
 
+    @Override
     public String getColumnName(int column) {
         return controller.getLocaliser().getString("tickerTableModel." + columnVariables[column]);
     }
 
+    @Override
     public Object getValueAt(int row, int column) {
         if (row < 0 && row >= getRowCount()) {
             return null;
@@ -165,12 +170,15 @@ public class TickerTableModel extends AbstractTableModel {
 
         String exchange;
         String currency;
+        ExchangeData exchangeData;
         if (row == 0) {
             exchange = exchange1;
             currency = currency1;
+            exchangeData = exchangeData1;
         } else {
             exchange = exchange2;
             currency = currency2;
+            exchangeData = exchangeData2;
         }
 
         String variable = columnVariables[column];
@@ -183,7 +191,6 @@ public class TickerTableModel extends AbstractTableModel {
             if (exchangeData.getLastPrice(currency) == null) {
                 return " ";
             } else {
-                //return String.format("%1$,.5f", exchangeData.getLastPrice(currency).getAmount().floatValue());
                 return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastPrice(currency));
             }
         } else if (TICKER_COLUMN_BID.equals(variable)) {
@@ -191,7 +198,6 @@ public class TickerTableModel extends AbstractTableModel {
             if (exchangeData.getLastBid(currency) == null) {
                 return " ";
             } else {
-                //return String.format("%1$,.5f", exchangeData.getLastBid(currency).getAmount().floatValue());
                 return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastBid(currency));
             }
         } else if (TICKER_COLUMN_ASK.equals(variable)) {
@@ -199,8 +205,7 @@ public class TickerTableModel extends AbstractTableModel {
             if (exchangeData.getLastAsk(currency) == null) {
                 return " ";
             } else {
-                //return String.format("%1$,.5f", exchangeData.getLastAsk(currency).getAmount().floatValue());
-                return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastAsk(currency));
+                 return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastAsk(currency));
             }
         } else if (TICKER_COLUMN_EXCHANGE.equals(variable)) {
             // exchange
@@ -214,6 +219,7 @@ public class TickerTableModel extends AbstractTableModel {
     /**
      * table model is read only
      */
+    @Override
     public void setValueAt(Object value, int row, int column) {
         throw new UnsupportedOperationException();
     }
