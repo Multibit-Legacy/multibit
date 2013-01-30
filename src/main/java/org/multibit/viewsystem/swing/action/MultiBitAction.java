@@ -23,6 +23,7 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * This {@link Action} represents a localised MultiBit action that just displays a view
@@ -49,7 +50,7 @@ public class MultiBitAction extends AbstractAction {
         this.viewToDisplay = viewToDisplay;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString(tooltipKey));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString(tooltipKey)));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic(mnemonicKey));
     }
 

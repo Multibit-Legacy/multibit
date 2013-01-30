@@ -26,6 +26,7 @@ import javax.swing.TransferHandler;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * This {@link Action} represents the swing copy QRCode image action
@@ -44,7 +45,7 @@ public class CopyQRCodeImageAction extends AbstractAction {
         this.dataProvider = dataProvider;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyQRCodeImageAction.tooltip"));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("copyQRCodeImageAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("copyQRCodeImageAction.mnemonicKey"));
     }
 

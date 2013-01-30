@@ -19,6 +19,7 @@ import javax.swing.Action;
 import javax.swing.JButton;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * button used in MultiBit Swing UI
@@ -35,6 +36,7 @@ public class MultiBitButton extends JButton {
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         setOpaque(false);
         setRolloverEnabled(true);
+        setToolTipText(HelpContentsPanel.createTooltipText((String)action.getValue(Action.SHORT_DESCRIPTION)));
     }
     
     public MultiBitButton(String label) {
@@ -43,5 +45,6 @@ public class MultiBitButton extends JButton {
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         setOpaque(false);
         setRolloverEnabled(true);
+        setToolTipText(HelpContentsPanel.createTooltipText(label));
     }
 }

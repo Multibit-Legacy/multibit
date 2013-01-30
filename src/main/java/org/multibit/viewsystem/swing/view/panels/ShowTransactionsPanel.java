@@ -490,12 +490,12 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                     primaryLabel.setIcon(buildingIcon);
                     primaryLabel.setText("");
                     if (numberOfBlocksEmbedded >= 6) {
-                        primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
+                        primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed")));
                     } else {
                         if (transaction != null && transaction.isCoinBase()) {
-                            primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmedAndCoinbase"));                            
+                            primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmedAndCoinbase")));                            
                         } else {
-                            primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                            primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed")));
                         }
                     }
                 }
@@ -505,7 +505,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 primaryLabel.setIcon(getConfidenceIcon(confidence));
                 primaryLabel.setText("");
                 
-                primaryLabel.setToolTipText(getUnconfirmedConfidenceToolTip(transaction) );
+                primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(getUnconfirmedConfidenceToolTip(transaction) ));
                 
                 if (transaction != null) {
                     if (transaction.getLockTime() > 0) {
@@ -520,7 +520,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             case NOT_IN_BEST_CHAIN: {
                 primaryLabel.setIcon(getConfidenceIcon(confidence));
                 primaryLabel.setText("");
-                primaryLabel.setToolTipText(getUnconfirmedConfidenceToolTip(transaction) );
+                primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(getUnconfirmedConfidenceToolTip(transaction)));
                 
                 if (transaction != null) {
                     if (transaction.getLockTime() > 0) {

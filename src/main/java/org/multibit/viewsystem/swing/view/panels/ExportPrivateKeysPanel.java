@@ -447,8 +447,8 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable {
                 chooseFile();
             }
         });
-        chooseOutputFilenameButton.setToolTipText(controller.getLocaliser()
-                .getString("showExportPrivateKeysPanel.filename.tooltip"));
+        chooseOutputFilenameButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser()
+                .getString("showExportPrivateKeysPanel.filename.tooltip")));
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
@@ -680,7 +680,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable {
 
         ImageIcon tickIcon = ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE);
         tickLabel = new JLabel(tickIcon);
-        tickLabel.setToolTipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch"));
+        tickLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch")));
 
         tickLabel.setVisible(false);
         constraints.fill = GridBagConstraints.NONE;

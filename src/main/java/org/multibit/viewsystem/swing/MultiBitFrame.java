@@ -457,7 +457,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         int availableToSpendHeight = fontMetrics.getHeight();
 
         estimatedBalanceLabelLabel = new MultiBitLabel(controller.getLocaliser().getString("multiBitFrame.balanceLabel"), JTextField.RIGHT);
-        estimatedBalanceLabelLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceLabelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
         estimatedBalanceLabelLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
 
         constraints.gridx = 3;
@@ -478,7 +478,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
 
         estimatedBalanceBTCLabel = new BlinkLabel(controller, true);
-        estimatedBalanceBTCLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceBTCLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
         estimatedBalanceBTCLabel.setBorder(BorderFactory.createEmptyBorder());
         //estimatedBalanceBTCLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
 
@@ -492,7 +492,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(estimatedBalanceBTCLabel, constraints);
 
         estimatedBalanceFiatLabel = new BlinkLabel(controller, true);
-        estimatedBalanceFiatLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceFiatLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
         estimatedBalanceFiatLabel.setBorder(BorderFactory.createEmptyBorder());
         //estimatedBalanceFiatLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
         

@@ -498,7 +498,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             }
             sidePanelButton.setText("");
             sidePanelButton.setBorderPainted(false);
-            sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip"));
+            sidePanelButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip")));
             sidePanelButton.setMnemonic(mnemonicUtil.getMnemonic(controller.getLocaliser().getString(
                     "sendBitcoinPanel.showLess.mnemonic")));
             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
@@ -512,7 +512,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             }
             sidePanelButton.setText("");
             sidePanelButton.setBorderPainted(false);
-            sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip"));
+            sidePanelButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip")));
             sidePanelButton.setMnemonic(mnemonicUtil.getMnemonic(controller.getLocaliser().getString(
                     "sendBitcoinPanel.showMore.mnemonic")));
             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
@@ -1003,7 +1003,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             } else {
                 qrCodeLabel.setText("");                
             }
-            qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.tooltip"));
+            qrCodeLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.tooltip")));
         }
     }
 
@@ -1208,7 +1208,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
         MultiBitLabel amountUnitBTCLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"));
         amountUnitBTCLabel.setHorizontalTextPosition(SwingConstants.LEADING);
-        amountUnitBTCLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
+        amountUnitBTCLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip")));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 0;
@@ -1354,7 +1354,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             }
             if (createNewButton != null) {
                 createNewButton.setEnabled(true);
-                createNewButton.setToolTipText(getLocalisationString(CREATE_NEW_TOOLTIP, null));
+                createNewButton.setToolTipText(HelpContentsPanel.createTooltipText(getLocalisationString(CREATE_NEW_TOOLTIP, null)));
             }
             if (deleteButton != null) {
                 boolean deleteEnable = true;
@@ -1362,11 +1362,11 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                     deleteEnable = addressesTableModel.getRowCount() > 0;
                 }
                 deleteButton.setEnabled(deleteEnable);
-                deleteButton.setToolTipText(getLocalisationString(DELETE_TOOLTIP, null));
+                deleteButton.setToolTipText(HelpContentsPanel.createTooltipText(getLocalisationString(DELETE_TOOLTIP, null)));
             }
             if (pasteSwatchButton != null) {
                 pasteSwatchButton.setEnabled(true);
-                pasteSwatchButton.setToolTipText(controller.getLocaliser().getString("pasteSwatchAction.tooltip"));
+                pasteSwatchButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("pasteSwatchAction.tooltip")));
             }
         }
         
@@ -1948,7 +1948,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     public Action getDeleteSendingAddressAction() {
         return deleteAddressAction;
-    } 
+    }
     
     @Override
     public void lostExchangeRate(ExchangeRate exchangeRate) {
@@ -1977,7 +1977,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 if (amountEqualsLabel != null) {
                     amountEqualsLabel.setVisible(fiatIsVisible);
                 }
-
                 if (amountBTCTextField != null) {
                     CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
                     if (converterResult.isBtcMoneyValid()) {

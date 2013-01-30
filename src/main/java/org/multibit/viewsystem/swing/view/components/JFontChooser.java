@@ -50,6 +50,7 @@ import javax.swing.text.Position;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -566,6 +567,7 @@ public class JFontChooser extends JComponent {
             putValue(Action.DEFAULT, ACTION_NAME);
             putValue(Action.ACTION_COMMAND_KEY, ACTION_NAME);
             putValue(Action.NAME, controller.getLocaliser().getString("fontChooser.ok"));
+            putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("fontChooser.ok")));
         }
 
         @Override
@@ -585,6 +587,7 @@ public class JFontChooser extends JComponent {
             putValue(Action.DEFAULT, ACTION_NAME);
             putValue(Action.ACTION_COMMAND_KEY, ACTION_NAME);
             putValue(Action.NAME, controller.getLocaliser().getString("fontChooser.cancel"));
+            putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("fontChooser.cancel")));
         }
 
         @Override

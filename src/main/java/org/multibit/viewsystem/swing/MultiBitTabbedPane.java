@@ -24,6 +24,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +100,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
             if (tabComponent != null && tabComponent instanceof JLabel) {
                 JLabel tabLabel = (JLabel) tabComponent;
                 if (selectedView != null) {
-                    tabLabel.setToolTipText(selectedView.getViewTooltip());
+                    tabLabel.setToolTipText(HelpContentsPanel.createTooltipText(selectedView.getViewTooltip()));
                 }
             }
         } catch (Throwable e) {
@@ -233,7 +234,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
             JComponent selectedTab = (JComponent)getComponentAt(index);
             Component[] components = selectedTab.getComponents();
             if (components != null && components.length > 0 && components[0] instanceof Viewable) {
-                return ((Viewable) components[0]).getViewTooltip();
+                return HelpContentsPanel.createTooltipText(((Viewable) components[0]).getViewTooltip());
             }
         }
 

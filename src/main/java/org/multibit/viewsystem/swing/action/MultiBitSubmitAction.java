@@ -10,6 +10,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * Abstract super class to check for whether wallet files have changed and
@@ -30,7 +31,7 @@ public abstract class MultiBitSubmitAction extends AbstractAction {
         this.controller = controller;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString(tooltipKey));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString(tooltipKey)));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic(mnemonicKey));
     }
    

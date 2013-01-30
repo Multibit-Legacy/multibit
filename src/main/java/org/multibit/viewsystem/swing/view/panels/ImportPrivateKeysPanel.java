@@ -401,7 +401,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
         outputFilenamePanel.add(MultiBitTitledPanel.createStent(stentWidth, ExportPrivateKeysPanel.STENT_HEIGHT), constraints);
 
         chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
-        chooseFilenameButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.tooltip"));
+        chooseFilenameButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.tooltip")));
         chooseFilenameButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         final MultiBitButton finalChooseFilenameButton = chooseFilenameButton;
@@ -472,8 +472,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
 
         MultiBitLabel numberOfKeysLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.numberOfKeys.text"));
-        numberOfKeysLabelLabel.setToolTipText(controller.getLocaliser()
-                .getString("showImportPrivateKeysPanel.numberOfKeys.tooltip"));
+        numberOfKeysLabelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser()
+                .getString("showImportPrivateKeysPanel.numberOfKeys.tooltip")));
         numberOfKeysLabelLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.NONE;
@@ -510,7 +510,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
 
         MultiBitLabel replayDateLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.replayDate.text"));
-        replayDateLabelLabel.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.replayDate.tooltip"));
+        replayDateLabelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.replayDate.tooltip")));
         replayDateLabelLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         constraints.fill = GridBagConstraints.NONE;
@@ -689,7 +689,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
                 }
             }
         });
-        unlockButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.unlock.tooltip"));
+        unlockButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.unlock.tooltip")));
         unlockButton.setEnabled(false);
 
         constraints.fill = GridBagConstraints.NONE;
