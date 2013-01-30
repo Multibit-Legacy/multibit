@@ -72,13 +72,24 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
     }
 
     /**
+     * Calculates the hash of the hash of the contents. This is a standard operation in Bitcoin.
+     */
+    public static Sha256Hash createDouble(byte[] contents) {
+        return new Sha256Hash(Utils.doubleDigest(contents));
+    }
+
+    /**
      * Returns a hash of the given files contents. Reads the file fully into memory before hashing so only use with
      * small files.
      * @throws IOException
      */
     public static Sha256Hash hashFileContents(File f) throws IOException {
-        // Lame implementation that just reads the entire file into RAM. Can be made more efficient later.
-        return create(ByteStreams.toByteArray(new FileInputStream(f)));
+        FileInputStream in = new FileInputStream(f);
+        try {
+            return create(ByteStreams.toByteArray(in));
+        } finally {
+            in.close();
+        }
     }
 
     /**

@@ -589,7 +589,7 @@ public class MultiBitService {
                                 if (loopWallet.getTransaction(sendTransaction.getHash()) == null) {
                                     log.debug("MultiBit adding a new pending transaction for the wallet '"
                                             + loopPerWalletModelData.getWalletDescription() + "'\n" + sendTransaction.toString());
-                                    loopWallet.receivePending(sendTransaction);
+                                    loopWallet.receivePending(sendTransaction, null);
                                 }
                             }  
                         }

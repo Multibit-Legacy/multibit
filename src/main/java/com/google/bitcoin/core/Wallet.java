@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
@@ -233,6 +234,9 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      */
     MultiBitWalletVersion version;
 
+    // Whether or not to ignore nLockTime > 0 transactions that are received to the mempool.
+    private boolean acceptTimeLockedTransactions;
+
     /**
      * A description for the wallet.
      */
@@ -281,6 +285,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                 invokeOnWalletChanged();
             }
         };
+        acceptTimeLockedTransactions = false;
     }
 
     public NetworkParameters getNetworkParameters() {
@@ -292,6 +297,13 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      */
     public synchronized Iterable<ECKey> getKeys() {
         return new ArrayList<ECKey>(keychain);
+    }
+
+    /**
+     * Returns the number of keys in the keychain.
+     */
+    public synchronized int getKeychainSize() {
+        return keychain.size();
     }
 
     /**
@@ -317,6 +329,28 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                 stream.close();
             }
         }
+    }
+
+    /**
+     * <p>Whether or not the wallet will ignore transactions that have a lockTime parameter > 0. By default, all such
+     * transactions are ignored, because they are useful only in special protocols and such a transaction may not
+     * confirm as fast as an app typically expects. By setting this property to true, you are acknowledging that
+     * you understand what time-locked transactions are, and that your code is capable of handling them without risk.
+     * For instance you are not providing anything valuable in return for an unconfirmed transaction that has a lock
+     * time far in the future (which opens you up to Finney attacks).</p>
+     *
+     * <p>Note that this property is not serialized. So you have to set it to true each time you load or create a
+     * wallet.</p>
+     */
+    public void setAcceptTimeLockedTransactions(boolean acceptTimeLockedTransactions) {
+        this.acceptTimeLockedTransactions = acceptTimeLockedTransactions;
+    }
+
+    /**
+     * See {@link Wallet#setAcceptTimeLockedTransactions(boolean)} for an explanation of this property.
+     */
+    public boolean doesAcceptTimeLockedTransactions() {
+        return acceptTimeLockedTransactions;
     }
 
     /**
@@ -417,25 +451,68 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
 
     /**
-     * Called when we have found a transaction (via network broadcast or otherwise) that is relevant to this wallet
+     * Called by the {@link BlockChain} when we receive a new filtered block that contains a transactions previously
+     * received by a call to @{link receivePending}.<p>
+     *
+     * This is necessary for the internal book-keeping Wallet does. When a transaction is received that sends us
+     * coins it is added to a pool so we can use it later to create spends. When a transaction is received that
+     * consumes outputs they are marked as spent so they won't be used in future.<p>
+     *
+     * A transaction that spends our own coins can be received either because a spend we created was accepted by the
+     * network and thus made it into a block, or because our keys are being shared between multiple instances and
+     * some other node spent the coins instead. We still have to know about that to avoid accidentally trying to
+     * double spend.<p>
+     *
+     * A transaction may be received multiple times if is included into blocks in parallel chains. The blockType
+     * parameter describes whether the containing block is on the main/best chain or whether it's on a presently
+     * inactive side chain. We must still record these transactions and the blocks they appear in because a future
+     * block might change which chain is best causing a reorganize. A re-org can totally change our balance!
+     */
+    public synchronized void notifyTransactionIsInBlock(Sha256Hash txHash, StoredBlock block,
+                                       BlockChain.NewBlockType blockType) throws VerificationException {
+        Transaction tx = pending.get(txHash);
+        if (tx == null)
+            return;
+        receive(tx, block, blockType, false);
+    }
+
+    protected static class AnalysisResult {
+        // Which tx, if any, had a non-zero lock time.
+        Transaction timeLocked;
+        // In future, depth, fees, if any are non-standard, anything else that's interesting ...
+    }
+
+    /**
+     * <p>Called when we have found a transaction (via network broadcast or otherwise) that is relevant to this wallet
      * and want to record it. Note that we <b>cannot verify these transactions at all</b>, they may spend fictional
      * coins or be otherwise invalid. They are useful to inform the user about coins they can expect to receive soon,
      * and if you trust the sender of the transaction you can choose to assume they are in fact valid and will not
-     * be double spent as an optimization.
+     * be double spent as an optimization.</p>
      *
-     * @param tx
-     * @throws VerificationException
+     * <p>Before this method is called, {@link Wallet#isPendingTransactionRelevant(Transaction)} should have been
+     * called to decide whether the wallet cares about the transaction - if it does, then this method expects the
+     * transaction and any dependencies it has which are still in the memory pool.</p>
      */
-    public synchronized void receivePending(Transaction tx) throws VerificationException {
-        // Can run in a peer thread.
+    public synchronized void receivePending(Transaction tx, List<Transaction> dependencies) throws VerificationException {
+        // Can run in a peer thread. This method will only be called if a prior call to isPendingTransactionRelevant
+        // returned true, so we already know by this point that it sends coins to or from our wallet, or is a double
+        // spend against one of our other pending transactions.
+        //
+        // Do a brief risk analysis of the transaction and its dependencies to check for any possible attacks.
+        AnalysisResult analysis = analyzeTransactionAndDependencies(tx, dependencies);
+        if (analysis.timeLocked != null && !doesAcceptTimeLockedTransactions()) {
+            log.warn("Transaction {}, dependency of {} has a time lock value of {}", new Object[] {
+                    analysis.timeLocked.getHashAsString(), tx.getHashAsString(), analysis.timeLocked.getLockTime()});
+            return;
+        }        
 
         // Ignore it if we already know about this transaction. Receiving a pending transaction never moves it
         // between pools.
-        EnumSet<Pool> containingPools = getContainingPools(tx);
-        if (!containingPools.equals(EnumSet.noneOf(Pool.class))) {
-            log.debug("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
-            return;
-        }
+//        EnumSet<Pool> containingPools = getContainingPools(tx);
+//        if (!containingPools.equals(EnumSet.noneOf(Pool.class))) {
+//            log.debug("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
+//            return;
+//        }
 
         // We only care about transactions that:
         //   - Send us coins
@@ -470,6 +547,51 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         //
         // Note that after we return from this function, the wallet may have been modified.
         commitTx(tx);
+    }
+
+    private AnalysisResult analyzeTransactionAndDependencies(Transaction tx, List<Transaction> dependencies) {
+        AnalysisResult result = new AnalysisResult();
+        if (tx.getLockTime() > 0)
+            result.timeLocked = tx;
+        if (dependencies != null) {
+            for (Transaction dep : dependencies) {
+                if (dep.getLockTime() > 0) {
+                    result.timeLocked = dep;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * This method is used by a {@link Peer} to find out if a transaction that has been announced is interesting,
+     * that is, whether we should bother downloading its dependencies and exploring the transaction to decide how
+     * risky it is. If this method returns true then {@link Wallet#receivePending(Transaction, java.util.List)}
+     * will soon be called with the transactions dependencies as well.
+     */
+    boolean isPendingTransactionRelevant(Transaction tx) throws ScriptException {
+        // Ignore it if we already know about this transaction. Receiving a pending transaction never moves it
+        // between pools.
+        EnumSet<Pool> containingPools = getContainingPools(tx);
+        if (!containingPools.equals(EnumSet.noneOf(Pool.class))) {
+            log.debug("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
+            return false;
+        }
+
+        // We only care about transactions that:
+        //   - Send us coins
+        //   - Spend our coins
+        if (!isTransactionRelevant(tx)) {
+            log.debug("Received tx that isn't relevant to this wallet, discarding.");
+            return false;
+        }
+
+        if (tx.getLockTime() > 0 && !acceptTimeLockedTransactions) {
+            log.warn("Received transaction {} with a lock time of {}, but not configured to accept these, discarding",
+                    tx.getHashAsString(), tx.getLockTime());
+            return false;
+        }
+        return true;
     }
 
     // Boilerplate that allows event listeners to delete themselves during execution, and auto locks the listener.
@@ -1169,6 +1291,12 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
          */
         public BigInteger fee = BigInteger.ZERO;
 
+        /**
+         * The AES key to use to decrypt the private key before signing.
+         * If null then no decryption will be performed.
+         */
+        public KeyParameter aesKey = null;
+
         // Tracks if this has been passed to wallet.completeTx already: just a safety check.
         private boolean completed;
 
@@ -1193,6 +1321,10 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             SendRequest req = new SendRequest();
             req.tx = tx;
             return req;
+        }
+
+        public boolean isCompleted() {
+            return completed;
         }
     }
 
@@ -1513,7 +1645,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * If {@link Wallet#autosaveToFile(java.io.File, long, java.util.concurrent.TimeUnit, com.google.bitcoin.core.Wallet.AutosaveEventListener)}
      * has been called, triggers an auto save bypassing the normal coalescing delay and event handlers.
      * If the key already exists in the wallet, does nothing and returns false.
-     * @throws KeyCrypterException 
+     * @throws KeyCrypterException
      */
     public synchronized boolean addKey(final ECKey key) throws KeyCrypterException {
         return addKeys(Lists.newArrayList(key)) == 1;
@@ -1525,7 +1657,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * has been called, triggers an auto save bypassing the normal coalescing delay and event handlers.
      * Returns the number of keys added, after duplicates are ignored. The onKeyAdded event will be called for each key
      * in the list that was not already present.
-     * @throws KeyCrypterException 
+     * @throws KeyCrypterException
      */
     public synchronized int addKeys(final List<ECKey> keys) throws KeyCrypterException {
         // TODO: Consider making keys a sorted list or hashset so membership testing is faster.
@@ -1693,10 +1825,17 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
     @Override
     public synchronized String toString() {
-        return toString(false);
+        return toString(false, null);
     }
 
-    public synchronized String toString(boolean includePrivateKeys) {
+    /**
+     * Formats the wallet as a human readable piece of text. Intended for debugging, the format is not meant to be
+     * stable or human readable.
+     * @param includePrivateKeys Whether raw private key data should be included.
+     * @param chain If set, will be used to estimate lock times for block timelocked transactions.
+     * @return
+     */
+    public synchronized String toString(boolean includePrivateKeys, AbstractBlockChain chain) {
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("Wallet containing %s BTC in:%n", bitcoinValueToFriendlyString(getBalance())));
         builder.append(String.format("  %d unspent transactions%n", unspent.size()));
@@ -1717,33 +1856,34 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         // Print the transactions themselves
         if (unspent.size() > 0) {
             builder.append("\nUNSPENT:\n");
-            toStringHelper(builder, unspent);
+            toStringHelper(builder, unspent, chain);
         }
         if (spent.size() > 0) {
             builder.append("\nSPENT:\n");
-            toStringHelper(builder, spent);
+            toStringHelper(builder, spent, chain);
         }
         if (pending.size() > 0) {
             builder.append("\nPENDING:\n");
-            toStringHelper(builder, pending);
+            toStringHelper(builder, pending, chain);
         }
         if (inactive.size() > 0) {
             builder.append("\nINACTIVE:\n");
-            toStringHelper(builder, inactive);
+            toStringHelper(builder, inactive, chain);
         }
         if (dead.size() > 0) {
             builder.append("\nDEAD:\n");
-            toStringHelper(builder, dead);
+            toStringHelper(builder, dead, chain);
         }
 
         // Add the keyCrypter so that any setup parameters are in the wallet toString.
         if (this.keyCrypter != null) {
-            builder.append("\n KeyCrypter: " + keyCrypter.toString());
+            builder.append("\n keyCrypter: " + keyCrypter.toString());
         }
         return builder.toString();
     }
 
-    private void toStringHelper(StringBuilder builder, Map<Sha256Hash, Transaction> transactionMap) {
+    private void toStringHelper(StringBuilder builder, Map<Sha256Hash, Transaction> transactionMap,
+            AbstractBlockChain chain) {
         for (Transaction tx : transactionMap.values()) {
             try {
                 builder.append("Sends ");
@@ -1756,19 +1896,22 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             } catch (ScriptException e) {
                 // Ignore and don't print this line.
             }
-            builder.append(tx);
+            builder.append(tx.toString(chain));
         }
     }
 
     /**
-     * Called by the {@link BlockChain} when the best chain (representing total work done) has changed. In this case,
+     * <p>Don't call this directly. It's not intended for API users.</p>
+     *
+     * <p>Called by the {@link BlockChain} when the best chain (representing total work done) has changed. In this case,
      * we need to go through our transactions and find out if any have become invalid. It's possible for our balance
      * to go down in this case: money we thought we had can suddenly vanish if the rest of the network agrees it
-     * should be so.<p>
+     * should be so.</p>
      *
-     * The oldBlocks/newBlocks lists are ordered height-wise from top first to bottom last.
+     * <p>The oldBlocks/newBlocks lists are ordered height-wise from top first to bottom last.</p>
      */
-    public synchronized void reorganize(StoredBlock splitPoint, List<StoredBlock> oldBlocks, List<StoredBlock> newBlocks) throws VerificationException {
+    public synchronized void reorganize(StoredBlock splitPoint, List<StoredBlock> oldBlocks,
+            List<StoredBlock> newBlocks) throws VerificationException {
         // This runs on any peer thread with the block chain synchronized.
         //
         // The reorganize functionality of the wallet is tested in ChainSplitTests.
@@ -2140,30 +2283,30 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     // This object is used to receive events from a Peer or PeerGroup. Currently it is only used to receive
     // transactions. Note that it does NOT pay attention to block message because they will be received from the
     // BlockChain object along with extra data we need for correct handling of re-orgs.
-    private transient PeerEventListener peerEventListener;
+//    private transient PeerEventListener peerEventListener;
 
     /**
      * The returned object can be used to connect the wallet to a {@link Peer} or {@link PeerGroup} in order to
      * receive and process blocks and transactions.
      */
-    public synchronized PeerEventListener getPeerEventListener() {
-        if (peerEventListener == null) {
-            // Instantiate here to avoid issues with wallets resurrected from serialized copies.
-            peerEventListener = new AbstractPeerEventListener() {
-                @Override
-                public void onTransaction(Peer peer, Transaction t) {
-                    // Runs locked on a peer thread.
-                    try {
-                        receivePending(t);
-                    } catch (VerificationException e) {
-                        log.warn("Received broadcast transaction that does not validate: {}", t);
-                        log.warn("VerificationException caught", e);
-                    }
-                }
-            };
-        }
-        return peerEventListener;
-    }
+//    public synchronized PeerEventListener getPeerEventListener() {
+//        if (peerEventListener == null) {
+//            // Instantiate here to avoid issues with wallets resurrected from serialized copies.
+//            peerEventListener = new AbstractPeerEventListener() {
+//                @Override
+//                public void onTransaction(Peer peer, Transaction t) {
+//                    // Runs locked on a peer thread.
+//                    try {
+//                        receivePending(t);
+//                    } catch (VerificationException e) {
+//                        log.warn("Received broadcast transaction that does not validate: {}", t);
+//                        log.warn("VerificationException caught", e);
+//                    }
+//                }
+//            };
+//        }
+//        return peerEventListener;
+//    }
 
     public Sha256Hash getLastBlockSeenHash() {
         return lastBlockSeenHash;
@@ -2268,7 +2411,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
     /**
      * Decrypt the wallet with the wallets keyCrypter and AES key.
-     * 
+     *
      * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
      * @throws KeyCrypterException Thrown if the wallet decryption fails. If so, the wallet state is unchanged.
      */
@@ -2277,13 +2420,13 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         if (getEncryptionType() == EncryptionType.UNENCRYPTED) {
             throw new WalletIsAlreadyDecryptedException("Wallet is already decrypted");
         }
-        
+
         // Check that the wallet keyCrypter is non-null. 
         // This is set either at construction (if an encrypted wallet is created) or by wallet encryption. 
         if (keyCrypter == null) {
             throw new KeyCrypterException("The wallet keyCrypter is null so cannot decrypt.");
         }
-        
+
         // Create a new arraylist that will contain the decrypted keys
         ArrayList<ECKey> decryptedKeyChain = new ArrayList<ECKey>();
 
@@ -2299,7 +2442,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
         // Replace the old keychain with the unencrypted one.
         keychain = decryptedKeyChain;
-        
+
         // The wallet is now unencrypted.
         keyCrypter = null;
     }
@@ -2307,7 +2450,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     /**
      *  Check whether the password can decrypt the first key in the wallet.
      *  This can be used to check the validity of an entered password.
-     *  
+     *
      *  @throws KeyCrypterException An exception is thrown if the AES key could not be derived from the password.
      *  @returns boolean true if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
@@ -2354,10 +2497,10 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     public KeyCrypter getKeyCrypter() {
         return keyCrypter;
     }
-    
+
     /**
      * Get the type of encryption used for this wallet.
-     * 
+     *
      * (This is a convenience method - the encryption type is actually stored in the keyCrypter).
      */
     public EncryptionType getEncryptionType() {
@@ -2380,8 +2523,68 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Gets the number of elements that will be added to a bloom filter returned by getBloomFilter
+     */
+    public int getBloomFilterElementCount() {
+        int size = getKeychainSize() * 2;
+        for (Transaction tx : getTransactions(false, true)) {
+            for (TransactionOutput out : tx.getOutputs()) {
+                try {
+                    if (out.isMine(this) && out.getScriptPubKey().isSentToRawPubKey())
+                        size++;
+                } catch (ScriptException e) {
+                    throw new RuntimeException(e); // If it is ours, we parsed the script corectly, so this shouldn't happen
+                }
+            }
+        }
+        return size;
+    }
+    
+    /**
+     * Gets a bloom filter that contains all of the public keys from this wallet,
+     * and which will provide the given false-positive rate.
+     * 
+     * See the docs for {@link BloomFilter#BloomFilter(int, double)} for a brief explanation of anonymity when using bloom filters.
+     */
+    public BloomFilter getBloomFilter(double falsePositiveRate) {
+        return getBloomFilter(getBloomFilterElementCount(), falsePositiveRate, new Random().nextLong());
+    }
+    
+    /**
+     * Gets a bloom filter that contains all of the public keys from this wallet,
+     * and which will provide the given false-positive rate if it has size elements.
+     * Keep in mind that you will get 2 elements in the bloom filter for each key in the wallet.
+     * 
+     * This is used to generate a BloomFilter which can be #{link BloomFilter.merge}d with another.
+     * It could also be used if you have a specific target for the filter's size.
+     * 
+     * See the docs for {@link BloomFilter#BloomFilter(int, double)} for a brief explanation of anonymity when using bloom filters.
+     */
+    public synchronized BloomFilter getBloomFilter(int size, double falsePositiveRate, long nTweak) {
+        BloomFilter filter = new BloomFilter(size, falsePositiveRate, nTweak);
+        for (ECKey key : keychain) {
+            filter.insert(key.getPubKey());
+            filter.insert(key.getPubKeyHash());
+        }
+        for (Transaction tx : getTransactions(false, true)) {
+            for (int i = 0; i < tx.getOutputs().size(); i++) {
+                TransactionOutput out = tx.getOutputs().get(i);
+                try {
+                    if (out.isMine(this) && out.getScriptPubKey().isSentToRawPubKey()) {
+                        TransactionOutPoint outPoint = new TransactionOutPoint(params, i, tx);
+                        filter.insert(outPoint.bitcoinSerialize());
+                    }
+                } catch (ScriptException e) {
+                    throw new RuntimeException(e); // If it is ours, we parsed the script corectly, so this shouldn't happen
+                }
+            }
+        }
+        return filter;
     }
 }

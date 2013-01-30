@@ -44,6 +44,7 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.MemoryBlockStore;
 import com.google.bitcoin.utils.BriefLogFormatter;
 import com.google.protobuf.ByteString;
+import com.google.bitcoin.core.Transaction.SigHash;
 
 public class WalletTest {
     static final NetworkParameters params = NetworkParameters.unitTests();
@@ -415,6 +416,7 @@ public class WalletTest {
         // First one is "called" second is "pending".
         final boolean[] flags = new boolean[2];
         final Transaction[] notifiedTx = new Transaction[1];
+        final int[] walletChanged = new int[1];
         wallet.addEventListener(new AbstractWalletEventListener() {
             @Override
             public void onCoinsReceived(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
@@ -427,21 +429,26 @@ public class WalletTest {
                 flags[1] = tx.isPending();
                 notifiedTx[0] = tx;
             }
+
+            @Override
+            public void onWalletChanged(Wallet wallet) {
+                walletChanged[0]++;
+            }
         });
 
-        wallet.receivePending(t1);
+        if (wallet.isPendingTransactionRelevant(t1))
+            wallet.receivePending(t1, null);
         assertTrue(flags[0]);
         assertTrue(flags[1]);   // is pending
         flags[0] = false;
         // Check we don't get notified if we receive it again.
-        wallet.receivePending(t1);
+        assertFalse(wallet.isPendingTransactionRelevant(t1));
         assertFalse(flags[0]);
         // Now check again, that we should NOT be notified when we receive it via a block (we were already notified).
         // However the confidence should be updated.
         // Make a fresh copy of the tx to ensure we're testing realistically.
         flags[0] = flags[1] = false;
         notifiedTx[0].getConfidence().addEventListener(new TransactionConfidence.Listener() {
-            @Override
             public void onConfidenceChanged(Transaction tx) {
                 flags[1] = true;
             }
@@ -449,8 +456,9 @@ public class WalletTest {
         assertEquals(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN,
                 notifiedTx[0].getConfidence().getConfidenceType());
         final Transaction t1Copy = new Transaction(params, t1.bitcoinSerialize());
-        wallet.receiveFromBlock(t1Copy, createFakeBlock(params, blockStore, t1Copy).storedBlock,
-                BlockChain.NewBlockType.BEST_CHAIN);
+        com.google.bitcoin.core.CoreTestUtils.BlockPair fakeBlock = createFakeBlock(params, blockStore, t1Copy);
+        wallet.receiveFromBlock(t1Copy, fakeBlock.storedBlock, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.notifyNewBestBlock(fakeBlock.block);
         assertFalse(flags[0]);
         assertTrue(flags[1]);
         assertEquals(TransactionConfidence.ConfidenceType.BUILDING, notifiedTx[0].getConfidence().getConfidenceType());
@@ -458,9 +466,67 @@ public class WalletTest {
         flags[0] = false;
         flags[1] = false;
         Transaction irrelevant = createFakeTx(params, nanos, new ECKey().toAddress(params));
-        wallet.receivePending(irrelevant);
+        if (wallet.isPendingTransactionRelevant(irrelevant))
+            wallet.receivePending(irrelevant, null);
         assertFalse(flags[0]);
+        assertEquals(2, walletChanged[0]);
     }
+    
+//    @Test
+//    public void pending1() throws Exception {
+//        // Check that if we receive a pending transaction that is then confirmed, we are notified as appropriate.
+//        final BigInteger nanos = Utils.toNanoCoins(1, 0);
+//        final Transaction t1 = createFakeTx(params, nanos, myAddress);
+//
+//        // First one is "called" second is "pending".
+//        final boolean[] flags = new boolean[2];
+//        final Transaction[] notifiedTx = new Transaction[1];
+//        wallet.addEventListener(new AbstractWalletEventListener() {
+//            @Override
+//            public void onCoinsReceived(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+//                // Check we got the expected transaction.
+//                assertEquals(tx, t1);
+//                // Check that it's considered to be pending inclusion in the block chain.
+//                assertEquals(prevBalance, BigInteger.ZERO);
+//                assertEquals(newBalance, nanos);
+//                flags[0] = true;
+//                flags[1] = tx.isPending();
+//                notifiedTx[0] = tx;
+//            }
+//        });
+//
+//        wallet.receivePending(t1, null);
+//        assertTrue(flags[0]);
+//        assertTrue(flags[1]);   // is pending
+//        flags[0] = false;
+//        // Check we don't get notified if we receive it again.
+//        wallet.receivePending(t1, null);
+//        assertFalse(flags[0]);
+//        // Now check again, that we should NOT be notified when we receive it via a block (we were already notified).
+//        // However the confidence should be updated.
+//        // Make a fresh copy of the tx to ensure we're testing realistically.
+//        flags[0] = flags[1] = false;
+//        notifiedTx[0].getConfidence().addEventListener(new TransactionConfidence.Listener() {
+//            @Override
+//            public void onConfidenceChanged(Transaction tx) {
+//                flags[1] = true;
+//            }
+//        });
+//        assertEquals(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN,
+//                notifiedTx[0].getConfidence().getConfidenceType());
+//        final Transaction t1Copy = new Transaction(params, t1.bitcoinSerialize());
+//        wallet.receiveFromBlock(t1Copy, createFakeBlock(params, blockStore, t1Copy).storedBlock,
+//                BlockChain.NewBlockType.BEST_CHAIN);
+//        assertFalse(flags[0]);
+//        assertTrue(flags[1]);
+//        assertEquals(TransactionConfidence.ConfidenceType.BUILDING, notifiedTx[0].getConfidence().getConfidenceType());
+//        // Check we don't get notified about an irrelevant transaction.
+//        flags[0] = false;
+//        flags[1] = false;
+//        Transaction irrelevant = createFakeTx(params, nanos, new ECKey().toAddress(params));
+//        wallet.receivePending(irrelevant, null);
+//        assertFalse(flags[0]);
+//    }
 
     @Test
     public void pending2() throws Exception {
@@ -486,7 +552,7 @@ public class WalletTest {
         BigInteger halfNanos = Utils.toNanoCoins(0, 50);
         Transaction t2 = wallet.createSend(new ECKey().toAddress(params), halfNanos, BigInteger.ZERO, null);
         // Now receive it as pending.
-        wallet.receivePending(t2);
+        wallet.receivePending(t2, null);
         // We received an onCoinsSent() callback.
         assertEquals(t2, txn[0]);
         assertEquals(nanos, bigints[0]);
@@ -603,6 +669,81 @@ public class WalletTest {
         assertEquals(now + 60, wallet.getEarliestKeyCreationTime());
     }
     
+
+    @Test
+    public void spendToSameWallet() throws Exception {
+        // Test that a spend to the same wallet is dealt with correctly.
+        // It should appear in the wallet and confirm.
+        // This is a bit of a silly thing to do in the real world as all it does is burn a fee but it is perfectly valid.
+
+        BigInteger coin1 = Utils.toNanoCoins(1, 0);
+        BigInteger coinHalf = Utils.toNanoCoins(0, 50);
+
+        // Start by giving us 1 coin.
+        Transaction inbound1 = createFakeTx(params, coin1, myAddress);
+        wallet.receiveFromBlock(inbound1, null, BlockChain.NewBlockType.BEST_CHAIN);
+
+        // Send half to ourselves. We should then have a balance available to spend of zero.
+        assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
+        assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.ALL));
+
+        Transaction outbound1 = wallet.createSend(myAddress, coinHalf, BigInteger.ZERO, null);
+        wallet.commitTx(outbound1);
+
+        // We should have a zero available balance before the next block.
+        assertEquals(BigInteger.ZERO, wallet.getBalance());
+
+        wallet.receiveFromBlock(outbound1, null, BlockChain.NewBlockType.BEST_CHAIN);
+
+        // We should have a balance of 1 BTC after the block is received.
+        assertEquals(coin1, wallet.getBalance());
+    }
+
+    
+    @Test
+    public void spendOutputFromPendingTransaction() throws Exception {
+        // We'll set up a wallet that receives a coin, then sends a coin of lesser value and keeps the change.
+        BigInteger v1 = Utils.toNanoCoins(1, 0);
+        Transaction t1 = createFakeTx(params, v1, myAddress);
+
+        wallet.receiveFromBlock(t1, null, BlockChain.NewBlockType.BEST_CHAIN);
+        assertEquals(v1, wallet.getBalance());
+        assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
+        assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.ALL));
+
+        // First create our current transaction
+        ECKey k2 = new ECKey();
+        wallet.addKey(k2);
+        BigInteger v2 = toNanoCoins(0, 50);
+        Transaction t2 = new Transaction(params);
+        TransactionOutput o2 = new TransactionOutput(params, t2, v2, k2.toAddress(params));
+        t2.addOutput(o2);
+        boolean complete = wallet.completeTx(t2, BigInteger.ZERO, null);
+        assertTrue(complete);
+        
+        // Commit t2, so it is placed in the pending pool
+        wallet.commitTx(t2);
+        assertEquals(0, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
+        assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.PENDING));
+        assertEquals(2, wallet.getPoolSize(WalletTransaction.Pool.ALL));
+        
+        // Now try the spend the output
+        ECKey k3 = new ECKey();
+        BigInteger v3 = toNanoCoins(0, 25);
+        Transaction t3 = new Transaction(params);
+        t3.addOutput(v3, k3.toAddress(params));
+        t3.addInput(o2);
+        t3.signInputs(SigHash.ALL, wallet);
+        
+        // Commit t3, so the coins from the pending t2 are spent
+        wallet.commitTx(t3);
+        assertEquals(0, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
+        assertEquals(2, wallet.getPoolSize(WalletTransaction.Pool.PENDING));
+        assertEquals(3, wallet.getPoolSize(WalletTransaction.Pool.ALL));
+        
+        // Now the output of t2 must not be available for spending
+        assertFalse(o2.isAvailableForSpending());
+    }
     @Test
     public void encryptionDecryptionBasic() throws Exception {
         // Check the wallet is initially of WalletType ENCRYPTED.

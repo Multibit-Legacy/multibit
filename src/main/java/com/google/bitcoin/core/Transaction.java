@@ -553,14 +553,28 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         return getConfidence().getDepthInBlocks() >= params.getSpendableCoinbaseDepth();
     }
 
-    /**
-     * A human readable version of the transaction useful for debugging. The format is not guaranteed to be stable.
-     */
     @Override
     public String toString() {
+        return toString(null);
+    }
+
+    public String toString(AbstractBlockChain chain) {
         // Basic info about the tx.
         StringBuffer s = new StringBuffer();
         s.append(String.format("  %s: %s%n", getHashAsString(), getConfidence()));
+        if (lockTime > 0) {
+            String time;
+            if (lockTime < LOCKTIME_THRESHOLD) {
+                time = "block " + lockTime;
+                if (chain != null) {
+                    time = time + " (estimated to be reached at " +
+                            chain.estimateBlockTime((int)lockTime).toString() + ")";
+                }
+            } else {
+                time = new Date(lockTime).toString();
+            }
+            s.append(String.format("  time locked until %s%n", time));
+        }
         if (inputs.size() == 0) {
             s.append(String.format("  INCOMPLETE: No inputs!%n"));
             return s.toString();
@@ -570,12 +584,9 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             String script2;
             try {
                 script = inputs.get(0).getScriptSig().toString();
-            } catch (ScriptException e) {
-                script = "???";
-            }
-            try {
                 script2 = outputs.get(0).getScriptPubKey().toString();
             } catch (ScriptException e) {
+                script = "???";
                 script2 = "???";
             }
             return "     == COINBASE TXN (scriptSig " + script + ")  (scriptPubKey " + script2 + ")\n";
@@ -674,6 +685,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         addOutput(new TransactionOutput(params, this, value, pubkey));
     }
 
+    public synchronized void signInputs(SigHash hashType, Wallet wallet) throws ScriptException, KeyCrypterException {
+        signInputs(hashType, wallet, null);
+    }
+
     /**
      * Once a transaction has some inputs and outputs added, the signatures in the inputs can be calculated. The
      * signature is over the transaction itself, to prove the redeemer actually created that transaction,
@@ -705,7 +720,8 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         ECKey[] signingKeys = new ECKey[inputs.size()];
         for (int i = 0; i < inputs.size(); i++) {
             TransactionInput input = inputs.get(i);
-            Preconditions.checkState(input.getScriptBytes().length == 0, "Attempting to sign a non-fresh transaction");
+            if (input.getScriptBytes().length != 0)
+                log.warn("Re-signing an already signed transaction! Be sure this is what you want.");
             // Find the signing key we'll need to use.
             ECKey key = input.getOutpoint().getConnectedKey(wallet);
             // This assert should never fire. If it does, it means the wallet is inconsistent.
@@ -739,7 +755,6 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         // 2) For pay-to-key outputs: just a signature.
         for (int i = 0; i < inputs.size(); i++) {
             TransactionInput input = inputs.get(i);
-            Preconditions.checkState(input.getScriptBytes().length == 0);
             ECKey key = signingKeys[i];
             Script scriptPubKey = input.getOutpoint().getConnectedOutput().getScriptPubKey();
             if (scriptPubKey.isSentToAddress()) {
@@ -846,7 +861,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
                 }
                 // In SIGHASH_SINGLE the outputs after the matching input index are deleted, and the outputs before
                 // that position are "nulled out". Unintuitively, the value in a "null" transaction is set to -1.
-                this.outputs = new ArrayList<TransactionOutput>(this.outputs.subList(0, inputIndex));
+                this.outputs = new ArrayList<TransactionOutput>(this.outputs.subList(0, inputIndex + 1));
                 for (int i = 0; i < inputIndex; i++)
                     this.outputs.set(i, new TransactionOutput(params, this, BigInteger.valueOf(-1), new byte[] {}));
                 // The signature isn't broken by new versions of the transaction issued by other parties.
@@ -865,8 +880,8 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
             ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(length == UNKNOWN_LENGTH ? 256 : length + 4);
             bitcoinSerialize(bos);
-            // We also have to write a hash type.
-            uint32ToByteStreamLE(sigHashType, bos);
+            // We also have to write a hash type (sigHashType is actually an unsigned char)
+            uint32ToByteStreamLE(0x000000ff & sigHashType, bos);
             // Note that this is NOT reversed to ensure it will be signed correctly. If it were to be printed out
             // however then we would expect that it is IS reversed.
             Sha256Hash hash = new Sha256Hash(doubleDigest(bos.toByteArray()));
@@ -937,7 +952,18 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         maybeParse();
         return Collections.unmodifiableList(outputs);
     }
-    
+
+    /** @return the given transaction: same as getInputs().get(index). */
+    public TransactionInput getInput(int index) {
+        maybeParse();
+        return inputs.get(index);
+    }
+
+    public TransactionOutput getOutput(int index) {
+        maybeParse();
+        return outputs.get(index);
+    }
+
     public synchronized TransactionConfidence getConfidence() {
         if (confidence == null) {
             confidence = new TransactionConfidence(this);
