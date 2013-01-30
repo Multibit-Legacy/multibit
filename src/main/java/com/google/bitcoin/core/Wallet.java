@@ -504,22 +504,6 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             log.warn("Transaction {}, dependency of {} has a time lock value of {}", new Object[] {
                     analysis.timeLocked.getHashAsString(), tx.getHashAsString(), analysis.timeLocked.getLockTime()});
             return;
-        }        
-
-        // Ignore it if we already know about this transaction. Receiving a pending transaction never moves it
-        // between pools.
-//        EnumSet<Pool> containingPools = getContainingPools(tx);
-//        if (!containingPools.equals(EnumSet.noneOf(Pool.class))) {
-//            log.debug("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
-//            return;
-//        }
-
-        // We only care about transactions that:
-        //   - Send us coins
-        //   - Spend our coins
-        if (!isTransactionRelevant(tx)) {
-            log.debug("Received tx that isn't relevant to this wallet, discarding.");
-            return;
         }
 
         BigInteger valueSentToMe = tx.getValueSentToMe(this);
@@ -570,6 +554,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * will soon be called with the transactions dependencies as well.
      */
     boolean isPendingTransactionRelevant(Transaction tx) throws ScriptException {
+        log.debug("isPendingTransactionRelevant -     -  tx = " + tx.getHash());
         // Ignore it if we already know about this transaction. Receiving a pending transaction never moves it
         // between pools.
         EnumSet<Pool> containingPools = getContainingPools(tx);
@@ -591,6 +576,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                     tx.getHashAsString(), tx.getLockTime());
             return false;
         }
+        log.debug("isPendingTransactionRelevant - YES - tx = " + tx.getHash());
+
         return true;
     }
 

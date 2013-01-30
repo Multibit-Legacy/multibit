@@ -1287,7 +1287,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Tell the tab to refresh (gets round bug on replay for transactions panel)
         Viewable tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
         if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
-            //log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
+            log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
             tabbedPaneCurrentView.displayView();
         }
     }

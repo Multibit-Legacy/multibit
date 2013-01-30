@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
@@ -59,6 +58,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
 
@@ -68,7 +68,7 @@ import com.google.bitcoin.uri.BitcoinURIParseException;
  * @author jim
  */
 public class MultiBitController implements GenericOpenURIEventListener, GenericPreferencesEventListener,
-        GenericAboutEventListener, GenericQuitEventListener {
+        GenericAboutEventListener, GenericQuitEventListener, WalletEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
 
@@ -291,12 +291,6 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         this.localiser = localiser;
     }
 
-    
-    // CAN DELETE CACHE MANAGER
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft, boolean checkIfBlockNeedsWriting) {   
-        fireBlockDownloaded();
-    }
-
     public void setOnlineStatus(StatusEnum statusEnum) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.setOnlineStatus(statusEnum);
@@ -327,22 +321,27 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
     }
 
+    @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
     }
 
+    @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
     
+    @Override
     public void onWalletChanged(Wallet wallet) {
-        // TODO
+        log.debug("onWalletChanged called");
+        fireDataChanged();
     }
 
+    @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         //log.debug("Firing confidence change in onTransactionConfidenceChanged.");
         
@@ -356,11 +355,13 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         checkForDirtyWallets(transaction);
     }
 
+    @Override
     public void onKeyAdded(ECKey ecKey) {
         log.debug("Key added : " + ecKey.toString());
     }
 
-    public void onReorganise(Wallet wallet) {
+    @Override
+    public void onReorganize(Wallet wallet) {
         List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             if (loopPerWalletModelData.getWallet().equals(wallet)) {
