@@ -23,51 +23,18 @@
  */
 package org.multibit.viewsystem;
 
-import java.util.List;
-import javax.swing.JPanel;
-
 /**
  *
- * This defines a extention that can extend a View
- * 
- * 
  * @author Cameron Garnham
  */
-public interface PanelModule<P extends BasePanel> {
-    
-    
-    /**
-     * Sets parent view.
-     * 
-     * @param view
-     */
-    void setParentView(Viewable view);
-    
-    /**
-     * Get Viewable parent
-     * 
-     * @return
-     * @throws NullPointerException
-     */
-    Viewable getParentView() throws NullPointerException;
-    
-    /**
-     * Called when this module is added.
-     * 
-     * @param panel
-     */
-    void onBegin(final P panel);
+public interface ModularView<M extends Module> extends Viewable {
 
-    
+    void addModule(M ext);
+
     /**
-     * Called a the end of the main 'init'
-     * 
-     * @param panel
+     * Call after all Extentions have been added.
+     * Must be overridden.
      */
-    void onFinishInit(final P panel);
-    
-    void displayView();
-    
-    Boolean getIsInitialised();
+    void finishInit();
     
 }

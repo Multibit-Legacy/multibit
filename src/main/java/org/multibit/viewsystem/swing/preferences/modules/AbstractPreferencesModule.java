@@ -25,15 +25,16 @@ package org.multibit.viewsystem.swing.preferences.modules;
 
 import java.util.List;
 import javax.swing.JPanel;
-import org.multibit.viewsystem.BasePanel;
-import org.multibit.viewsystem.PanelModule;
+import org.multibit.viewsystem.swing.AbstractModularPanel;
+import org.multibit.viewsystem.Module;
 import org.multibit.viewsystem.Viewable;
+import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
 
 /**
  *
  * @author Cameron Garnham
  */
-public abstract class PreferencesPanelModule implements PanelModule {
+public abstract class AbstractPreferencesModule implements Module<PreferencesPanel,PreferencesModule> {
 
     /**
      * Gets the panel from the module.
@@ -64,13 +65,13 @@ public abstract class PreferencesPanelModule implements PanelModule {
     abstract public List<JPanel> addPanels();
 
     @Override
-    public void onBegin(BasePanel panel)
+    public void onBegin(PreferencesPanel panel)
     {
         // do nothing
     }
     
     @Override
-    public void onFinishInit(BasePanel panel)
+    public void onFinishInit(PreferencesPanel panel)
     {
         this.setIsInitialised(true);
     }
@@ -91,5 +92,4 @@ public abstract class PreferencesPanelModule implements PanelModule {
     protected void setIsInitialised(Boolean isInitialised) {
         this.isInitialised = isInitialised;
     }
-    
 }

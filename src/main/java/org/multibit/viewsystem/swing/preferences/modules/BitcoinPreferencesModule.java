@@ -53,7 +53,7 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
  *
  * @author Cameron Garnham
  */
-public class BitcoinPreferencesPanelModule extends PreferencesPanelModule implements BitcoinPreferencesDataProvider {
+public class BitcoinPreferencesModule extends AbstractPreferencesModule implements BitcoinPreferencesDataProvider {
 
     
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
@@ -71,7 +71,7 @@ public class BitcoinPreferencesPanelModule extends PreferencesPanelModule implem
     private JRadioButton askEveryTime;
 
     
-     public BitcoinPreferencesPanelModule(MultiBitController controller, MultiBitFrame mainFrame){
+     public BitcoinPreferencesModule(MultiBitController controller, MultiBitFrame mainFrame){
         this.controller = controller;
         this.mainFrame = mainFrame;
      }
@@ -127,6 +127,11 @@ public class BitcoinPreferencesPanelModule extends PreferencesPanelModule implem
         panels.add(createBrowserIntegrationPanel(0));
         
         return panels;
+    }
+
+    @Override
+    public PreferencesModule getModuleEnum() {
+        return PreferencesModule.BITCOIN;
     }
 
     

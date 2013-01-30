@@ -15,7 +15,7 @@
  */
 package org.multibit.viewsystem.swing.preferences;
 
-import org.multibit.viewsystem.swing.preferences.modules.PreferencesPanelModule;
+import org.multibit.viewsystem.swing.preferences.modules.AbstractPreferencesModule;
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -34,7 +34,7 @@ import javax.swing.JScrollPane;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.BasePanel;
+import org.multibit.viewsystem.swing.AbstractModularPanel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -49,7 +49,7 @@ import org.multibit.viewsystem.swing.view.components.MutiBitFiller;
 /**
  * The show preferences view.
  */
-public class PreferencesPanel extends BasePanel<PreferencesPanelModule> {
+public class PreferencesPanel extends AbstractModularPanel<AbstractPreferencesModule> {
 
 
     private static final long serialVersionUID = 191352298245057705L;
@@ -130,7 +130,7 @@ public class PreferencesPanel extends BasePanel<PreferencesPanelModule> {
                 constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
             
             
-            for (PreferencesPanelModule extention : super.extentions) {
+            for (AbstractPreferencesModule extention : super.extentions) {
                 
                 List<JPanel> panels = extention.addPanels();
                 
@@ -214,6 +214,7 @@ public class PreferencesPanel extends BasePanel<PreferencesPanelModule> {
                     }
                 });
         undoChangesButton = new MultiBitButton(undoChangesAction, controller);
+        undoChangesButton.setEnabled(false);
         buttonPanel.add(undoChangesButton);
         
         constraints.fill = GridBagConstraints.NONE;
@@ -254,7 +255,7 @@ public class PreferencesPanel extends BasePanel<PreferencesPanelModule> {
 
     private void fireSubmitButtonAction()
     {
-      for (PreferencesPanelModule extention : super.extentions)
+      for (AbstractPreferencesModule extention : super.extentions)
         {
             extention.onSubmitAction();
         }
@@ -262,7 +263,7 @@ public class PreferencesPanel extends BasePanel<PreferencesPanelModule> {
     
     private void fireUndoButtonAction()
     {
-      for (PreferencesPanelModule extention : super.extentions)
+      for (AbstractPreferencesModule extention : super.extentions)
         {
             extention.onUndoAction();
         }

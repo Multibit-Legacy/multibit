@@ -21,12 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
+package org.multibit.viewsystem.swing;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.swing.JPanel;
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.ModularView;
+import org.multibit.viewsystem.Module;
 
 /**
  *
@@ -42,7 +44,7 @@ import org.multibit.controller.MultiBitController;
  * 
  * @author Cameron Garnham
  */
-public abstract class BasePanel<E extends PanelModule> extends JPanel implements Viewable{
+public abstract class AbstractModularPanel<E extends Module> extends JPanel implements ModularView<E>{
     
     
     protected Set<E> extentions;
@@ -50,7 +52,7 @@ public abstract class BasePanel<E extends PanelModule> extends JPanel implements
     abstract protected MultiBitController getCoreController();
     
     
-    protected BasePanel()
+    protected AbstractModularPanel()
     {
         extentions = new LinkedHashSet<E>();
     }
@@ -70,6 +72,7 @@ public abstract class BasePanel<E extends PanelModule> extends JPanel implements
      * Call after all Extentions have been added.
      * Must be overridden.
      */
+    @Override
     public void finishInit()
     {
       this.initUI();
@@ -86,6 +89,7 @@ public abstract class BasePanel<E extends PanelModule> extends JPanel implements
     abstract protected void initUI();
     abstract protected void applyComponentOrientation();
     
+    @Override
     public void addModule(E ext)
     {
         extentions.add(ext);

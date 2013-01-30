@@ -16,38 +16,14 @@
 package org.multibit.viewsystem.swing.preferences.actions;
 
 import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Timer;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
-
-import org.joda.money.CurrencyUnit;
 import org.multibit.controller.MultiBitController;
-import org.multibit.exchange.CurrencyConverter;
-import org.multibit.exchange.TickerTimerTask;
-import org.multibit.message.Message;
-import org.multibit.message.MessageManager;
-import org.multibit.model.ExchangeData;
-import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.preferences.BitcoinPreferencesDataProvider;
-import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
-
-import com.google.bitcoin.core.Utils;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 
 /**
