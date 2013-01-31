@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
-import com.xeiam.xchange.currency.CurrencyPair;
+import com.xeiam.xchange.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
 
