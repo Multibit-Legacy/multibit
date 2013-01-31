@@ -19,18 +19,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.multibit</groupId>
-	<artifactId>multibit</artifactId>
-	<version>0.5.8beta</version>
-	<name>MultiBit</name>
-	<description>A Java Swing client for Bitcoin</description>
-	<url>http://www.multibit.org</url>
-	<!-- Use "mvn clean package" to build the code packaged into a basic multibit.jar 
-		Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
-		to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
-		generate a complete website under target/site Use "mvn site:run" to run a 
-		local webserver localhost:8080/index.html -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.multibit</groupId>
+    <artifactId>multibit</artifactId>
+    <version>0.5.8beta</version>
+    <name>MultiBit</name>
+    <description>A Java Swing client for Bitcoin</description>
+    <url>http://www.multibit.org</url>
+    <!-- Use "mvn clean package" to build the code packaged into a basic multibit.jar 
+  		Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
+  		to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
+  		generate a complete website under target/site Use "mvn site:run" to run a 
+  		local webserver localhost:8080/index.html -->
     <licenses>
         <license>
             <name>MIT</name>
@@ -434,10 +434,10 @@
                                 <copy
                                     todir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app">
                                     <fileset dir="${basedir}/target/MultiBit-${project.version}.app"
-                                                                                 includes="**" />
+                                             includes="**" />
                                 </copy>
                                 <copy file="${basedir}/src/main/izpack/mac/readme.txt"
-                                                                      todir="${basedir}/target/MultiBit-mac" />
+                                      todir="${basedir}/target/MultiBit-mac" />
 
 
                                 <!-- Create Applications Symbolic link -->
@@ -489,9 +489,9 @@
                                     <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar" />
                                 </path>
                                 <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
-                                                                         classpathref="jsmooth-classpathref" />
+                                         classpathref="jsmooth-classpathref" />
                                 <jsmoothgen project="src/main/jsmooth/exe.jsmooth"
-                                                                            skeletonroot="src/main/jsmooth/skeletons" />
+                                            skeletonroot="src/main/jsmooth/skeletons" />
                             </tasks>
                         </configuration>
                         <goals>
@@ -511,9 +511,9 @@
                                     <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar" />
                                 </path>
                                 <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
-                                                                         classpathref="jsmooth-classpathref" />
+                                         classpathref="jsmooth-classpathref" />
                                 <jsmoothgen project="src/main/jsmooth/installer.jsmooth"
-                                                                            skeletonroot="src/main/jsmooth/skeletons" />
+                                            skeletonroot="src/main/jsmooth/skeletons" />
                                 <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows.exe" />
                             </tasks>
                         </configuration>
@@ -611,7 +611,7 @@
             <version>1.3.0</version>
         </dependency>
         <!-- XChange Bitcoin central exchange support -->
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-bitcoincentral</artifactId>
             <version>1.4.0-SNAPSHOT</version>
