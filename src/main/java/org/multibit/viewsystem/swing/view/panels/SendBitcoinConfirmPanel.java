@@ -577,7 +577,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         cancelButton.setVisible(false);
     }
     
-    public static void updatePanel(final Transaction transactionWithChangedConfidence) {
+    public static void updatePanel(final Transaction transactionWithChangedConfidence, final int numberOfPeersSeenBy) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -626,8 +626,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
                             if (sentTransaction != null
                                     && sentTransaction.getHash().equals(transactionWithChangedConfidence.getHash())) {
                                 confirmText2.setText(thisPanel.getConfidenceToolTip(transactionWithChangedConfidence
-                                        .getConfidence()));
-                                confirmText2.setIcon(thisPanel.getConfidenceIcon(transactionWithChangedConfidence.getConfidence()));
+                                        .getConfidence(), numberOfPeersSeenBy));
+                                confirmText2.setIcon(thisPanel.getConfidenceIcon(transactionWithChangedConfidence.getConfidence(), numberOfPeersSeenBy));
                             }
                         }
                     }
@@ -640,11 +640,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         });
     }
 
-    private String getConfidenceToolTip(TransactionConfidence confidence) {
-        int numberOfPeers = 0;
-        if (confidence != null) {
-            numberOfPeers = confidence.getBroadcastByCount();
-        }
+    private String getConfidenceToolTip(TransactionConfidence confidence, int numberOfPeers) {
         StringBuilder builder = new StringBuilder("");
         if (numberOfPeers == 0) {
             builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
@@ -659,12 +655,11 @@ public class SendBitcoinConfirmPanel extends JPanel {
         return builder.toString();
     }
 
-    private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
+    private ImageIcon getConfidenceIcon(TransactionConfidence confidence, int numberOfPeers) {
         // By default return a triangle which indicates the least known.
         ImageIcon iconToReturn = shapeTriangleIcon;
 
         if (confidence != null) {
-            int numberOfPeers = confidence.getBroadcastByCount();
             if (numberOfPeers >= 4) {
                 return progress0Icon;
             } else {

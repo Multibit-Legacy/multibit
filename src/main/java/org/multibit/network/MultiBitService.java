@@ -65,7 +65,9 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.Wallet.SendRequest;
 import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
 
@@ -237,7 +239,7 @@ public class MultiBitService {
             } else if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
-                peerGroup.addPeerDiscovery(new MultiBitDnsDiscovery(networkParameters));
+                peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
             }
         }
         // Add the controller as a PeerEventListener.
@@ -548,9 +550,12 @@ public class MultiBitService {
         if (perWalletModelData.getWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
             aesKey = perWalletModelData.getWallet().getKeyCrypter().deriveKey(password);
         }
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
-                Utils.toNanoCoins(amount), fee, aesKey);
+        SendRequest request = SendRequest.to(sendAddress,  Utils.toNanoCoins(amount));
+        request.aesKey = aesKey;
+        request.fee = fee;
+        Wallet.SendResult sendResult = perWalletModelData.getWallet().sendCoins(peerGroup, request);
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
+        Transaction sendTransaction = sendResult.tx;
 
         assert sendTransaction != null; 
         // We should never try to send more

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
-import com.xeiam.xchange.CurrencyPair;
+import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
 
@@ -300,8 +300,8 @@ public class TickerTimerTask extends TimerTask {
                     String baseCurrency = exchangeSymbols1.get(i).baseCurrency;
                     String counterCurrency = exchangeSymbols1.get(i).counterCurrency;
 
-                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols1.get(i).baseCurrency
-                            + ", counterCurrency = " + exchangeSymbols1.get(i).counterCurrency);
+//                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols1.get(i).baseCurrency
+//                            + ", counterCurrency = " + exchangeSymbols1.get(i).counterCurrency);
 
                     if ("BTC".equalsIgnoreCase(baseCurrency)) {
                         availableCurrencies.add(counterCurrency);
@@ -333,8 +333,8 @@ public class TickerTimerTask extends TimerTask {
                     String baseCurrency = exchangeSymbols2.get(i).baseCurrency;
                     String counterCurrency = exchangeSymbols2.get(i).counterCurrency;
 
-                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols2.get(i).baseCurrency
-                            + ", counterCurrency = " + exchangeSymbols2.get(i).counterCurrency);
+//                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols2.get(i).baseCurrency
+//                            + ", counterCurrency = " + exchangeSymbols2.get(i).counterCurrency);
 
                     if ("BTC".equalsIgnoreCase(baseCurrency)) {
                         availableCurrencies.add(counterCurrency);

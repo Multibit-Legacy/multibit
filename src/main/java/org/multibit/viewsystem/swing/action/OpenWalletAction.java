@@ -183,7 +183,7 @@ public class OpenWalletAction extends AbstractAction {
                         messageMessage.setShowInStatusBar(false);
                         MessageManager.INSTANCE.addMessage(messageMessage);  
                         
-                        controller.fireRecreateAllViews(false);
+                        controller.fireRecreateAllViews(true);
                         controller.fireDataChanged();
                     } else {
                         log.error(message);

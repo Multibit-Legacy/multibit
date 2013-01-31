@@ -1015,7 +1015,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         // Tell the wallets list to display.
         if (walletsView != null) {
-            walletsView.initUI();
+//            if (initUI) {
+//                walletsView.initUI();
+//            }
             walletsView.displayView();
         }
 
@@ -1233,8 +1235,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                int numberOfPeers = 0;
+                if (transaction != null && transaction.getConfidence() != null) {
+                    numberOfPeers = transaction.getConfidence().getBroadcastByCount();
+                }
                 ShowTransactionsPanel.updateTransactions();
-                SendBitcoinConfirmPanel.updatePanel(transaction);
+                SendBitcoinConfirmPanel.updatePanel(transaction, numberOfPeers);
             }
         });
     }
@@ -1490,7 +1496,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onWalletChanged(Wallet wallet) {
-        // TODO 
+        fireDataChanged();
     }
 
     @Override

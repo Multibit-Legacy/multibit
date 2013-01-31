@@ -1314,94 +1314,112 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             return completed;
         }
     }
-
-    /**
-     * Statelessly creates a transaction that sends the given number of nanocoins to address. The change is sent to
-     * {@link Wallet#getChangeAddress()}, so you must have added at least one key.<p>
-     * <p/>
-     * This method is stateless in the sense that calling it twice with the same inputs will result in two
-     * Transaction objects which are equal. The wallet is not updated to track its pending status or to mark the
+    
+    /*
+     * <p>Statelessly creates a transaction that sends the given value to address. The change is sent to
+     * {@link Wallet#getChangeAddress()}, so you must have added at least one key.</p>
+     *
+     * <p>If you just want to send money quickly, you probably want
+     * {@link Wallet#sendCoins(PeerGroup, Address, java.math.BigInteger)} instead. That will create the sending
+     * transaction, commit to the wallet and broadcast it to the network all in one go. This method is lower level
+     * and lets you see the proposed transaction before anything is done with it.</p>
+     *
+     * <p>This is a helper method that is equivalent to using {@link Wallet.SendRequest#to(Address, java.math.BigInteger)}
+     * followed by {@link Wallet#completeTx(com.google.bitcoin.core.Wallet.SendRequest)} and returning the requests
+     * transaction object. If you want more control over the process, just do those two steps yourself.</p>
+     *
+     * <p>IMPORTANT: This method does NOT update the wallet. If you call createSend again you may get two transactions
+     * that spend the same coins. You have to call {@link Wallet#commitTx(Transaction)} on the created transaction to
+     * prevent this, but that should only occur once the transaction has been accepted by the network. This implies
+     * you cannot have more than one outstanding sending tx at once.</p>
+     *
+     * @param address       The BitCoin address to send the money to.
+     * @param nanocoins     How much currency to send, in nanocoins.
+     * @return either the created Transaction or null if there are insufficient coins.
      * coins as spent until commitTx is called on the result.
-     * @throws KeyCrypterException 
-     * @throws IllegalStateException 
      */
-    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
-        return createSend(address, nanocoins, fee, getChangeAddress(), aesKey);
+    public synchronized Transaction createSend(Address address, BigInteger nanocoins) throws KeyCrypterException {
+        SendRequest req = SendRequest.to(address, nanocoins);
+        if (completeTx(req)) {
+            return req.tx;
+        } else {
+            return null;  // No money.
+        }
     }
 
     /**
      * Sends coins to the given address but does not broadcast the resulting pending transaction. It is still stored
      * in the wallet, so when the wallet is added to a {@link PeerGroup} or {@link Peer} the transaction will be
-     * announced to the network.
+     * announced to the network. The given {@link SendRequest} is completed first using
+     * {@link Wallet#completeTx(com.google.bitcoin.core.Wallet.SendRequest)} to make it valid.
      *
-     * @param to Address to send the coins to.
-     * @param nanocoins How many coins to send.
-     * @return the Transaction that was created, or null if there are insufficient coins in thew allet.
-     * @throws KeyCrypterException 
-     * @throws IllegalStateException 
+     * @return the Transaction that was created, or null if there are insufficient coins in the wallet.
      */
-    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
-        Transaction tx = createSend(to, nanocoins, fee, aesKey);
-        if (tx == null)   // Not enough money! :-(
-            return null;
+    public synchronized Transaction sendCoinsOffline(SendRequest request) throws KeyCrypterException {
         try {
-            commitTx(tx);
+            if (!completeTx(request))
+                return null;  // Not enough money! :-(
+            commitTx(request.tx);
+            return request.tx;
         } catch (VerificationException e) {
             throw new RuntimeException(e);  // Cannot happen unless there's a bug, as we just created this ourselves.
         }
-        return tx;
     }
 
     /**
-     * Sends coins to the given address, via the given {@link PeerGroup}. Change is returned to {@link Wallet#getChangeAddress()}.
-     * The transaction will be announced to any connected nodes asynchronously. If you would like to know when
-     * the transaction was successfully sent to at least one node, use 
-     * {@link Wallet#sendCoinsOffline(Address, java.math.BigInteger)} and then {@link PeerGroup#broadcastTransaction(Transaction)}
-     * on the result to obtain a {@link java.util.concurrent.Future<Transaction>}.
+     * <p>Sends coins to the given address, via the given {@link PeerGroup}. Change is returned to
+     * {@link Wallet#getChangeAddress()}. No fee is attached <b>even if one would be required</b>.</p>
      *
-     * @param peerGroup a PeerGroup to use for broadcast.
-     * @param to        Which address to send coins to.
-     * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
-     * @param fee       The fee to include     
-     * @return the Transaction
-     * @throws IOException if there was a problem broadcasting the transaction
-     * @throws KeyCrypterException 
-     * @throws IllegalStateException 
-     */
-    public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey)
-            throws IOException, IllegalStateException, KeyCrypterException {
-        Transaction tx = sendCoinsOffline(to, nanocoins, fee, aesKey);
-        if (tx == null)
-            return null;  // Not enough money.
-        // Just throw away the Future here. If the user wants it, they can call sendCoinsOffline/broadcastTransaction
-        // themselves.
-        peerGroup.broadcastTransaction(tx);
-        return tx;
-    }
-
-    /**
-     * Sends coins to the given address, via the given {@link PeerGroup}. Change is returned to {@link Wallet#getChangeAddress()}.
-     * The method will block until the transaction has been announced to at least one node.
+     * <p>The returned object provides both the transaction, and a future that can be used to learn when the broadcast
+     * is complete. Complete means, if the PeerGroup is limited to only one connection, when it was written out to
+     * the socket. Otherwise when the transaction is written out and we heard it back from a different peer.</p>
+     *
+     * <p>Note that the sending transaction is committed to the wallet immediately, not when the transaction is
+     * successfully broadcast. This means that even if the network hasn't heard about your transaction you won't be
+     * able to spend those same coins again.</p>
      *
      * @param peerGroup a PeerGroup to use for broadcast or null.
      * @param to        Which address to send coins to.
-     * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
-     * @param fee       The fee to include     
-     * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
-     * @throws KeyCrypterException 
-     * @throws IllegalStateException 
+     * @param value     How much value to send. You can use Utils.toNanoCoins() to calculate this.
+     * @return An object containing the transaction that was created, and a future for the broadcast of it.
      */
-    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
-        Transaction tx = sendCoinsOffline(to, nanocoins, fee, aesKey);
+    public SendResult sendCoins(PeerGroup peerGroup, Address to, BigInteger value) throws KeyCrypterException {
+        SendRequest request = SendRequest.to(to, value);
+        return sendCoins(peerGroup, request);
+    }
+
+    /**
+     * <p>Sends coins according to the given request, via the given {@link PeerGroup}.</p>
+     *
+     * <p>The returned object provides both the transaction, and a future that can be used to learn when the broadcast
+     * is complete. Complete means, if the PeerGroup is limited to only one connection, when it was written out to
+     * the socket. Otherwise when the transaction is written out and we heard it back from a different peer.</p>
+     *
+     * <p>Note that the sending transaction is committed to the wallet immediately, not when the transaction is
+     * successfully broadcast. This means that even if the network hasn't heard about your transaction you won't be
+     * able to spend those same coins again.</p>
+     *
+     * @param peerGroup a PeerGroup to use for broadcast or null.
+     * @param request the SendRequest that describes what to do, get one using static methods on SendRequest itself.
+     * @return An object containing the transaction that was created, and a future for the broadcast of it.
+     */
+    public SendResult sendCoins(PeerGroup peerGroup, SendRequest request) throws KeyCrypterException {
+        // Does not need to be synchronized as sendCoinsOffline is and the rest is all thread-local.
+
+        // Commit the TX to the wallet immediately so the spent coins won't be reused.
+        // TODO: We should probably allow the request to specify tx commit only after the network has accepted it.
+        Transaction tx = sendCoinsOffline(request);
         if (tx == null)
             return null;  // Not enough money.
-        try {
-            return peerGroup.broadcastTransaction(tx).get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        SendResult result = new SendResult();
+        result.tx = tx;
+        // The tx has been committed to the pending pool by this point (via sendCoinsOffline -> commitTx), so it has
+        // a txConfidenceListener registered. Once the tx is broadcast the peers will update the memory pool with the
+        // count of seen peers, the memory pool will update the transaction confidence object, that will invoke the
+        // txConfidenceListener which will in turn invoke the wallets event listener onTransactionConfidenceChanged
+        // method.
+        result.broadcastComplete = peerGroup.broadcastTransaction(tx);
+        return result;
     }
 
     /**
@@ -1409,81 +1427,186 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * If an exception is thrown by {@link Peer#sendMessage(Message)} the transaction is still committed, so the
      * pending transaction must be broadcast <b>by you</b> at some other time.
      *
-     * @param to        Which address to send coins to.
-     * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
-     * @param fee       The fee to include     
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      * @throws IOException if there was a problem broadcasting the transaction
-     * @throws KeyCrypterException 
-     * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IOException, IllegalStateException, KeyCrypterException {
-        // TODO: This API is fairly questionable and the function isn't tested. If anything goes wrong during sending
-        // on the peer you don't get access to the created Transaction object and must fish it out of the wallet then
-        // do your own retry later.
-
-        Transaction tx = createSend(to, nanocoins, fee, aesKey);
-        if (tx == null)   // Not enough money! :-(
-            return null;
-        try {
-            commitTx(tx);
-        } catch (VerificationException e) {
-            throw new RuntimeException(e);  // Cannot happen unless there's a bug, as we just created this ourselves.
-        }
+    public synchronized Transaction sendCoins(Peer peer, SendRequest request) throws IOException, KeyCrypterException {
+        Transaction tx = sendCoinsOffline(request);
+        if (tx == null)
+            return null;  // Not enough money.
         peer.sendMessage(tx);
         return tx;
     }
 
+//    /**
+//     * Statelessly creates a transaction that sends the given number of nanocoins to address. The change is sent to
+//     * {@link Wallet#getChangeAddress()}, so you must have added at least one key.<p>
+//     * <p/>
+//     * This method is stateless in the sense that calling it twice with the same inputs will result in two
+//     * Transaction objects which are equal. The wallet is not updated to track its pending status or to mark the
+//     * coins as spent until commitTx is called on the result.
+//     * @throws KeyCrypterException 
+//     * @throws IllegalStateException 
+//     */
+//    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
+//        return createSend(address, nanocoins, fee, getChangeAddress(), aesKey);
+//    }
+//
+//    /**
+//     * Sends coins to the given address but does not broadcast the resulting pending transaction. It is still stored
+//     * in the wallet, so when the wallet is added to a {@link PeerGroup} or {@link Peer} the transaction will be
+//     * announced to the network.
+//     *
+//     * @param to Address to send the coins to.
+//     * @param nanocoins How many coins to send.
+//     * @return the Transaction that was created, or null if there are insufficient coins in thew allet.
+//     * @throws KeyCrypterException 
+//     * @throws IllegalStateException 
+//     */
+//    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
+//        Transaction tx = createSend(to, nanocoins, fee, aesKey);
+//        if (tx == null)   // Not enough money! :-(
+//            return null;
+//        try {
+//            commitTx(tx);
+//        } catch (VerificationException e) {
+//            throw new RuntimeException(e);  // Cannot happen unless there's a bug, as we just created this ourselves.
+//        }
+//        return tx;
+//    }
+//
+//    /**
+//     * Sends coins to the given address, via the given {@link PeerGroup}. Change is returned to {@link Wallet#getChangeAddress()}.
+//     * The transaction will be announced to any connected nodes asynchronously. If you would like to know when
+//     * the transaction was successfully sent to at least one node, use 
+//     * {@link Wallet#sendCoinsOffline(Address, java.math.BigInteger)} and then {@link PeerGroup#broadcastTransaction(Transaction)}
+//     * on the result to obtain a {@link java.util.concurrent.Future<Transaction>}.
+//     *
+//     * @param peerGroup a PeerGroup to use for broadcast.
+//     * @param to        Which address to send coins to.
+//     * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
+//     * @param fee       The fee to include     
+//     * @return the Transaction
+//     * @throws IOException if there was a problem broadcasting the transaction
+//     * @throws KeyCrypterException 
+//     * @throws IllegalStateException 
+//     */
+//    public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey)
+//            throws IOException, IllegalStateException, KeyCrypterException {
+//        Transaction tx = sendCoinsOffline(to, nanocoins, fee, aesKey);
+//        if (tx == null)
+//            return null;  // Not enough money.
+//        // Just throw away the Future here. If the user wants it, they can call sendCoinsOffline/broadcastTransaction
+//        // themselves.
+//        peerGroup.broadcastTransaction(tx);
+//        return tx;
+//    }
+//
+//    /**
+//     * Sends coins to the given address, via the given {@link PeerGroup}. Change is returned to {@link Wallet#getChangeAddress()}.
+//     * The method will block until the transaction has been announced to at least one node.
+//     *
+//     * @param peerGroup a PeerGroup to use for broadcast or null.
+//     * @param to        Which address to send coins to.
+//     * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
+//     * @param fee       The fee to include     
+//     * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
+//     * @throws KeyCrypterException 
+//     * @throws IllegalStateException 
+//     */
+//    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
+//        Transaction tx = sendCoinsOffline(to, nanocoins, fee, aesKey);
+//        if (tx == null)
+//            return null;  // Not enough money.
+//        try {
+//            return peerGroup.broadcastTransaction(tx).get();
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        } catch (ExecutionException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    /**
+//     * Sends coins to the given address, via the given {@link Peer}. Change is returned to {@link Wallet#getChangeAddress()}.
+//     * If an exception is thrown by {@link Peer#sendMessage(Message)} the transaction is still committed, so the
+//     * pending transaction must be broadcast <b>by you</b> at some other time.
+//     *
+//     * @param to        Which address to send coins to.
+//     * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
+//     * @param fee       The fee to include     
+//     * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
+//     * @throws IOException if there was a problem broadcasting the transaction
+//     * @throws KeyCrypterException 
+//     * @throws IllegalStateException 
+//     */
+//    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, KeyParameter aesKey) throws IOException, IllegalStateException, KeyCrypterException {
+//        // TODO: This API is fairly questionable and the function isn't tested. If anything goes wrong during sending
+//        // on the peer you don't get access to the created Transaction object and must fish it out of the wallet then
+//        // do your own retry later.
+//
+//        Transaction tx = createSend(to, nanocoins, fee, aesKey);
+//        if (tx == null)   // Not enough money! :-(
+//            return null;
+//        try {
+//            commitTx(tx);
+//        } catch (VerificationException e) {
+//            throw new RuntimeException(e);  // Cannot happen unless there's a bug, as we just created this ourselves.
+//        }
+//        peer.sendMessage(tx);
+//        return tx;
+//    }
+//
+//    /**
+//     * Creates a transaction that sends $coins.$cents BTC to the given address.<p>
+//     * <p/>
+//     * IMPORTANT: This method does NOT update the wallet. If you call createSend again you may get two transactions
+//     * that spend the same coins. You have to call commitTx on the created transaction to prevent this,
+//     * but that should only occur once the transaction has been accepted by the network. This implies you cannot have
+//     * more than one outstanding sending tx at once.
+//     *
+//     * @param address       The BitCoin address to send the money to.
+//     * @param nanocoins     How much currency to send, in nanocoins.
+//     * @param fee           The fee to include
+//     * @param changeAddress Which address to send the change to, in case we can't make exactly the right value from
+//     *                      our coins. This should be an address we own (is in the keychain).
+//     * @return a new {@link Transaction} or null if we cannot afford this send.
+//     * @throws KeyCrypterException 
+//     * @throws IllegalStateException 
+//     */
+//    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
+//        log.info("Creating send tx to " + address.toString() + " for " +
+//                bitcoinValueToFriendlyString(nanocoins));
+//
+//        Transaction sendTx = new Transaction(params);
+//        sendTx.addOutput(nanocoins, address);
+//
+//        if (completeTx(sendTx, changeAddress, fee, aesKey)) {
+//            return sendTx;
+//        } else {
+//            return null;
+//        }
+//    }
+
     /**
-     * Creates a transaction that sends $coins.$cents BTC to the given address.<p>
-     * <p/>
-     * IMPORTANT: This method does NOT update the wallet. If you call createSend again you may get two transactions
-     * that spend the same coins. You have to call commitTx on the created transaction to prevent this,
-     * but that should only occur once the transaction has been accepted by the network. This implies you cannot have
-     * more than one outstanding sending tx at once.
+     * Given a spend request containing an incomplete transaction, makes it valid by adding inputs and outputs according
+     * to the instructions in the request. The transaction in the request is modified by this method.
      *
-     * @param address       The BitCoin address to send the money to.
-     * @param nanocoins     How much currency to send, in nanocoins.
-     * @param fee           The fee to include
-     * @param changeAddress Which address to send the change to, in case we can't make exactly the right value from
-     *                      our coins. This should be an address we own (is in the keychain).
-     * @return a new {@link Transaction} or null if we cannot afford this send.
-     * @throws KeyCrypterException 
-     * @throws IllegalStateException 
+     * @param req a SendRequest that contains the incomplete transaction and details for how to make it valid.
+     * @throws IllegalArgumentException if you try and complete the same SendRequest twice.
+     * @throws KeyCrypterException
+     * @return False if we cannot afford this send, true otherwise.
      */
-    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
-        log.info("Creating send tx to " + address.toString() + " for " +
-                bitcoinValueToFriendlyString(nanocoins));
-
-        Transaction sendTx = new Transaction(params);
-        sendTx.addOutput(nanocoins, address);
-
-        if (completeTx(sendTx, changeAddress, fee, aesKey)) {
-            return sendTx;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Takes a transaction with arbitrary outputs, gathers the necessary inputs for spending, and signs it
-     * @param sendTx           The transaction to complete
-     * @param changeAddress    Which address to send the change to, in case we can't make exactly the right value from
-     *                         our coins. This should be an address we own (is in the keychain).
-     * @param fee              The fee to include     
-     * @return False if we cannot afford this send, true otherwise
-     * @throws KeyCrypterException 
-     * @throws IllegalStateException 
-     */
-    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
+    public synchronized boolean completeTx(SendRequest req) throws IllegalStateException, KeyCrypterException {
+        // Transaction sendTx, Address changeAddress, BigInteger fee, KeyParameter aesKey
         // Calculate the transaction total
         BigInteger nanocoins = BigInteger.ZERO;
-        for(TransactionOutput output : sendTx.getOutputs()) {
+        for(TransactionOutput output : req.tx.getOutputs()) {
             nanocoins = nanocoins.add(output.getValue());
         }
-        final BigInteger total = nanocoins.add(fee);
+        final BigInteger total = nanocoins.add(req.fee);
 
-        log.info("Completing send tx with {} outputs totalling {}", sendTx.getOutputs().size(), bitcoinValueToFriendlyString(nanocoins));
+        log.info("Completing send tx with {} outputs totalling {}", req.tx.getOutputs().size(), bitcoinValueToFriendlyString(nanocoins));
 
         // To send money to somebody else, we need to do gather up transactions with unspent outputs until we have
         // sufficient value. Many coin selection algorithms are possible, we use a simple but suboptimal one.
@@ -1538,22 +1661,23 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             }
         }
         checkState(gathered.size() > 0);
-        sendTx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
+        req.tx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
         BigInteger change = valueGathered.subtract(total);
         if (change.compareTo(BigInteger.ZERO) > 0) {
             // The value of the inputs is greater than what we want to send. Just like in real life then,
             // we need to take back some coins ... this is called "change". Add another output that sends the change
-            // back to us.
-            log.info("  with " + bitcoinValueToFriendlyString(change) + " coins change");
-            sendTx.addOutput(new TransactionOutput(params, sendTx, change, changeAddress));
+            // back to us. The address comes either from the request or getChangeAddress() as a default.
+            Address changeAddress = req.changeAddress != null ? req.changeAddress : getChangeAddress();
+            log.info("  with {} coins change", bitcoinValueToFriendlyString(change));
+            req.tx.addOutput(new TransactionOutput(params, req.tx, change, changeAddress));
         }
         for (TransactionOutput output : gathered) {
-            sendTx.addInput(output);
+            req.tx.addInput(output);
         }
 
         // Now sign the inputs, thus proving that we are entitled to redeem the connected outputs.
         try {
-            sendTx.signInputs(Transaction.SigHash.ALL, this, aesKey);
+            req.tx.signInputs(Transaction.SigHash.ALL, this, req.aesKey);
         } catch (ScriptException e) {
             // If this happens it means an output script in a wallet tx could not be understood. That should never
             // happen, if it does it means the wallet has got into an inconsistent state.
@@ -1565,9 +1689,9 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
         // keep a track of the date the tx was created (used in MultiBitService
         // to work out the block it appears in)
-        sendTx.setUpdateTime(new Date());
+        req.tx.setUpdateTime(new Date());
 
-        log.info("  completed {}", sendTx.getHashAsString());
+        log.info("  completed {}", req.tx.getHashAsString());
         return true;
     }
 
@@ -1615,9 +1739,9 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @throws KeyCrypterException 
      * @throws IllegalStateException 
      */
-    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
-        return completeTx(sendTx, getChangeAddress(), fee, aesKey);
-    }
+//    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, KeyParameter aesKey) throws IllegalStateException, KeyCrypterException {
+//        return completeTx(sendTx, getChangeAddress(), fee, aesKey);
+//    }
 
     synchronized Address getChangeAddress() {
         // For now let's just pick the first key in our keychain. In future we might want to do something else to

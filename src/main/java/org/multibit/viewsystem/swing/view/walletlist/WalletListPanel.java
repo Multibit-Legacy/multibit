@@ -109,6 +109,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     }
     
     public void displayView(boolean blinkEnabled) {
+        log.debug("WalletListPanel called - blinkEnabled = " + blinkEnabled);
         if (walletPanels != null) {
             synchronized(walletPanels) {
                 int amountFiatLabelSize = 0;
@@ -142,9 +143,10 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
         
-        invalidate();
-        revalidate();
-        repaint();
+        // Repaint else open/ new / delete wallets dont get refreshed
+//            invalidate();
+//            revalidate();
+//            repaint();
     }
 
     private void selectWalletPanelByFilename(String filename) {
@@ -171,7 +173,6 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     public void initUI() {
         //log.debug(" initUI called");
 
-        this.removeAll();
         setLayout(new BorderLayout());
 
         tabbedPane = new MultiBitTabbedPane(controller);
@@ -195,6 +196,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         tabbedPane.addTab(controller.getLocaliser().getString("showYourWalletsAction.text"), ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE),
                 tabPanel);
  
+        removeAll();
         add(tabbedPane, BorderLayout.CENTER);
     }
 
