@@ -367,6 +367,37 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewTabbedPane = new MultiBitTabbedPane(controller);
         viewTabbedPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
+        // Create a split pane with the two scroll panes in it.
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
+        } else {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewTabbedPane, (JPanel) walletsView);
+            splitPane.setResizeWeight(1.0);
+        }
+
+        splitPane.setOneTouchExpandable(false);
+        splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
+        splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        
+        BasicSplitPaneDivider divider = ( ( javax.swing.plaf.basic.BasicSplitPaneUI)splitPane.getUI()).getDivider();
+        divider.setDividerSize(WIDTH_OF_SPLIT_PANE_DIVIDER);
+       
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1000.0;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        contentPane.add(splitPane, constraints);
+
+        calculateDividerPosition();
+        
+        // Cannot get the RTL wallets drawing nicely so switch off adjustment.
+        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
+
         // Add the send bitcoin tab.
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
         Viewable sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
@@ -387,47 +418,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
         viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
                 transactionsOutlinePanel);
-
-        // Create a split pane with the two scroll panes in it.
-        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
-        } else {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewTabbedPane, (JPanel) walletsView);
-            splitPane.setResizeWeight(1.0);
-        }
-
-        splitPane.setOneTouchExpandable(false);
-        splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
-        splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        
-        BasicSplitPaneDivider divider = ( ( javax.swing.plaf.basic.BasicSplitPaneUI)splitPane.getUI()).getDivider();
-        divider.setDividerSize(WIDTH_OF_SPLIT_PANE_DIVIDER);
-//        splitPane.setUI(new BasicSplitPaneUI() {
-//            @SuppressWarnings("serial")
-//            public BasicSplitPaneDivider createDefaultDivider() {
-//                return new BasicSplitPaneDivider(this) {
-//                    public void setBorder(Border border) {
-//                        super.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-//                    }
-//                };
-//            }
-//        });
-       
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 1;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1000.0;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        contentPane.add(splitPane, constraints);
-
-        calculateDividerPosition();
-        
-        // Cannot get the RTL wallets drawing nicely so switch off adjustment.
-        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
@@ -984,12 +974,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (initUI) {
             thisFrame.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
+            viewFactory.initialise();
             contentPane.removeAll();
             viewTabbedPane.removeAllTabs();
-            viewFactory.initialise();
             initUI();
             
-            //String current = controller.getCurrentView().toString();
             if (initialView != null && !initialView.toString().equals(View.TRANSACTIONS_VIEW.toString()) && !initialView.toString().equals(View.SEND_BITCOIN_VIEW.toString())
                     && !initialView.toString().equals(View.RECEIVE_BITCOIN_VIEW)) {
                 JPanel currentTabPanel = new JPanel(new BorderLayout());
@@ -1009,16 +998,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         statusBar.refreshOnlineStatusText();
 
         updateHeader();
-        if (tickerTablePanel != null) {
-            tickerTablePanel.update();
-        }
-        
+
         // Tell the wallets list to display.
         if (walletsView != null) {
-//            if (initUI) {
-//                walletsView.initUI();
-//            }
             walletsView.displayView();
+        }
+
+        if (tickerTablePanel != null) {
+            tickerTablePanel.update();
         }
 
         // Tell all the tabs in the tabbedPane to update.

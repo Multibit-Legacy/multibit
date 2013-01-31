@@ -34,6 +34,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
@@ -435,11 +436,21 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
     @Override
     public void foundExchangeRate(ExchangeRate exchangeRate) {
-        displayView(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                displayView(false);
+            }
+        });       
     }
 
     @Override
     public void updatedExchangeRate(ExchangeRate exchangeRate) {
-        displayView(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                displayView(false);
+            }
+        });     
     }
 }
