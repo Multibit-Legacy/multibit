@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.joda.money.CurrencyUnit;
+import org.joda.money.IllegalCurrencyException;
 import org.joda.money.Money;
 import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
@@ -41,12 +42,12 @@ public enum CurrencyConverter {
     public static final int ADDITIONAL_CALCULATION_DIGITS = 16;
    
     // This is the Bitcoin currency unit, denominated in satoshi with 0 decimal places.
-    public static CurrencyUnit BITCOIN_CURRENCY_UNIT  = CurrencyUnit.of("BTC");
+    public CurrencyUnit BITCOIN_CURRENCY_UNIT;
     
     /**
      * The currency unit for the currency being converted.
      */
-    private CurrencyUnit currencyUnit = CurrencyUnit.of(TickerTableModel.DEFAULT_CURRENCY);
+    private CurrencyUnit currencyUnit;  
 
     /**
      * MoneyFormatter without currency code
@@ -83,10 +84,18 @@ public enum CurrencyConverter {
     
     public void initialise(MultiBitController controller, String currencyCode) {
        this.controller = controller;
-        
+       
+       try {
+           BITCOIN_CURRENCY_UNIT  = CurrencyUnit.of("BTC");
+       } catch (IllegalCurrencyException ice) {
+           ice.printStackTrace();
+       }
+       
        if (currencyCode != null && !"".equals(currencyCode)) {
            currencyUnit = CurrencyUnit.of(currencyCode);
-       }         
+       } else {
+           currencyUnit = CurrencyUnit.of("USD");
+       }
         // Exchange rate is unknown.
         rate = null;
         rateDividedByNumberOfSatoshiInOneBitcoin = null;
