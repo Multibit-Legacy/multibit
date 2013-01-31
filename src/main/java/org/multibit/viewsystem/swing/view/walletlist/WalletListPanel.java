@@ -51,8 +51,6 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The wallet list view.
@@ -61,7 +59,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
     private static final long serialVersionUID = 191352298245057705L;
 
-    private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
+    //private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
@@ -109,7 +107,6 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     }
     
     public void displayView(boolean blinkEnabled) {
-        log.debug("WalletListPanel called - blinkEnabled = " + blinkEnabled);
         if (walletPanels != null) {
             synchronized(walletPanels) {
                 int amountFiatLabelSize = 0;
@@ -143,10 +140,9 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
         
-        // Repaint else open/ new / delete wallets dont get refreshed
-//            invalidate();
-//            revalidate();
-//            repaint();
+        invalidate();
+        revalidate();
+        repaint();
     }
 
     private void selectWalletPanelByFilename(String filename) {
@@ -171,8 +167,6 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     }
 
     public void initUI() {
-        //log.debug(" initUI called");
-
         setLayout(new BorderLayout());
 
         tabbedPane = new MultiBitTabbedPane(controller);
@@ -208,7 +202,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         walletListPanel.setBorder(BorderFactory.createEmptyBorder());
         walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        // get the wallets from the model
+        // Get the wallets from the model.
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -436,9 +430,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     }
 
     @Override
-    public void lostExchangeRate(ExchangeRate exchangeRate) {
-        // TODO Auto-generated method stub
-        
+    public void lostExchangeRate(ExchangeRate exchangeRate) {      
     }
 
     @Override
