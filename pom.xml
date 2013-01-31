@@ -16,481 +16,487 @@
   Use "mvn site:site" to generate a complete website under target/site
   Use "mvn site:run" to run a local webserver localhost:8080/index.html
 
-  -->
+    -->
 
-  <licenses>
-    <license>
-      <name>MIT</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
-      <distribution>repo</distribution>
-      <comments>A business-friendly OSS license</comments>
-    </license>
-  </licenses>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
 
-  <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/jim618/multibit/issues</url>
-  </issueManagement>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/jim618/multibit/issues</url>
+    </issueManagement>
 
-  <scm>
-    <!-- Public read-only source -->
-    <url>https://github.com/jim618/multibit</url>
-  </scm>
+    <scm>
+        <!-- Public read-only source -->
+        <url>https://github.com/jim618/multibit</url>
+    </scm>
 
-  <repositories>
-         <repository>
-            <id>sonatype-oss-snapshot</id>
-            <snapshots/>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-        <!-- bitcoin-j repo -->
+    <repositories>
         <repository>
             <id>bitcoinj-release</id>
-            <releases />
+            <releases/>
             <url>http://nexus.bitcoinj.org/content/repositories/releases</url>
         </repository>
         <repository>
             <id>bitcoinj-snapshot</id>
-            <snapshots />
+            <snapshots/>
             <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
         </repository>
+        <!-- xeiam repo -->
+        <repository>
+            <id>xeiam-release</id>
+            <releases />
+            <url>http://nexus.xeiam.com/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>xeiam-snapshot</id>
+            <snapshots />
+            <url>http://nexus.xeiam.com/content/repositories/snapshots/</url>
+        </repository>
+
         <!-- zxing repo -->
         <repository>
             <id>mvn-adamgent</id>
             <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
             <name>Adam Gent Maven Repository</name>
         </repository>
-  </repositories>
+    </repositories>
 
-  <build>
-    <finalName>multibit</finalName>
-    <resources>
-      <!-- filter properties files e.g. version.properties -->
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.properties</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <excludes>
-          <exclude>**/*.properties</exclude>
-          <exclude>**/*.blockchain</exclude>
-        </excludes>
-      </resource>
-    </resources>
-    <plugins>
-      <!-- Standard compile to ensure Java6 is used in all environments (e.g. Jenkins) -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <showDeprecation>true</showDeprecation>
-          <showWarnings>true</showWarnings>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <!-- Put bitcoinj classes into target dir for production of the executable jar later -->
-          <execution>
-            <id>unpack-bitcoinj-classes</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>com.google</groupId>
-                  <artifactId>bitcoinj</artifactId>
-                  <version>${bitcoinj.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
-                  <includes>**/*.*</includes>
-                  <!-- excludes classes that are duplicated in multibit -->
-                  <excludes> **/Sha256Hash.class,
-                    **/Transaction.class, **/Transaction$*.class,
-                    **/TransactionConfidence.class, **/TransactionConfidence$*.class,
-                    **/TransactionInput.class, **/TransactionInput$*.class,
-                    **/Wallet.class, **/Wallet$*.class,
-                    **/WalletExtensionSerializer.class,
-                    **/WalletProtobufSerializer.class
-                  </excludes>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
+    <build>
+        <finalName>multibit</finalName>
+        <resources>
+            <!-- filter properties files e.g. version.properties -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                    <exclude>**/*.blockchain</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- Standard compile to ensure Java6 is used in all environments (e.g. Jenkins) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <!-- Put bitcoinj classes into target dir for production of the executable jar later -->
+                    <execution>
+                        <id>unpack-bitcoinj-classes</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.google</groupId>
+                                    <artifactId>bitcoinj</artifactId>
+                                    <version>${bitcoinj.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
+                                    <includes>**/*.*</includes>
+                                    <!-- excludes classes that are duplicated in multibit -->
+                                    <excludes> **/Sha256Hash.class,
+                                        **/Transaction.class, **/Transaction$*.class,
+                                        **/TransactionConfidence.class, **/TransactionConfidence$*.class,
+                                        **/TransactionInput.class, **/TransactionInput$*.class,
+                                        **/Wallet.class, **/Wallet$*.class,
+                                        **/WalletExtensionSerializer.class,
+                                        **/WalletProtobufSerializer.class
+                                    </excludes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
 
-          <!-- Put izPack2app into linux staging dir for production of linux installer later -->
-          <execution>
-            <id>unpack-shared-resources-ipack2app-linux</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <phase>install</phase>
-            <configuration>
-              <includeGroupIds>org.codehaus.izpack</includeGroupIds>
-              <includeArtifactIds>izpack-standalone-compiler</includeArtifactIds>
-              <classifier>izpack2app</classifier>
-              <type>zip</type>
-              <excludeTransitive>true</excludeTransitive>
-              <outputDirectory>${staging.linux.dir}</outputDirectory>
-            </configuration>
-          </execution>
+                    <!-- Put izPack2app into linux staging dir for production of linux installer later -->
+                    <execution>
+                        <id>unpack-shared-resources-ipack2app-linux</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <includeGroupIds>org.codehaus.izpack</includeGroupIds>
+                            <includeArtifactIds>izpack-standalone-compiler</includeArtifactIds>
+                            <classifier>izpack2app</classifier>
+                            <type>zip</type>
+                            <excludeTransitive>true</excludeTransitive>
+                            <outputDirectory>${staging.linux.dir}</outputDirectory>
+                        </configuration>
+                    </execution>
 
-          <!-- Put izPack2app into windows staging dir for production of windows installer later -->
-          <execution>
-            <id>unpack-shared-resources-ipack2app-windows</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <phase>install</phase>
-            <configuration>
-              <includeGroupIds>org.codehaus.izpack</includeGroupIds>
-              <includeArtifactIds>izpack-standalone-compiler</includeArtifactIds>
-              <classifier>izpack2app</classifier>
-              <type>zip</type>
-              <excludeTransitive>true</excludeTransitive>
-              <outputDirectory>${staging.windows.dir}</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+                    <!-- Put izPack2app into windows staging dir for production of windows installer later -->
+                    <execution>
+                        <id>unpack-shared-resources-ipack2app-windows</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <includeGroupIds>org.codehaus.izpack</includeGroupIds>
+                            <includeArtifactIds>izpack-standalone-compiler</includeArtifactIds>
+                            <classifier>izpack2app</classifier>
+                            <type>zip</type>
+                            <excludeTransitive>true</excludeTransitive>
+                            <outputDirectory>${staging.windows.dir}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-      <!-- Create main executable jar -->
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2.1</version>
-        <configuration>
-          <descriptors>
-            <!-- this assembly descriptor also includes the bitcoinj classes unpacked earlier -->
-            <descriptor>src/assemble/exe.xml</descriptor>
-          </descriptors>
-          <archive>
-            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+            <!-- Create main executable jar -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <descriptors>
+                        <!-- this assembly descriptor also includes the bitcoinj classes unpacked earlier -->
+                        <descriptor>src/assemble/exe.xml</descriptor>
+                    </descriptors>
+                    <archive>
+                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-      <!-- Produce staging directory with all resources used in creation of the linux IzPack installer and in creation of the Mac application bundle -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
-        <executions>
-          <execution>
-            <id>copy-resources-to-staging-linux</id>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${staging.linux.dir}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/izpack/linux</directory>
-                  <filtering>true</filtering>
-                  <includes>
-                    <include>install.xml</include>
-                    <include>readme.txt</include>
-                    <include>Unix_shortcutSpec.xml</include>
-                    <include>multibit-protocol-handler.sh</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>src/main/resources/images</directory>
-                  <includes>
-                    <include>installerLeft.png</include>
-                    <include>multibit48.png</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <includes>
-                    <include>multibit.blockchain</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>.</directory>
-                  <includes>
-                    <include>release_notes.txt</include>
-                    <include>configuration.txt</include>
-                    <include>COPYING</include>
-                    <include>AUTHORS.txt</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>target</directory>
-                  <includes>
-                    <include>multibit-exe.jar</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
+            <!-- Produce staging directory with all resources used in creation of the linux IzPack installer and in creation of the Mac application bundle -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources-to-staging-linux</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${staging.linux.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/izpack/linux</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>install.xml</include>
+                                        <include>readme.txt</include>
+                                        <include>Unix_shortcutSpec.xml</include>
+                                        <include>multibit-protocol-handler.sh</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources/images</directory>
+                                    <includes>
+                                        <include>installerLeft.png</include>
+                                        <include>multibit48.png</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>multibit.blockchain</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>.</directory>
+                                    <includes>
+                                        <include>release_notes.txt</include>
+                                        <include>configuration.txt</include>
+                                        <include>COPYING</include>
+                                        <include>AUTHORS.txt</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>multibit-exe.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
 
-          <!-- Produce staging directory with all resources used in creation of the windows IzPack installer -->
-          <execution>
-            <id>copy-resources-to-staging-windows</id>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${staging.windows.dir}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/izpack/windows</directory>
-                  <filtering>true</filtering>
-                   <includes>
-                    <include>install.xml</include>
-                    <include>readme.txt</include>
-                    <include>shortcutSpec.xml</include>
-                    <include>registrySpec.xml</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>src/main/resources/images</directory>
-                  <includes>
-                    <include>installerLeft.png</include>
-                    <include>multibit.ico</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <includes>
-                    <include>multibit.blockchain</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>.</directory>
-                  <includes>
-                    <include>release_notes.txt</include>
-                    <include>configuration.txt</include>
-                    <include>COPYING</include>
-                    <include>AUTHORS.txt</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>target</directory>
-                  <includes>
-                    <include>multibit.exe</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
+                    <!-- Produce staging directory with all resources used in creation of the windows IzPack installer -->
+                    <execution>
+                        <id>copy-resources-to-staging-windows</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${staging.windows.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/izpack/windows</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>install.xml</include>
+                                        <include>readme.txt</include>
+                                        <include>shortcutSpec.xml</include>
+                                        <include>registrySpec.xml</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources/images</directory>
+                                    <includes>
+                                        <include>installerLeft.png</include>
+                                        <include>multibit.ico</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>multibit.blockchain</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>.</directory>
+                                    <includes>
+                                        <include>release_notes.txt</include>
+                                        <include>configuration.txt</include>
+                                        <include>COPYING</include>
+                                        <include>AUTHORS.txt</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>multibit.exe</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
 
-          <!-- produce a Mac application bundle -->
-          <!-- this plugin copies a skeleton App and then copies in the resources from the linux staging directory -->
-          <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ but cannot get extra resources into my Java directory in the app -->
-          <execution>
-            <id>create-skeleton-Mac-application-bundle</id>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/MultiBit-${project.version}.app</outputDirectory>
-              <resources>
-                <resource>
-                  <!-- skeleton app -->
-                  <directory>src/app-resources/MultiBit.app</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-Java-resources-into-application-bundle</id>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/MultiBit-${project.version}.app/Contents/Resources/Java</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${basedir}/target/staging.linux</directory>
-                  <includes>
-                    <include>multibit-exe.jar</include>
-                    <include>multibit.blockchain</include>
-                    <include>release_notes.txt</include>
-                    <include>configuration.txt</include>
-                    <include>COPYING</include>
-                    <include>AUTHORS.txt</include>
-                  </includes>
-                </resource>
-                <resource>
-                  <directory>${basedir}/src/main/izpack/mac</directory>
-                  <includes>
-                    <include>readme.txt</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+                    <!-- produce a Mac application bundle -->
+                    <!-- this plugin copies a skeleton App and then copies in the resources from the linux staging directory -->
+                    <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ but cannot get extra resources into my Java directory in the app -->
+                    <execution>
+                        <id>create-skeleton-Mac-application-bundle</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/MultiBit-${project.version}.app</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <!-- skeleton app -->
+                                    <directory>src/app-resources/MultiBit.app</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-Java-resources-into-application-bundle</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/MultiBit-${project.version}.app/Contents/Resources/Java</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/target/staging.linux</directory>
+                                    <includes>
+                                        <include>multibit-exe.jar</include>
+                                        <include>multibit.blockchain</include>
+                                        <include>release_notes.txt</include>
+                                        <include>configuration.txt</include>
+                                        <include>COPYING</include>
+                                        <include>AUTHORS.txt</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${basedir}/src/main/izpack/mac</directory>
+                                    <includes>
+                                        <include>readme.txt</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-      <!-- Produce linux IzPack installer from contents of linux staging directory -->
-      <plugin>
-        <groupId>org.codehaus.izpack</groupId>
-        <artifactId>izpack-maven-plugin</artifactId>
-        <version>1.0-alpha-5</version>
-        <executions>
-          <execution>
-            <id>create-linux-installer</id>
-            <phase>install</phase>
-            <goals>
-              <goal>izpack</goal>
-            </goals>
-            <configuration>
-              <izpackBasedir>${staging.linux.dir}</izpackBasedir>
-              <installerFile>target/${project.build.finalName}-${project.version}-linux.jar</installerFile>
-            </configuration>
-          </execution>
-          <execution>
-            <id>create-windows-installer</id>
-            <phase>install</phase>
-            <goals>
-              <goal>izpack</goal>
-            </goals>
-            <configuration>
-              <izpackBasedir>${staging.windows.dir}</izpackBasedir>
-              <installerFile>target/${project.build.finalName}-windows.jar</installerFile>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.izpack</groupId>
-            <artifactId>izpack-standalone-compiler</artifactId>
-            <version>4.3.4</version>
-          </dependency>
-        </dependencies>
-      </plugin>
+            <!-- Produce linux IzPack installer from contents of linux staging directory -->
+            <plugin>
+                <groupId>org.codehaus.izpack</groupId>
+                <artifactId>izpack-maven-plugin</artifactId>
+                <version>1.0-alpha-5</version>
+                <executions>
+                    <execution>
+                        <id>create-linux-installer</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>izpack</goal>
+                        </goals>
+                        <configuration>
+                            <izpackBasedir>${staging.linux.dir}</izpackBasedir>
+                            <installerFile>target/${project.build.finalName}-${project.version}-linux.jar</installerFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-windows-installer</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>izpack</goal>
+                        </goals>
+                        <configuration>
+                            <izpackBasedir>${staging.windows.dir}</izpackBasedir>
+                            <installerFile>target/${project.build.finalName}-windows.jar</installerFile>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.izpack</groupId>
+                        <artifactId>izpack-standalone-compiler</artifactId>
+                        <version>4.3.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
-      <!-- Build a Mac DMG -->
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>create-mac-dmg</id>
-            <phase>install</phase>
-            <configuration>
-              <tasks>
-                <!-- Make the JavaApplicationStub in the Mac application bundle executable (it loses its 'x' permission after the copy)  -->
-                <chmod file="${basedir}/target/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
+            <!-- Build a Mac DMG -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-mac-dmg</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <!-- Make the JavaApplicationStub in the Mac application bundle executable (it loses its 'x' permission after the copy)  -->
+                                <chmod file="${basedir}/target/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
 
-                <mkdir dir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app"/>
-                <copy todir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app">
-                  <fileset dir="${basedir}/target/MultiBit-${project.version}.app" includes="**"/>
-                </copy>
-                <copy file="${basedir}/src/main/izpack/mac/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
+                                <mkdir dir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app"/>
+                                <copy todir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app">
+                                    <fileset dir="${basedir}/target/MultiBit-${project.version}.app" includes="**"/>
+                                </copy>
+                                <copy file="${basedir}/src/main/izpack/mac/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
 
 
-                <!-- Create Applications Symbolic link -->
-                <!-- WARNING, do not remove this symbolic link by Java(ant) -->
-                <exec executable="ln" os="'Mac OS X'">
-                  <arg line="-s /Applications ${basedir}/target/MultiBit-mac/Applications"/>
-                </exec>
+                                <!-- Create Applications Symbolic link -->
+                                <!-- WARNING, do not remove this symbolic link by Java(ant) -->
+                                <exec executable="ln" os="'Mac OS X'">
+                                    <arg line="-s /Applications ${basedir}/target/MultiBit-mac/Applications"/>
+                                </exec>
 
-                <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 'x' permission after the copy)  -->
-                <chmod file="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub"
+                                <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 'x' permission after the copy)  -->
+                                <chmod file="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub"
                        perm="777"/>
 
-                <!-- create a DMG file -->
-                <exec executable="hdiutil" os="'Mac OS X'">
-                  <arg value="create"/>
-                  <arg value="-srcfolder"/>
-                  <arg value="${basedir}/target/MultiBit-mac"/>
-                  <arg path="${basedir}/target/multibit-${project.version}.dmg"/>
-                </exec>
+                                <!-- create a DMG file -->
+                                <exec executable="hdiutil" os="'Mac OS X'">
+                                    <arg value="create"/>
+                                    <arg value="-srcfolder"/>
+                                    <arg value="${basedir}/target/MultiBit-mac"/>
+                                    <arg path="${basedir}/target/multibit-${project.version}.dmg"/>
+                                </exec>
 
-                <!-- IMPORTANT! -->
-                <!-- Remove symbolic link before deleting tmp dir -->
-                <exec executable="rm" os="'Mac OS X'">
-                  <arg line="-R ${basedir}/target/MultiBit-mac/Applications"/>
-                </exec>
+                                <!-- IMPORTANT! -->
+                                <!-- Remove symbolic link before deleting tmp dir -->
+                                <exec executable="rm" os="'Mac OS X'">
+                                    <arg line="-R ${basedir}/target/MultiBit-mac/Applications"/>
+                                </exec>
 
-                <!-- get rid of temporary directory -->
-                <delete includeEmptyDirs="true">
-                  <fileset dir="${basedir}/target/MultiBit-mac"/>
-                </delete>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <!-- Produce a Win32 exe from the multibit-exe.jar (no Maven plugin for JSmooth so drop down to ant) -->
-          <execution>
-            <id>jsmooth-installer2exe-exe</id>
-            <phase>package</phase>
-            <configuration>
-              <tasks>
-                <path id="jsmooth-classpathref">
-                  <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
-                  <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
-                </path>
-                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
+                                <!-- get rid of temporary directory -->
+                                <delete includeEmptyDirs="true">
+                                    <fileset dir="${basedir}/target/MultiBit-mac"/>
+                                </delete>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <!-- Produce a Win32 exe from the multibit-exe.jar (no Maven plugin for JSmooth so drop down to ant) -->
+                    <execution>
+                        <id>jsmooth-installer2exe-exe</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <path id="jsmooth-classpathref">
+                                    <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
+                                    <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
+                                </path>
+                                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
                          classpathref="jsmooth-classpathref"/>
-                <jsmoothgen project="src/main/jsmooth/exe.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
+                                <jsmoothgen project="src/main/jsmooth/exe.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
 
-          <!-- Produce a Win32 exe from the windows IzPack installer (no Maven plugin for JSmooth so drop down to ant) -->
-          <execution>
-            <id>jsmooth-installer2exe-installer</id>
-            <phase>install</phase>
-            <configuration>
-              <tasks>
-                <path id="jsmooth-classpathref">
-                  <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
-                  <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
-                </path>
-                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
+                    <!-- Produce a Win32 exe from the windows IzPack installer (no Maven plugin for JSmooth so drop down to ant) -->
+                    <execution>
+                        <id>jsmooth-installer2exe-installer</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <path id="jsmooth-classpathref">
+                                    <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
+                                    <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
+                                </path>
+                                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
                          classpathref="jsmooth-classpathref"/>
-                <jsmoothgen project="src/main/jsmooth/installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
-                <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows.exe"/>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant-nodeps</artifactId>
-            <version>1.8.1</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
-  </build>
-  <dependencies>
+                                <jsmoothgen project="src/main/jsmooth/installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
+                                <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows.exe"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -515,7 +521,7 @@
             <artifactId>sc-light-jdk15on</artifactId>
             <version>${sc-light-jdk15on.version}</version>
         </dependency>
-        <!-- zxing used for QR codes -->
+        <!-- zxing used for swatches -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -534,62 +540,69 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.google</groupId>
+            <artifactId>bitcoinj</artifactId>
+            <version>${bitcoinj.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-core</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
+            <version>1.3.0</version>
+            <scope>compile</scope>
         </dependency>
-        <!-- XChange MtGox exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-mtgox</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
-        </dependency>
-        <!-- XChange VirtEx exchange support -->
-		<dependency>
-			<groupId>com.xeiam.xchange</groupId>
-			<artifactId>xchange-cavirtex</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
-		</dependency>
-		<!-- XChange Open Exchange Rates exchange support -->
-		<dependency>
-			<groupId>com.xeiam.xchange</groupId>
-			<artifactId>xchange-openexchangerates</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
-		</dependency>
-		<!-- XChange BTC-E exchange support -->
-		<dependency>
-			<groupId>com.xeiam.xchange</groupId>
-			<artifactId>xchange-btce</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
-		</dependency>
-		<!-- XChange Bitstamp exchange support -->
-		<dependency>
-			<groupId>com.xeiam.xchange</groupId>
-			<artifactId>xchange-bitstamp</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
-		</dependency>
-		<!-- XChange Bitcoin central exchange support -->
-		<dependency>
-			<groupId>com.xeiam.xchange</groupId>
-			<artifactId>xchange-bitcoincentral</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
-		</dependency>
-		<!-- XChange CampBX exchange support -->
-		<dependency>
-			<groupId>com.xeiam.xchange</groupId>
-			<artifactId>xchange-campbx</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
-		</dependency>
-		<!-- XChange BitcoinCharts support -->
-		<dependency>
-			<groupId>com.xeiam.xchange</groupId>
-			<artifactId>xchange-bitcoincharts</artifactId>
-			<version>1.4.0-SNAPSHOT</version>
-		</dependency>
-        <dependency>
-            <groupId>com.xeiam.xchart</groupId>
-            <artifactId>xchart</artifactId>
             <version>1.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-cavirtex</artifactId>
+            <version>1.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-btce</artifactId>
+            <version>1.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-openexchangerates</artifactId>
+            <version>1.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-campbx</artifactId>
+            <version>1.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-bitstamp</artifactId>
+            <version>1.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-bitcoincharts</artifactId>
+            <version>1.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--    <dependency>
+          <groupId>com.xeiam.xchange</groupId>
+          <artifactId>xchange-bitcoincentral</artifactId>
+          <version>1.3.0</version>
+          <scope>compile</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>com.xeiam</groupId>
+            <artifactId>xchart</artifactId>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.izpack</groupId>
@@ -618,63 +631,58 @@
         <dependency>
             <groupId>org.joda</groupId>
             <artifactId>joda-money</artifactId>
-            <version>0.6</version>
+            <version>0.6</version> 
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.5</version>
         </dependency>
-        <dependency>
-            <groupId>com.google</groupId>
-            <artifactId>bitcoinj</artifactId>
-            <version>${bitcoinj.version}</version>
-        </dependency>
-  </dependencies>
+    </dependencies>
 
-  <reporting>
-    <plugins>
-      <!-- PMD checking -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>2.5</version>
-        <configuration>
-          <linkXRef>true</linkXRef>
-          <sourceEncoding>utf-8</sourceEncoding>
-          <minimumTokens>100</minimumTokens>
-          <targetJdk>1.6</targetJdk>
-        </configuration>
-      </plugin>
-      <!-- Findbugs checking -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.3.2</version>
-      </plugin>
-      <!-- Generate cross-referenced HTML source code listing -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.1</version>
-      </plugin>
-    </plugins>
-  </reporting>
+    <reporting>
+        <plugins>
+            <!-- PMD checking -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <linkXRef>true</linkXRef>
+                    <sourceEncoding>utf-8</sourceEncoding>
+                    <minimumTokens>100</minimumTokens>
+                    <targetJdk>1.6</targetJdk>
+                </configuration>
+            </plugin>
+            <!-- Findbugs checking -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.3.2</version>
+            </plugin>
+            <!-- Generate cross-referenced HTML source code listing -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
-  <properties>
-    <!-- Source encoding -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <properties>
+        <!-- Source encoding -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Location of staging directory for creation of linux IzPack installer -->
-    <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
+        <!-- Location of staging directory for creation of linux IzPack installer -->
+        <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
 
-    <!-- Version of BitCoinJ to use (multiple uses) -->
-    <bitcoinj.version>0.6.1</bitcoinj.version>
+        <!-- Version of BitCoinJ to use (multiple uses) -->
+        <bitcoinj.version>0.6.1</bitcoinj.version>
 
-    <!-- Version of spongycastle to use -->
-    <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
+        <!-- Version of spongycastle to use -->
+        <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
  
-    <!-- Location of staging directory for creation of windows IzPack installer -->
-    <staging.windows.dir>${project.build.directory}/staging.windows</staging.windows.dir>
-  </properties>
+        <!-- Location of staging directory for creation of windows IzPack installer -->
+        <staging.windows.dir>${project.build.directory}/staging.windows</staging.windows.dir>
+    </properties>
 </project>
