@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.joda.money.BigMoney;
 
-import com.xeiam.xchange.bitcoincentral.BitcoinCentralExchange;
 import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.btce.BTCEExchange;
@@ -119,8 +118,12 @@ public class ExchangeData {
     public static String[] getAvailableExchanges() {
 //        return new String[] { MT_GOX_EXCHANGE_NAME, BITCOIN_CENTRAL_EXCHANGE_NAME, BITCOIN_CHARTS_EXCHANGE_NAME, BITSTAMP_EXCHANGE_NAME, BTCE_EXCHANGE_NAME,  
 //                CAMPBX_EXCHANGE_NAME, OPEN_EXCHANGE_RATES_EXCHANGE_NAME, VIRTEX_EXCHANGE_NAME};
-        return new String[] { MT_GOX_EXCHANGE_NAME, BITCOIN_CENTRAL_EXCHANGE_NAME,BITSTAMP_EXCHANGE_NAME, BTCE_EXCHANGE_NAME,  
-                CAMPBX_EXCHANGE_NAME, VIRTEX_EXCHANGE_NAME};
+        return new String[] { MT_GOX_EXCHANGE_NAME,
+            //BITCOIN_CENTRAL_EXCHANGE_NAME,
+            BITSTAMP_EXCHANGE_NAME,
+            BTCE_EXCHANGE_NAME,
+            CAMPBX_EXCHANGE_NAME,
+            VIRTEX_EXCHANGE_NAME};
     }
 
     public Collection<String> getCurrenciesWeAreInterestedIn() {
@@ -159,8 +162,8 @@ public class ExchangeData {
             return  BTCEExchange.class.getName();
         } else if (OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  OERExchange.class.getName();
-        } else if (BITCOIN_CENTRAL_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-            return  BitcoinCentralExchange.class.getName();
+//        } else if (BITCOIN_CENTRAL_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+//            return  BitcoinCentralExchange.class.getName();
         } else if (CAMPBX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  CampBXExchange.class.getName();
         }else if (BITSTAMP_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
