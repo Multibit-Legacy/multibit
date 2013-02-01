@@ -254,6 +254,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletTypeButton = new JButton();
         walletTypeButton.setOpaque(false);
         walletTypeButton.setVisible(true);
+        walletTypeButton.setHorizontalAlignment(SwingConstants.CENTER);
+        walletTypeButton.setVerticalAlignment(SwingConstants.CENTER);
 
         walletTypeButton.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, 0));
         if (perWalletModelData.getWallet() != null) {
@@ -526,6 +528,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 myRoundedPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                 roundedBottomPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                 
+                walletTypeButton.setOpaque(true);
+                walletTypeButton.setBackground(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
+                walletTypeButton.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,ColorAndFontConstants.SELECTION_BACKGROUND_COLOR));
+                
                 myRoundedPanel.repaint();
                 roundedBottomPanel.repaint();
                 twistyLabel.setVisible(true);
@@ -537,6 +543,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
                 myRoundedPanel.setBackground(inactiveBackGroundColor);
                 roundedBottomPanel.setBackground(inactiveBackGroundColor);
+
+                walletTypeButton.setOpaque(false);
+                walletTypeButton.setBackground(inactiveBackGroundColor);
+                walletTypeButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+
 
                 myRoundedPanel.repaint();
                 roundedBottomPanel.repaint();
