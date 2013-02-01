@@ -66,5 +66,8 @@ public class ColorAndFontConstants {
         DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
         ALTERNATE_TABLE_COLOR = DEFAULT_ALTERNATE_TABLE_COLOR;
         VERY_LIGHT_BACKGROUND_COLOR = DEFAULT_VERY_LIGHT_BACKGROUND_COLOR;
+        
+        SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
+        SELECTION_BACKGROUND_COLOR = SystemColor.textHighlight;
     }
 }

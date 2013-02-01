@@ -149,7 +149,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
-       
+  
         thisPanel = this;
 
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
@@ -530,7 +530,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 
                 walletTypeButton.setOpaque(true);
                 walletTypeButton.setBackground(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
-                walletTypeButton.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,ColorAndFontConstants.SELECTION_BACKGROUND_COLOR));
+                walletTypeButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.SELECTION_BACKGROUND_COLOR.darker()), 
+                        BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.SELECTION_BACKGROUND_COLOR)));
+                walletTypeButton.setBorderPainted(true);
                 
                 myRoundedPanel.repaint();
                 roundedBottomPanel.repaint();
@@ -547,6 +549,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletTypeButton.setOpaque(false);
                 walletTypeButton.setBackground(inactiveBackGroundColor);
                 walletTypeButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+                walletTypeButton.setBorderPainted(false);
 
 
                 myRoundedPanel.repaint();
