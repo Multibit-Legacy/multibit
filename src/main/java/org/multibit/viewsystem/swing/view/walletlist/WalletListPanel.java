@@ -52,6 +52,7 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
 /**
  * The wallet list view.

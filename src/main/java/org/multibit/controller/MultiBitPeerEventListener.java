@@ -2,6 +2,7 @@ package org.multibit.controller;
 
 import java.util.List;
 
+import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -12,7 +13,10 @@ import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
+import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.VerificationException;
+import com.google.bitcoin.core.Wallet;
 
 public class MultiBitPeerEventListener implements PeerEventListener {
 
@@ -80,7 +84,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 //                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
 //                        Wallet loopWallet = perWalletModelData.getWallet();
 //                        if (loopWallet != null) {
-//                            if (loopWallet.isTransactionRelevant(transaction)) {
+//                            if (loopWallet.isPendingTransactionRelevant(transaction)) {
 //                                // The perWalletModelData is marked as dirty.
 //                                if (perWalletModelData.getWalletInfo() != null) {
 //                                    synchronized(perWalletModelData.getWalletInfo()) {

@@ -1011,10 +1011,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             outerPanel.add(pane, BorderLayout.LINE_START);
             outerPanel.add(filler, BorderLayout.CENTER);
             
-            // Avoid flicker of first row by doing layout.
-            if (row ==0) {
-                outerPanel.doLayout();
-            }
+            // Avoid flicker by doing layout.
+            outerPanel.doLayout();
+
             return outerPanel;
         }
     }

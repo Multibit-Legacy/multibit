@@ -52,5 +52,6 @@
 
     <!-- Define logging for organisation applications only -->
     <logger name="org.multibit" level="DEBUG" />
+    <logger name="com.google.bitcoin.core.Wallet" level="DEBUG" />
     <logger name="com.google.bitcoin.core.TransactionOutput" level="OFF" />
 </configuration>
