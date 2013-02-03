@@ -283,7 +283,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         prefViewFactory.addModuleFromEnum(PreferencesModule.CORE);
         prefViewFactory.addModuleFromEnum(PreferencesModule.BITCOIN);
-        prefViewFactory.addModuleFromEnum(PreferencesModule.TICKER);
+        prefViewFactory.addModuleFromEnum(PreferencesModule.EXCHANGE);
         
         viewFactory = new ViewFactory(controller, this, prefViewFactory);
 

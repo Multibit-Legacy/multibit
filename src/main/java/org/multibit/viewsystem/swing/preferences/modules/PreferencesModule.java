@@ -31,6 +31,6 @@ public enum PreferencesModule {
     
     CORE,
     BITCOIN,
-    TICKER
+    EXCHANGE
 
 }

@@ -58,7 +58,7 @@ import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
  *
  * @author Cameron Garnham
  */
-public class TickerPreferencesModule  extends AbstractPreferencesModule implements TickerPreferencesDataProvider {
+public class ExchangePreferencesModule  extends AbstractPreferencesModule implements TickerPreferencesDataProvider {
 
     
     private static final int EXCHANGE_COMBO_HEIGHT_DELTA = 15;
@@ -105,7 +105,7 @@ public class TickerPreferencesModule  extends AbstractPreferencesModule implemen
     private JComboBox currencyComboBox2;
 
     
-     public TickerPreferencesModule(MultiBitController controller, MultiBitFrame mainFrame){
+     public ExchangePreferencesModule(MultiBitController controller, MultiBitFrame mainFrame){
         this.controller = controller;
         this.mainFrame = mainFrame;
      }
@@ -137,7 +137,7 @@ public class TickerPreferencesModule  extends AbstractPreferencesModule implemen
     
     @Override
     public PreferencesModule getModuleEnum() {
-        return PreferencesModule.TICKER;
+        return PreferencesModule.EXCHANGE;
     }
 
     
