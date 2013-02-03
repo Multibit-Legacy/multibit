@@ -100,7 +100,7 @@ public class RoundedBottomPanel extends JPanel {
 
         if (selected) {
             graphics.setColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
-            graphics.setStroke(new BasicStroke(strokeSize + 1));
+            graphics.setStroke(new BasicStroke(strokeSize + 2));
         } else {
             graphics.setColor(SystemColor.windowBorder);
             graphics.setStroke(new BasicStroke(strokeSize));

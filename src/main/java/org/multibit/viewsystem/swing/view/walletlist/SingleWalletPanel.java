@@ -81,7 +81,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private PerWalletModelData perWalletModelData;
 
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
-    private static final int COLOR_DELTA = 14;
+    private static final int COLOR_DELTA = 24;
 
     private static final int HEIGHT_DELTA = 26;
     private static final int DETAIL_HEIGHT_DELTA = 4;

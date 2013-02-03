@@ -20,6 +20,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -156,12 +157,18 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
                         if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(filename)) {
                             loopSingleWalletPanel.setSelected(true);
+                            Rectangle bounds = loopSingleWalletPanel.getParent().getBounds();
+                            System.out.println("Bounds = " + bounds);
+                            Rectangle visible = scrollPane.getVisibleRect();
+                            System.out.println("Visible = " + visible + ", viewRect " + scrollPane.getViewport().getViewRect());
+                            //scrollPane.getVerticalScrollBar().setValue(bounds.x);
+                            walletListPanel.scrollRectToVisible(bounds);
                         } else {
                             loopSingleWalletPanel.setSelected(false);
                         }
                     }
                 }
-            } 
+            }
         }
     }
 
@@ -397,6 +404,8 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
                     controller.fireDataChanged();
                 }
+                // Always select the selectedWalletPanel so that relative key movements work
+                selectedWalletPanel.requestFocusInWindow();
             }
         }
 
