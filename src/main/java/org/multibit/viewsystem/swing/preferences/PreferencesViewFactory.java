@@ -30,7 +30,7 @@ import org.multibit.viewsystem.swing.preferences.modules.AbstractPreferencesModu
 import org.multibit.viewsystem.swing.preferences.modules.BitcoinPreferencesModule;
 import org.multibit.viewsystem.swing.preferences.modules.CorePreferencesModule;
 import org.multibit.viewsystem.swing.preferences.modules.PreferencesModule;
-import org.multibit.viewsystem.swing.preferences.modules.TickerPreferencesModule;
+import org.multibit.viewsystem.swing.preferences.modules.ExchangePreferencesModule;
 
 /**
  *
@@ -54,8 +54,8 @@ public class PreferencesViewFactory extends AbstractModularViewFactory<Preferenc
                 module = new BitcoinPreferencesModule(this.controller, this.mainFrame);
                 break;
 
-            case TICKER:
-                module = new TickerPreferencesModule(this.controller, this.mainFrame);
+            case EXCHANGE:
+                module = new ExchangePreferencesModule(this.controller, this.mainFrame);
                 break;
         }
 
