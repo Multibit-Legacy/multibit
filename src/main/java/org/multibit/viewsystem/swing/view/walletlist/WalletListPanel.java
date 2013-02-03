@@ -23,6 +23,7 @@ import java.awt.GridBagLayout;
 import java.awt.SystemColor;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -52,7 +53,6 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
 /**
  * The wallet list view.
@@ -93,6 +93,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         walletPanels = new ArrayList<SingleWalletPanel>();
 
         setOpaque(false);
+        setFocusable(true);
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -200,6 +201,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         walletListPanel = new JPanel();
         walletListPanel.setLayout(new GridBagLayout());
         walletListPanel.setOpaque(false);
+        walletListPanel.setFocusable(true);
         walletListPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         walletListPanel.setBorder(BorderFactory.createEmptyBorder());
         walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -333,6 +335,44 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         return buttonPanel;
     }
 
+    public final void selectAdjacentWallet(KeyEvent e, String keyStatus) {
+        int keyCode = e.getKeyCode();
+        int modifiersEx = e.getModifiersEx();
+
+        boolean moveToNextWallet = ((keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_KP_DOWN) && modifiersEx == KeyEvent.SHIFT_DOWN_MASK);
+        boolean moveToPreviousWallet = ((keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_KP_UP) && modifiersEx == KeyEvent.SHIFT_DOWN_MASK);
+
+        if (walletPanels != null) {
+            synchronized (walletPanels) {
+                int currentlySelectedWalletIndex = 0;
+                int nextSelectedWalletIndex = -1;
+                for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                    if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
+                        if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename()
+                                .equals(controller.getModel().getActiveWalletFilename())) {
+                            // Found the currently selected panel.
+                            if (moveToNextWallet && currentlySelectedWalletIndex < walletPanels.size() - 1) {
+                                nextSelectedWalletIndex = currentlySelectedWalletIndex + 1;
+                                break;
+                            } else {
+                                if (moveToPreviousWallet && currentlySelectedWalletIndex > 0) {
+                                    nextSelectedWalletIndex = currentlySelectedWalletIndex - 1;
+                                    break;
+                                }   
+                            }
+                        }
+                    }
+                    currentlySelectedWalletIndex++;
+                }
+                if (nextSelectedWalletIndex > -1) {
+                    controller.getModel().setActiveWalletByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
+                    selectWalletPanelByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
+                    controller.fireDataChanged();
+                }
+            }
+        }
+    }
+    
     class WalletMouseListener extends MouseAdapter implements MouseListener {
         public WalletMouseListener() {
             super();

@@ -27,6 +27,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -223,6 +226,15 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletDescriptionTextField.setFocusable(true);
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
+        walletDescriptionTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (walletListPanel != null) {
+                    walletListPanel.selectAdjacentWallet(e, "SingleWalletPanel#WalletDescriptionTextField"); 
+                }
+                super.keyTyped(e);
+            }            
+        });
         //walletDescriptionTextField.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
         walletDescriptionTextField.setOpaque(false);
@@ -464,6 +476,16 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         setSelected(false);
              
         updateFromModel(false);
+        
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent arg0) {
+                if (walletListPanel != null) {
+                    walletListPanel.selectAdjacentWallet(arg0, "SingleWalletPanel");
+                }
+                super.keyTyped(arg0);                
+            }    
+        });
     }
 
     public void setIconForWalletType(EncryptionType walletType, JButton button) {
@@ -562,10 +584,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletDescriptionTextField.setForeground(Color.BLACK);
                 if (!walletDescriptionTextField.isEditable()) {
                     walletDescriptionTextField.setEditable(true);
-                    // may not have the caret quite right
-                    // send the focus to the panel
-                    requestFocusInWindow();
                 }
+                requestFocusInWindow();
 
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
                 walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
