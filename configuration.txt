@@ -4,15 +4,21 @@ All these options are set in the main control file:
 multibit.properties
 
 
-+ Connect to single node
-If you want to connect to a single node set the following 
++ Connect to specific peers
+If you want to connect to specific peers set the following 
 property:
-singleNodeConnection=<node to connect to>
 
-The node can be specified as either a domain name (www.myNode.com) 
-or an IP address e.g if your node was 12.34.56.78 you would put:
+peers=<comma separated list of peers to connect to>
 
-singleNodeConnection=12.34.56.78
+The list of peers can be specified using domain names (www.myNode.com) 
+or IP addresses. Example:
+
+peers=173.242.119.177, 176.9.42.247, 217.79.19.226, 98.216.173.54
+
+(The older property singleNodeConnection is still honoured but is
+now deprecated. Use 'peers' instead).
+
+Note: ONLY these peers will be used for connections.
 
 
 + Testnet / testnet3

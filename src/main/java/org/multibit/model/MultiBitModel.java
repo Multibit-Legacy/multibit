@@ -158,9 +158,12 @@ public class MultiBitModel {
     public static final String BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX = "aes.json";
     public static final String BLOCKCHAIN_WALLET_PLAIN_SUFFIX = "json";
 
-    // Connect to single node.
+    // Connect to nodes.
+    @Deprecated
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
+    public static final String PEERS = "peers";
 
+    
     // Sizes and last modified dates of files.
     public static final String WALLET_FILE_SIZE = "walletFileSize";
     public static final String WALLET_FILE_LAST_MODIFIED = "walletFileLastModified";

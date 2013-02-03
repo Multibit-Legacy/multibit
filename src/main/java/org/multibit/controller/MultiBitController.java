@@ -337,7 +337,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     
     @Override
     public void onWalletChanged(Wallet wallet) {
-        log.debug("onWalletChanged called");
+        //log.debug("onWalletChanged called");
         fireDataChanged();
     }
 

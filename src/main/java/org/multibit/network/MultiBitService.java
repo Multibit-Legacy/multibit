@@ -224,15 +224,37 @@ public class MultiBitService {
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
+        boolean peersSpecified = false;
         String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+        String peers = controller.getModel().getUserPreference(MultiBitModel.PEERS);
         if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
             try {
-                peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
+                peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection.trim())));
                 peerGroup.setMaxConnections(1);
+                peersSpecified = true;
             } catch (UnknownHostException e) {
                 log.error(e.getMessage(), e);
             }
-        } else {
+        } else if (peers != null && !peers.equals("")) {
+            // Split using commas.
+            String[] peerList = peers.split(",");
+            if (peerList != null) {
+                int numberOfPeersAdded = 0;
+            
+                for (int i = 0; i < peerList.length; i++) {
+                    try {
+                        peerGroup.addAddress(new PeerAddress(InetAddress.getByName(peerList[i].trim())));
+                        numberOfPeersAdded++;
+                    } catch (UnknownHostException e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }
+                peerGroup.setMaxConnections(numberOfPeersAdded);
+                peersSpecified = true;
+            }    
+        } 
+        
+        if (!peersSpecified){
             // Use DNS for production, IRC for test.
             if (TESTNET3_GENESIS_HASH.equals(controller.getModel().getNetworkParameters().genesisBlock.getHashAsString())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
