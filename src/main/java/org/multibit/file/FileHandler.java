@@ -170,7 +170,8 @@ public class FileHandler {
             }
   
             // Add the new wallet into the model.
-            WalletData perWalletModelData = controller.getModel().addWallet(wallet, walletFilenameToUse);
+            WalletData perWalletModelData = controller.getModel().addWallet(wallet, walletFilenameToUse,
+                    controller.getLocaliser(), controller.getMultiBitService().getBlockStore());
 
             perWalletModelData.setWalletInfo(walletInfo);
 

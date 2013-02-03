@@ -83,6 +83,9 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     private Collection<WalletBusyListener> walletBusyListeners;
     
+    
+    
+    
     /**
      * The data model backing the views.
      */

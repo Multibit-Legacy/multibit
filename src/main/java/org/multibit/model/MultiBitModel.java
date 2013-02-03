@@ -50,6 +50,8 @@ import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.store.BlockStoreException;
+import org.multibit.Localiser;
+import org.multibit.store.ReplayableBlockStore;
 
 /**
  * Model containing the MultiBit data.
@@ -207,9 +209,6 @@ public class MultiBitModel {
     public static final String USE_ASK_AS_EXCHANGE_RATE = "useAskAsExchangeRate";               // boolean
     public static final String SHOW_BTC_IN_WALLET_PANEL = "showBTCinWalletPanel";               // boolean
     
-    // Main controller class.
-    private final MultiBitController controller;
-
     // User preferences.
     private Properties userPreferences;
 
@@ -243,13 +242,12 @@ public class MultiBitModel {
     private int numberOfConnectedPeers = UNKNOWN_NUMBER_OF_CONNECTD_PEERS;
     
     
-     public MultiBitModel(MultiBitController controller) {
-        this(controller, new Properties());
+     public MultiBitModel() {
+        this(new Properties());
     }
 
     @SuppressWarnings("deprecation")
-    public MultiBitModel(MultiBitController controller, Properties userPreferences) {
-        this.controller = controller;
+    public MultiBitModel( Properties userPreferences) {
         this.userPreferences = userPreferences;
 
         perWalletModelDataList = new LinkedList<WalletData>();
@@ -306,8 +304,6 @@ public class MultiBitModel {
         exchangeData2 = new ExchangeData();
         exchangeData1.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
         exchangeData2.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
-        
-        controller.setModel(this);
     }
 
     /**
@@ -501,7 +497,7 @@ public class MultiBitModel {
     /**
      * Add a new wallet to the list of managed wallets.
      */
-    public WalletData addWallet(Wallet wallet, String walletFilename) {
+    public WalletData addWallet(Wallet wallet, String walletFilename, Localiser localiser, ReplayableBlockStore blockStore) {
         if (walletFilename == null) {
             return null;
         }
@@ -529,12 +525,7 @@ public class MultiBitModel {
 
         perWalletModelDataList.add(newPerWalletModelData);
 
-        // Wire up the controller as a wallet event listener.
-        if (wallet != null) {
-            wallet.addEventListener(controller);
-        }
-
-        createWalletData(walletFilename);
+        createWalletData(walletFilename, localiser, blockStore);
         createAddressBookReceivingAddresses(walletFilename);
 
         return newPerWalletModelData;
@@ -554,15 +545,15 @@ public class MultiBitModel {
      * Convert the active wallet info into walletdata records as they are easier
      * to show to the user in tabular form.
      */
-    public ArrayList<WalletTableData> createActiveWalletData() {
-        return createWalletDataInternal(controller.getModel().getActivePerWalletModelData());
+    public ArrayList<WalletTableData> createActiveWalletData(MultiBitModel model, Localiser localiser, ReplayableBlockStore blockStore) {
+        return createWalletDataInternal(model.getActivePerWalletModelData(),localiser,blockStore);
     }
     
     /**
      * Convert the wallet info into walletdata records as they are easier
      * to show to the user in tabular form.
      */
-    public ArrayList<WalletTableData> createWalletData(String walletFilename) {
+    public ArrayList<WalletTableData> createWalletData(String walletFilename, Localiser localiser, ReplayableBlockStore blockStore) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (walletFilename == null) {
@@ -579,10 +570,10 @@ public class MultiBitModel {
             }
         }
         
-        return createWalletDataInternal(perWalletModelData);
+        return createWalletDataInternal(perWalletModelData, localiser, blockStore);
     }
 
-    public ArrayList<WalletTableData> createWalletDataInternal(WalletData perWalletModelData) {
+    public ArrayList<WalletTableData> createWalletDataInternal(WalletData perWalletModelData, Localiser localiser, ReplayableBlockStore blockStore) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (perWalletModelData == null || perWalletModelData.getWallet() == null) {
@@ -608,10 +599,10 @@ public class MultiBitModel {
                     TransactionInput firstInput = transactionInputs.get(0);
                     if (firstInput != null) {
                         walletDataRow.setDescription(createDescription(perWalletModelData.getWallet(), transactionInputs,
-                                transactionOutputs, walletDataRow.getCredit(), walletDataRow.getDebit()));
+                                transactionOutputs, walletDataRow.getCredit(), walletDataRow.getDebit(), localiser));
                     }
                 }
-                walletDataRow.setDate(createDate(loopTransaction));
+                walletDataRow.setDate(createDate(loopTransaction, blockStore));
                 walletDataRow.setHeight(workOutHeight(loopTransaction));
             }
         }
@@ -681,7 +672,7 @@ public class MultiBitModel {
      * @return A description of the transaction
      */
     public String createDescription(Wallet wallet, List<TransactionInput> transactionInputs,
-            List<TransactionOutput> transactionOutputs, BigInteger credit, BigInteger debit) {
+            List<TransactionOutput> transactionOutputs, BigInteger credit, BigInteger debit, Localiser localiser) {
         String toReturn = "";
 
         WalletData perWalletModelData = null;
@@ -726,10 +717,10 @@ public class MultiBitModel {
                     label = perWalletModelData.getWalletInfo().lookupLabelForReceivingAddress(addressString);
                 }
                 if (label != null && label != "") {
-                    toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
+                    toReturn = localiser.getString("multiBitModel.creditDescriptionWithLabel",
                             new Object[]{addressString, label});
                 } else {
-                    toReturn = controller.getLocaliser().getString("multiBitModel.creditDescription",
+                    toReturn = localiser.getString("multiBitModel.creditDescription",
                             new Object[]{addressString});
                 }
             } catch (ScriptException e) {
@@ -749,10 +740,10 @@ public class MultiBitModel {
                         label = perWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);
                     }
                     if (label != null && label != "") {
-                        toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
+                        toReturn = localiser.getString("multiBitModel.debitDescriptionWithLabel",
                                 new Object[]{addressString, label});
                     } else {
-                        toReturn = controller.getLocaliser().getString("multiBitModel.debitDescription",
+                        toReturn = localiser.getString("multiBitModel.debitDescription",
                                 new Object[]{addressString});
                     }
                 }
@@ -769,7 +760,7 @@ public class MultiBitModel {
      * @param transaction
      * @return Date date of transaction
      */
-    private Date createDate(Transaction transaction) {
+    private Date createDate(Transaction transaction, ReplayableBlockStore blockStore) {
         // If transaction has altered date - return that.
         if (transaction.getUpdateTime() != null) {
             return transaction.getUpdateTime();
@@ -785,9 +776,8 @@ public class MultiBitModel {
                     Sha256Hash appearsInHash = iterator.next();
                     StoredBlock appearsInStoredBlock;
                     try {
-                        if (controller != null && controller.getMultiBitService() != null
-                                && controller.getMultiBitService().getBlockStore() != null) {
-                            appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
+                        if (blockStore != null) {
+                            appearsInStoredBlock = blockStore.get(appearsInHash);
                             Block appearsInBlock = appearsInStoredBlock.getHeader();
                             // Set the time of the block to be the time of the
                             // transaction - TODO get transaction time.

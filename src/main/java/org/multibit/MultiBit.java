@@ -162,10 +162,12 @@ public class MultiBit {
 
             log.debug("Creating model");
 
+            {
             // Create the model.
-            // The model is set to the controller.
-            // The model constructor calls 'setModel(this) on the controller.
-            MultiBitModel model = new MultiBitModel(controller, userPreferences);
+                MultiBitModel model = new MultiBitModel(userPreferences);
+                controller.setModel(model);
+            }
+            
 
             // Initialise currency converter.
             CurrencyConverter.INSTANCE.initialise(finalController);

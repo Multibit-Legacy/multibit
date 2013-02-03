@@ -129,7 +129,9 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
             log.debug("RT Ping 10");
 
-            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename(),
+                    controller.getLocaliser(), controller.getMultiBitService().getBlockStore());
+            
             log.debug("RT Ping 11");
 
             controller.fireRecreateAllViews(false);

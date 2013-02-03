@@ -55,7 +55,8 @@ public class WalletTableModel extends AbstractTableModel {
 
         createHeaders();
 
-        walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
+        walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename(),
+                controller.getLocaliser(), controller.getMultiBitService().getBlockStore());
     }
     
     @Override
@@ -156,7 +157,12 @@ public class WalletTableModel extends AbstractTableModel {
 
     public void recreateWalletData() {
         // Recreate the wallet data as the underlying wallet has changed.
-        walletData = multiBitModel.createActiveWalletData();
+        walletData = multiBitModel.createActiveWalletData(
+                (null != this.controller) ? this.controller.getModel() : null,
+                (null != this.controller) ? this.controller.getLocaliser() : null,
+                (null != this.controller && null != this.controller.getMultiBitService()) ? this.controller.getMultiBitService().getBlockStore() : null
+                );
+        
         fireTableDataChanged();
     }
 
