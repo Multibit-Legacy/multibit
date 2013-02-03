@@ -149,8 +149,8 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         }
         
         // Get the wallets from the model.
-        String activeWalletFilename = controller.getModel().getActiveWalletFilename();
-        WalletData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
+        String activeWalletFilename = controller.getBitcoinModel().getActiveWalletFilename();
+        WalletData activePerModelData = controller.getBitcoinModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
 
         if (activePerModelData != null) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
@@ -222,7 +222,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // Get the wallets from the model.
-        List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        List<WalletData> perWalletModelDataList = controller.getBitcoinModel().getPerWalletModelDataList();
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -364,7 +364,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
                         if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename()
-                                .equals(controller.getModel().getActiveWalletFilename())) {
+                                .equals(controller.getBitcoinModel().getActiveWalletFilename())) {
                             // Found the currently selected panel.
                             if (moveToNextWallet && currentlySelectedWalletIndex < walletPanels.size() - 1) {
                                 nextSelectedWalletIndex = currentlySelectedWalletIndex + 1;
@@ -380,7 +380,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                     currentlySelectedWalletIndex++;
                 }
                 if (nextSelectedWalletIndex > -1) {
-                    controller.getModel().setActiveWalletByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
+                    controller.getBitcoinModel().setActiveWalletByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
                     controller.fireDataChangedUpdateNow();
                 }
@@ -405,8 +405,8 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
             }
             if (selectedWalletPanel != null) {
                 if (!selectedWalletPanel.getPerWalletModelData().getWalletFilename()
-                        .equals(controller.getModel().getActiveWalletFilename())) {
-                    controller.getModel()
+                        .equals(controller.getBitcoinModel().getActiveWalletFilename())) {
+                    controller.getBitcoinModel()
                             .setActiveWalletByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 

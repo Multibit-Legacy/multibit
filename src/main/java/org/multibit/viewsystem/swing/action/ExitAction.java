@@ -75,7 +75,7 @@ public class ExitAction extends AbstractAction {
         log.debug("exit 2");
 
         // Save all the wallets and put their filenames in the user preferences.
-        List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        List<WalletData> perWalletModelDataList = controller.getBitcoinModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 try {

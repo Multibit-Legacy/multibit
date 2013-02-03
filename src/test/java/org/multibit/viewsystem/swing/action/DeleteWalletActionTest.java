@@ -38,7 +38,7 @@ public class DeleteWalletActionTest extends TestCase {
         MultiBitController controller = ActionTestUtils.createController();
 
         // This test runs against an empty PerWalletModelDataList.
-        assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
+        assertTrue("There was an active wallet when there should not be", controller.getBitcoinModel().thereIsNoActiveWallet());
 
         // Create a new DeleteWalletAction to test.
         FontSizer.INSTANCE.initialise(controller);

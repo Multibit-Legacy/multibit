@@ -43,7 +43,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 //        CreateNewReceivingAddressSubmitAction createNewAction = createNewPanel.getCreateNewReceivingAddressSubmitAction();
 //
 //        assertNotNull("createNewAction was not created successfully", createNewAction);
-//        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+//        assertEquals("Wrong number of keys at wallet creation", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
 //        assertTrue("Wallet password is enabled when it should not be", !createNewPanel.isWalletPasswordFieldEnabled());
 //        assertNull("The last private key backup file was not null", createNewAction.getLastPrivateKeysBackupFile());
 //        
@@ -52,7 +52,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 //        
 //        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
 //        
-//        assertEquals("Wrong number of keys after addition of default number of keys", 2, controller.getModel().getActiveWallet().getKeychain().size());    
+//        assertEquals("Wrong number of keys after addition of default number of keys", 2, controller.getBitcoinModel().getActiveWallet().getKeychain().size());    
 //
 //        assertNull("The last private key backup file was not null - a backup should not be created for non-encrypted wallets.", createNewAction.getLastPrivateKeysBackupFile());
 //
@@ -62,7 +62,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 //        
 //        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
 //
-//        assertEquals("Wrong number of keys after addition of 1 key", 3, controller.getModel().getActiveWallet().getKeychain().size());
+//        assertEquals("Wrong number of keys after addition of 1 key", 3, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
 //        
 //        // Add five addresses by selecting on the combo box.
 //        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(5));
@@ -70,7 +70,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 //        
 //        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 5);
 //
-//        assertEquals("Wrong number of keys after addition of 5 keys", 8, controller.getModel().getActiveWallet().getKeychain().size());   
+//        assertEquals("Wrong number of keys after addition of 5 keys", 8, controller.getBitcoinModel().getActiveWallet().getKeychain().size());   
 //        
 //        // Add twenty addresses by selecting on the combo box.
 //        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
@@ -78,7 +78,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 //        
 //        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 20);
 //
-//        assertEquals("Wrong number of keys after addition of 20 keys", 28, controller.getModel().getActiveWallet().getKeychain().size());  
+//        assertEquals("Wrong number of keys after addition of 20 keys", 28, controller.getBitcoinModel().getActiveWallet().getKeychain().size());  
 //        
 //        // Add one hundred addresses by selecting on the combo box.
 //        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(100));
@@ -86,7 +86,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 //
 //        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 100);
 //
-//        assertEquals("Wrong number of keys after addition of 100 keys", 128, controller.getModel().getActiveWallet().getKeychain().size());    
+//        assertEquals("Wrong number of keys after addition of 100 keys", 128, controller.getBitcoinModel().getActiveWallet().getKeychain().size());    
 //    }
     
     @Test
@@ -103,8 +103,8 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         CreateNewReceivingAddressSubmitAction createNewAction = createNewPanel.getCreateNewReceivingAddressSubmitAction();
         assertTrue("Wallet password is not enabled when it should be", createNewPanel.isWalletPasswordFieldEnabled());
         assertNotNull("createNewAction was not created successfully", createNewAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
-        assertTrue("Wallet is not encrypted but it should be", controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
+        assertTrue("Wallet is not encrypted but it should be", controller.getBitcoinModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         assertNull("The last private key backup file was not null", createNewAction.getLastPrivateKeysBackupFile());
 System.out.println("ping 1");
         // Execute the createNewAction - by default the createNewDialog sould be set to add one key.
@@ -114,7 +114,7 @@ System.out.println("ping 1");
         
         Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
 
-        assertEquals("Wrong number of keys after addition of default number of keys with no wallet password", 1, controller.getModel().getActiveWallet().getKeychain().size());    
+        assertEquals("Wrong number of keys after addition of default number of keys with no wallet password", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());    
         
         // Check there is a message that the wallet password is required.
         assertEquals("No message to enter wallet password", "Enter the wallet password", createNewPanel.getMessageText());
@@ -141,7 +141,7 @@ System.out.println("ping 1");
 
         Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
 
-        assertEquals("Wrong number of keys after addition of default number of keys with wallet password", 2, controller.getModel().getActiveWallet().getKeychain().size()); 
+        assertEquals("Wrong number of keys after addition of default number of keys with wallet password", 2, controller.getBitcoinModel().getActiveWallet().getKeychain().size()); 
 
         // Add twenty addresses by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
@@ -153,10 +153,10 @@ System.out.println("ping 1");
 
         Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 40);
 
-        assertEquals("Wrong number of keys after addition of 20 keys", 22, controller.getModel().getActiveWallet().getKeychain().size());  
+        assertEquals("Wrong number of keys after addition of 20 keys", 22, controller.getBitcoinModel().getActiveWallet().getKeychain().size());  
 
         // The added private keys should be encrypted with the same password as the wallet password.
         // Thus a decrypt should work fine.
-        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getKeyCrypter().deriveKey(TEST_PASSWORD1));
+        controller.getBitcoinModel().getActiveWallet().decrypt(controller.getBitcoinModel().getActiveWallet().getKeyCrypter().deriveKey(TEST_PASSWORD1));
     }
 }

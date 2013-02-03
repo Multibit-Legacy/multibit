@@ -21,7 +21,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public class MoreOrLessAction extends AbstractAction {
         //log.debug("showSidePanel = " + showSidePanel);
 
         // Put it in the user preferences - will then get loaded when view form loads.
-        controller.getModel().setUserPreference(MultiBitModel.SHOW_SIDE_PANEL, (new Boolean(showSidePanel)).toString());
+        controller.getCoreModel().setUserPreference(BitcoinModel.SHOW_SIDE_PANEL, (new Boolean(showSidePanel)).toString());
         
         // Display the side panel (or not).
         abstractTradePanel.displaySidePanel();

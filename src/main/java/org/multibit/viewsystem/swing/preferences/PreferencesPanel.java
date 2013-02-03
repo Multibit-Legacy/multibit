@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.AbstractModularPanel;
 import org.multibit.viewsystem.View;
@@ -71,14 +71,14 @@ public class PreferencesPanel extends AbstractModularPanel<AbstractPreferencesMo
     @Override
     public void displayView() {
         
-        String canUndoPreferencesChanges = controller.getModel().getUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES);
+        String canUndoPreferencesChanges = controller.getCoreModel().getUserPreference(CoreModel.CAN_UNDO_PREFERENCES_CHANGES);
         if (Boolean.TRUE.toString().equals(canUndoPreferencesChanges)) {
             undoChangesButton.setEnabled(true);
-            String previousUndoChangesText = controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
+            String previousUndoChangesText = controller.getCoreModel().getUserPreference(CoreModel.PREVIOUS_UNDO_CHANGES_TEXT);
             if (previousUndoChangesText != null && !"".equals(previousUndoChangesText)) {
                 undoChangesButton.setText(previousUndoChangesText);
             }
-            String previousFontName = controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_NAME);
+            String previousFontName = controller.getCoreModel().getUserPreference(CoreModel.PREVIOUS_FONT_NAME);
 
             if (previousFontName != null && !"".equals(previousFontName)) {
                 undoChangesButton.setFont(new Font(previousFontName, FontSizer.INSTANCE.getAdjustedDefaultFont().getStyle(),
@@ -156,8 +156,8 @@ public class PreferencesPanel extends AbstractModularPanel<AbstractPreferencesMo
             mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
             mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
             mainScrollPane.getViewport().setOpaque(true);
-            mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-            mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+            mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+            mainScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
             add(mainScrollPane, BorderLayout.CENTER);
         }

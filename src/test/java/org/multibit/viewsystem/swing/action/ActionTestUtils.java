@@ -11,7 +11,8 @@ import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
@@ -23,6 +24,8 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
+import org.multibit.network.MultiBitService;
+
 
 /**
  * Class containing utility methods for action tests.
@@ -34,19 +37,22 @@ public class ActionTestUtils {
     private static SecureRandom secureRandom;
 
     public static MultiBitController createController() {
-         MultiBitController controller = new MultiBitController();
-         
-         Localiser localiser = new Localiser(Locale.ENGLISH);
-         MultiBitModel model = new MultiBitModel(controller);
-         
-         controller.setLocaliser(localiser);
-         controller.setModel(model);
-         
-         CurrencyConverter.INSTANCE.initialise(controller);
-         
-         MultiBit.setController(controller);
-         return controller;
-     }
+        MultiBitController controller = new MultiBitController();
+
+        Localiser localiser = new Localiser(Locale.ENGLISH);
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel();
+
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        controller.setLocaliser(localiser);
+
+        
+        CurrencyConverter.INSTANCE.initialise(controller);
+
+        MultiBit.setController(controller);
+        return controller;
+    }
      
      public static void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, char[] walletPassword) throws Exception {
          if (secureRandom == null) {
@@ -89,6 +95,6 @@ public class ActionTestUtils {
          fileHandler.savePerWalletModelData(perWalletModelData, true);
          WalletData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
          
-         controller.getModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());         
+         controller.getBitcoinModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());         
      }
 }

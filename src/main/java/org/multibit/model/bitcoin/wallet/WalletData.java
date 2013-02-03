@@ -121,7 +121,7 @@ public class WalletData {
             }
             String currentWalletDescription = walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
             if (!walletDescription.equals(currentWalletDescription)) {
-                walletInfo.put(WalletInfoData.DESCRIPTION_PROPERTY, walletDescription);
+                walletInfo.putProperty(WalletInfoData.DESCRIPTION_PROPERTY, walletDescription);
                 if (wallet != null) {
                     wallet.setDescription(walletDescription);
                 }

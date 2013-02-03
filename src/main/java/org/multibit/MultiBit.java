@@ -38,8 +38,11 @@ import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.NetworkParametersEnum;
 import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
@@ -142,7 +145,7 @@ public class MultiBit {
             });
 
             Localiser localiser;
-            String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
+            String userLanguageCode = userPreferences.getProperty(CoreModel.USER_LANGUAGE_CODE);
             log.debug("userLanguageCode = {}", userLanguageCode);
 
             if (userLanguageCode == null) {
@@ -150,9 +153,9 @@ public class MultiBit {
                 // use the user default, else Localiser will set it to English.
                 localiser = new Localiser(Locale.getDefault());
 
-                userPreferences.setProperty(MultiBitModel.USER_LANGUAGE_CODE, localiser.getLocale().getLanguage());
+                userPreferences.setProperty(CoreModel.USER_LANGUAGE_CODE, localiser.getLocale().getLanguage());
             } else {
-                if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
+                if (CoreModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
                     localiser = new Localiser(Locale.getDefault());
                 } else {
                     localiser = new Localiser(new Locale(userLanguageCode));
@@ -163,9 +166,20 @@ public class MultiBit {
             log.debug("Creating model");
 
             {
-            // Create the model.
-                MultiBitModel model = new MultiBitModel(userPreferences);
-                controller.setModel(model);
+                // Create the models.
+                CoreModel coreModel = new CoreModel(userPreferences);
+                
+                NetworkParametersEnum networkPram = NetworkParametersEnum.getFromPreferences(coreModel);
+                BitcoinModel bitcoinModel = new BitcoinModel(networkPram);
+
+                ExchangeModel exchangeModel = new ExchangeModel(
+                        coreModel.getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE),
+                        coreModel.getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE)
+                        );
+                
+                controller.setCoreModel(coreModel);
+                controller.setBitcoinModel(bitcoinModel);
+                controller.setExchangeModel(exchangeModel);
             }
             
 
@@ -174,7 +188,7 @@ public class MultiBit {
             
             log.debug("Setting look and feel");
             try {
-                String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
+                String lookAndFeel = userPreferences.getProperty(CoreModel.LOOK_AND_FEEL);
  
                 // No need to load look and feel if system - will be used by default.
                 if (!"system".equalsIgnoreCase(lookAndFeel)) {
@@ -216,14 +230,14 @@ public class MultiBit {
 
             log.debug("Locating wallets");
             // Find the active wallet filename in the multibit.properties.
-            String activeWalletFilename = userPreferences.getProperty(MultiBitModel.ACTIVE_WALLET_FILENAME);
+            String activeWalletFilename = userPreferences.getProperty(BitcoinModel.ACTIVE_WALLET_FILENAME);
 
             // Get the number of the early wallets - these are serialised and protobuf2
-            String numberOfEarlyWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_EARLY_WALLETS);
+            String numberOfEarlyWalletsAsString = userPreferences.getProperty(BitcoinModel.NUMBER_OF_EARLY_WALLETS);
             log.debug("When loading early wallets, there were " + numberOfEarlyWalletsAsString);
 
             // Get the number of the protobuf3 wallets
-            String numberOfProtobuf3WalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_PROTOBUF3_WALLETS);
+            String numberOfProtobuf3WalletsAsString = userPreferences.getProperty(BitcoinModel.NUMBER_OF_PROTOBUF3_WALLETS);
             log.debug("When loading protobuf3 wallets, there were " + numberOfProtobuf3WalletsAsString);
 
             boolean useFastCatchup = false;
@@ -237,10 +251,10 @@ public class MultiBit {
                 try {
                     // ActiveWalletFilename may be null on first time startup.
                     controller.addWalletFromFilename(activeWalletFilename);
-                    List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                    List<WalletData> perWalletModelDataList = controller.getBitcoinModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null && !perWalletModelDataList.isEmpty()) {
                         activeWalletFilename = perWalletModelDataList.get(0).getWalletFilename();
-                        controller.getModel().setActiveWalletByFilename(activeWalletFilename);
+                        controller.getBitcoinModel().setActiveWalletByFilename(activeWalletFilename);
                         log.debug("Created/loaded wallet '" + activeWalletFilename + "'");
                         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
                                 "multiBit.createdWallet", new Object[] { activeWalletFilename })));
@@ -266,8 +280,8 @@ public class MultiBit {
                 } finally {
                     if (thereWasAnErrorLoadingTheWallet) {
                         // Clear the backup wallet filename - this prevents it being automatically overwritten.
-                        if (controller.getModel().getActiveWalletWalletInfo() != null) {
-                            controller.getModel().getActiveWalletWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                        if (controller.getBitcoinModel().getActiveWalletWalletInfo() != null) {
+                            controller.getBitcoinModel().getActiveWalletWalletInfo().putProperty(BitcoinModel.WALLET_BACKUP_FILE, "");
                         }
                     }
                     if (swingViewSystem instanceof MultiBitFrame) {
@@ -284,7 +298,7 @@ public class MultiBit {
                         if (numberOfEarlyWallets > 0) {
                             for (int i = 1; i <= numberOfEarlyWallets; i++) {
                                 // look up ith wallet filename
-                                String loopWalletFilename = userPreferences.getProperty(MultiBitModel.EARLY_WALLET_FILENAME_PREFIX + i);
+                                String loopWalletFilename = userPreferences.getProperty(BitcoinModel.EARLY_WALLET_FILENAME_PREFIX + i);
                                 if (!walletFilenamesToLoad.contains(loopWalletFilename)) {
                                     walletFilenamesToLoad.add(loopWalletFilename);
                                 }
@@ -298,7 +312,7 @@ public class MultiBit {
                         if (numberOfProtobuf3Wallets > 0) {
                             for (int i = 1; i <= numberOfProtobuf3Wallets; i++) {
                                 // look up ith wallet filename
-                                String loopWalletFilename = userPreferences.getProperty(MultiBitModel.PROTOBUF3_WALLET_FILENAME_PREFIX + i);
+                                String loopWalletFilename = userPreferences.getProperty(BitcoinModel.PROTOBUF3_WALLET_FILENAME_PREFIX + i);
                                 if (!walletFilenamesToLoad.contains(loopWalletFilename)) {
                                     walletFilenamesToLoad.add(loopWalletFilename);
                                 }
@@ -313,7 +327,7 @@ public class MultiBit {
                     boolean haveWalletOrder = false;
                     List<String> walletFilenameOrder = new ArrayList<String>();
                     try {
-                        String walletOrderTotalAsString = userPreferences.getProperty(MultiBitModel.WALLET_ORDER_TOTAL);
+                        String walletOrderTotalAsString = userPreferences.getProperty(BitcoinModel.WALLET_ORDER_TOTAL);
                         log.debug("When loading the wallet orders, there were " + walletOrderTotalAsString);
 
                         int walletOrderTotal = Integer.parseInt(walletOrderTotalAsString);
@@ -321,7 +335,7 @@ public class MultiBit {
                             haveWalletOrder = true;
                             for (int i = 1; i <= walletOrderTotal; i++) {
                                 // add the wallet filename order
-                                String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_ORDER_PREFIX + i);
+                                String loopWalletFilename = userPreferences.getProperty(BitcoinModel.WALLET_ORDER_PREFIX + i);
                                 if (!walletFilenameOrder.contains(loopWalletFilename)) {
                                     walletFilenameOrder.add(loopWalletFilename);
                                 }
@@ -370,7 +384,7 @@ public class MultiBit {
                             try {
                                 if (activeWalletFilename != null && activeWalletFilename.equals(actualOrder)) {
                                     controller.addWalletFromFilename(actualOrder);
-                                    controller.getModel().setActiveWalletByFilename(actualOrder);
+                                    controller.getBitcoinModel().setActiveWalletByFilename(actualOrder);
                                 } else {
                                     controller.addWalletFromFilename(actualOrder);
                                 }
@@ -399,11 +413,11 @@ public class MultiBit {
                             }
                             
                             if (thereWasAnErrorLoadingTheWallet) {
-                                WalletData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(actualOrder);
+                                WalletData loopData = controller.getBitcoinModel().getPerWalletModelDataByWalletFilename(actualOrder);
                                 if (loopData != null) {
                                     // Clear the backup wallet filename - this prevents it being automatically overwritten.
                                     if (loopData.getWalletInfo() != null) {
-                                        loopData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                                        loopData.getWalletInfo().putProperty(BitcoinModel.WALLET_BACKUP_FILE, "");
                                     }
                                 }
                             }
@@ -446,7 +460,7 @@ public class MultiBit {
 
             log.debug("Downloading blockchain");
             if (useFastCatchup) {
-                long earliestTimeSecs = controller.getModel().getActiveWallet().getEarliestKeyCreationTime();
+                long earliestTimeSecs = controller.getBitcoinModel().getActiveWallet().getEarliestKeyCreationTime();
                 controller.getMultiBitService().getPeerGroup().setFastCatchupTimeSecs(earliestTimeSecs);
                 log.debug("Using FastCatchup for blockchain sync with time of " + (new Date(earliestTimeSecs)).toString());
             }

@@ -86,7 +86,7 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         int minimumHeight = fontMetrics.getHeight() * 5 + HEIGHT_DELTA;
-        int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getModel().getActiveWalletFilename()),
+        int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getBitcoinModel().getActiveWalletFilename()),
                 fontMetrics.stringWidth(controller.getLocaliser().getString("deleteSendingAddressConfirmDialog.message")))
                 + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));

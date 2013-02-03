@@ -26,10 +26,12 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
+import org.multibit.Localiser;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
@@ -76,7 +78,17 @@ public class GenesisBlockReplayTest extends TestCase {
             
             // Create the model - gets hooked up to controller automatically.
             @SuppressWarnings("unused")
-            MultiBitModel model = new MultiBitModel(controller);
+            Localiser localiser = new Localiser();
+            controller.setLocaliser(localiser);
+
+            CoreModel coreModel = new CoreModel();
+            BitcoinModel bitcoinModel = new BitcoinModel();
+
+            controller.setCoreModel(coreModel);
+            controller.setBitcoinModel(bitcoinModel);
+
+            assertNotNull(coreModel);
+            assertNotNull(bitcoinModel);
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.

@@ -18,7 +18,7 @@ package org.multibit.viewsystem.swing.view;
 import java.io.File;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 
 public class PrivateKeyFileFilter extends javax.swing.filechooser.FileFilter {
 
@@ -31,12 +31,12 @@ public class PrivateKeyFileFilter extends javax.swing.filechooser.FileFilter {
     
     @Override
     public boolean accept(File file) {
-        return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) || (file.getName().toLowerCase().endsWith(MultiBitModel.PRIVATE_KEY_FILE_EXTENSION));
+        return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) || (file.getName().toLowerCase().endsWith(BitcoinModel.PRIVATE_KEY_FILE_EXTENSION));
     }
 
     @Override
     public String getDescription() {
         String multiBitText = controller.getLocaliser().getString("multiBitFrame.title");
-        return multiBitText + " (*." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION + ")";
+        return multiBitText + " (*." + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION + ")";
     }
 }

@@ -29,18 +29,24 @@ import org.joda.money.format.MoneyFormatter;
 import org.junit.Test;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.exchange.ExchangeModel;
 
 public class CurrencyConverterTest extends TestCase {
     @Test
     public void testBasic() throws IOException {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        assertNotNull(model);
-
-        // set the default currency to USD
-        controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, "USD");
+        
+        CoreModel coreModel = new CoreModel();
+        
+        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+          
+        controller.setCoreModel(coreModel);
+        controller.setExchangeModel(exchangeModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(exchangeModel);
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
         assertNotNull(converter);
@@ -52,7 +58,7 @@ public class CurrencyConverterTest extends TestCase {
         assertEquals("Wrong default currency.1", CurrencyUnit.of("USD"), converter.getCurrencyUnit());
         
         // Initialise to CAD.
-        controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, "CAD");
+        controller.getCoreModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, "CAD");
         converter.initialise(controller);
         // Default currency should be CAD
         assertEquals("Wrong default currency.2", CurrencyUnit.of("CAD"), converter.getCurrencyUnit());
@@ -68,7 +74,14 @@ public class CurrencyConverterTest extends TestCase {
     public void testConvert() throws Exception {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);   
+        CoreModel coreModel = new CoreModel();
+        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+          
+        controller.setCoreModel(coreModel);
+        controller.setExchangeModel(exchangeModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(exchangeModel);
 
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -91,7 +104,14 @@ public class CurrencyConverterTest extends TestCase {
     public void testFormatter() throws Exception {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        CoreModel coreModel = new CoreModel();
+        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+          
+        controller.setCoreModel(coreModel);
+        controller.setExchangeModel(exchangeModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(exchangeModel);
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -114,7 +134,14 @@ public class CurrencyConverterTest extends TestCase {
         controller.setLocaliser(localiser);
         
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        CoreModel coreModel = new CoreModel();
+        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+          
+        controller.setCoreModel(coreModel);
+        controller.setExchangeModel(exchangeModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(exchangeModel);
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -145,7 +172,14 @@ public class CurrencyConverterTest extends TestCase {
         controller.setLocaliser(localiser);
         
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        CoreModel coreModel = new CoreModel();
+        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+          
+        controller.setCoreModel(coreModel);
+        controller.setExchangeModel(exchangeModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(exchangeModel);
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -177,7 +211,14 @@ public class CurrencyConverterTest extends TestCase {
         controller.setLocaliser(localiser);
         
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        CoreModel coreModel = new CoreModel();
+        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+          
+        controller.setCoreModel(coreModel);
+        controller.setExchangeModel(exchangeModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(exchangeModel);
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 

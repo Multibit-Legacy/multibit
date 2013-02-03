@@ -61,7 +61,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.setPerformReplay(false);
 
         assertNotNull("importAction was not created successfully", importAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
         assertTrue("Wallet password is enabled when it should not be", !importPanel.isWalletPasswordFieldEnabled());
 
          // Execute - this is with an unencrypted wallet and default settings.
@@ -109,7 +109,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.setPerformReplay(false);
 
         assertNotNull("importAction was not created successfully", importAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
         assertTrue("Wallet password is enabled when it should not be", !importPanel.isWalletPasswordFieldEnabled());
         
          // Execute - this is with an unencrypted wallet and default settings.
@@ -155,7 +155,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnencryptedWallet", true, WALLET_PASSWORD);
 
-        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertTrue("Wallet is not encrypted when it should be",  controller.getBitcoinModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
@@ -166,7 +166,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.setPerformReplay(false);
 
         assertNotNull("importAction was not created successfully", importAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
         assertTrue("Wallet password is not enabled when it should be", importPanel.isWalletPasswordFieldEnabled());
 
          // Execute - this is with an encrypted wallet and default settings.
@@ -201,10 +201,10 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         Thread.sleep(DELAY_TO_COMPLETE_IMPORT);
         assertEquals("Wrong message after unencrypted import should have completed", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText1());    
               
-        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertTrue("Wallet is not encrypted when it should be",  controller.getBitcoinModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         // Decrypt wallet to enable private key comparision
-        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        controller.getBitcoinModel().getActiveWallet().decrypt(controller.getBitcoinModel().getActiveWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
         
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
@@ -218,7 +218,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnEncryptedWallet", true, WALLET_PASSWORD);
 
-        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertTrue("Wallet is not encrypted when it should be",  controller.getBitcoinModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
@@ -229,7 +229,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.setPerformReplay(false);
 
         assertNotNull("importAction was not created successfully", importAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
         assertTrue("Wallet password is not enabled when it should be", importPanel.isWalletPasswordFieldEnabled());
         
          // Execute - this is with an encrypted wallet and default settings.
@@ -271,10 +271,10 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         Thread.sleep(DELAY_TO_COMPLETE_IMPORT);
         assertEquals("Wrong message after encrypted import is good to go", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText1());    
              
-        assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertTrue("Wallet is not encrypted when it should be",  controller.getBitcoinModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         // Decrypt wallet to enable private key comparision.
-        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
+        controller.getBitcoinModel().getActiveWallet().decrypt(controller.getBitcoinModel().getActiveWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
         
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
@@ -286,7 +286,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         MultiBitController controller = ActionTestUtils.createController();
 
         // This test runs against an empty PerWalletModelDataList.
-        assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
+        assertTrue("There was an active wallet when there should not be", controller.getBitcoinModel().thereIsNoActiveWallet());
 
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
@@ -306,8 +306,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         // Check every key on the expected list is now on the wallet.
         for (int i = 0; i < PrivateKeysHandlerTest.EXPECTED_ADDRESSES_FOR_TEST1_WALLET.length; i++) {
             boolean foundIt = false;
-            for (ECKey ecKey : controller.getModel().getActiveWallet().getKeychain()) {
-                if (PrivateKeysHandlerTest.EXPECTED_ADDRESSES_FOR_TEST1_WALLET[i].equals(ecKey.toAddress(controller.getModel().getNetworkParameters()).toString())) {
+            for (ECKey ecKey : controller.getBitcoinModel().getActiveWallet().getKeychain()) {
+                if (PrivateKeysHandlerTest.EXPECTED_ADDRESSES_FOR_TEST1_WALLET[i].equals(ecKey.toAddress(controller.getBitcoinModel().getNetworkParameters()).toString())) {
                     foundIt = true;
                     break;
                 }

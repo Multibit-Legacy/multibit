@@ -36,17 +36,19 @@ import java.awt.image.BufferedImage;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.uri.BitcoinURI;
+
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
+
 
 /**
  * Class to generate QR codes
@@ -88,8 +90,8 @@ public class QRCodeGenerator {
         try {
             Address decodeAddress = null;
             if (address != null && !"".equals(address) && controller.getMultiBitService() != null
-                    && controller.getModel().getNetworkParameters() != null) {
-                decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
+                    && controller.getBitcoinModel().getNetworkParameters() != null) {
+                decodeAddress = new Address(controller.getBitcoinModel().getNetworkParameters(), address);
             }
             if (decodeAddress != null && !"".equals(decodeAddress)) {
                 if (amount != null && !"".equals(amount)) {
@@ -102,7 +104,7 @@ public class QRCodeGenerator {
                     bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
                 }
             }
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+            controller.getBitcoinModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "false");
         } catch (IllegalArgumentException e) {
             //log.warn("The address '" + address + "' could not be converted to a bitcoin address. (IAE)");
             return null;

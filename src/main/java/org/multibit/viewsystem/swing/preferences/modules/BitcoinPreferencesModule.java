@@ -40,7 +40,7 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.viewsystem.dataproviders.preferences.BitcoinPreferencesDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -82,11 +82,11 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule implemen
 
         if (super.getIsInitialised()) {
 
-            String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+            String sendFeeString = controller.getCoreModel().getUserPreference(BitcoinModel.SEND_FEE);
 
             if (sendFeeString == null || sendFeeString == "") {
                 sendFeeString = controller.getLocaliser()
-                        .bitcoinValueToStringNotLocalised(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+                        .bitcoinValueToStringNotLocalised(BitcoinModel.SEND_FEE_DEFAULT, false, false);
             }
             originalFee = sendFeeString;
 
@@ -101,8 +101,8 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule implemen
             }
             feeTextField.setText(sendFeeStringLocalised);
 
-            String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-            String useUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+            String showDialogString = controller.getCoreModel().getUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG);
+            String useUriString = controller.getCoreModel().getUserPreference(BitcoinModel.OPEN_URI_USE_URI);
 
             if (!(Boolean.FALSE.toString().equalsIgnoreCase(showDialogString))) {
                 // missing showDialog or it is set to true
@@ -143,12 +143,12 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule implemen
 
         String previousSendFee = this.getPreviousSendFee();
         String newSendFee = this.getNewSendFee();
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_SEND_FEE, previousSendFee);
+        controller.getCoreModel().setUserPreference(BitcoinModel.PREVIOUS_SEND_FEE, previousSendFee);
 
         // Check fee is set.
         if (newSendFee == null || "".equals(newSendFee)) {
             // Fee must be set validation error.
-            controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+            controller.getCoreModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
             feeValidationError = true;
             updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.aFeeMustBeSet");
         }
@@ -159,23 +159,23 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule implemen
                 BigInteger feeAsBigInteger = Utils.toNanoCoins(newSendFee);
 
                 // Check fee is at least the minimum fee.
-                if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MINIMUM_FEE) < 0) {
+                if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
                     feeValidationError = true;
                     updateStatusText = controller.getLocaliser().getString(
                             "showPreferencesPanel.feeCannotBeSmallerThanMinimumFee");
                 } else {
                     // Fee is ok.
-                    controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, newSendFee);
+                    controller.getCoreModel().setUserPreference(BitcoinModel.SEND_FEE, newSendFee);
                 }
             } catch (NumberFormatException nfe) {
                 // Recycle the old fee and set status message.
-                controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                controller.getCoreModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                 feeValidationError = true;
                 updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
                         new Object[]{newSendFee});
             } catch (ArithmeticException ae) {
                 // Recycle the old fee and set status message.
-                controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                controller.getCoreModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                 feeValidationError = true;
                 updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
                         new Object[]{newSendFee});
@@ -185,13 +185,13 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule implemen
         // Open URI - use dialog.
         String openUriDialog = this.getOpenUriDialog();
         if (openUriDialog != null) {
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, openUriDialog);
+            controller.getCoreModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, openUriDialog);
         }
 
         // Open URI - use URI.
         String openUriUseUri = this.getOpenUriUseUri();
         if (openUriUseUri != null) {
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, openUriUseUri);
+            controller.getCoreModel().setUserPreference(BitcoinModel.OPEN_URI_USE_URI, openUriUseUri);
         }
 
         if (feeValidationError) {
@@ -244,10 +244,10 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule implemen
         feeLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip")));
         MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
 
-        String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        String sendFeeString = controller.getCoreModel().getUserPreference(BitcoinModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            sendFeeString = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
 

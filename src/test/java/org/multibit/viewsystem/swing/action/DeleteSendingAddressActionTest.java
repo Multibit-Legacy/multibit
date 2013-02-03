@@ -53,7 +53,7 @@ public class DeleteSendingAddressActionTest extends TestCase {
         assertEquals("Wrong number of send addresses after initial delete", 0, sendBitcoinPanel.getAddressesTableModel().getRowCount());
         
         // Create two sending addresses.
-        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
         perWalletModelData.getWalletInfo().addSendingAddress(new WalletAddressBookData(LABEL1, ADDRESS1));
         perWalletModelData.getWalletInfo().addSendingAddress(new WalletAddressBookData(LABEL2, ADDRESS2));
 

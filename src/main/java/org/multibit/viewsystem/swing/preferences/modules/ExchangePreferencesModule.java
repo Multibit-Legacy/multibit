@@ -42,9 +42,9 @@ import org.joda.money.CurrencyUnit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ExchangeData;
-import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.AbstractModularPanel;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.dataproviders.preferences.TickerPreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -116,11 +116,11 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
     public void displayView() {
         if (super.getIsInitialised()) {
         
-        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
+        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
 
         originalShowBitcoinConvertedToFiat = !Boolean.FALSE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
+                controller.getCoreModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
         showBitcoinConvertedToFiat.setSelected(originalShowBitcoinConvertedToFiat);
         }
     }
@@ -179,8 +179,8 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
                 restartTickerTimer = true;
             }
 
-            controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, new Boolean(showTicker).toString());
-            controller.getModel().setUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
+            controller.getCoreModel().setUserPreference(ExchangeModel.TICKER_SHOW, new Boolean(showTicker).toString());
+            controller.getCoreModel().setUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
                     new Boolean(showBitcoinConvertedToFiat).toString());
 
             String columnsToShow = "";
@@ -202,15 +202,15 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
                 // this is to stop the default columns appearing.
                 columnsToShow = TickerTableModel.TICKER_COLUMN_NONE;
             }
-            controller.getModel().setUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW, columnsToShow);
+            controller.getCoreModel().setUserPreference(ExchangeModel.TICKER_COLUMNS_TO_SHOW, columnsToShow);
 
             String previousExchange1 = this.getPreviousExchange1();
             String newExchange1 = this.getNewExchange1();
             if (newExchange1 != null && !newExchange1.equals(previousExchange1)) {
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
+                controller.getCoreModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
                 ExchangeData newExchangeData = new ExchangeData();
                 newExchangeData.setShortExchangeName(newExchange1);
-                controller.getModel().setExchangeData1(newExchangeData);
+                controller.getExchangeModel().setExchangeData1(newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -218,7 +218,7 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
             String previousCurrency1 = this.getPreviousCurrency1();
             String newCurrency1 = this.getNewCurrency1();
             if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
+                controller.getCoreModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
                 CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrency1));
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
@@ -228,7 +228,7 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
             String newShowSecondRow = new Boolean(this.getNewShowSecondRow()).toString();
             if (newShowSecondRow != null && !newShowSecondRow.equals(previousShowSecondRow)) {
                 // New show second row is set on model.
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW, newShowSecondRow);
+                controller.getCoreModel().setUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW, newShowSecondRow);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -236,10 +236,10 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
             String previousExchange2 = this.getPreviousExchange2();
             String newExchange2 = this.getNewExchange2();
             if (newExchange2 != null && !newExchange2.equals(previousExchange2)) {
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
+                controller.getCoreModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
                 ExchangeData newExchangeData = new ExchangeData();
                 newExchangeData.setShortExchangeName(newExchange2);
-                controller.getModel().setExchangeData2(newExchangeData);
+                controller.getExchangeModel().setExchangeData2(newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -247,7 +247,7 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
             String previousCurrency2 = this.getPreviousCurrency2();
             String newCurrency2 = this.getNewCurrency2();
             if (newCurrency2 != null && !newCurrency2.equals(previousCurrency2)) {
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
+                controller.getCoreModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -256,15 +256,15 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
             // get downloaded to save bandwidth/ server time.
             Collection<String> currencies1 = new ArrayList<String>();
             currencies1.add(newCurrency1);
-            controller.getModel().getExchangeData1().setCurrenciesWeAreInterestedIn(currencies1);
+            controller.getExchangeModel().getExchangeData1().setCurrenciesWeAreInterestedIn(currencies1);
             if (this.getNewShowSecondRow()) {
                 Collection<String> currencies2 = new ArrayList<String>();
                 currencies2.add(newCurrency2);
-                controller.getModel().getExchangeData2().setCurrenciesWeAreInterestedIn(currencies2);
+                controller.getExchangeModel().getExchangeData2().setCurrenciesWeAreInterestedIn(currencies2);
             }
 
             // Can undo.
-            controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
+            controller.getCoreModel().setUserPreference(CoreModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
 
             if (restartTickerTimer) {
                 // Reinitialise the currency converter.
@@ -295,13 +295,13 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
     
     private JPanel createTickerPanel(int stentWidth) {
         // load up the original values
-        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
-        originalExchange1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
-        originalCurrency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_SHOW));
+        originalExchange1 = controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
+        originalCurrency1 = controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
         originalShowSecondRow = Boolean.TRUE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
-        originalExchange2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
-        originalCurrency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
+                controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
+        originalExchange2 = controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
+        originalCurrency2 = controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
 
         MultiBitTitledPanel tickerPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showPreferencesPanel.ticker.title2"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -372,7 +372,7 @@ public class ExchangePreferencesModule  extends AbstractPreferencesModule implem
         showAsk.setOpaque(false);
         showAsk.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        String tickerColumnsToShow = controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
+        String tickerColumnsToShow = controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_COLUMNS_TO_SHOW);
         if (tickerColumnsToShow == null || tickerColumnsToShow.equals("")) {
             tickerColumnsToShow = TickerTableModel.DEFAULT_COLUMNS_TO_SHOW;
         }

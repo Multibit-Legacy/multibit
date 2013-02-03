@@ -29,7 +29,6 @@ import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
 import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.model.bitcoin.StatusEnum;
 import org.multibit.model.bitcoin.wallet.WalletBusyListener;
@@ -60,6 +59,9 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.exchange.ExchangeModel;
 
 /**
  * The MVC controller for MultiBit.
@@ -83,13 +85,12 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     private Collection<WalletBusyListener> walletBusyListeners;
     
-    
-    
-    
     /**
      * The data model backing the views.
      */
-    private MultiBitModel model;
+    private CoreModel coreModel;
+    private BitcoinModel bitcoinModel;
+    private ExchangeModel exchangeModel;
 
     /**
      * The localiser used to localise everything.
@@ -147,6 +148,30 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         localiser = new Localiser(Locale.ENGLISH);
     }
 
+    // models
+    public void setCoreModel(CoreModel model) {
+        this.coreModel = model;
+    }
+    public CoreModel getCoreModel() {
+        return this.coreModel;
+    }
+
+    public void setBitcoinModel(BitcoinModel model) {
+        this.bitcoinModel = model;
+    }
+    public BitcoinModel getBitcoinModel() {
+        return this.bitcoinModel;
+    }
+
+    public void setExchangeModel(ExchangeModel model) {
+        this.exchangeModel = model;
+    }
+    public ExchangeModel getExchangeModel() {
+        return this.exchangeModel;
+    }
+
+    
+    
     /**
      * Display the view specified.
      * 
@@ -214,14 +239,6 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         walletBusyListeners.add(walletBusyListener);
     }
 
-    public MultiBitModel getModel() {
-        return model;
-    }
-
-    public void setModel(MultiBitModel model) {
-        this.model = model;
-    }
-
     /**
      * Add a wallet to multibit from a filename.
      * 
@@ -244,7 +261,8 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     public void fireDataStructureChanged() {
         log.debug("fireDataStructureChanged called");
 
-        Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
+        Locale newLocale = new Locale(this.getCoreModel().getUserPreference(CoreModel.USER_LANGUAGE_CODE));
+
         localiser.setLocale(newLocale);
 
         View viewToDisplay = getCurrentView();
@@ -356,7 +374,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
         // log.debug("onWalletChanged called");
         final int walletIdentityHashCode = System.identityHashCode(wallet);
-        for (WalletData loopPerWalletModelData : getModel().getPerWalletModelDataList()) {
+        for (WalletData loopPerWalletModelData : getBitcoinModel().getPerWalletModelDataList()) {
             // Find the wallet object and mark as dirty.
             if (System.identityHashCode(loopPerWalletModelData.getWallet()) == walletIdentityHashCode) {
                 loopPerWalletModelData.setDirty(true);
@@ -383,7 +401,8 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     @Override
     public void onReorganize(Wallet wallet) {
         log.debug("onReorganize called");
-        List<WalletData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        List<WalletData> perWalletModelDataList = getBitcoinModel().getPerWalletModelDataList();
+        
         for (WalletData loopPerWalletModelData : perWalletModelDataList) {
 
             if (loopPerWalletModelData.getWallet().equals(wallet)) {
@@ -413,15 +432,15 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     }
 
     public View getCurrentView() {
-        View view = (null == getModel()) ? null : getModel().getCurrentView();
+        View view = (null == this.getCoreModel()) ? null : this.getCoreModel().getCurrentView();
         
         return (null == view) ? View.DEFAULT_VIEW() : view;
     }
 
     public void setCurrentView(View view) {
         // log.debug("setCurrentView = " + view);
-        if (getModel() != null) {
-            getModel().setCurrentView(view);
+        if (this.getCoreModel() != null) {
+            this.getCoreModel().setCurrentView(view);
         }
     }
 
@@ -445,8 +464,8 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         log.debug("handleOpenURI called and rawBitcoinURI ='" + rawBitcoinURI + "'");
 
         // get the open URI configuration information
-        String showOpenUriDialogText = getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        String useUriText = getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+        String showOpenUriDialogText = this.getCoreModel().getUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG);
+        String useUriText = getCoreModel().getUserPreference(BitcoinModel.OPEN_URI_USE_URI);
 
         if (Boolean.FALSE.toString().equalsIgnoreCase(useUriText)
                 && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
@@ -473,7 +492,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         String uriString = rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
         BitcoinURI bitcoinURI = null;
         try {
-            bitcoinURI = new BitcoinURI(this.getModel().getNetworkParameters(), uriString);
+            bitcoinURI = new BitcoinURI(this.getBitcoinModel().getNetworkParameters(), uriString);
         } catch (BitcoinURIParseException pe) {
             log.error("Could not parse the uriString '" + uriString + "', aborting");
             return;
@@ -496,21 +515,21 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
             // Do not show confirm dialog - go straight to send view.
             // Populate the model with the URI data.
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
+            this.getBitcoinModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, address);
+            this.getBitcoinModel().setActiveWalletPreference(BitcoinModel.SEND_LABEL, label);
+            this.getBitcoinModel().setActiveWalletPreference(BitcoinModel.SEND_AMOUNT, amount);
+            this.getBitcoinModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "true");
             log.debug("Routing straight to send view for address = " + address);
 
-            getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
+            this.getCoreModel().setUserPreference(BitcoinModel.BRING_TO_FRONT, "true");
             displayView(View.SEND_BITCOIN_VIEW);
             return;
         } else {
             // Show the confirm dialog to see if the user wants to use URI.
             // Populate the model with the URI data.
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
+            this.getCoreModel().setUserPreference(BitcoinModel.OPEN_URI_ADDRESS, address);
+            this.getCoreModel().setUserPreference(BitcoinModel.OPEN_URI_LABEL, label);
+            this.getCoreModel().setUserPreference(BitcoinModel.OPEN_URI_AMOUNT, amount);
             log.debug("Routing to show open uri view for address = " + address);
 
             displayView(View.SHOW_OPEN_URI_DIALOG_VIEW);
@@ -558,7 +577,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
                 // loop through all the wallets, seeing if the transaction is relevant
                 if (transaction != null) {
                     try {
-                        java.util.List<WalletData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+                        java.util.List<WalletData> perWalletModelDataList = getBitcoinModel().getPerWalletModelDataList();
 
                         if (perWalletModelDataList != null) {
                             for (WalletData perWalletModelData : perWalletModelDataList) {

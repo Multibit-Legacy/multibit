@@ -25,12 +25,11 @@ import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyInfo;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.wallet.WalletTableData;
+import org.multibit.store.ReplayableBlockStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
 public class WalletTableModel extends AbstractTableModel {
 
@@ -42,21 +41,18 @@ public class WalletTableModel extends AbstractTableModel {
 
     private ArrayList<WalletTableData> walletData;
 
-    /**
-     * The MultiBit model.
-     */
-    private MultiBitModel multiBitModel;
 
     private MultiBitController controller;
 
     public WalletTableModel(MultiBitController controller) {
-        this.multiBitModel = controller.getModel();
         this.controller = controller;
 
         createHeaders();
 
-        walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename(),
-                controller.getLocaliser(), controller.getMultiBitService().getBlockStore());
+        ReplayableBlockStore blockStore = (null != controller.getMultiBitService()) ? controller.getMultiBitService().getBlockStore() : null;
+        
+        walletData = this.controller.getBitcoinModel().createWalletData(this.controller.getBitcoinModel().getActiveWalletFilename(),
+                controller.getLocaliser(), blockStore);
     }
     
     @Override
@@ -156,9 +152,11 @@ public class WalletTableModel extends AbstractTableModel {
     }
 
     public void recreateWalletData() {
+        
+        
         // Recreate the wallet data as the underlying wallet has changed.
-        walletData = multiBitModel.createActiveWalletData(
-                (null != this.controller) ? this.controller.getModel() : null,
+        walletData = this.controller.getBitcoinModel().createActiveWalletData(
+                (null != this.controller) ? this.controller.getBitcoinModel() : null,
                 (null != this.controller) ? this.controller.getLocaliser() : null,
                 (null != this.controller && null != this.controller.getMultiBitService()) ? this.controller.getMultiBitService().getBlockStore() : null
                 );

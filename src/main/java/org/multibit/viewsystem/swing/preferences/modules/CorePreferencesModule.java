@@ -49,7 +49,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.viewsystem.swing.AbstractModularPanel;
 import org.multibit.viewsystem.dataproviders.preferences.CorePreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -122,14 +122,14 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
 
         if (super.getIsInitialised()) {
             
-        String fontNameString = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
+        String fontNameString = controller.getCoreModel().getUserPreference(CoreModel.FONT_NAME);
         if (fontNameString == null || "".equals(fontNameString)) {
             fontNameString = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
         }
         originalFontName = fontNameString;
 
         int fontStyle = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_STYLE;
-        String fontStyleString = controller.getModel().getUserPreference(MultiBitModel.FONT_STYLE);
+        String fontStyleString = controller.getCoreModel().getUserPreference(CoreModel.FONT_STYLE);
         if (fontStyleString != null && !"".equals(fontStyleString)) {
             try {
                 fontStyle = Integer.parseInt(fontStyleString);
@@ -140,7 +140,7 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
         originalFontStyle = "" + fontStyle;
 
         int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        String fontSizeString = controller.getCoreModel().getUserPreference(CoreModel.FONT_SIZE);
         if (fontSizeString != null && !"".equals(fontSizeString)) {
             try {
                 fontSize = Integer.parseInt(fontSizeString);
@@ -176,16 +176,16 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
 
         boolean wantToFireDataStructureChanged = false;
 
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT,
+        controller.getCoreModel().setUserPreference(CoreModel.PREVIOUS_UNDO_CHANGES_TEXT,
                 this.getPreviousUndoChangesText());
 
         String previousLanguageCode = this.getPreviousUserLanguageCode();
         String newLanguageCode = this.getNewUserLanguageCode();
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE, previousLanguageCode);
+        controller.getCoreModel().setUserPreference(CoreModel.PREVIOUS_USER_LANGUAGE_CODE, previousLanguageCode);
 
         if (previousLanguageCode != null && !previousLanguageCode.equals(newLanguageCode)) {
             // New language to set on model.
-            controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE, newLanguageCode);
+            controller.getCoreModel().setUserPreference(CoreModel.USER_LANGUAGE_CODE, newLanguageCode);
             wantToFireDataStructureChanged = true;
         }
 
@@ -194,10 +194,10 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
         String previousFontName = this.getPreviousFontName();
         String newFontName = this.getNewFontName();
 
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_NAME, previousFontName);
+        controller.getCoreModel().setUserPreference(CoreModel.PREVIOUS_FONT_NAME, previousFontName);
 
         if (newFontName != null) {
-            controller.getModel().setUserPreference(MultiBitModel.FONT_NAME, newFontName);
+            controller.getCoreModel().setUserPreference(CoreModel.FONT_NAME, newFontName);
 
             if (!newFontName.equals(previousFontName)) {
                 fontHasChanged = true;
@@ -207,10 +207,10 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
         String previousFontStyle = this.getPreviousFontStyle();
         String newFontStyle = this.getNewFontStyle();
 
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE, previousFontStyle);
+        controller.getCoreModel().setUserPreference(CoreModel.PREVIOUS_FONT_STYLE, previousFontStyle);
 
         if (newFontStyle != null) {
-            controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE, newFontStyle);
+            controller.getCoreModel().setUserPreference(CoreModel.FONT_STYLE, newFontStyle);
 
             if (!newFontStyle.equals(previousFontStyle)) {
                 fontHasChanged = true;
@@ -220,10 +220,10 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
         String previousFontSize = this.getPreviousFontSize();
         String newFontSize = this.getNewFontSize();
 
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, previousFontSize);
+        controller.getCoreModel().setUserPreference(CoreModel.PREVIOUS_FONT_SIZE, previousFontSize);
 
         if (newFontSize != null) {
-            controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE, newFontSize);
+            controller.getCoreModel().setUserPreference(CoreModel.FONT_SIZE, newFontSize);
 
             if (!newFontSize.equals(previousFontSize)) {
                 fontHasChanged = true;
@@ -235,11 +235,11 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
         String previousLookAndFeel = this.getPreviousLookAndFeel();
         String newLookAndFeel = this.getNewLookAndFeel();
 
-        controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, previousLookAndFeel);
+        controller.getCoreModel().setUserPreference(CoreModel.LOOK_AND_FEEL, previousLookAndFeel);
 
         if (newLookAndFeel != null
                 && (!newLookAndFeel.equals(previousLookAndFeel) || !newLookAndFeel.equals(UIManager.getLookAndFeel().getName()))) {
-            controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, newLookAndFeel);
+            controller.getCoreModel().setUserPreference(CoreModel.LOOK_AND_FEEL, newLookAndFeel);
 
             lookAndFeelHasChanged = true;
         }
@@ -250,7 +250,7 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
 
         if (lookAndFeelHasChanged) {
             try {
-                if (MultiBitModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
+                if (CoreModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } else {
                     for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -408,8 +408,8 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
         languageComboBox.setRenderer(renderer);
 
         // get the languageCode value stored in the model
-        String userLanguageCode = controller.getModel().getUserPreference(MultiBitModel.USER_LANGUAGE_CODE);
-        if (userLanguageCode == null || MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
+        String userLanguageCode = controller.getCoreModel().getUserPreference(CoreModel.USER_LANGUAGE_CODE);
+        if (userLanguageCode == null || CoreModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
             useDefaultLocale.setSelected(true);
             languageComboBox.setEnabled(false);
         } else {
@@ -582,7 +582,7 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
         constraints.anchor = GridBagConstraints.LINE_END;
         appearancePanel.add(lookAndFeelLabel, constraints);
 
-        originalLookAndFeel = controller.getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL);
+        originalLookAndFeel = controller.getCoreModel().getUserPreference(CoreModel.LOOK_AND_FEEL);
         UIManager.LookAndFeelInfo[] lookAndFeels = UIManager.getInstalledLookAndFeels();
 
         lookAndFeelComboBox = new JComboBox();
@@ -597,7 +597,7 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
         }
 
         if (originalLookAndFeel == null || originalLookAndFeel.equals("")
-                || MultiBitModel.SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
+                || CoreModel.SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
             lookAndFeelComboBox.setSelectedItem(localisedSystemLookAndFeelName);
         }
 
@@ -678,7 +678,7 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
     @Override
     public String getNewUserLanguageCode() {
         if (useDefaultLocale.isSelected()) {
-            return MultiBitModel.USER_LANGUAGE_IS_DEFAULT;
+            return CoreModel.USER_LANGUAGE_IS_DEFAULT;
         } else {
             Integer selectedLanguageIndex = (Integer) languageComboBox.getSelectedItem();
             if (selectedLanguageIndex != null) {
@@ -739,7 +739,7 @@ public class CorePreferencesModule  extends AbstractPreferencesModule implements
     public String getNewLookAndFeel() {
         String lookAndFeel = (String) lookAndFeelComboBox.getSelectedItem();
         if (localisedSystemLookAndFeelName.equals(lookAndFeel)) {
-            lookAndFeel = MultiBitModel.SYSTEM_LOOK_AND_FEEL;
+            lookAndFeel = CoreModel.SYSTEM_LOOK_AND_FEEL;
         }
         return lookAndFeel;
     }

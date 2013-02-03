@@ -31,7 +31,7 @@ import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -132,15 +132,15 @@ public class SendBitcoinConfirmPanel extends JPanel {
 
 
         // Get the data out of the wallet preferences.
-        sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
+        sendAddress = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
+        sendLabel = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
+        String sendAmount = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
 
         String sendAmountLocalised = CurrencyConverter.INSTANCE.prettyPrint(sendAmount);
 
-        String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        String fee = controller.getCoreModel().getUserPreference(BitcoinModel.SEND_FEE);
         if (fee == null || fee == "") {
-            fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            fee = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
         }
 
         String sendFeeLocalised = CurrencyConverter.INSTANCE.prettyPrint(fee);
@@ -424,8 +424,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler5, constraints);
 
-        if (controller.getModel().getActiveWallet() != null) {
-            if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (controller.getBitcoinModel().getActiveWallet() != null) {
+            if (controller.getBitcoinModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                 // Need wallet password.
                 walletPasswordField.setEnabled(true);
                 walletPasswordPromptLabel.setEnabled(true);
@@ -504,13 +504,12 @@ public class SendBitcoinConfirmPanel extends JPanel {
     private void enableSendAccordingToNumberOfConnectedPeers() {
         boolean enableSend = false;
 
-        MultiBitModel model = controller.getModel();
-        if (model != null) {
-            String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+        if (this.controller.getCoreModel() != null) {
+            String singleNodeConnection = this.controller.getCoreModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
             boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
             
             if (thisPanel.sendBitcoinNowAction != null) {
-                if (!singleNodeConnectionOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                if (!singleNodeConnectionOverride && this.controller.getBitcoinModel().getNumberOfConnectedPeers() < BitcoinModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                     // Disable send button
                     enableSend = false;
                 } else {
@@ -580,14 +579,14 @@ public class SendBitcoinConfirmPanel extends JPanel {
             @Override
             public void run() {
                 if (thisPanel != null && thisPanel.isVisible()) {
-                    MultiBitModel model = MultiBit.getController().getModel();
-                    if (model != null) {
-                        String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+                    final MultiBitController controller = MultiBit.getController();
+                    if (controller != null) {
+                        String singleNodeConnection = controller.getCoreModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
                         boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
                         
                         boolean enableSend = false;
                         if (thisPanel.sendBitcoinNowAction != null) {
-                            if (!singleNodeConnectionOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                            if (!singleNodeConnectionOverride && controller.getBitcoinModel().getNumberOfConnectedPeers() < BitcoinModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                                 // Disable send button
                                 enableSend = false;
                             } else {

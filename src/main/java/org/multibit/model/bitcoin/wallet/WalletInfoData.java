@@ -42,8 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 
 /**
  * Wallet info is the companion info to the bitcoinj that multibit uses it
@@ -131,7 +130,7 @@ public class WalletInfoData {
      * @param key
      * @param value
      */
-    public void put(String key, String value) {
+    public void putProperty(String key, String value) {
         walletPreferences.put(key, value);
     }
 
@@ -150,7 +149,7 @@ public class WalletInfoData {
      * 
      * @param key
      */
-    public void remove(String key) {
+    public void removeProperty(String key) {
         walletPreferences.remove(key);
     }
     
@@ -552,9 +551,9 @@ public class WalletInfoData {
         }
 
         String walletInfoFilename = walletFilename;
-        if (walletFilename.endsWith(MultiBitModel.WALLET_FILE_EXTENSION)) {
+        if (walletFilename.endsWith(BitcoinModel.WALLET_FILE_EXTENSION)) {
             walletInfoFilename = walletInfoFilename.substring(0,
-                    walletFilename.length() - MultiBitModel.WALLET_FILE_EXTENSION.length() - 1);
+                    walletFilename.length() - BitcoinModel.WALLET_FILE_EXTENSION.length() - 1);
             walletInfoFilename = walletInfoFilename + "." + INFO_FILE_EXTENSION;
         } else {
             walletInfoFilename = walletInfoFilename + "." + INFO_FILE_EXTENSION;

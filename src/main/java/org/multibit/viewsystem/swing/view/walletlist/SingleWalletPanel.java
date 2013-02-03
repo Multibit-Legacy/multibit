@@ -538,9 +538,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         hourglassLabel.setVisible(isBusy);
         
         // Update the tooltip.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (controller.getBitcoinModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            hourglassLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()})));           
+            hourglassLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getBitcoinModel().getActivePerWalletModelData().getBusyOperation()})));           
         } else {
             hourglassLabel.setToolTipText(null);
         }
@@ -666,10 +666,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             perWalletModelData.setWalletDescription(text);
 
             String titleText = controller.getLocaliser().getString("multiBitFrame.title");
-            if (controller.getModel().getActiveWallet() != null) {
+            if (controller.getBitcoinModel().getActiveWallet() != null) {
                 titleText = titleText + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+                        + controller.getBitcoinModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
+                        + controller.getBitcoinModel().getActivePerWalletModelData().getWalletFilename();
             }
             mainFrame.setTitle(titleText);
         }

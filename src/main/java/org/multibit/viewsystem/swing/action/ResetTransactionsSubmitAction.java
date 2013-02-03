@@ -81,7 +81,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
         Date resetDate = resetTransactionsDataProvider.getResetDate();
 
-        WalletData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData activePerWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
         log.debug("RT Ping 3");
 
         Date actualResetDate = null;
@@ -129,7 +129,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
             log.debug("RT Ping 10");
 
-            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename(),
+            controller.getBitcoinModel().createWalletData(controller.getBitcoinModel().getActiveWalletFilename(),
                     controller.getLocaliser(), controller.getMultiBitService().getBlockStore());
             
             log.debug("RT Ping 11");

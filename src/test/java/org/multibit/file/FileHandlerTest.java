@@ -29,7 +29,8 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
@@ -47,6 +48,7 @@ import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+
 
 public class FileHandlerTest extends TestCase {
     private final String WALLET_TESTDATA_DIRECTORY = "wallets";
@@ -97,10 +99,20 @@ public class FileHandlerTest extends TestCase {
         keyCrypter = new KeyCrypterScrypt(scryptParameters);
         
         controller = new MultiBitController();
+        
         Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
         controller.setLocaliser(localiser);
-        controller.setModel(model);
+        
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel();
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
+        
+        
         fileHandler = new FileHandler(controller);
     }
     
@@ -472,10 +484,16 @@ public class FileHandlerTest extends TestCase {
     public void testIsSerialisdWallet() throws Exception {
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
         controller.setLocaliser(localiser);
-        controller.setModel(model);
+        
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel();
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
 
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
@@ -500,7 +518,16 @@ public class FileHandlerTest extends TestCase {
     public void testCannotLoadOrSaveFutureWalletVersions() throws IOException {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel();
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
+        
         FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_WALLET_VERSION_PREFIX, ".wallet");
@@ -551,7 +578,16 @@ public class FileHandlerTest extends TestCase {
     public void testWalletVersion2() throws IOException {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+                
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel();
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
+        
         FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_WALLET_VERSION_2_PREFIX, ".wallet");

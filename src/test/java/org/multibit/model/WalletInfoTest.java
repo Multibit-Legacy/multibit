@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.store.MultiBitWalletVersion;
 
 public class WalletInfoTest extends TestCase {
@@ -53,10 +55,16 @@ public class WalletInfoTest extends TestCase {
         // set up core objects
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
         controller.setLocaliser(localiser);
-        controller.setModel(model);
+
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel();
+
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
 
         // get test directory and wallet
         File directory = new File(".");
@@ -69,7 +77,7 @@ public class WalletInfoTest extends TestCase {
         WalletInfoData walletInfo = new WalletInfoData(walletName, MultiBitWalletVersion.SERIALIZED);
         assertNotNull(walletInfo);
 
-        walletInfo.put(WalletInfoData.DESCRIPTION_PROPERTY, DESCRIPTION_TEST1);
+        walletInfo.putProperty(WalletInfoData.DESCRIPTION_PROPERTY, DESCRIPTION_TEST1);
 
         WalletAddressBookData receivingAddress = new WalletAddressBookData(EXAMPLE_RECEIVING_ADDRESS_LABEL, EXAMPLE_RECEIVING_ADDRESS);
         walletInfo.addReceivingAddress(receivingAddress, false, true);
@@ -77,9 +85,9 @@ public class WalletInfoTest extends TestCase {
         WalletAddressBookData sendingAddress = new WalletAddressBookData(EXAMPLE_SENDING_ADDRESS_LABEL, EXAMPLE_SENDING_ADDRESS);
         walletInfo.addSendingAddress(sendingAddress);
 
-        walletInfo.put(PROPERTY_NAME1, PROPERTY_VALUE1);
-        walletInfo.put(PROPERTY_NAME2, PROPERTY_VALUE2);
-        
+        walletInfo.putProperty(PROPERTY_NAME1, PROPERTY_VALUE1);
+        walletInfo.putProperty(PROPERTY_NAME2, PROPERTY_VALUE2);
+
         // write to file
         walletInfo.writeToFile(WalletInfoData.createWalletInfoFilename(walletName), MultiBitWalletVersion.SERIALIZED);
 
@@ -100,14 +108,14 @@ public class WalletInfoTest extends TestCase {
         WalletAddressBookData sendAddress = sendAddresses.get(0);
         assertEquals(EXAMPLE_SENDING_ADDRESS_LABEL, sendAddress.getLabel());
         assertEquals(EXAMPLE_SENDING_ADDRESS, sendAddress.getAddress());
- 
+
         // check receiving address
         ArrayList<WalletAddressBookData> receiveAddresses = rebornWalletInfo.getReceivingAddresses();
         assertEquals(1, receiveAddresses.size());
         WalletAddressBookData receiveAddress = receiveAddresses.get(0);
         assertEquals(EXAMPLE_RECEIVING_ADDRESS_LABEL, receiveAddress.getLabel());
         assertEquals(EXAMPLE_RECEIVING_ADDRESS, receiveAddress.getAddress());
-        
+
         // Check properties.
         assertEquals(PROPERTY_VALUE1, rebornWalletInfo.getProperty(PROPERTY_NAME1));
         assertEquals(PROPERTY_VALUE2, rebornWalletInfo.getProperty(PROPERTY_NAME2));
@@ -118,11 +126,17 @@ public class WalletInfoTest extends TestCase {
         // Set up core objects.
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
         controller.setLocaliser(localiser);
-        controller.setModel(model);
 
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel();
+
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
+        
         // Get test directory and wallet.
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();

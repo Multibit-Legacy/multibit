@@ -21,7 +21,8 @@ import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
-import org.multibit.model.MultiBitModel;
+
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
@@ -55,7 +56,7 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
         }
 
         // Check to see if the wallet files have changed.
-        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
 
         WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
@@ -64,19 +65,19 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
         }
 
         if (walletInfo.getSendingAddresses().isEmpty()) {
-            String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-            String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
+            String address = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
+            String label = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
 
             perWalletModelData.getWalletInfo().addSendingAddress(new WalletAddressBookData(label, address));
             sendBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
-            controller.getModel().getActivePerWalletModelData().setDirty(true);
+            controller.getBitcoinModel().getActivePerWalletModelData().setDirty(true);
         } else {
             perWalletModelData.getWalletInfo().addSendingAddress(new WalletAddressBookData("", ""));
             sendBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
             sendBitcoinPanel.selectRows();
 
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, "");
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, "");
+            controller.getBitcoinModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, "");
+            controller.getBitcoinModel().setActiveWalletPreference(BitcoinModel.SEND_LABEL, "");
         }
         
         sendBitcoinPanel.checkDeleteSendingEnabled();

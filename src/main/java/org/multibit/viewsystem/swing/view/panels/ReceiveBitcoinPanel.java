@@ -41,8 +41,9 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.wallet.WalletInfoData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -95,16 +96,16 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
  
     @Override
     public String getAddressConstant() {
-        return MultiBitModel.RECEIVE_ADDRESS;
+        return BitcoinModel.RECEIVE_ADDRESS;
     }
     
     @Override
     public String getLabelConstant() {
-        return MultiBitModel.RECEIVE_LABEL;
+        return BitcoinModel.RECEIVE_LABEL;
     }
     @Override
     public String getAmountConstant() {
-        return MultiBitModel.RECEIVE_AMOUNT;
+        return BitcoinModel.RECEIVE_AMOUNT;
     }
     
     /**
@@ -229,8 +230,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
                 .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA + 6));
         labelScrollPane.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
                 .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA + 6));
-        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        labelScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        labelScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
@@ -342,8 +343,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         formPanel.add(sidePanelButton, constraints);
 
         // disable any new changes if another process has changed the wallet
-        if (controller.getModel().getActivePerWalletModelData() != null
-                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+        if (controller.getBitcoinModel().getActivePerWalletModelData() != null
+                && controller.getBitcoinModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
             labelTextArea.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip")));
             mainFrame.setUpdatesStoppedTooltip(labelTextArea);
@@ -376,10 +377,10 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
     @Override
     public void loadForm() {
         // get the current address, label and amount from the model
-        String address = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
-        String label = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_LABEL);
+        String address = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.RECEIVE_ADDRESS);
+        String label = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.RECEIVE_LABEL);
 
-        String amountNotLocalised = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_AMOUNT);
+        String amountNotLocalised = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.RECEIVE_AMOUNT);
 
         if (amountBTCTextField != null) {
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
@@ -407,7 +408,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         if (address == null || address == "") {
             pickFirstReceivingAddress = true;
         } else {
-            WalletInfoData addressBook = controller.getModel().getActiveWalletWalletInfo();
+            WalletInfoData addressBook = controller.getBitcoinModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
                 if (!addressBook.containsReceivingAddress(address)) {
                     pickFirstReceivingAddress = true;
@@ -416,7 +417,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         }
 
         if (pickFirstReceivingAddress) {
-            WalletInfoData addressBook = controller.getModel().getActiveWalletWalletInfo();
+            WalletInfoData addressBook = controller.getBitcoinModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
                 ArrayList<WalletAddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
                 if (receivingAddresses != null) {
@@ -425,8 +426,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
                         if (addressBookData != null) {
                             address = addressBookData.getAddress();
                             label = addressBookData.getLabel();
-                            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
-                            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
+                            controller.getBitcoinModel().setActiveWalletPreference(BitcoinModel.RECEIVE_ADDRESS, address);
+                            controller.getBitcoinModel().setActiveWalletPreference(BitcoinModel.RECEIVE_LABEL, label);
                         }
                     }
                 }
@@ -449,8 +450,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         labelTextArea.setBorder(aTextField.getBorder());
 
         // disable any new changes if another process has changed the wallet
-        if (controller.getModel().getActivePerWalletModelData() != null
-                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+        if (controller.getBitcoinModel().getActivePerWalletModelData() != null
+                && controller.getBitcoinModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
             titleLabel.setText(controller.getLocaliser()
                     .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));

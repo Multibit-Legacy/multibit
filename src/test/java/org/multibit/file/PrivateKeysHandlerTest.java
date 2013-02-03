@@ -28,12 +28,14 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.piuk.blockchain.MyWallet;
+
 
 public class PrivateKeysHandlerTest extends TestCase {
     public static final String PRIVATE_KEYS_TESTDATA_DIRECTORY = "privateKeys";
@@ -65,10 +67,16 @@ public class PrivateKeysHandlerTest extends TestCase {
         MultiBitController controller = new MultiBitController();
         
         Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-        
         controller.setLocaliser(localiser);
-        controller.setModel(model);   
+        
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel();
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
 
         PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(NetworkParameters.prodNet());
         assertNotNull(privateKeysHandler);

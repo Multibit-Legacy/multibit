@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
@@ -58,7 +58,7 @@ public class PasteAddressAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
-        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -79,7 +79,7 @@ public class PasteAddressAction extends AbstractAction {
 
             // put it in the user preferences - will then get loaded when view
             // form loads
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, stringToPaste);
+            controller.getBitcoinModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, stringToPaste);
 
             // forward back to the view currently being displayed
             controller.displayView(controller.getCurrentView());

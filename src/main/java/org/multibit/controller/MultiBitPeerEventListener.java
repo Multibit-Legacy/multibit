@@ -2,7 +2,6 @@ package org.multibit.controller;
 
 import java.util.List;
 
-import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.model.bitcoin.StatusEnum;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -13,10 +12,7 @@ import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
-import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.VerificationException;
-import com.google.bitcoin.core.Wallet;
 
 public class MultiBitPeerEventListener implements PeerEventListener {
 
@@ -46,8 +42,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
         if (peerCount >= 1) {
             controller.setOnlineStatus(StatusEnum.ONLINE);
         }
-        if (controller.getModel() != null) {
-            controller.getModel().setNumberOfConnectedPeers(peerCount);
+        if (controller.getBitcoinModel() != null) {
+            controller.getBitcoinModel().setNumberOfConnectedPeers(peerCount);
         }   
         SendBitcoinConfirmPanel.updatePanel(); 
     }
@@ -60,8 +56,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
         if (peerCount == 0) {
            controller.setOnlineStatus(StatusEnum.CONNECTING);
         }
-        if (controller.getModel() != null) {
-            controller.getModel().setNumberOfConnectedPeers(peerCount);
+        if (controller.getBitcoinModel() != null) {
+            controller.getBitcoinModel().setNumberOfConnectedPeers(peerCount);
         } 
         SendBitcoinConfirmPanel.updatePanel();    
     }
@@ -78,7 +74,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
         // (As of 30 Jan 2013, incoming zero confirmation tx are not seen if this code is removed)
 //        if (transaction != null) {
 //            try {
-//                java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+//                java.util.List<PerWalletModelData> perWalletModelDataList = controller.getBitcoinModel().getPerWalletModelDataList();
 //
 //                if (perWalletModelDataList != null) {
 //                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {

@@ -55,7 +55,7 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (controller == null) {
             return 0;
         }
-        WalletInfoData walletInfo = controller.getModel().getActiveWalletWalletInfo();
+        WalletInfoData walletInfo = controller.getBitcoinModel().getActiveWalletWalletInfo();
         if (isReceiving) {
             if (walletInfo != null && walletInfo.getReceivingAddresses() != null) {
                 return walletInfo.getReceivingAddresses().size();
@@ -78,7 +78,7 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        WalletInfoData walletInfo = controller.getModel().getActiveWalletWalletInfo();
+        WalletInfoData walletInfo = controller.getBitcoinModel().getActiveWalletWalletInfo();
 
         if (walletInfo == null) {
             return null;
@@ -132,7 +132,7 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (address == null) {
             return -1;
         }
-        WalletInfoData walletInfo = controller.getModel().getActiveWalletWalletInfo();
+        WalletInfoData walletInfo = controller.getBitcoinModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return -1;
         }
@@ -163,7 +163,7 @@ public class AddressBookTableModel extends DefaultTableModel {
      * given a row, return the AddressBookData on this row
      */
     public WalletAddressBookData getAddressBookDataByRow(int row, boolean isReceiving) {
-        WalletInfoData walletInfo = controller.getModel().getActiveWalletWalletInfo();
+        WalletInfoData walletInfo = controller.getBitcoinModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return null;
         }
@@ -185,7 +185,7 @@ public class AddressBookTableModel extends DefaultTableModel {
      * set a AddressBookData into a row
      */
     public void setAddressBookDataByRow(WalletAddressBookData addressBookData, int row, boolean isReceiving) {
-        WalletInfoData walletInfo = controller.getModel().getActiveWalletWalletInfo();
+        WalletInfoData walletInfo = controller.getBitcoinModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return;
         }

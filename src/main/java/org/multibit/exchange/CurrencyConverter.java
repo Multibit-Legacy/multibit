@@ -21,8 +21,7 @@ import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
+import org.multibit.model.exchange.ExchangeModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +77,7 @@ public enum CurrencyConverter {
 
     public void initialise(MultiBitController controller) {
         // Initialise conversion currency.
-        String currencyCode = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        String currencyCode = controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
         initialise(controller, currencyCode);
     }
     
@@ -435,7 +434,7 @@ public enum CurrencyConverter {
     }
 
     public boolean isShowingFiat() {
-        return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
+        return !Boolean.FALSE.toString().equals(controller.getCoreModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
     }
     
     public CurrencyUnit getCurrencyUnit() {

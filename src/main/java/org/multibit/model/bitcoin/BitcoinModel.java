@@ -1,41 +1,27 @@
-/**
- * Copyright 2011 multibit.org
+/*
+ * The MIT License
  *
- * Licensed under the MIT license (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright 2013 Cameron Garnham.
  *
- *    http://opensource.org/licenses/mit-license.php
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
-package org.multibit.model;
-
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.exchange.ExchangeData;
-import org.multibit.model.bitcoin.wallet.WalletData;
-import org.multibit.model.bitcoin.wallet.WalletInfoData;
-import org.multibit.model.bitcoin.wallet.WalletTableData;
-
-import org.multibit.viewsystem.View;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.multibit.model.bitcoin;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Block;
@@ -48,24 +34,33 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.store.BlockStoreException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import org.multibit.Localiser;
+import org.multibit.model.AbstractModel;
+import org.multibit.model.ModelEnum;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
+import org.multibit.model.bitcoin.wallet.WalletTableData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.store.ReplayableBlockStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Model containing the MultiBit data.
  * 
- * Most of the methods act on the single, active wallet in the model.
- * 
- * @author jim
- * 
+ * @author Cameron Garnham
  */
-public class MultiBitModel {
+public class BitcoinModel extends AbstractModel {
 
-    private static final Logger log = LoggerFactory.getLogger(MultiBitModel.class);
+    private static final Logger log = LoggerFactory.getLogger(BitcoinModel.class);
 
-    // Constants used in the multibit.properties.
 
     // MultiBit start up.
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
@@ -74,27 +69,6 @@ public class MultiBitModel {
     public static final String PRODUCTION_NETWORK_VALUE = "production";
     public static final String WALLET_FILENAME = "walletFilename";
 
-    // User preferences.
-    public static final String SELECTED_VIEW = "selectedView";
-    public static final String SELECTED_VIEW_ENUM = "selectedViewEnum";
-
-    public static final String USER_LANGUAGE_CODE = "languageCode";
-    public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
-    
-    public static final String LOOK_AND_FEEL = "lookAndFeel";
-    public static final String SYSTEM_LOOK_AND_FEEL = "system";
-    
-    public static final int SCROLL_INCREMENT = 12;
-
-    // Currency ticker.
-    public static final String TICKER_SHOW = "tickerShow";
-    public static final String TICKER_COLUMNS_TO_SHOW = "tickerColumnsToShow";
-    public static final String TICKER_FIRST_ROW_EXCHANGE = "tickerFirstRowExchange";
-    public static final String TICKER_FIRST_ROW_CURRENCY = "tickerFirstRowCurrency";
-    public static final String TICKER_SHOW_SECOND_ROW = "tickerShowSecondRow";
-    public static final String TICKER_SECOND_ROW_EXCHANGE = "tickerSecondRowExchange";
-    public static final String TICKER_SECOND_ROW_CURRENCY = "tickerSecondRowCurrency";
-    
     // Wallets, open wallet and save wallet as dialog.
     public static final String GRAB_FOCUS_FOR_ACTIVE_WALLET = "grabFocusForActiveWallet";
     public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
@@ -103,10 +77,8 @@ public class MultiBitModel {
     // The number of serialised and protobuf2 wallets in the multibit.properties.
     public static final String EARLY_WALLET_FILENAME_PREFIX = "walletFilename.";
     public static final String NUMBER_OF_EARLY_WALLETS = "numberOfWallets";
-
     public static final String PROTOBUF3_WALLET_FILENAME_PREFIX = "protobuf3WalletFilename.";
     public static final String NUMBER_OF_PROTOBUF3_WALLETS = "numberfProtobuf3Wallets";
-
     public static final String WALLET_ORDER_TOTAL = "walletOrderTotal";
     public static final String WALLET_ORDER_PREFIX = "walletOrder.";
 
@@ -119,7 +91,6 @@ public class MultiBitModel {
     public static final String SHOW_SIDE_PANEL = "showSidePanel";
     public static final String DISPLAY_AS_SWATCH = "displayAsSwatch";
     public static final String DISPLAY_AS_QR_CODE = "displayAsQRcode";
-    
     public static final int MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED = 2;
 
     // Open bitcoin URI.
@@ -130,12 +101,15 @@ public class MultiBitModel {
     public static final String OPEN_URI_AMOUNT = "openUriAmount";
     public static final String BRING_TO_FRONT = "bringToFront";
 
+    public static final String PREVIOUS_OPEN_URI_SHOW_DIALOG = "previousOpenUriShowDialog";
+    public static final String PREVIOUS_OPEN_URI_USE_URI = "previousOpenUriUseUri";
+    public static final String PREVIOUS_SEND_FEE = "previousSendFee";
+    
     // Default fee.
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000");
     
     // Minimum fee.
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
-
     public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
     public static final String SEND_ERROR_MESSAGE = "sendErrorMessage";
 
@@ -154,7 +128,6 @@ public class MultiBitModel {
     public static final String VALIDATION_NOT_ENOUGH_FUNDS = "validationNotEnoughFunds";
     public static final String VALIDATION_ADDRESS_VALUE = "validationAddressValue";
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
-
     public static final String WALLET_FILE_EXTENSION = "wallet";
 
     // Private key import and export.
@@ -174,27 +147,9 @@ public class MultiBitModel {
     // Sizes and last modified dates of files.
     public static final String WALLET_FILE_SIZE = "walletFileSize";
     public static final String WALLET_FILE_LAST_MODIFIED = "walletFileLastModified";
-
     public static final String WALLET_INFO_FILE_SIZE = "walletInfoFileSize";
     public static final String WALLET_INFO_FILE_LAST_MODIFIED = "walletInfoFileLastModified";
-
-    // User preference font.
-    public static final String FONT = "font";
-    public static final String FONT_NAME = "fontName";
-    public static final String FONT_STYLE = "fontStyle";
-    public static final String FONT_SIZE = "fontSize";
-
-    public static final String PREVIOUS_FONT_NAME = "previousFontName";
-    public static final String PREVIOUS_FONT_STYLE = "previousFontStyle";
-    public static final String PREVIOUS_FONT_SIZE = "previousFontSize";
-
-    // User preferences undo.
-    public static final String PREVIOUS_OPEN_URI_SHOW_DIALOG = "previousOpenUriShowDialog";
-    public static final String PREVIOUS_OPEN_URI_USE_URI = "previousOpenUriUseUri";
-    public static final String PREVIOUS_SEND_FEE = "previousSendFee";
-    public static final String PREVIOUS_USER_LANGUAGE_CODE = "previousLanguageCode";
-    public static final String PREVIOUS_UNDO_CHANGES_TEXT = "previousUndoChangesText";
-    public static final String CAN_UNDO_PREFERENCES_CHANGES = "canUndoPreferencesChanges";
+    public static final int UNKNOWN_NUMBER_OF_CONNECTD_PEERS = -1;
 
     // Wallet migration.
     public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
@@ -202,146 +157,40 @@ public class MultiBitModel {
     // Wallet backup.
     public static final String WALLET_BACKUP_FILE = "walletBackupFile";
        
-    // Currency support.
-    public static final String SHOW_BITCOIN_CONVERTED_TO_FIAT = "showBitcoinConvertedToFiat";   // boolean
-    public static final String USE_LAST_AS_EXCHANGE_RATE = "useLastAsExchangeRate";             // boolean
-    public static final String USE_BID_AS_EXCHANGE_RATE = "useBidAsExchangeRate";               // boolean
-    public static final String USE_ASK_AS_EXCHANGE_RATE = "useAskAsExchangeRate";               // boolean
-    public static final String SHOW_BTC_IN_WALLET_PANEL = "showBTCinWalletPanel";               // boolean
     
-    // User preferences.
-    private Properties userPreferences;
 
-    /**
-     * List of each wallet's total model data.
-     */
-    private List<WalletData> perWalletModelDataList;
-
-    /**
-     * The current active wallet.
-     */
-    private WalletData activeWalletModelData;
-    
-    /**
-     * The currently displayed view. One of the View constants.
-     */
-    private View currentView = null;
-    
-    /**
-     * Holds exchange Data.
-     * Two simultaneous exchanges are supported.
-     */
-    private ExchangeData exchangeData1;
-    private ExchangeData exchangeData2;;
-
-    public static final int UNKNOWN_NUMBER_OF_CONNECTD_PEERS = -1;
     
     /**
      * The number of peers connected.
      */
     private int numberOfConnectedPeers = UNKNOWN_NUMBER_OF_CONNECTD_PEERS;
+    /**
+     * List of each wallet's total model data.
+     */
+    private List<WalletData> perWalletModelDataList;
+    /**
+     * The current active wallet.
+     */
+    private WalletData activeWalletModelData;
     
+    private NetworkParametersEnum networkPramEnum;
     
-     public MultiBitModel() {
-        this(new Properties());
+
+    
+    public BitcoinModel(){
+        this(null);
     }
 
-    @SuppressWarnings("deprecation")
-    public MultiBitModel( Properties userPreferences) {
-        this.userPreferences = userPreferences;
-
-        perWalletModelDataList = new LinkedList<WalletData>();
-
-        activeWalletModelData = new WalletData();
-        perWalletModelDataList.add(activeWalletModelData);
-
-
-        // Initialize everything to look at the stored opened view.
-        // If no properties passed in just initialize to the default view.
-        if (userPreferences != null) {
-            // first try and find a old view setting.
-            View initialViewInProperties = null;
-            Object oldViewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW);
-
-            String oldViewString = (null != oldViewObject) ? (String) oldViewObject : null;
-
-            if (null != oldViewString) {
-                Integer oldViewInt = null;
-                try {
-                    oldViewInt = Integer.parseInt(oldViewString);
-                } catch (NumberFormatException nfe) {
-                    // do nothing
-                } finally {
-                    initialViewInProperties = View.parseOldView(oldViewInt);
-                    
-                    // Remove the old view property from the properties - replaced by enum.
-                    // (It may be put back in for backwads compatibility in FileHandler#writeUserPreferences.
-                    userPreferences.remove(MultiBitModel.SELECTED_VIEW);
-                }
-            }
-
-            // If oldViewInProperties is still null,  try and find the view.
-            if (null == initialViewInProperties) {
-                Object viewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW_ENUM);
-
-                String viewString = (null != viewObject) ? (String) viewObject : null;
-
-                if (viewString != null) {
-                    try {
-                        View viewEnum = View.valueOf(viewString);
-                        initialViewInProperties = (!viewEnum.isObsolete()) ? viewEnum : null;
-
-                    } catch (IllegalArgumentException nfe) {
-                        // do nothing.
-                    }
-                }
-            }
-            setCurrentView((null != initialViewInProperties) ? initialViewInProperties : View.DEFAULT_VIEW());
-            log.debug("Initial view from properties file is '" + getCurrentView().toString() + "'");
-        }
-
-        exchangeData1 = new ExchangeData();
-        exchangeData2 = new ExchangeData();
-        exchangeData1.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
-        exchangeData2.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
+    public BitcoinModel(NetworkParametersEnum networkPramEnum) {
+        
+        this.networkPramEnum = (null != networkPramEnum) ? networkPramEnum : NetworkParametersEnum.PRODUCTION_NETWORK;
     }
 
-    /**
-     * Get a user preference.
-     *
-     * @param key String key of property
-     * @return String property value
-     */
-    public String getUserPreference(String key) {
-        return userPreferences.getProperty(key);
+    @Override
+    public ModelEnum getModelEnum() {
+        return ModelEnum.BITCOIN;
     }
 
-    /**
-     * Set a user preference.
-     *
-     * @return
-     */
-    public void setUserPreference(String key, String value) {
-        if (key != null && value != null) {
-            userPreferences.put(key, value);
-        }
-    }
-
-    /**
-     * Get all user preference.
-     *
-     * @return
-     */
-    public Properties getAllUserPreferences() {
-        return userPreferences;
-    }
-
-    /**
-     * Set all user preferences.
-     */
-    public void setAllUserPreferences(Properties properties) {
-        userPreferences = properties;
-    }
 
     public WalletData getActivePerWalletModelData() {
         return activeWalletModelData;
@@ -367,14 +216,14 @@ public class MultiBitModel {
      * @return
      */
     public void setActiveWalletPreference(String key, String value) {
-        if (MultiBitModel.SEND_AMOUNT.equals(key)) {
+        if (SEND_AMOUNT.equals(key)) {
             if (value.indexOf(",") > -1) {
                 boolean bad = true;
                 bad = !bad;
             }
         }
         if (activeWalletModelData.getWalletInfo() != null && value != null) {
-            activeWalletModelData.getWalletInfo().put(key, value);
+            activeWalletModelData.getWalletInfo().putProperty(key, value);
             activeWalletModelData.setDirty(true);
         }
     }
@@ -388,7 +237,7 @@ public class MultiBitModel {
         if (activeWalletModelData.getWallet() == null) {
             return BigInteger.ZERO;
         } else {
-            return activeWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
+            return activeWalletModelData.getWallet().getBalance(Wallet.BalanceType.ESTIMATED);
         }
     }
 
@@ -401,7 +250,7 @@ public class MultiBitModel {
         if (activeWalletModelData.getWallet() == null) {
             return BigInteger.ZERO;
         } else {
-            return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE);
+            return activeWalletModelData.getWallet().getBalance(Wallet.BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE);
         }
     }
 
@@ -460,7 +309,7 @@ public class MultiBitModel {
      *
      * @param perWalletModeData
      */
-    public void remove(WalletData perWalletModelDataToRemove) {
+    public void removeWallet(WalletData perWalletModelDataToRemove) {
         if (perWalletModelDataToRemove == null) {
             return;
         }
@@ -545,7 +394,7 @@ public class MultiBitModel {
      * Convert the active wallet info into walletdata records as they are easier
      * to show to the user in tabular form.
      */
-    public ArrayList<WalletTableData> createActiveWalletData(MultiBitModel model, Localiser localiser, ReplayableBlockStore blockStore) {
+    public ArrayList<WalletTableData> createActiveWalletData(BitcoinModel model, Localiser localiser, ReplayableBlockStore blockStore) {
         return createWalletDataInternal(model.getActivePerWalletModelData(),localiser,blockStore);
     }
     
@@ -825,45 +674,18 @@ public class MultiBitModel {
         return null;
     }
 
-    public View getCurrentView() {
-        return currentView;
-    }
-
-    public final void setCurrentView(View view) {
-        this.currentView = view;
-        setUserPreference(MultiBitModel.SELECTED_VIEW_ENUM, view.name());
-    }
-
-    public ExchangeData getExchangeData1() {
-        return exchangeData1;
-    }
-
-    public void setExchangeData1(ExchangeData exchangeData) {
-        this.exchangeData1 = exchangeData;
-    }
-    
-    public ExchangeData getExchangeData2() {
-        return exchangeData2;
-    }
-
-    public void setExchangeData2(ExchangeData exchangeData) {
-        this.exchangeData2 = exchangeData;
-    }
-
     public NetworkParameters getNetworkParameters() {
-        // If test or production is not specified, default to production.
-        String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
-        if (testOrProduction == null) {
-            testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
-            userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
-        }
-        if (MultiBitModel.TEST_NETWORK_VALUE.equalsIgnoreCase(testOrProduction)) {
-            return NetworkParameters.oldTestNet();
-        } else if (MultiBitModel.TESTNET3_VALUE.equalsIgnoreCase(testOrProduction)) {
-            return NetworkParameters.testNet();
-        } else {
+
+        switch (this.networkPramEnum) {
+            case PRODUCTION_NETWORK:
             return NetworkParameters.prodNet();
+            case TEST_NETWORK:
+                return NetworkParameters.testNet();
+            case OLD_TEST_NETWORK:
+                return NetworkParameters.oldTestNet();
         }
+
+        return null;
     }
 
     public boolean thereIsNoActiveWallet() {
