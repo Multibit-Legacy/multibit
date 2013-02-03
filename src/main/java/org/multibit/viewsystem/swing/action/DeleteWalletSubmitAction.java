@@ -29,7 +29,7 @@ import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
@@ -73,7 +73,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
             boolean newWalletCreated = deleteActiveWallet();
             
             // Set the first wallet to be the active wallet.
-            PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
+            WalletData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
             controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
              
             String confirm2 = newWalletCreated ? controller.getLocaliser().getString("deleteWalletConfirmDialog.newWalletCreated") : " ";
@@ -140,7 +140,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      */
     public boolean deleteActiveWallet()  throws DeleteWalletException, WalletVersionException, IOException {
         boolean newWalletCreated = false;
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         
         MultiBitWalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
         String backupFilename = perWalletModelData.getWalletInfo().getProperty(MultiBitModel.WALLET_BACKUP_FILE);
@@ -152,9 +152,9 @@ public class DeleteWalletSubmitAction extends AbstractAction {
 
                 // Delete the backupFile unless the user has manually opened it.
                 boolean userHasOpenedBackupFile = false;
-                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
                 if (perWalletModelDataList != null) {
-                    for (PerWalletModelData perWalletModelDataLoop : perWalletModelDataList) {
+                    for (WalletData perWalletModelDataLoop : perWalletModelDataList) {
                         if ((backupFilename != null && backupFilename.equals(perWalletModelDataLoop.getWalletFilename()))) {
                             userHasOpenedBackupFile = true;
                             break;
@@ -177,7 +177,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      * @throws DeleteWalletException
      * @throws IOException
      */
-    private boolean deleteWallet(PerWalletModelData perWalletModelData) throws DeleteWalletException, WalletVersionException, IOException {
+    private boolean deleteWallet(WalletData perWalletModelData) throws DeleteWalletException, WalletVersionException, IOException {
         FileHandler fileHandler = new FileHandler(controller);
         fileHandler.deleteWalletAndWalletInfo(perWalletModelData);
 
@@ -192,7 +192,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         }
         
         // Set the first wallet to be the active wallet.
-        PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
+        WalletData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
         controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
         
         fileHandler.savePerWalletModelData(firstPerWalletModelData, true);

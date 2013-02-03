@@ -43,7 +43,7 @@ import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 import org.multibit.utils.ImageLoader;
@@ -123,7 +123,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 FileHandler fileHandler = new FileHandler(controller);
                 
                 for (String walletFilename : walletFilenamesToMigrate) {
-                    PerWalletModelData loopPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
+                    WalletData loopPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                     
                     if (loopPerWalletModelData != null) {
                         MessageManager.INSTANCE.addMessage(new Message(" "));
@@ -175,7 +175,7 @@ public class MigrateWalletsAction extends AbstractAction {
                         } finally {
                             // Delete test wallet data.
                             if (testWalletFile != null) {
-                                PerWalletModelData testPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(testWalletFile.getAbsolutePath());
+                                WalletData testPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(testWalletFile.getAbsolutePath());
                                 controller.getModel().remove(testPerWalletModelData);
                                 fileHandler.deleteWalletAndWalletInfo(testPerWalletModelData);
                                 tempDirectory.delete();
@@ -242,7 +242,7 @@ public class MigrateWalletsAction extends AbstractAction {
         }
     }
     
-    private void migrationWasNotSuccessful(PerWalletModelData perWalletModelData, Exception e) {
+    private void migrationWasNotSuccessful(WalletData perWalletModelData, Exception e) {
         // Save the MultiBit version so that we do not keep trying to run the migrate utility (until the next version).
         perWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
         perWalletModelData.setDirty(true);
@@ -251,7 +251,7 @@ public class MigrateWalletsAction extends AbstractAction {
         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.testMigrationUnsuccessful") + "\n" + localiseError(e)));
     }
     
-    private void migrationWasNotSuccessfulUseBackup(PerWalletModelData perWalletModelData, Exception e) {
+    private void migrationWasNotSuccessfulUseBackup(WalletData perWalletModelData, Exception e) {
         perWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
         perWalletModelData.setDirty(true);
 
@@ -274,7 +274,7 @@ public class MigrateWalletsAction extends AbstractAction {
      */
     private String convertToProtobufAndCheck(File walletFile, FileHandler fileHandler) {
         // Load the newly copied test serialised file.
-        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+        WalletData perWalletModelData = fileHandler.loadFromFile(walletFile);
         
         // Change wallet to protobuf.
         perWalletModelData.getWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
@@ -284,7 +284,7 @@ public class MigrateWalletsAction extends AbstractAction {
         fileHandler.savePerWalletModelData(perWalletModelData, true);
         
         // Load the newly saved test protobuf wallet.
-        PerWalletModelData protobuf = fileHandler.loadFromFile(walletFile);
+        WalletData protobuf = fileHandler.loadFromFile(walletFile);
         
         if (protobuf == null) {
             return controller.getLocaliser().getString("migrateWalletsAction.theProtobufWalletWouldNotLoad");
@@ -305,7 +305,7 @@ public class MigrateWalletsAction extends AbstractAction {
      * @param protobuf
      * @return String described error, or null if successful
      */
-    private String compareWallets(PerWalletModelData serialised, PerWalletModelData protobuf) {       
+    private String compareWallets(WalletData serialised, WalletData protobuf) {       
         // Check the number of keys are the same.
         if (protobuf.getWallet().getKeychain().size() != serialised.getWallet().getKeychain().size()) {
             return controller.getLocaliser().getString("migrateWalletsAction.numberOfPrivateKeysAreDifferent", 
@@ -374,8 +374,8 @@ public class MigrateWalletsAction extends AbstractAction {
     
     private List<String> getWalletFilenamesToMigrate() {
         List<String> walletFilenamesToMigrate = new ArrayList<String>();
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+        List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        for (WalletData loopPerWalletModelData : perWalletModelDataList) {
             // Is it a serialized wallet ?
             if (loopPerWalletModelData.getWalletInfo() != null) {
                 if (MultiBitWalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {

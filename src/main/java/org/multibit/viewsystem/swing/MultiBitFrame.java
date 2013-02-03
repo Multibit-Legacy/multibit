@@ -68,9 +68,9 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.StatusEnum;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.platform.GenericApplication;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
@@ -1259,7 +1259,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
-    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
+    public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData) {
         if (controller.getModel().getActiveWalletFilename() != null
                 && controller.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
             Message message = new Message(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "

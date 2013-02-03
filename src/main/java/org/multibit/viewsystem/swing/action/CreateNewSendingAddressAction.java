@@ -20,10 +20,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBookData;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
@@ -55,11 +55,11 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
         }
 
         // Check to see if the wallet files have changed.
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
 
-        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfoData(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
 
@@ -67,11 +67,11 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
             String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
             String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
 
-            perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData(label, address));
+            perWalletModelData.getWalletInfo().addSendingAddress(new WalletAddressBookData(label, address));
             sendBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
             controller.getModel().getActivePerWalletModelData().setDirty(true);
         } else {
-            perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData("", ""));
+            perWalletModelData.getWalletInfo().addSendingAddress(new WalletAddressBookData("", ""));
             sendBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
             sendBitcoinPanel.selectRows();
 

@@ -42,7 +42,7 @@ import org.joda.money.CurrencyUnit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
-import org.multibit.model.ExchangeData;
+import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.AbstractModularPanel;
 import org.multibit.viewsystem.dataproviders.preferences.TickerPreferencesDataProvider;

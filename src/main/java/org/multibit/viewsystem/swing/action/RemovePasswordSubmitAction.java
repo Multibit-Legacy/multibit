@@ -24,8 +24,8 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
@@ -81,7 +81,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
             Wallet wallet = controller.getModel().getActiveWallet();
             if (wallet != null) {
 
-                    PerWalletModelData perWalletModelData = null;
+                    WalletData perWalletModelData = null;
                     try {
                         // Double check wallet is not busy then declare that the active
                         // wallet is busy with the task

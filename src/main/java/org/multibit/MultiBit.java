@@ -39,7 +39,7 @@ import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
@@ -235,7 +235,7 @@ public class MultiBit {
                 try {
                     // ActiveWalletFilename may be null on first time startup.
                     controller.addWalletFromFilename(activeWalletFilename);
-                    List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                    List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null && !perWalletModelDataList.isEmpty()) {
                         activeWalletFilename = perWalletModelDataList.get(0).getWalletFilename();
                         controller.getModel().setActiveWalletByFilename(activeWalletFilename);
@@ -397,7 +397,7 @@ public class MultiBit {
                             }
                             
                             if (thereWasAnErrorLoadingTheWallet) {
-                                PerWalletModelData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(actualOrder);
+                                WalletData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(actualOrder);
                                 if (loopData != null) {
                                     // Clear the backup wallet filename - this prevents it being automatically overwritten.
                                     if (loopData.getWalletInfo() != null) {

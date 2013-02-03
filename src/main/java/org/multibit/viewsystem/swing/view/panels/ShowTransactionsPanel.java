@@ -70,7 +70,7 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletTableData;
+import org.multibit.model.bitcoin.wallet.WalletTableData;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;

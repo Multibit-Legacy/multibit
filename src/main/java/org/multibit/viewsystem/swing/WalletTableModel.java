@@ -26,7 +26,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyInfo;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletTableData;
+import org.multibit.model.bitcoin.wallet.WalletTableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

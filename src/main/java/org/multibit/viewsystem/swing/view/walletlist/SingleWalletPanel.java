@@ -51,7 +51,7 @@ import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
@@ -78,7 +78,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 5);
     private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(7, 7);
 
-    private PerWalletModelData perWalletModelData;
+    private WalletData perWalletModelData;
 
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
     private static final int COLOR_DELTA = 24;
@@ -152,7 +152,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private final SingleWalletPanel thisPanel;
           
-    public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
+    public SingleWalletPanel(WalletData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
@@ -631,7 +631,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         requestFocusInWindow();
     }
 
-    public PerWalletModelData getPerWalletModelData() {
+    public WalletData getPerWalletModelData() {
         return perWalletModelData;
     }
 

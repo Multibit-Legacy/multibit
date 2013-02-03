@@ -18,7 +18,7 @@ package org.multibit.viewsystem.swing.view.ticker;
 import javax.swing.table.AbstractTableModel;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.ExchangeData;
+import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
 
 /**

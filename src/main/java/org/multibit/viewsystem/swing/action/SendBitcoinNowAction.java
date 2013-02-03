@@ -29,11 +29,11 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.AddressBookData;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -100,7 +100,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         sendBitcoinConfirmPanel.setMessageText(" ", " ");
 
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -124,8 +124,8 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             }
 
             if (sendLabel != null && !sendLabel.equals("")) {
-                WalletInfo addressBook = perWalletModelData.getWalletInfo();
-                addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
+                WalletInfoData addressBook = perWalletModelData.getWalletInfo();
+                addressBook.addSendingAddress(new WalletAddressBookData(sendLabel, sendAddress));
             }
             
             char[] walletPassword = walletPasswordField.getPassword();
@@ -174,7 +174,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     /**
      * Send the transaction directly.
      */
-    private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, char[] walletPassword) {
+    private void performSend(WalletData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, char[] walletPassword) {
         String message = null;
         
         boolean sendWasSuccessful = Boolean.FALSE;

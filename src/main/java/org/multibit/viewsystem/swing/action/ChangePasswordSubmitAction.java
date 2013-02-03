@@ -26,8 +26,8 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
@@ -111,7 +111,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
         if (wallet != null) {
             // Double check wallet is not busy then declare that the active
             // wallet is busy with the task.
-            PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+            WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
 
             if (!perWalletModelData.isBusy()) {
                 perWalletModelData.setBusy(true);
