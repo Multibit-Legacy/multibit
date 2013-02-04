@@ -13,7 +13,9 @@ public class UpdateTransactionsTimerTask extends TimerTask {
     private ShowTransactionsPanel transactionsPanel;
     private MultiBitFrame mainFrame;
 
-    private Boolean updateTransactions = Boolean.FALSE;
+    private boolean updateTransactions = false;
+    private boolean isCurrentlyUpdating = false;
+
 
     public UpdateTransactionsTimerTask(MultiBitController controller, final ShowTransactionsPanel transactionsPanel,
             MultiBitFrame mainFrame) {
@@ -24,26 +26,36 @@ public class UpdateTransactionsTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        // If viewing transactions, refresh the screen so that transaction
-        // confidence icons can update.
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                boolean updateThisTime = false;
-                if (updateTransactions) {
-                    updateTransactions = false;
-                    updateThisTime = true;
-                }
+        // If still updating from the last time, skip this firing.
+        // Timer thread.
+        if (!isCurrentlyUpdating) {
+            // If viewing transactions, refresh the screen so that transaction
+            // confidence icons can update.
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    boolean updateThisTime = false;
+                    if (updateTransactions) {
+                        updateTransactions = false;
+                        updateThisTime = true;
+                    }
 
-                if (updateThisTime) {
-                    mainFrame.updateHeader();
-                    if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-                        // log.debug("Updating transaction view");
-                        transactionsPanel.displayView();
+                    if (updateThisTime) {
+                        mainFrame.updateHeader();
+                        if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+                            // Swing thread.
+                            isCurrentlyUpdating = true;
+                            try {
+                                transactionsPanel.displayView();
+                            } finally {
+                                // Swing thread.
+                                isCurrentlyUpdating = false;
+                            }
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     public boolean isUpdateTransactions() {

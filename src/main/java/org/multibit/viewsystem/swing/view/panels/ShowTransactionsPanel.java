@@ -129,7 +129,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private int selectedRow = -1;
     
-    public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 333; // milliseconds
+    public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 1000; // milliseconds
     
     private JScrollPane scrollPane;
     
@@ -354,7 +354,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     @Override
     public void displayView() {
-        log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
+        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
         if (controller.getModel().getActiveWallet() == null) {
             return;
         }
@@ -371,7 +371,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
 
-        log.debug("Table has " + table.getRowCount() + " rows");
+        //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
     @Override

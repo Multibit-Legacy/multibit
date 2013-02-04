@@ -337,7 +337,19 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     
     @Override
     public void onWalletChanged(Wallet wallet) {
-        //log.debug("onWalletChanged called");
+        if (wallet == null) {
+            return;
+        }
+        // log.debug("onWalletChanged called");
+        final int walletIdentityHashCode = System.identityHashCode(wallet);
+        for (PerWalletModelData loopPerWalletModelData : getModel().getPerWalletModelDataList()) {
+            // Find the wallet object and mark as dirty.
+            if (System.identityHashCode(loopPerWalletModelData.getWallet()) == walletIdentityHashCode) {
+                loopPerWalletModelData.setDirty(true);
+                break;
+            }
+        }
+
         fireDataChanged();
     }
 
@@ -346,13 +358,13 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         //log.debug("Firing confidence change in onTransactionConfidenceChanged.");
         
         // Set the depth in blocks as this does not seem to get updated anywhere.
-        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
-            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
-        }
+//        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
+//            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
+//        }
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
-        checkForDirtyWallets(transaction);
+//        checkForDirtyWallets(transaction);
     }
 
     @Override

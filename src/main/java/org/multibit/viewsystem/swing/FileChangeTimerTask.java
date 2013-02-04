@@ -42,6 +42,8 @@ public class FileChangeTimerTask extends TimerTask {
     private static Logger log = LoggerFactory.getLogger(FileChangeTimerTask.class);
 
     private final MultiBitController controller;
+    
+    private boolean enable = true;
 
     /**
      * Constructs the object, sets the string to be output in function run()
@@ -56,46 +58,52 @@ public class FileChangeTimerTask extends TimerTask {
      */
     @Override
     public void run() {
-        log.debug("Start of FileChangeTimerTask - run");
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        log.debug("Start of FileChangeTimerTask - run - enable = " + enable);
+        if (enable) {
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
-        if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopModelData : perWalletModelDataList) {
-                if (controller.getFileHandler() != null) {
-                    // See if the files have been changed by another process (non MultiBit).
-                    boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(loopModelData);
-                    if (haveFilesChanged) {
-                        boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
-                        loopModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-                        if (!previousFilesHaveBeenChanged) {
-                            // only fire once, when change happens
-                            controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
-                            log.debug("Marking wallet " + loopModelData.getWalletFilename() + " as having been changed by another process.");
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData loopModelData : perWalletModelDataList) {
+                    if (controller.getFileHandler() != null) {
+                        // See if the files have been changed by another process
+                        // (non MultiBit).
+                        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(loopModelData);
+                        if (haveFilesChanged) {
+                            boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
+                            loopModelData.setFilesHaveBeenChangedByAnotherProcess(true);
+                            if (!previousFilesHaveBeenChanged) {
+                                // only fire once, when change happens
+                                controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
+                                log.debug("Marking wallet " + loopModelData.getWalletFilename()
+                                        + " as having been changed by another process.");
+                            }
                         }
-                    }
 
-                    // See if they are dirty - write out if so.
-                    if (loopModelData.isDirty()) {
-                        log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'...");
-                        try {
-                            controller.getFileHandler().savePerWalletModelData(loopModelData, false);
-                            log.debug("... done.");
-                        } catch (WalletSaveException e) {
-                            String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
-                                    new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
-                            log.error(message);
-                            MessageManager.INSTANCE.addMessage(new Message(message));
-                        } catch (WalletVersionException e) {
-                            String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
-                                    new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
-                            log.error(message);
-                            MessageManager.INSTANCE.addMessage(new Message(message));
-                        } 
+                        // See if they are dirty - write out if so.
+                        if (loopModelData.isDirty()) {
+                            log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'...");
+                            try {
+                                controller.getFileHandler().savePerWalletModelData(loopModelData, false);
+                                log.debug("... done.");
+                            } catch (WalletSaveException e) {
+                                String message = controller.getLocaliser().getString(
+                                        "createNewWalletAction.walletCouldNotBeCreated",
+                                        new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
+                                log.error(message);
+                                MessageManager.INSTANCE.addMessage(new Message(message));
+                            } catch (WalletVersionException e) {
+                                String message = controller.getLocaliser().getString(
+                                        "createNewWalletAction.walletCouldNotBeCreated",
+                                        new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
+                                log.error(message);
+                                MessageManager.INSTANCE.addMessage(new Message(message));
+                            }
+                        }
                     }
                 }
             }
         }
-        
-        log.debug("End of FileChangeTimerTask - run");    
+
+        log.debug("End of FileChangeTimerTask - run");
     }
 }

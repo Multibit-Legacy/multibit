@@ -103,6 +103,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
@@ -210,6 +211,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitWalletBusyAction showImportPrivateKeysAction;
     private MultiBitWalletBusyAction showExportPrivateKeysAction;
 
+    
+    public static final int FIRE_DATA_CHANGED_DELAY_TIME = 500; // milliseconds
+    /**
+     * Timer used to condense multiple updates
+     */
+    private static Timer fireDataChangedTimer;
+
+    private static FireDataChangedTimerTask fireDataChangedTimerTask;
+
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application, View initialView) {
         this.controller = controller;
@@ -299,6 +309,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         pack();
 
         setVisible(true);
+        
+        fireDataChangedTimerTask = new FireDataChangedTimerTask(this);
+        fireDataChangedTimer = new Timer();
+        fireDataChangedTimer.scheduleAtFixedRate(fireDataChangedTimerTask, FIRE_DATA_CHANGED_DELAY_TIME, FIRE_DATA_CHANGED_DELAY_TIME);
     }
 
     public GenericApplication getApplication() {
@@ -1218,16 +1232,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
-    public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
+    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
+        final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
+        final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
+        
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                int numberOfPeers = 0;
-                if (transaction != null && transaction.getConfidence() != null) {
-                    numberOfPeers = transaction.getConfidence().getBroadcastByCount();
-                }
                 ShowTransactionsPanel.updateTransactions();
-                SendBitcoinConfirmPanel.updatePanel(transaction, numberOfPeers);
+                SendBitcoinConfirmPanel.updatePanel(transactionHash, numberOfPeers);
             }
         });
     }
@@ -1244,25 +1257,22 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     /**
-     * Update the UI after the model data has changed.
+     * Mark that the UI needs to be updated.
      */
     @Override
     public void fireDataChanged() {
-        updateHeader();
-
-        if (EventQueue.isDispatchThread()) {
-            fireDataChangedOnSwingThread();
-        } else {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    fireDataChangedOnSwingThread();
-                }
-            });
+        if (fireDataChangedTimerTask != null) {
+            fireDataChangedTimerTask.setFireDataChanged(true);
         }
     }
     
-    private void fireDataChangedOnSwingThread() {
+    /**
+     * Actually update the UI.
+     * (cCalled back from the FireDataChangedTimerTask).
+     */
+    public void fireDataChangedOnSwingThread() {
+        updateHeader();
+
         // Update the password related menu items.
         updateMenuItemsOnWalletChange();
         

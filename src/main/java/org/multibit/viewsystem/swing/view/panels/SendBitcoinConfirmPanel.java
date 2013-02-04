@@ -20,7 +20,6 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.ListIterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -44,9 +43,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.bitcoin.core.PeerAddress;
+import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
 
 /**
  * The send bitcoin confirm panel.
@@ -577,7 +575,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         cancelButton.setVisible(false);
     }
     
-    public static void updatePanel(final Transaction transactionWithChangedConfidence, final int numberOfPeersSeenBy) {
+    public static void updatePanel(final Sha256Hash transactionWithChangedConfidenceHash, final int numberOfPeersSeenBy) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -615,19 +613,14 @@ public class SendBitcoinConfirmPanel extends JPanel {
                         }
                     }
 
-                    if (transactionWithChangedConfidence == null) {
-                        return;
-                    }
-
                     MultiBitLabel confirmText2 = thisPanel.getConfirmText2();
                     if (confirmText2 != null) {
                         if (thisPanel.getSendBitcoinNowAction() != null) {
                             Transaction sentTransaction = thisPanel.getSendBitcoinNowAction().getTransaction();
                             if (sentTransaction != null
-                                    && sentTransaction.getHash().equals(transactionWithChangedConfidence.getHash())) {
-                                confirmText2.setText(thisPanel.getConfidenceToolTip(transactionWithChangedConfidence
-                                        .getConfidence(), numberOfPeersSeenBy));
-                                confirmText2.setIcon(thisPanel.getConfidenceIcon(transactionWithChangedConfidence.getConfidence(), numberOfPeersSeenBy));
+                                    && sentTransaction.getHash().equals(transactionWithChangedConfidenceHash)) {
+                                confirmText2.setText(thisPanel.getConfidenceToolTip(numberOfPeersSeenBy));
+                                confirmText2.setIcon(thisPanel.getConfidenceIcon(numberOfPeersSeenBy));
                             }
                         }
                     }
@@ -640,7 +633,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         });
     }
 
-    private String getConfidenceToolTip(TransactionConfidence confidence, int numberOfPeers) {
+    private String getConfidenceToolTip(int numberOfPeers) {
         StringBuilder builder = new StringBuilder("");
         if (numberOfPeers == 0) {
             builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
@@ -655,30 +648,28 @@ public class SendBitcoinConfirmPanel extends JPanel {
         return builder.toString();
     }
 
-    private ImageIcon getConfidenceIcon(TransactionConfidence confidence, int numberOfPeers) {
+    private ImageIcon getConfidenceIcon(int numberOfPeers) {
         // By default return a triangle which indicates the least known.
-        ImageIcon iconToReturn = shapeTriangleIcon;
+        ImageIcon iconToReturn;
 
-        if (confidence != null) {
-            if (numberOfPeers >= 4) {
-                return progress0Icon;
-            } else {
-                switch (numberOfPeers) {
-                case 0:
-                    iconToReturn = shapeTriangleIcon;
-                    break;
-                case 1:
-                    iconToReturn = shapeSquareIcon;
-                    break;
-                case 2:
-                    iconToReturn = shapeHeptagonIcon;
-                    break;
-                case 3:
-                    iconToReturn = shapeHexagonIcon;
-                    break;
-                default:
-                    iconToReturn = shapeTriangleIcon;
-                }
+        if (numberOfPeers >= 4) {
+            return progress0Icon;
+        } else {
+            switch (numberOfPeers) {
+            case 0:
+                iconToReturn = shapeTriangleIcon;
+                break;
+            case 1:
+                iconToReturn = shapeSquareIcon;
+                break;
+            case 2:
+                iconToReturn = shapeHeptagonIcon;
+                break;
+            case 3:
+                iconToReturn = shapeHexagonIcon;
+                break;
+            default:
+                iconToReturn = shapeTriangleIcon;
             }
         }
         return iconToReturn;
