@@ -48,6 +48,7 @@ import org.multibit.store.MultiBitWalletProtobufSerializer;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 import org.multibit.utils.DateUtils;
+import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -699,8 +700,18 @@ public class FileHandler {
             controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME, controller.getModel().getActiveWalletFilename());
         }
 
-        // Write the user preference properties.
         Properties userPreferences = controller.getModel().getAllUserPreferences();
+     
+        // If the view is marked as also requiring a backwards compatible numeric field write that.
+        @SuppressWarnings("deprecation")
+        int currentViewNumericFormat = View.toOldViewNumeric(controller.getCurrentView());
+        if (currentViewNumericFormat != 0) {
+            userPreferences.put(MultiBitModel.SELECTED_VIEW, "" + currentViewNumericFormat);
+        } else {
+            // Make sure the old numeric value for a view is not in the user properties.
+            userPreferences.remove(MultiBitModel.SELECTED_VIEW);
+        }
+        // Write the user preference properties.
         OutputStream outputStream = null;
         try {
             String userPropertiesFilename;

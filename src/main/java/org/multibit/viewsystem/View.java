@@ -108,4 +108,40 @@ public enum View {
             default : return null;
         }
     }
+    
+    /**
+     * Finds the old view name system from the view.
+     * Used for backwards compatibility.
+     * @param view
+     * @return viewNumber, or 0 if not found
+     * @deprecated (this feature may be removed in a future release)
+     */
+    @Deprecated
+    public static int toOldViewNumeric(View view) {
+        if (null == view) {
+            return 0;
+        }
+        
+        switch (view) {
+            case TRANSACTIONS_VIEW : return 1;
+            case SEND_BITCOIN_VIEW : return 2;
+            case RECEIVE_BITCOIN_VIEW : return 4;
+            case HELP_CONTENTS_VIEW : return 5;
+            case HELP_ABOUT_VIEW : return 6;
+            case PREFERENCES_VIEW : return 7;
+            case YOUR_WALLETS_VIEW : return 11;
+            case RESET_TRANSACTIONS_VIEW : return 13;
+            case SHOW_OPEN_URI_DIALOG_VIEW : return 14;
+            case SHOW_IMPORT_PRIVATE_KEYS_VIEW : return 15;
+            case SHOW_EXPORT_PRIVATE_KEYS_VIEW : return 16;
+            case WELCOME_VIEW : return 17;
+            case MESSAGES_VIEW : return 18;
+            case ADD_PASSWORD_VIEW : return 19;
+            case CHANGE_PASSWORD_VIEW : return 20;
+            case REMOVE_PASSWORD_VIEW : return 21;
+            case CHARTS_VIEW : return 22;
+
+            default : return 0;
+        }
+    }
 }

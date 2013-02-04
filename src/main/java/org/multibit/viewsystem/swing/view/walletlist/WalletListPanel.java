@@ -158,10 +158,6 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                         if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(filename)) {
                             loopSingleWalletPanel.setSelected(true);
                             Rectangle bounds = loopSingleWalletPanel.getParent().getBounds();
-                            System.out.println("Bounds = " + bounds);
-                            Rectangle visible = scrollPane.getVisibleRect();
-                            System.out.println("Visible = " + visible + ", viewRect " + scrollPane.getViewport().getViewRect());
-                            //scrollPane.getVerticalScrollBar().setValue(bounds.x);
                             walletListPanel.scrollRectToVisible(bounds);
                         } else {
                             loopSingleWalletPanel.setSelected(false);

@@ -42,7 +42,6 @@ import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
@@ -69,7 +68,6 @@ public class MultiBitModel {
     // User preferences.
     public static final String SELECTED_VIEW = "selectedView";
     public static final String SELECTED_VIEW_ENUM = "selectedViewEnum";
-    public static final String PREVIOUSLY_SELECTED_VIEW = "previousView";
 
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
@@ -242,6 +240,7 @@ public class MultiBitModel {
         this(controller, new Properties());
     }
 
+    @SuppressWarnings("deprecation")
     public MultiBitModel(MultiBitController controller, Properties userPreferences) {
         this.controller = controller;
         this.userPreferences = userPreferences;
@@ -254,9 +253,7 @@ public class MultiBitModel {
 
         // Initialize everything to look at the stored opened view.
         // If no properties passed in just initialize to the default view.
-
         if (userPreferences != null) {
-
             // first try and find a old view setting.
             View initialViewInProperties = null;
             Object oldViewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW);
@@ -273,11 +270,12 @@ public class MultiBitModel {
                     initialViewInProperties = View.parseOldView(oldViewInt);
                     
                     // Remove the old view property from the properties - replaced by enum.
+                    // (It may be put back in for backwads compatibility in FileHandler#writeUserPreferences.
                     userPreferences.remove(MultiBitModel.SELECTED_VIEW);
                 }
             }
 
-            // if oldViewInProperties is still null, lest try and find the view.
+            // If oldViewInProperties is still null,  try and find the view.
             if (null == initialViewInProperties) {
                 Object viewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW_ENUM);
 
@@ -549,6 +547,14 @@ public class MultiBitModel {
      * Convert the active wallet info into walletdata records as they are easier
      * to show to the user in tabular form.
      */
+    public ArrayList<WalletTableData> createActiveWalletData() {
+        return createWalletDataInternal(controller.getModel().getActivePerWalletModelData());
+    }
+    
+    /**
+     * Convert the wallet info into walletdata records as they are easier
+     * to show to the user in tabular form.
+     */
     public ArrayList<WalletTableData> createWalletData(String walletFilename) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
@@ -565,9 +571,17 @@ public class MultiBitModel {
                 }
             }
         }
+        
+        return createWalletDataInternal(perWalletModelData);
+    }
+
+    public ArrayList<WalletTableData> createWalletDataInternal(PerWalletModelData perWalletModelData) {
+        ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
+
         if (perWalletModelData == null || perWalletModelData.getWallet() == null) {
             return walletData;
         }
+        
         Set<Transaction> transactions = perWalletModelData.getWallet().getTransactions(false, false);
 
         if (transactions != null) {

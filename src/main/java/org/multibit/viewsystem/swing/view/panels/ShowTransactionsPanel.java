@@ -354,7 +354,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     @Override
     public void displayView() {
-        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
+        log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
         if (controller.getModel().getActiveWallet() == null) {
             return;
         }
@@ -365,14 +365,13 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer();
         table.getColumnModel().getColumn(3).setCellRenderer(decimalAlignRenderer);
 
-
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
 
-        //log.debug("Table has " + table.getRowCount() + " rows");
+        log.debug("Table has " + table.getRowCount() + " rows");
     }
 
     @Override

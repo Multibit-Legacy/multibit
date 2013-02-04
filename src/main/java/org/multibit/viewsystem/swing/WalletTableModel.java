@@ -156,7 +156,7 @@ public class WalletTableModel extends AbstractTableModel {
 
     public void recreateWalletData() {
         // Recreate the wallet data as the underlying wallet has changed.
-        walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
+        walletData = multiBitModel.createActiveWalletData();
         fireTableDataChanged();
     }
 
