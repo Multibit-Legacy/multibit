@@ -25,6 +25,7 @@ package org.multibit.model.exchange;
 
 import org.multibit.model.AbstractModel;
 import org.multibit.model.ModelEnum;
+import org.multibit.model.core.CoreModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cameron Garnham
  */
-public class ExchangeModel extends AbstractModel {
+public class ExchangeModel extends AbstractModel<CoreModel> {
     
    private static final Logger log = LoggerFactory.getLogger(ExchangeModel.class);
     
@@ -61,14 +62,37 @@ public class ExchangeModel extends AbstractModel {
     private ExchangeData exchangeData1;
     private ExchangeData exchangeData2;;
     
-    public ExchangeModel(String shortExchangeName1, String shortExchangeName2){
+    
+    public ExchangeModel(CoreModel coreModel){
+        this(coreModel, null, null);
+    }
+    
+    
+    public ExchangeModel(CoreModel coreModel, String shortExchangeName1, String shortExchangeName2){
+        super(coreModel);
+        
         exchangeData1 = new ExchangeData();
         exchangeData2 = new ExchangeData();
-        exchangeData1.setShortExchangeName(shortExchangeName1);
-        exchangeData2.setShortExchangeName(shortExchangeName2);
         
-        //exchangeData1.setShortExchangeName(getUserPreference(TICKER_FIRST_ROW_EXCHANGE));
-        //exchangeData2.setShortExchangeName(getUserPreference(TICKER_SECOND_ROW_EXCHANGE));
+        String name1 = shortExchangeName1;
+        String name2 = shortExchangeName2;
+        
+        if (null == name1){
+            name1 = super.getUserPreference(TICKER_FIRST_ROW_EXCHANGE);
+            if (null == name1) {
+                name1 = "USD"; // hardcoded default for now
+            }
+        }
+        
+        if (null == name2){
+            name2 = super.getUserPreference(TICKER_SECOND_ROW_EXCHANGE);
+            if (null == name2) {
+                name2 = "CAD"; // hardcoded default for now
+            }
+        }
+        
+        exchangeData1.setShortExchangeName(name1);
+        exchangeData2.setShortExchangeName(name2);
     }
     
     

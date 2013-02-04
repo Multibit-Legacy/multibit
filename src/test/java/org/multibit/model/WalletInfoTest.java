@@ -58,7 +58,7 @@ public class WalletInfoTest extends TestCase {
         controller.setLocaliser(localiser);
 
         CoreModel coreModel = new CoreModel();
-        BitcoinModel bitcoinModel = new BitcoinModel();
+        BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
 
         controller.setCoreModel(coreModel);
         controller.setBitcoinModel(bitcoinModel);
@@ -129,7 +129,7 @@ public class WalletInfoTest extends TestCase {
         controller.setLocaliser(localiser);
 
         CoreModel coreModel = new CoreModel();
-        BitcoinModel bitcoinModel = new BitcoinModel();
+        BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
 
         controller.setCoreModel(coreModel);
         controller.setBitcoinModel(bitcoinModel);

@@ -49,6 +49,7 @@ import org.multibit.model.ModelEnum;
 import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.model.bitcoin.wallet.WalletTableData;
 import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.store.ReplayableBlockStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Cameron Garnham
  */
-public class BitcoinModel extends AbstractModel {
+public class BitcoinModel extends AbstractModel<CoreModel> {
 
     private static final Logger log = LoggerFactory.getLogger(BitcoinModel.class);
 
@@ -173,17 +174,24 @@ public class BitcoinModel extends AbstractModel {
      */
     private WalletData activeWalletModelData;
     
-    private NetworkParametersEnum networkPramEnum;
+    private NetworkParametersEnum networkPramEnum = null;
     
 
     
-    public BitcoinModel(){
-        this(null);
+    public BitcoinModel(CoreModel coreModel){
+        this(coreModel, null);
     }
 
-    public BitcoinModel(NetworkParametersEnum networkPramEnum) {
+    public BitcoinModel(CoreModel coreModel, NetworkParametersEnum networkPramEnum) {
         
-        this.networkPramEnum = (null != networkPramEnum) ? networkPramEnum : NetworkParametersEnum.PRODUCTION_NETWORK;
+        super(coreModel);
+        
+        this.networkPramEnum = (null != networkPramEnum) ? networkPramEnum : this.getNetworkParametersEnum();
+
+        perWalletModelDataList = new LinkedList<WalletData>();
+
+        activeWalletModelData = new WalletData();
+        perWalletModelDataList.add(activeWalletModelData);
     }
 
     @Override
@@ -674,6 +682,28 @@ public class BitcoinModel extends AbstractModel {
         return null;
     }
 
+    
+    public final NetworkParametersEnum getNetworkParametersEnum(){
+        
+        if (null != this.networkPramEnum) {
+            return this.networkPramEnum;
+        }
+        
+        String testOrProduction = super.getUserPreference(BitcoinModel.TEST_OR_PRODUCTION_NETWORK);
+        if (null == testOrProduction) {
+            testOrProduction = BitcoinModel.PRODUCTION_NETWORK_VALUE;
+            super.setUserPreference(BitcoinModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
+        }
+
+        if (BitcoinModel.TEST_NETWORK_VALUE.equalsIgnoreCase(testOrProduction)) {
+            return NetworkParametersEnum.OLD_TEST_NETWORK;
+        } else if (BitcoinModel.TESTNET3_VALUE.equalsIgnoreCase(testOrProduction)) {
+            return NetworkParametersEnum.TEST_NETWORK;
+        } else {
+            return NetworkParametersEnum.OLD_TEST_NETWORK;
+        }
+    }
+    
     public NetworkParameters getNetworkParameters() {
 
         switch (this.networkPramEnum) {

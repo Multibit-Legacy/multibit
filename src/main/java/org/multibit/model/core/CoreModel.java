@@ -24,7 +24,7 @@
 package org.multibit.model.core;
 
 import java.util.Properties;
-import org.multibit.model.AbstractModel;
+import org.multibit.model.BaseModel;
 import org.multibit.model.ModelEnum;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cameron Garnham
  */
-public class CoreModel extends AbstractModel {
+public class CoreModel extends BaseModel<CoreModel> {
 
     private static final Logger log = LoggerFactory.getLogger(CoreModel.class);
     
@@ -67,8 +67,6 @@ public class CoreModel extends AbstractModel {
     public static final String CAN_UNDO_PREFERENCES_CHANGES = "canUndoPreferencesChanges";
     
     
-    // User preferences.
-    private Properties userPreferences;
     /**
      * The currently displayed view. One of the View constants.
      */
@@ -79,14 +77,15 @@ public class CoreModel extends AbstractModel {
     }
 
     public CoreModel(Properties userPreferences) {
-        this.userPreferences = (null != userPreferences) ? userPreferences : new Properties();
+        
+        super((null != userPreferences) ? userPreferences : new Properties());
 
         // Initialize everything to look at the stored opened view.
         // If no properties passed in just initialize to the default view.
-        if (userPreferences != null) {
+        if (super.userPreferences != null) {
             // first try and find a old view setting.
             View initialViewInProperties = null;
-            Object oldViewObject = userPreferences.get(CoreModel.SELECTED_VIEW);
+            Object oldViewObject = super.userPreferences.get(CoreModel.SELECTED_VIEW);
 
             String oldViewString = (null != oldViewObject) ? (String) oldViewObject : null;
 
@@ -101,14 +100,15 @@ public class CoreModel extends AbstractModel {
                     
                     // Remove the old view property from the properties - replaced by enum.
                     // (It may be put back in for backwads compatibility in FileHandler#writeUserPreferences.
-                    userPreferences.remove(CoreModel.SELECTED_VIEW);
+                    super.userPreferences.remove(CoreModel.SELECTED_VIEW);
+
                 }
             }
 
             // If oldViewInProperties is still null,  try and find the view.
             if (null == initialViewInProperties) {
-                Object viewObject = userPreferences.get(CoreModel.SELECTED_VIEW_ENUM);
 
+                Object viewObject = super.userPreferences.get(CoreModel.SELECTED_VIEW_ENUM);
                 String viewString = (null != viewObject) ? (String) viewObject : null;
 
                 if (viewString != null) {
@@ -131,30 +131,14 @@ public class CoreModel extends AbstractModel {
         return ModelEnum.CORE;
     }
     
-    /**
-     * Get a user preference.
-     *
-     * @param key String key of property
-     * @return String property value
-     */
-    public String getUserPreference(String key) {
-        return userPreferences.getProperty(key);
-    }
 
-    /**
-     * Set a user preference.
-     *
-     * @return
-     */
-    public void setUserPreference(String key, String value) {
-        if (key != null && value != null) {
-            userPreferences.put(key, value);
-        }
+    public View getCurrentView() {
+        return currentView;
     }
 
     public final void setCurrentView(View view) {
         this.currentView = view;
-        setUserPreference(SELECTED_VIEW_ENUM, view.name());
+        super.setUserPreference(SELECTED_VIEW_ENUM, view.name());
     }
 
     /**
@@ -163,17 +147,15 @@ public class CoreModel extends AbstractModel {
      * @return
      */
     public Properties getAllUserPreferences() {
-        return userPreferences;
+        return super.userPreferences;
     }
 
     /**
      * Set all user preferences.
      */
     public void setAllUserPreferences(Properties properties) {
-        userPreferences = properties;
+        super.userPreferences = properties;
     }
 
-    public View getCurrentView() {
-        return currentView;
-    }
+
 }

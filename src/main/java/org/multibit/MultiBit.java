@@ -169,13 +169,8 @@ public class MultiBit {
                 // Create the models.
                 CoreModel coreModel = new CoreModel(userPreferences);
                 
-                NetworkParametersEnum networkPram = NetworkParametersEnum.getFromPreferences(coreModel);
-                BitcoinModel bitcoinModel = new BitcoinModel(networkPram);
-
-                ExchangeModel exchangeModel = new ExchangeModel(
-                        coreModel.getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE),
-                        coreModel.getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE)
-                        );
+                BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
+                ExchangeModel exchangeModel = new ExchangeModel(coreModel);
                 
                 controller.setCoreModel(coreModel);
                 controller.setBitcoinModel(bitcoinModel);

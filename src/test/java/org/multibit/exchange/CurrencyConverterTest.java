@@ -40,7 +40,7 @@ public class CurrencyConverterTest extends TestCase {
         
         CoreModel coreModel = new CoreModel();
         
-        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+        ExchangeModel exchangeModel = new ExchangeModel(coreModel,"USD","CAD");
           
         controller.setCoreModel(coreModel);
         controller.setExchangeModel(exchangeModel);
@@ -75,7 +75,7 @@ public class CurrencyConverterTest extends TestCase {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
         CoreModel coreModel = new CoreModel();
-        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+        ExchangeModel exchangeModel = new ExchangeModel(coreModel,"USD","CAD");
           
         controller.setCoreModel(coreModel);
         controller.setExchangeModel(exchangeModel);
@@ -105,7 +105,7 @@ public class CurrencyConverterTest extends TestCase {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
         CoreModel coreModel = new CoreModel();
-        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+        ExchangeModel exchangeModel = new ExchangeModel(coreModel,"USD","CAD");
           
         controller.setCoreModel(coreModel);
         controller.setExchangeModel(exchangeModel);
@@ -135,7 +135,7 @@ public class CurrencyConverterTest extends TestCase {
         
         @SuppressWarnings("unused")
         CoreModel coreModel = new CoreModel();
-        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+        ExchangeModel exchangeModel = new ExchangeModel(coreModel,"USD","CAD");
           
         controller.setCoreModel(coreModel);
         controller.setExchangeModel(exchangeModel);
@@ -173,7 +173,7 @@ public class CurrencyConverterTest extends TestCase {
         
         @SuppressWarnings("unused")
         CoreModel coreModel = new CoreModel();
-        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+        ExchangeModel exchangeModel = new ExchangeModel(coreModel,"USD","CAD");
           
         controller.setCoreModel(coreModel);
         controller.setExchangeModel(exchangeModel);
@@ -212,7 +212,7 @@ public class CurrencyConverterTest extends TestCase {
         
         @SuppressWarnings("unused")
         CoreModel coreModel = new CoreModel();
-        ExchangeModel exchangeModel = new ExchangeModel("USD","CAD");
+        ExchangeModel exchangeModel = new ExchangeModel(coreModel,"USD","CAD");
           
         controller.setCoreModel(coreModel);
         controller.setExchangeModel(exchangeModel);

@@ -41,7 +41,7 @@ public class ActionTestUtils {
 
         Localiser localiser = new Localiser(Locale.ENGLISH);
         CoreModel coreModel = new CoreModel();
-        BitcoinModel bitcoinModel = new BitcoinModel();
+        BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
 
         controller.setCoreModel(coreModel);
         controller.setBitcoinModel(bitcoinModel);

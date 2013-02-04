@@ -27,6 +27,25 @@ package org.multibit.model;
  *
  * @author Cameron Garnham
  */
-public abstract class AbstractModel implements Model {
-    // nothing here... yet.
+public abstract class AbstractModel<B extends BaseModel<B>> implements Model {
+
+    B baseModel;
+    
+    public AbstractModel(B baseModel)
+    {
+        if (null == baseModel) {
+            throw new NullPointerException();
+        }
+        this.baseModel = baseModel;
+    }
+    
+    @Override
+    public String getUserPreference(String key) {
+        return baseModel.getUserPreference(key);
+    }
+
+    @Override
+    public void setUserPreference(String key, String value) {
+        baseModel.setUserPreference(key, value);
+    } 
 }

@@ -23,14 +23,45 @@
  */
 package org.multibit.model;
 
+import java.util.Properties;
+
 /**
  *
  * @author Cameron Garnham
  */
-public interface Model {
+public abstract class BaseModel<M extends BaseModel<M>> implements Model {
     
-    ModelEnum getModelEnum();
+    protected Properties userPreferences;
     
-    String getUserPreference(String key);
-    void setUserPreference(String key, String value);
+    protected BaseModel(Properties userPreferences) {
+        
+        if (null == userPreferences) {
+            throw new NullPointerException();
+        }
+        
+        this.userPreferences = userPreferences;
+    }
+    
+    /**
+     * Get a user preference.
+     *
+     * @param key String key of property
+     * @return String property value
+     */
+    @Override
+    public String getUserPreference(String key) {
+        return userPreferences.getProperty(key);
+    }
+    
+    /**
+     * Set a user preference.
+     *
+     * @return
+     */
+    @Override
+    public void setUserPreference(String key, String value) {
+        if (key != null && value != null) {
+            userPreferences.put(key, value);
+        }
+    }
 }

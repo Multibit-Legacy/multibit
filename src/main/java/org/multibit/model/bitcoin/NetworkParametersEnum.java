@@ -34,23 +34,5 @@ public enum NetworkParametersEnum {
 
     PRODUCTION_NETWORK,
     TEST_NETWORK,
-    OLD_TEST_NETWORK;
-
-    public static NetworkParametersEnum getFromPreferences(CoreModel coreModel) {
-        // If test or production is not specified, default to production.
-
-        String testOrProduction = coreModel.getUserPreference(BitcoinModel.TEST_OR_PRODUCTION_NETWORK);
-        if (null == testOrProduction) {
-            testOrProduction = BitcoinModel.PRODUCTION_NETWORK_VALUE;
-            coreModel.setUserPreference(BitcoinModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
-        }
-
-        if (BitcoinModel.TEST_NETWORK_VALUE.equalsIgnoreCase(testOrProduction)) {
-            return OLD_TEST_NETWORK;
-        } else if (BitcoinModel.TESTNET3_VALUE.equalsIgnoreCase(testOrProduction)) {
-            return TEST_NETWORK;
-        } else {
-            return OLD_TEST_NETWORK;
-        }
-    }
+    OLD_TEST_NETWORK
 }
