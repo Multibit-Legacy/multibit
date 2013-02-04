@@ -15,11 +15,11 @@
  */
 package org.multibit.model;
 
-import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
+//import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.btce.BTCEExchange;
 import com.xeiam.xchange.campbx.CampBXExchange;
-import com.xeiam.xchange.oer.OERExchange;
+//import com.xeiam.xchange.oer.OERExchange;
 import com.xeiam.xchange.virtex.VirtExExchange;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -155,14 +155,14 @@ public class ExchangeData {
     public static String convertExchangeShortNameToClassname(String shortExchangeName) {
         if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName)) {
             return "com.xeiam.xchange.mtgox.v1.MtGoxExchange";
-        } else if (BITCOIN_CHARTS_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-            return  BitcoinChartsExchange.class.getName();
+//        } else if (BITCOIN_CHARTS_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+//            return  BitcoinChartsExchange.class.getName();
         } else if (VIRTEX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  VirtExExchange.class.getName();
         } else if (BTCE_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  BTCEExchange.class.getName();
-        } else if (OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-            return  OERExchange.class.getName();
+//        } else if (OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+//            return  OERExchange.class.getName();
 //        } else if (BITCOIN_CENTRAL_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
 //            return  BitcoinCentralExchange.class.getName();
         } else if (CAMPBX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {

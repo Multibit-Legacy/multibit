@@ -16,152 +16,123 @@
 
 package org.multibit.network;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
-import javax.swing.SwingWorker;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.discovery.PeerDiscovery;
 import com.google.bitcoin.discovery.PeerDiscoveryException;
+import com.google.common.collect.Sets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.*;
 
 /**
- * Supports peer discovery through DNS.
- * <p>
+ * <p>Supports peer discovery through DNS.</p>
+ *
+ * <p>This class does not support the testnet as currently there are no DNS servers providing testnet hosts.
+ * If this class is being used for testnet you must specify the hostnames to use.</p>
+ *
+ * <p>Failure to resolve individual host names will not cause an Exception to be thrown.
+ * However, if all hosts passed fail to resolve a PeerDiscoveryException will be thrown during getPeers().
+ * </p>
+ *
+ * <p>DNS seeds do not attempt to enumerate every peer on the network. {@link DnsDiscovery#getPeers(long, java.util.concurrent.TimeUnit)}
+ * will return up to 30 random peers from the set of those returned within the timeout period. If you want more peers
+ * to connect to, you need to discover them via other means (like addr broadcasts).
+ * </p>
  * 
- * This class does not support the testnet as currently there are no DNS servers
- * providing testnet hosts. If this class is being used for testnet you must
- * specify the hostnames to use.
- * <p>
- * 
- * Failure to resolve individual host names will not cause an Exception to be
- * thrown. However, if all hosts passed fail to resolve a PeerDiscoveryException
- * will be thrown during getPeers().
+ * This is a straight copy of the bitcionj 0.7 DnsDiscovery class which is to good to wait for.
  */
 public class MultiBitDnsDiscovery implements PeerDiscovery {
     private static final Logger log = LoggerFactory.getLogger(MultiBitDnsDiscovery.class);
 
-    private static final int SLEEP_PERIOD = 3000; // milliseconds
-    private static final int MAXIMUM_CONNECT_TIME = 60 * 1000; // milliseconds
-    private static final int MINIMUM_NUMBER_OF_PEERS_TO_FIND = 4;
-
     private String[] hostNames;
     private NetworkParameters netParams;
 
-    private final Set<InetSocketAddress> addresses = new HashSet<InetSocketAddress>();
-
-    public static final String[] defaultHosts = new String[] { 
-            "seed.bitcoin.sipa.be",       // Pieter Wuille
-            "dnsseed.bluematt.me",        // Matt Corallo
-            "dnsseed.bitcoin.dashjr.org", // Luke Dashjr
-            "bitseed.xf2.org"             // Jeff Garzik
+    public static final String[] defaultHosts = new String[]{
+            "seed.bitcoin.sipa.be",        // Pieter Wuille
+            "dnsseed.bluematt.me",         // Matt Corallo
+            "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
+            "bitseed.xf2.org",             // Jeff Garzik
     };
-    
-    private boolean canReturnCache = false;
-    private boolean haveReturnedCurrentCache = false;
-    private Random random;
 
     /**
-     * Supports finding peers through DNS A records. Community run DNS entry
-     * points will be used.
-     * 
-     * @param netParams
-     *            Network parameters to be used for port information.
+     * Supports finding peers through DNS A records. Community run DNS entry points will be used.
+     *
+     * @param netParams Network parameters to be used for port information.
      */
     public MultiBitDnsDiscovery(NetworkParameters netParams) {
-        this.hostNames = defaultHosts;
-        this.netParams = netParams;
-        
-        random = new Random();
-    }
-
-    public InetSocketAddress[] getPeers() throws PeerDiscoveryException {
-        if (canReturnCache && !haveReturnedCurrentCache) {
-            InetSocketAddress[] addressesToReturn;
-            
-            synchronized(addresses) {
-                addressesToReturn = createAddressesArray(addresses);
-            }
-            haveReturnedCurrentCache = true;
-            
-            return addressesToReturn;
-        }
-        
-        canReturnCache = false;
-        haveReturnedCurrentCache = false;
- 
-        // Clear any existing addresses found as they may be offline.
-        synchronized(addresses) {
-            addresses.clear();
-        }    
-     
-        for (String hostName : hostNames) {
-            try {
-                // Find inetSocketAddresses in background.
-                findPeerAddressesInBackground(hostName);
-            } catch (Exception e) {
-                log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
-            }
-        }
-
-        // Wait until we see at least the minimum required addresses 
-        int waitTime = 0;
-        while (waitTime < MAXIMUM_CONNECT_TIME 
-                && addresses.size() < MINIMUM_NUMBER_OF_PEERS_TO_FIND) {
-            try {
-                log.debug("At time '" + waitTime + "' had found " +  addresses.size() + " peers.");
-                Thread.sleep(SLEEP_PERIOD);
-                waitTime = waitTime + SLEEP_PERIOD;
-            } catch (InterruptedException e) {
-                log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
-            }
-        }
-        log.debug("At time '" + waitTime + "' had found " +  addresses.size() + " peers.");
-        
-        if (addresses.size() >= 1) {
-            canReturnCache = true;
-        }
-
-        InetSocketAddress[] addressesToReturn;
-        
-        synchronized(addresses) {
-            addressesToReturn = createAddressesArray(addresses);
-//            for (int i = 0; i < addressesToReturn.length; i++) {
-//                log.debug("addressToReturn(" + i + ") = " +  addressesToReturn[i].toString());
-//            }
-        }
-        return addressesToReturn;
+        this(getDefaultHostNames(), netParams);
     }
 
     /**
-     * Create randomised list of peers.
+     * Supports finding peers through DNS A records.
+     *
+     * @param hostNames Host names to be examined for seed addresses.
+     * @param netParams Network parameters to be used for port information.
      */
-    private InetSocketAddress[] createAddressesArray(Set<InetSocketAddress> addresses) {
-        InetSocketAddress[] peersArray = addresses.toArray(new InetSocketAddress[] {});
-        
-        // Randomly swop the first half of the addresses with any other for load balancing across clients.
-        for (int i = 0; i < (int)(peersArray.length *.5); i++) {
-            InetSocketAddress temp = peersArray[i];
-            int randomNumber = random.nextInt(peersArray.length);
-            
-            peersArray[i] = peersArray[randomNumber];
-            peersArray[randomNumber] = temp;
-        }
-        
-        return peersArray;
+    public MultiBitDnsDiscovery(String[] hostNames, NetworkParameters netParams) {
+        this.hostNames = hostNames;
+        this.netParams = netParams;
     }
-    
+
+    public InetSocketAddress[] getPeers(long timeoutValue, TimeUnit timeoutUnit) throws PeerDiscoveryException {
+        final BlockingQueue<InetSocketAddress> queue = new LinkedBlockingQueue<InetSocketAddress>();
+
+        ArrayList<String> seeds = new ArrayList<String>(Arrays.asList(hostNames));
+        // Java doesn't have an async DNS API so we have to do all lookups in a thread pool, as sometimes seeds go
+        // hard down and it takes ages to give up and move on.
+        ExecutorService pool = Executors.newFixedThreadPool(seeds.size());
+        for (final String seed : seeds) {
+            pool.submit(new Runnable() {
+                public void run() {
+                    try {
+                        InetAddress[] addrs = InetAddress.getAllByName(seed);
+                        for (InetAddress addr : addrs) queue.put(new InetSocketAddress(addr, netParams.port));
+                    } catch (UnknownHostException e) {
+                        log.warn("Unable to resolve {}", seed);
+                    } catch (InterruptedException e) {
+                        // Silently go away.
+                    }
+                }
+            });
+        }
+        // The queue will fill up with resolutions. Let's wait until we got at least 30 or we run out of time.
+        final long timeout = timeoutUnit.toMillis(timeoutValue);
+        long start = System.currentTimeMillis();
+        Set<InetSocketAddress> addrs = Sets.newHashSet();
+        while (addrs.size() < 30) {
+            try {
+                long pollTime = timeout - (System.currentTimeMillis() - start);
+                if (pollTime < 0) break;
+                InetSocketAddress a = queue.poll(pollTime, TimeUnit.MILLISECONDS);
+                if (a == null) {
+                    break;
+                }
+                addrs.add(a);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+        if (addrs.size() == 0) {
+            throw new PeerDiscoveryException("Unable to find any peers via DNS");
+        }
+        ArrayList<InetSocketAddress> shuffledAddrs = new ArrayList<InetSocketAddress>(addrs);
+        Collections.shuffle(shuffledAddrs);
+        pool.shutdown();
+        return shuffledAddrs.toArray(new InetSocketAddress[]{});
+    }
+
     /**
      * Returns the well known discovery host names on the production network.
      */
-    public static String[] getDefaulHostNames() {
+    public static String[] getDefaultHostNames() {
         return defaultHosts;
     }
 
@@ -169,61 +140,8 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
     public void shutdown() {
     }
 
-    /**
-     * Get the peer addresses in a background Swing worker thread.
-     */
-    private void findPeerAddressesInBackground(final String hostName) {
-        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
-            private Set<InetSocketAddress> backgroundAddresses = new HashSet<InetSocketAddress>();
-
-            @Override
-            protected Boolean doInBackground() throws Exception {
-                Boolean successMeasure = Boolean.FALSE;
-
-                try {
-                    log.debug("Discovery of all addresses for '" + hostName + "' started at + " + (new Date()).toString());
-                    InetAddress[] hostAddresses = InetAddress.getAllByName(hostName);
-                    log.debug("Discovery of all addresses for '" + hostName + "' finished at + " + (new Date()).toString());
-
-                    for (InetAddress inetAddress : hostAddresses) {
-                        // DNS isn't going to provide us with the port.
-                        // Grab the port from the specified NetworkParameters.
-                        InetSocketAddress socketAddress = new InetSocketAddress(inetAddress, netParams.port);
-
-                        // Only add the new address if it's not already in the
-                        // combined list.
-                        if (!backgroundAddresses.contains(socketAddress)) {
-                            backgroundAddresses.add(socketAddress);
-                        }
-                    }
-                    successMeasure = Boolean.TRUE;
-
-                    log.debug("Discovery of hostname '" + hostName + "' adding addresses finished at + " + (new Date()).toString());
-                } catch (Exception e2) {
-                    log.info("DNS lookup for " + hostName + " failed. Error was '" + e2.getClass() + " " + e2.getMessage());
-                }
-
-                return successMeasure;
-            }
-
-            protected void done() {
-                try {
-                    // Add addresses for this host onto the allhosts - set.
-                    Boolean wasSuccessful = get();
-
-                    if (wasSuccessful) {
-                        synchronized (addresses) {
-                            addresses.addAll(backgroundAddresses);
-                        }
-                    }
-                } catch (Exception e) {
-                    // Not really used but caught so that SwingWorker shuts down
-                    // cleanly.
-                    log.error(e.getClass() + " " + e.getMessage());
-                }
-            }
-        };
-        log.debug("Finding peers in background SwingWorker thread for host " + hostName);
-        worker.execute();
+    @Override
+    public InetSocketAddress[] getPeers() throws PeerDiscoveryException {
+        return getPeers(1000, TimeUnit.MILLISECONDS);
     }
 }

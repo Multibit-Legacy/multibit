@@ -39,27 +39,21 @@
 
     <repositories>
         <repository>
+            <id>sonatype-oss-snapshot</id>
+            <snapshots/>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <!-- bitcoin-j repo -->
+        <repository>
             <id>bitcoinj-release</id>
-            <releases/>
+            <releases />
             <url>http://nexus.bitcoinj.org/content/repositories/releases</url>
         </repository>
         <repository>
             <id>bitcoinj-snapshot</id>
-            <snapshots/>
+            <snapshots />
             <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
         </repository>
-        <!-- xeiam repo -->
-        <repository>
-            <id>xeiam-release</id>
-            <releases />
-            <url>http://nexus.xeiam.com/content/repositories/releases/</url>
-        </repository>
-        <repository>
-            <id>xeiam-snapshot</id>
-            <snapshots />
-            <url>http://nexus.xeiam.com/content/repositories/snapshots/</url>
-        </repository>
-
         <!-- zxing repo -->
         <repository>
             <id>mvn-adamgent</id>
@@ -548,61 +542,43 @@
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-core</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-mtgox</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-cavirtex</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-btce</artifactId>
-            <version>1.3.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-openexchangerates</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-campbx</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-bitstamp</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-bitcoincharts</artifactId>
-            <version>1.3.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <!--    <dependency>
-          <groupId>com.xeiam.xchange</groupId>
-          <artifactId>xchange-bitcoincentral</artifactId>
-          <version>1.3.0</version>
-          <scope>compile</scope>
-        </dependency>-->
-        <dependency>
-            <groupId>com.xeiam</groupId>
+            <groupId>com.xeiam.xchart</groupId>
             <artifactId>xchart</artifactId>
-            <version>1.2.1</version>
+            <version>1.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.izpack</groupId>
@@ -631,7 +607,7 @@
         <dependency>
             <groupId>org.joda</groupId>
             <artifactId>joda-money</artifactId>
-            <version>0.6</version> 
+            <version>0.8</version> 
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
