@@ -142,6 +142,6 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
 
     @Override
     public InetSocketAddress[] getPeers() throws PeerDiscoveryException {
-        return getPeers(1000, TimeUnit.MILLISECONDS);
+        return getPeers(10, TimeUnit.SECONDS);
     }
 }
