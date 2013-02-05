@@ -85,7 +85,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
                         // We are already displaying the correct tab.
                         // Just update the contents.
                         selectedView.displayView();
-                        controller.fireDataChanged();
+                        controller.fireDataChangedUpdateNow();
                     } else {
                         // Select the new tab, update the content.
                         controller.setCurrentView(selectedView.getViewId());
@@ -93,7 +93,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
                         // Fire data change but no need to redisplay the view
                         enableUpdates = false;
-                        controller.fireDataChanged();
+                        controller.fireDataChangedUpdateNow();
                         enableUpdates = true;
                     }
                 }

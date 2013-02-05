@@ -21,52 +21,59 @@ import org.multibit.model.StatusEnum;
 import com.google.bitcoin.core.WalletEventListener;
 
 /**
- * An interface describing a collection of views that are used to render the MultiBit application
+ * An interface describing a collection of views that are used to render the MultiBit application.
  * @author jim
  *
  */
 public interface ViewSystem extends WalletEventListener { 
     /**
-     * display the view specified
-     * @param view to display - one of the View constants
+     * Display the view specified.
+     * @param view to display - one of the View constants.
      */   
     public void displayView(View viewToDisplay);
     
     /**
-     * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
-     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
+     * Navigate away from a view - gives the view the opportunity to tidy up/ disappear etc.
+     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants.
      */   
     public void navigateAwayFromView(View viewToNavigateAwayFrom);
            
     /**
-     * tells the view system that the model data has changed (but the wallet is still the same)
+     * Tells the view system that the model data has changed (but the wallet is still the same).
+     * Use this variant for when you want the UI to update immediately (typically after user generated events).
      */   
-    public void fireDataChanged();
+    public void fireDataChangedUpdateNow();
     
     /**
-     * tells the view system to recreate all views e.g. after a language change or wallet change
+     * Tells the view system that the model data has changed (but the wallet is still the same).
+     * Use this variant for when you want the UI to collapse multiple events and only update at, say, 1 second interval.
+     */   
+    public void fireDataChangedUpdateLater();
+    
+    /**
+     * Tells the view system to recreate all views e.g. after a language change or wallet change.
      * @param initUI Completely redraw everything on all screens = true
      */   
     public void recreateAllViews(boolean initUI, View initialView);
        
      /**
-     * tells the view system that an external process has modified one of the wallets
+     * Tells the view system that an external process has modified one of the wallets.
      */
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData);
 
     /**
-     * a method called when MultiBit online status changes between online, connecting. error
+     * A method called when MultiBit online status changes between online, connecting. error.
      */
     public void setOnlineStatus(StatusEnum statusEnum);
    
     /**
-     * notification that a block has been downloaded
+     * Notification that a block has been downloaded.
      * (this is typically called from a peer thread)
      */
     public void blockDownloaded();
  
     /**
-     * Set the help context to display
+     * Set the help context to display.
      * @param helpContextToDisplay
      */
     public void setHelpContext(String helpContextToDisplay);

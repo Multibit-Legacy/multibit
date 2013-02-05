@@ -111,7 +111,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                     }
             }
         }
-        controller.fireDataChanged();
+        controller.fireDataChangedUpdateNow();
 
         // Success.
         SwingUtilities.invokeLater(new Runnable() {

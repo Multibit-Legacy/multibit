@@ -244,7 +244,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
 
         setCurrentView(viewToDisplay);
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
 
     /**
@@ -258,11 +258,21 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     }
 
     /**
-     * Fire that the model data has changed.
+     * Fire that the model data has changed and the UI should be updated immediately.
      */
-    public void fireDataChanged() {
+    public void fireDataChangedUpdateNow() {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.fireDataChanged();
+            viewSystem.fireDataChangedUpdateNow();
+        }
+    }
+
+
+    /**
+     * Fire that the model data has changed and similar events are collapsed.
+     */
+    public void fireDataChangedUpdateLater() {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.fireDataChangedUpdateLater();
         }
     }
 
@@ -271,7 +281,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         }
 
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
        
     /**
@@ -350,13 +360,11 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
             }
         }
 
-        fireDataChanged();
+        fireDataChangedUpdateLater();
     }
 
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        //log.debug("Firing confidence change in onTransactionConfidenceChanged.");
-        
         // Set the depth in blocks as this does not seem to get updated anywhere.
 //        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
 //            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
@@ -364,7 +372,6 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
-//        checkForDirtyWallets(transaction);
     }
 
     @Override

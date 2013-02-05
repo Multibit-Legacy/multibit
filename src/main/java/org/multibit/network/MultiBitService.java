@@ -266,6 +266,18 @@ public class MultiBitService {
         }
         // Add the controller as a PeerEventListener.
         peerGroup.addEventListener(controller.getPeerEventListener());
+        
+        // Add all existing wallets to the PeerGroup.
+        if (controller != null && controller.getModel() != null) {
+            List<PerWalletModelData> perWalletDataModels = controller.getModel().getPerWalletModelDataList();
+            if (perWalletDataModels != null) {
+                for (PerWalletModelData perWalletDataModel : perWalletDataModels) {
+                    if (perWalletDataModel != null && perWalletDataModel.getWallet() != null) {
+                        peerGroup.addWallet(perWalletDataModel.getWallet());
+                    }
+                }
+            }
+        }
         return peerGroup;
     }
 
@@ -409,8 +421,6 @@ public class MultiBitService {
      *            from genesis block
      */
     public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException {
-        boolean restartPeerGroup = true;
-        
         MessageManager.INSTANCE.addMessage(new Message (controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay")));
         
         // Navigate backwards in the blockchain to work out how far back in time to go.
@@ -509,12 +519,13 @@ public class MultiBitService {
         }
         MessageManager.INSTANCE.addMessage(message);
 
+        log.debug("About to restart PeerGroup.");
+        restartPeerGroup();
+        log.debug("Restarted PeerGroup.");
 
-        if (restartPeerGroup) {
-            restartPeerGroup();
-        }
-
+        log.debug("About to start  blockchain download.");
         downloadBlockChain();
+        log.debug("Blockchain download started.");
     }
     
     public void restartPeerGroup() {

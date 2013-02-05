@@ -212,7 +212,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitWalletBusyAction showExportPrivateKeysAction;
 
     
-    public static final int FIRE_DATA_CHANGED_DELAY_TIME = 500; // milliseconds
+    /**
+     * For events coming from Peers condense the events into regular updates.
+     * This is to prevent the UI thrashing with hundreds of events per second.
+     */
+    public static final int FIRE_DATA_CHANGED_UPDATE_LATER_DELAY_TIME = 1000; // milliseconds
+ 
     /**
      * Timer used to condense multiple updates
      */
@@ -312,7 +317,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         fireDataChangedTimerTask = new FireDataChangedTimerTask(this);
         fireDataChangedTimer = new Timer();
-        fireDataChangedTimer.scheduleAtFixedRate(fireDataChangedTimerTask, FIRE_DATA_CHANGED_DELAY_TIME, FIRE_DATA_CHANGED_DELAY_TIME);
+        fireDataChangedTimer.scheduleAtFixedRate(fireDataChangedTimerTask, FIRE_DATA_CHANGED_UPDATE_LATER_DELAY_TIME, FIRE_DATA_CHANGED_UPDATE_LATER_DELAY_TIME);
     }
 
     public GenericApplication getApplication() {
@@ -1214,12 +1219,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
 
     @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
 
     /**
@@ -1253,24 +1258,39 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2")), true);
             MessageManager.INSTANCE.addMessage(message);
         }
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
 
     /**
      * Mark that the UI needs to be updated.
      */
     @Override
-    public void fireDataChanged() {
+    public void fireDataChangedUpdateNow() {
+        if (EventQueue.isDispatchThread()) {
+            fireDataChangedOnSwingThread();   
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    fireDataChangedOnSwingThread(); 
+                }
+            });
+        }
+    }
+    
+
+    @Override
+    public void fireDataChangedUpdateLater() {
         if (fireDataChangedTimerTask != null) {
             fireDataChangedTimerTask.setFireDataChanged(true);
-        }
+        }    
     }
     
     /**
      * Actually update the UI.
-     * (cCalled back from the FireDataChangedTimerTask).
+     * (Called back from the FireDataChangedTimerTask).
      */
-    public void fireDataChangedOnSwingThread() {
+    private void fireDataChangedOnSwingThread() {
         updateHeader();
 
         // Update the password related menu items.
@@ -1493,7 +1513,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onWalletChanged(Wallet wallet) {
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
 
     @Override

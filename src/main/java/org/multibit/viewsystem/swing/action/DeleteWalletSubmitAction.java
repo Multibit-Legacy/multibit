@@ -117,7 +117,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
                     .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { ioe.getMessage() }));
         } finally {
             controller.fireRecreateAllViews(true);
-            controller.fireDataChanged();
+            controller.fireDataChangedUpdateNow();
         }
     }
     
@@ -202,7 +202,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         log.debug("User preferences with old wallet deleted were written successfully");
 
         controller.fireRecreateAllViews(true);
-        controller.fireDataChanged();
+        controller.fireDataChangedUpdateNow();
         
         return newWalletCreated;
     }

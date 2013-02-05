@@ -57,8 +57,14 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void fireDataChanged() {
-        System.out.println("SIMPLE. Data has changed");
+    public void fireDataChangedUpdateNow() {
+        System.out.println("SIMPLE. Data has changed - update now.");
+    }
+    
+
+    @Override
+    public void fireDataChangedUpdateLater() {
+        System.out.println("SIMPLE. Data has changed - update later.");
     }
 
     @Override

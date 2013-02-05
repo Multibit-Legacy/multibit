@@ -161,7 +161,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                 controller.fireWalletBusyChange(false);                   
             }
         }
-        controller.fireDataChanged();
+        controller.fireDataChangedUpdateNow();
 
         // Success.
         SwingUtilities.invokeLater(new Runnable() {
