@@ -129,9 +129,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int HEIGHT_OF_HEADER = 70;
     
     public static final int WIDTH_OF_SPLIT_PANE_DIVIDER = 9;
-
-    public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 50;
-    
+   
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
     public static final String SEPARATOR = " - ";
@@ -1219,12 +1217,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        fireDataChangedUpdateNow();
+        fireDataChangedUpdateLater();
     }
 
     @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        fireDataChangedUpdateNow();
+        fireDataChangedUpdateLater();
     }
 
     /**
@@ -1238,16 +1236,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
-        final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ShowTransactionsPanel.updateTransactions();
-                SendBitcoinConfirmPanel.updatePanel(transactionHash, numberOfPeers);
-            }
-        });
+        if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+            ShowTransactionsPanel.updateTransactions(); 
+        } else if (controller.getCurrentView() == View.SEND_BITCOIN_CONFIRM_VIEW) {
+            final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
+            final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
+            SendBitcoinConfirmPanel.updatePanelDueToTransactionConfidenceChange(transactionHash, numberOfPeers); 
+        }
     }
 
     @Override

@@ -55,7 +55,6 @@ import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
@@ -132,6 +131,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     public MultiBitController(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
         this.applicationDataDirectoryLocator = applicationDataDirectoryLocator;
 
+        // NO
         viewSystems = new ArrayList<ViewSystem>();
         
         walletBusyListeners = new ArrayList<WalletBusyListener>();
@@ -151,16 +151,18 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      *            View to display. Must be one of the View constants
      */
     public void displayView(View viewToDisplay) {
-        // log.debug("Displaying view '" + viewToDisplay + "'");
+        log.debug("Displaying view '" + viewToDisplay + "'");
 
-        // tell all views to close the current view
+        // NO
+
+        // Tell all views to close the current view.
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
 
         setCurrentView(viewToDisplay);
 
-        // tell all views which view to display
+        // Tell all views which view to display.
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.displayView(getCurrentView());
         }
@@ -174,14 +176,17 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     public void displayHelpContext(String helpContextToDisplay) {
         log.debug("Displaying help context '" + helpContextToDisplay + "'");
-        // tell all views to close the current view
+        // Tell all views to close the current view.
+
+        // NO
+
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
 
         setCurrentView(View.HELP_CONTENTS_VIEW);
 
-        // tell all views which view to display
+        // Tell all views which view to display.
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.setHelpContext(helpContextToDisplay);
             viewSystem.displayView(View.HELP_CONTENTS_VIEW);
@@ -195,11 +200,12 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      *            system
      */
     public void registerViewSystem(ViewSystem viewSystem) {
+        // NO
         viewSystems.add(viewSystem);
     }
     
     /**
-     * Register a new WalletBusyListener
+     * Register a new WalletBusyListener.
      */
     public void registerWalletBusyListener(WalletBusyListener walletBusyListener) {
         walletBusyListeners.add(walletBusyListener);
@@ -233,6 +239,8 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * The language has been changed.
      */
     public void fireDataStructureChanged() {
+        log.debug("fireDataStructureChanged called");
+
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
         localiser.setLocale(newLocale);
 
@@ -251,6 +259,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * Fire that all the views need recreating.
      */
     public void fireRecreateAllViews(boolean initUI) {
+        log.debug("fireRecreateAllViews called");
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews(initUI, getCurrentView());
@@ -261,6 +270,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * Fire that the model data has changed and the UI should be updated immediately.
      */
     public void fireDataChangedUpdateNow() {
+        log.debug("fireDataChangedUpdateNow called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.fireDataChangedUpdateNow();
         }
@@ -268,7 +278,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
 
 
     /**
-     * Fire that the model data has changed and similar events are collapsed.
+     * Fire that the model data has changed and similar events are to be collapsed.
      */
     public void fireDataChangedUpdateLater() {
         for (ViewSystem viewSystem : viewSystems) {
@@ -277,6 +287,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
+        log.debug("fireFilesHaveBeenChangedByAnotherProcess called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         }
@@ -288,6 +299,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * Fire that a wallet has changed its busy state.
      */
     public void fireWalletBusyChange(boolean newWalletIsBusy) {
+        log.debug("fireWalletBusyChange called");
         for (WalletBusyListener walletBusyListener : walletBusyListeners) {
             walletBusyListener.walletBusyChange(newWalletIsBusy);
         }
@@ -302,6 +314,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     }
 
     public void setOnlineStatus(StatusEnum statusEnum) {
+        log.debug("setOnlineStatus called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.setOnlineStatus(statusEnum);
         }
@@ -317,22 +330,9 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
     }
 
-    private void checkForDirtyWallets(Transaction transaction) {
-        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-            try {
-                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction)) {
-                    loopPerWalletModelData.setDirty(true);
-                    //log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
-                }
-            } catch (ScriptException e) {
-                log.debug(e.getMessage());
-            }
-        }
-    }
-
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        log.debug("onCoinsReceived called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
@@ -340,6 +340,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
 
     @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        log.debug("onCoinsSent called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
@@ -365,10 +366,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
 
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        // Set the depth in blocks as this does not seem to get updated anywhere.
-//        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
-//            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
-//        }
+        //log.debug("onTransactionConfidenceChanged called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
@@ -381,6 +379,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
 
     @Override
     public void onReorganize(Wallet wallet) {
+        log.debug("onReorganize called");
         List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             if (loopPerWalletModelData.getWallet().equals(wallet)) {

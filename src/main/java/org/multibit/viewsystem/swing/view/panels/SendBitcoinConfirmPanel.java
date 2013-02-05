@@ -575,7 +575,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         cancelButton.setVisible(false);
     }
     
-    public static void updatePanel(final Sha256Hash transactionWithChangedConfidenceHash, final int numberOfPeersSeenBy) {
+    public static void updatePanel() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -613,18 +613,6 @@ public class SendBitcoinConfirmPanel extends JPanel {
                         }
                     }
 
-                    MultiBitLabel confirmText2 = thisPanel.getConfirmText2();
-                    if (confirmText2 != null) {
-                        if (thisPanel.getSendBitcoinNowAction() != null) {
-                            Transaction sentTransaction = thisPanel.getSendBitcoinNowAction().getTransaction();
-                            if (sentTransaction != null
-                                    && sentTransaction.getHash().equals(transactionWithChangedConfidenceHash)) {
-                                confirmText2.setText(thisPanel.getConfidenceToolTip(numberOfPeersSeenBy));
-                                confirmText2.setIcon(thisPanel.getConfidenceIcon(numberOfPeersSeenBy));
-                            }
-                        }
-                    }
-                    
                     thisPanel.invalidate();
                     thisPanel.validate();
                     thisPanel.repaint();
@@ -633,6 +621,32 @@ public class SendBitcoinConfirmPanel extends JPanel {
         });
     }
 
+    public static void updatePanelDueToTransactionConfidenceChange(final Sha256Hash transactionWithChangedConfidenceHash,
+            final int numberOfPeersSeenBy) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (thisPanel == null || !thisPanel.isVisible() || thisPanel.getSendBitcoinNowAction() == null) {
+                    return;
+                }
+                Transaction sentTransaction = thisPanel.getSendBitcoinNowAction().getTransaction();
+
+                if (sentTransaction == null || !sentTransaction.getHash().equals(transactionWithChangedConfidenceHash)) {
+                    return;
+                }
+
+                MultiBitLabel confirmText2 = thisPanel.getConfirmText2();
+                if (confirmText2 != null) {
+                    confirmText2.setText(thisPanel.getConfidenceToolTip(numberOfPeersSeenBy));
+                    confirmText2.setIcon(thisPanel.getConfidenceIcon(numberOfPeersSeenBy));
+                }
+
+                thisPanel.invalidate();
+                thisPanel.validate();
+                thisPanel.repaint();
+            }
+        });
+    }
     private String getConfidenceToolTip(int numberOfPeers) {
         StringBuilder builder = new StringBuilder("");
         if (numberOfPeers == 0) {

@@ -49,7 +49,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
         if (controller.getModel() != null) {
             controller.getModel().setNumberOfConnectedPeers(peerCount);
         }   
-        SendBitcoinConfirmPanel.updatePanel(null, 0); 
+        SendBitcoinConfirmPanel.updatePanel(); 
     }
 
     @Override
@@ -63,7 +63,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
         if (controller.getModel() != null) {
             controller.getModel().setNumberOfConnectedPeers(peerCount);
         } 
-        SendBitcoinConfirmPanel.updatePanel(null, 0);    
+        SendBitcoinConfirmPanel.updatePanel();    
     }
 
     @Override
