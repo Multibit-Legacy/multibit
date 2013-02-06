@@ -53,7 +53,7 @@ import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -816,6 +816,18 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         
         messageLabel1.setText(" ");
         messageLabel2.setText(" ");
+    }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
     }
 
     @Override

@@ -42,8 +42,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -110,6 +110,18 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         displayView(true);
     }
     
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+    
     public void displayView(boolean blinkEnabled) {
         if (walletPanels != null) {
             synchronized(walletPanels) {
@@ -138,7 +150,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         
         // Get the wallets from the model.
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
-        PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
+        WalletData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
 
         if (activePerModelData != null) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
@@ -210,7 +222,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // Get the wallets from the model.
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -224,7 +236,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
         if (perWalletModelDataList != null) {
             synchronized (walletPanels) {
-                for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     if (loopPerWalletModelData.getWallet() != null) {
                         JPanel outerPanel = new JPanel();
                         outerPanel.setOpaque(false);

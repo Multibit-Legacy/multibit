@@ -29,8 +29,8 @@ import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
@@ -169,7 +169,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
@@ -191,7 +191,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      */
     private void exportPrivateKeysInBackground(final File exportPrivateKeysFile, final boolean performEncryptionOfExportFile,
             final char[] exportPasswordToUse, final char[] walletPassword) {
-        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        final WalletData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ExportPrivateKeysPanel finalExportPanel = exportPrivateKeysPanel;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {

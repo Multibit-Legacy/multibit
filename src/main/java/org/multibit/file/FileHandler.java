@@ -41,8 +41,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.network.MultiBitService;
 import org.multibit.store.MultiBitWalletProtobufSerializer;
 import org.multibit.store.MultiBitWalletVersion;
@@ -106,7 +106,7 @@ public class FileHandler {
         walletProtobufSerializer = new MultiBitWalletProtobufSerializer();
     }
 
-    public PerWalletModelData loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
+    public WalletData loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
         if (walletFile == null) {
             return null;
         }
@@ -115,11 +115,11 @@ public class FileHandler {
 
         try {
             // See if the wallet is serialized or protobuf.
-            WalletInfo walletInfo;
+            WalletInfoData walletInfo;
             if (isWalletSerialised(walletFile)) {
-                walletInfo = new WalletInfo(walletFilenameToUse, MultiBitWalletVersion.SERIALIZED);
+                walletInfo = new WalletInfoData(walletFilenameToUse, MultiBitWalletVersion.SERIALIZED);
             } else {
-                walletInfo = new WalletInfo(walletFilenameToUse, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfoData(walletFilenameToUse, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             }
             
             // If the wallet file is missing or empty but the backup file exists load that instead.
@@ -157,9 +157,9 @@ public class FileHandler {
                 // If wallet description is only in the wallet, copy it to the wallet info
                 // (perhaps the user deleted/ did not copy the info file.
                 if (walletInfo != null) {
-                    String walletDescriptionInInfo = walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+                    String walletDescriptionInInfo = walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
                     if ((walletDescriptionInInfo == null || walletDescriptionInInfo.length() == 0) && wallet.getDescription() != null ) {
-                        walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, wallet.getDescription());
+                        walletInfo.put(WalletInfoData.DESCRIPTION_PROPERTY, wallet.getDescription());
                     }
                 }
             } finally {
@@ -170,7 +170,7 @@ public class FileHandler {
             }
   
             // Add the new wallet into the model.
-            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilenameToUse);
+            WalletData perWalletModelData = controller.getModel().addWallet(wallet, walletFilenameToUse);
 
             perWalletModelData.setWalletInfo(walletInfo);
 
@@ -225,14 +225,14 @@ public class FileHandler {
      * @param forceWrite
      *            force the write of the perWalletModelData     
      */
-    public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
+    public void savePerWalletModelData(WalletData perWalletModelData, boolean forceWrite) {
         if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
             return;
         }
 
         File walletFile = new File(perWalletModelData.getWalletFilename());
 
-        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
 
         if (walletInfo != null) {
             synchronized (walletInfo) {
@@ -244,7 +244,7 @@ public class FileHandler {
 
                     if (!filesHaveChanged || forceWrite) {
                         // Normal write of data.
-                        String walletInfoFilename = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
+                        String walletInfoFilename = WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename());
                         saveWalletAndWalletInfo(perWalletModelData, perWalletModelData.getWalletFilename(), walletInfoFilename);
 
                         rememberFileSizesAndLastModified(walletFile, walletInfo);
@@ -270,7 +270,7 @@ public class FileHandler {
      * @param perWalletModelData
      * @param lastFailedMigrateVersion
      */
-    public void backupPerWalletModelData(PerWalletModelData perWalletModelData, String lastFailedMigrateVersion) {
+    public void backupPerWalletModelData(WalletData perWalletModelData, String lastFailedMigrateVersion) {
         // Write to backup files.
         // Work out / reuse the backup file names.
         String walletInfoBackupFilename = null;
@@ -289,7 +289,7 @@ public class FileHandler {
                 perWalletModelData.setWalletBackupFilename(walletBackupFilename);
 
                 walletInfoBackupFilename = createBackupFilename(
-                        new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true, null);
+                        new File(WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true, null);
                 perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
             }
 
@@ -328,9 +328,9 @@ public class FileHandler {
     * 4) Make the backup file in step 1) the new backup file
     * 
     **/
-    private void saveWalletAndWalletInfo(PerWalletModelData perWalletModelData, String walletFilename, String walletInfoFilename) {
+    private void saveWalletAndWalletInfo(WalletData perWalletModelData, String walletFilename, String walletInfoFilename) {
         File walletFile = new File(walletFilename);
-        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
         
         FileOutputStream fileOutputStream = null;
         
@@ -342,7 +342,7 @@ public class FileHandler {
                 // and wallet infos can be deprecated.
                 // TODO - migrate completely to use wallet description and then deprecate value in info file
                 if (walletInfo != null) {
-                    String walletDescriptionInInfoFile = walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+                    String walletDescriptionInInfoFile = walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
                     if (walletDescriptionInInfoFile != null) {
                         perWalletModelData.getWallet().setDescription(walletDescriptionInInfoFile);
                     }
@@ -404,9 +404,9 @@ public class FileHandler {
                     
                     // Delete the oldBackupFile unless the user has manually opened it.
                     boolean userHasOpenedBackupFile = false;
-                    List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                    List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null) {
-                        for (PerWalletModelData perWalletModelDataLoop : perWalletModelDataList) {
+                        for (WalletData perWalletModelDataLoop : perWalletModelDataList) {
                             if ((oldBackupFilename != null && oldBackupFilename.equals(perWalletModelDataLoop.getWalletFilename())) ||
                                 (newBackupFilename != null && newBackupFilename.equals(perWalletModelDataLoop.getWalletFilename()))) {
                                 userHasOpenedBackupFile = true;
@@ -494,14 +494,14 @@ public class FileHandler {
      * 
      * @param perWalletModelData
      */
-    public void deleteWalletAndWalletInfo(PerWalletModelData perWalletModelData) {
+    public void deleteWalletAndWalletInfo(WalletData perWalletModelData) {
         if (perWalletModelData == null) {
             return;
         }
 
         File walletFile = new File(perWalletModelData.getWalletFilename());
-        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-        String walletInfoFilenameAsString = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
+        WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
+        String walletInfoFilenameAsString = WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename());
         File walletInfoFile = new File(walletInfoFilenameAsString);
 
         synchronized (walletInfo) {
@@ -529,18 +529,18 @@ public class FileHandler {
         return;
     }
 
-    public boolean haveFilesChanged(PerWalletModelData perWalletModelData) {
+    public boolean haveFilesChanged(WalletData perWalletModelData) {
         if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
             return false;
         }
 
         boolean haveFilesChanged = false;
 
-        String walletInfoFilename = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
+        String walletInfoFilename = WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename());
         File walletInfoFile = new File(walletInfoFilename);
         File walletFile = new File(perWalletModelData.getWalletFilename());
 
-        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
 
         if (walletInfo != null) {
             synchronized (walletInfo) {
@@ -591,7 +591,7 @@ public class FileHandler {
                         perWalletModelData.setWalletBackupFilename(createBackupFilename(walletFile, true, false, null));
 
                         perWalletModelData.setWalletInfoBackupFilename(createBackupFilename(
-                                new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true,
+                                new File(WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true,
                                 null));
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
@@ -612,7 +612,7 @@ public class FileHandler {
      * @param walletInfo
      *            The wallet info
      */
-    private void rememberFileSizesAndLastModified(File walletFile, WalletInfo walletInfo) {
+    private void rememberFileSizesAndLastModified(File walletFile, WalletInfoData walletInfo) {
         // Get the files' last modified data and sizes and store them in the
         // wallet properties.
         if (walletFile == null || walletInfo == null) {
@@ -623,7 +623,7 @@ public class FileHandler {
         long walletFileLastModified = walletFile.lastModified();
 
         String walletFilename = walletFile.getAbsolutePath();
-        String walletInfoFilename = WalletInfo.createWalletInfoFilename(walletFilename);
+        String walletInfoFilename = WalletInfoData.createWalletInfoFilename(walletFilename);
         File walletInfoFile = new File(walletInfoFilename);
         long walletInfoFileSize = walletInfoFile.length();
         long walletInfoFileLastModified = walletInfoFile.lastModified();
@@ -642,13 +642,13 @@ public class FileHandler {
     public static void writeUserPreferences(MultiBitController controller) {
         // Save all the wallets' filenames in the user preferences.
         if (controller.getModel().getPerWalletModelDataList() != null) {
-            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
       
             List<String> orderList = new ArrayList<String>();
             List<String> earlyList = new ArrayList<String>();
             List<String> protobuf3List = new ArrayList<String>();
             
-            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+            for (WalletData perWalletModelData : perWalletModelDataList) {
                 // Check if this is the initial empty PerWalletModelData
                 if ("".equals(perWalletModelData.getWalletFilename()) || perWalletModelData.getWalletFilename() == null || perWalletModelData.getWalletInfo() == null) {
                     continue;

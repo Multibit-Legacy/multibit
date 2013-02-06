@@ -37,7 +37,7 @@ import javax.swing.event.ChangeListener;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
-import org.multibit.model.AddressBookData;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -413,7 +413,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         }
     }
 
-    public void setAddressBookDataByRow(AddressBookData addressBookData) {
+    public void setAddressBookDataByRow(WalletAddressBookData addressBookData) {
         addressTextField.setText(addressBookData.getAddress());
         addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRowModel, false);
     }
@@ -467,6 +467,18 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
             titleLabel.setToolTipText(null);
         }
         checkDeleteSendingEnabled();
+    }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
     }
 
     @Override

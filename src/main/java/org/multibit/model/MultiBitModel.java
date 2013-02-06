@@ -15,6 +15,7 @@
  */
 package org.multibit.model;
 
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +27,13 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
+import org.multibit.model.bitcoin.wallet.WalletTableData;
+
 import org.multibit.viewsystem.View;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -209,12 +216,12 @@ public class MultiBitModel {
     /**
      * List of each wallet's total model data.
      */
-    private List<PerWalletModelData> perWalletModelDataList;
+    private List<WalletData> perWalletModelDataList;
 
     /**
      * The current active wallet.
      */
-    private PerWalletModelData activeWalletModelData;
+    private WalletData activeWalletModelData;
     
     /**
      * The currently displayed view. One of the View constants.
@@ -245,9 +252,9 @@ public class MultiBitModel {
         this.controller = controller;
         this.userPreferences = userPreferences;
 
-        perWalletModelDataList = new LinkedList<PerWalletModelData>();
+        perWalletModelDataList = new LinkedList<WalletData>();
 
-        activeWalletModelData = new PerWalletModelData();
+        activeWalletModelData = new WalletData();
         perWalletModelDataList.add(activeWalletModelData);
 
 
@@ -340,7 +347,7 @@ public class MultiBitModel {
         userPreferences = properties;
     }
 
-    public PerWalletModelData getActivePerWalletModelData() {
+    public WalletData getActivePerWalletModelData() {
         return activeWalletModelData;
     }
 
@@ -416,7 +423,7 @@ public class MultiBitModel {
      *
      * @return
      */
-    public WalletInfo getActiveWalletWalletInfo() {
+    public WalletInfoData getActiveWalletWalletInfo() {
         return activeWalletModelData.getWalletInfo();
     }
 
@@ -439,7 +446,7 @@ public class MultiBitModel {
             return;
         }
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
                     activeWalletModelData = loopPerWalletModelData;
                     break;
@@ -457,12 +464,12 @@ public class MultiBitModel {
      *
      * @param perWalletModeData
      */
-    public void remove(PerWalletModelData perWalletModelDataToRemove) {
+    public void remove(WalletData perWalletModelDataToRemove) {
         if (perWalletModelDataToRemove == null) {
             return;
         }
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 if (perWalletModelDataToRemove.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
                     perWalletModelDataList.remove(loopPerWalletModelData);
                     break;
@@ -481,7 +488,7 @@ public class MultiBitModel {
             return;
         }
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
                     loopPerWalletModelData.setWalletDescription(walletDescription);
                     loopPerWalletModelData.setDirty(true);
@@ -494,20 +501,20 @@ public class MultiBitModel {
     /**
      * Add a new wallet to the list of managed wallets.
      */
-    public PerWalletModelData addWallet(Wallet wallet, String walletFilename) {
+    public WalletData addWallet(Wallet wallet, String walletFilename) {
         if (walletFilename == null) {
             return null;
         }
 
         // Check to see if it is already in the managed list - no need to add it
         // again if so.
-        for (PerWalletModelData loopModelData : perWalletModelDataList) {
+        for (WalletData loopModelData : perWalletModelDataList) {
             if (walletFilename.equals(loopModelData.getWalletFilename())) {
                 return loopModelData;
             }
         }
 
-        PerWalletModelData newPerWalletModelData = new PerWalletModelData();
+        WalletData newPerWalletModelData = new WalletData();
         newPerWalletModelData.setWallet(wallet);
         newPerWalletModelData.setWalletFilename(walletFilename);
 
@@ -562,9 +569,9 @@ public class MultiBitModel {
             return walletData;
         }
 
-        PerWalletModelData perWalletModelData = null;
+        WalletData perWalletModelData = null;
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
                     perWalletModelData = loopPerWalletModelData;
                     break;
@@ -575,7 +582,7 @@ public class MultiBitModel {
         return createWalletDataInternal(perWalletModelData);
     }
 
-    public ArrayList<WalletTableData> createWalletDataInternal(PerWalletModelData perWalletModelData) {
+    public ArrayList<WalletTableData> createWalletDataInternal(WalletData perWalletModelData) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (perWalletModelData == null || perWalletModelData.getWallet() == null) {
@@ -636,9 +643,9 @@ public class MultiBitModel {
             return;
         }
 
-        PerWalletModelData perWalletModelData = null;
+        WalletData perWalletModelData = null;
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
                     perWalletModelData = loopPerWalletModelData;
                     break;
@@ -677,9 +684,9 @@ public class MultiBitModel {
             List<TransactionOutput> transactionOutputs, BigInteger credit, BigInteger debit) {
         String toReturn = "";
 
-        PerWalletModelData perWalletModelData = null;
+        WalletData perWalletModelData = null;
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 if (wallet.equals(loopPerWalletModelData.getWallet())) {
                     perWalletModelData = loopPerWalletModelData;
                     break;
@@ -805,21 +812,21 @@ public class MultiBitModel {
         return -1; // -1 = we do not know. TODO probably needs replacing by height on TransactionConfidence.
     }
 
-    public void setActiveWalletInfo(WalletInfo walletInfo) {
+    public void setActiveWalletInfo(WalletInfoData walletInfo) {
         activeWalletModelData.setWalletInfo(walletInfo);
     }
 
-    public List<PerWalletModelData> getPerWalletModelDataList() {
+    public List<WalletData> getPerWalletModelDataList() {
         return perWalletModelDataList;
     }
 
-    public PerWalletModelData getPerWalletModelDataByWalletFilename(String walletFilename) {
+    public WalletData getPerWalletModelDataByWalletFilename(String walletFilename) {
         if (walletFilename == null) {
             return null;
         }
 
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
                     return loopPerWalletModelData;
                 }

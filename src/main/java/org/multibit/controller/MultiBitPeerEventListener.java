@@ -2,8 +2,8 @@ package org.multibit.controller;
 
 import java.util.List;
 
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.StatusEnum;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

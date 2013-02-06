@@ -31,11 +31,11 @@ import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.AddressBookData;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
@@ -94,7 +94,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             return;
         }
 
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean encryptNewKeys = false;
         
         if (controller.getModel().getActiveWallet() != null
@@ -123,9 +123,9 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             }
         }
 
-        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfoData(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
         
@@ -139,7 +139,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
             int numberOfAddressesToCreate = createNewReceivingAddressPanel.getNumberOfAddressesToCreate();
             
-            String walletDescription =  controller.getModel().getActiveWalletWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+            String walletDescription =  controller.getModel().getActiveWalletWalletInfo().getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
             String shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingShort", new Object[] { new Integer(numberOfAddressesToCreate)});
             String longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
             createNewReceivingAddressPanel.setMessageText(shortMessage);
@@ -160,7 +160,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
      */
     private void createNewReceivingAddressesInBackground(final int numberOfAddressesToCreate, final boolean encryptNewKeys, 
             final char[] walletPassword, final CreateNewReceivingAddressSubmitAction thisAction) {
-        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        final WalletData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String shortMessage = null;
@@ -202,7 +202,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         // Add keys to address book.
                         for (ECKey newKey : newKeys) {
                             lastAddressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
-                            finalPerWalletModelData.getWalletInfo().addReceivingAddress(new AddressBookData("", lastAddressString),
+                            finalPerWalletModelData.getWalletInfo().addReceivingAddress(new WalletAddressBookData("", lastAddressString),
                                 false, false);
                         }
                         
@@ -234,7 +234,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
  
                     String walletDescription =  "";
                     if (finalPerWalletModelData != null && finalPerWalletModelData.getWalletInfo() != null) {
-                        walletDescription = finalPerWalletModelData.getWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+                        walletDescription = finalPerWalletModelData.getWalletInfo().getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
                     }
                     
                     if (wasSuccessful) {

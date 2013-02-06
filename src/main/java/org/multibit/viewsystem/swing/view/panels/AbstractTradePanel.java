@@ -77,10 +77,10 @@ import org.multibit.exchange.CurrencyInfo;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.AddressBookData;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.store.MultiBitWalletVersion;
@@ -802,7 +802,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 int viewRow = addressesTable.getSelectedRow();
                 if (viewRow >= 0) {
                     selectedAddressRowModel = addressesTable.convertRowIndexToModel(viewRow);
-                    AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRowModel,
+                    WalletAddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRowModel,
                             thisAbstractTradePanel.isReceiveBitcoin());
                     if (rowData != null) {
                         controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(),
@@ -1447,11 +1447,11 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 }
             }
             String label = labelTextArea.getText();
-            AddressBookData addressBookData = new AddressBookData(label, address);
+            WalletAddressBookData addressBookData = new WalletAddressBookData(label, address);
 
-            WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
+            WalletInfoData walletInfo = controller.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfoData(controller.getModel().getActiveWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
                 controller.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);
@@ -1668,7 +1668,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     public boolean processDecodedString(String decodedString, ImageIcon icon) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -1728,7 +1728,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                     + ", label = " + decodedLabel);
             log.debug("AbstractTradePanel - ping 5");
 
-            AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
+            WalletAddressBookData addressBookData = new WalletAddressBookData(decodedLabel, addressString);
             log.debug("AbstractTradePanel - ping 6");
             // see if the address is already in the address book
             // see if the current address is on the table and

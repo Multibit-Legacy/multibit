@@ -38,7 +38,7 @@ import javax.swing.SwingConstants;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -576,6 +576,18 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
         
         clearMessages();
     }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
 
     public void clearMessages() {
         setMessage1(" ");
@@ -599,6 +611,8 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
             messageLabel2.setText(message2);
         }
     }
+
+
 
     class PasswordListener implements KeyListener {
         /** Handle the key typed event from the text field. */

@@ -30,9 +30,9 @@ import org.multibit.Localiser;
 import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.StatusEnum;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;
@@ -227,8 +227,8 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * 
      * @return The model data
      */
-    public PerWalletModelData addWalletFromFilename(String walletFilename) throws IOException {
-        PerWalletModelData perWalletModelDataToReturn = null;
+    public WalletData addWalletFromFilename(String walletFilename) throws IOException {
+        WalletData perWalletModelDataToReturn = null;
         if (multiBitService != null) {
             perWalletModelDataToReturn = multiBitService.addWalletFromFilename(walletFilename);
         }
@@ -286,7 +286,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
     }
 
-    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
+    public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData) {
         log.debug("fireFilesHaveBeenChangedByAnotherProcess called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
@@ -353,7 +353,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
         // log.debug("onWalletChanged called");
         final int walletIdentityHashCode = System.identityHashCode(wallet);
-        for (PerWalletModelData loopPerWalletModelData : getModel().getPerWalletModelDataList()) {
+        for (WalletData loopPerWalletModelData : getModel().getPerWalletModelDataList()) {
             // Find the wallet object and mark as dirty.
             if (System.identityHashCode(loopPerWalletModelData.getWallet()) == walletIdentityHashCode) {
                 loopPerWalletModelData.setDirty(true);
@@ -380,8 +380,9 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     @Override
     public void onReorganize(Wallet wallet) {
         log.debug("onReorganize called");
-        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+        List<WalletData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        for (WalletData loopPerWalletModelData : perWalletModelDataList) {
+
             if (loopPerWalletModelData.getWallet().equals(wallet)) {
                 loopPerWalletModelData.setDirty(true);
                 log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
@@ -554,10 +555,10 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
                 // loop through all the wallets, seeing if the transaction is relevant
                 if (transaction != null) {
                     try {
-                        java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+                        java.util.List<WalletData> perWalletModelDataList = getModel().getPerWalletModelDataList();
 
                         if (perWalletModelDataList != null) {
-                            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                            for (WalletData perWalletModelData : perWalletModelDataList) {
                                 Wallet loopWallet = perWalletModelData.getWallet();
                                 if (loopWallet != null) {
                                     if (loopWallet.isTransactionRelevant(transaction)) {

@@ -28,8 +28,8 @@ import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.slf4j.Logger;
@@ -112,7 +112,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                 }
             }
 
-            PerWalletModelData perWalletModelData = null;
+            WalletData perWalletModelData = null;
             try {
                 // Double check wallet is not busy then declare that the active
                 // wallet is busy with the task

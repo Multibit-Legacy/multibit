@@ -40,9 +40,9 @@ import javax.swing.event.ChangeListener;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
-import org.multibit.model.AddressBookData;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -407,7 +407,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         if (address == null || address == "") {
             pickFirstReceivingAddress = true;
         } else {
-            WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
+            WalletInfoData addressBook = controller.getModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
                 if (!addressBook.containsReceivingAddress(address)) {
                     pickFirstReceivingAddress = true;
@@ -416,12 +416,12 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         }
 
         if (pickFirstReceivingAddress) {
-            WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
+            WalletInfoData addressBook = controller.getModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
-                ArrayList<AddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
+                ArrayList<WalletAddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
                 if (receivingAddresses != null) {
                     if (receivingAddresses.iterator().hasNext()) {
-                        AddressBookData addressBookData = receivingAddresses.iterator().next();
+                        WalletAddressBookData addressBookData = receivingAddresses.iterator().next();
                         if (addressBookData != null) {
                             address = addressBookData.getAddress();
                             label = addressBookData.getLabel();
@@ -459,6 +459,18 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
             titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
             titleLabel.setToolTipText(null);
         }
+    }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
     }
     
     @Override

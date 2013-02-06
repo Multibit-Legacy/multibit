@@ -37,7 +37,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -710,6 +710,18 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
 
         clearMessages();
+    }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
     }
 
     public void clearMessages() {

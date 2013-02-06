@@ -38,8 +38,8 @@ import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
 import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.slf4j.Logger;
@@ -216,7 +216,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             final char[] walletPassword) {
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
@@ -237,7 +237,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      */
     private void importPrivateKeysInBackground(final Collection<PrivateKeyAndDate> privateKeyAndDateArray,
             final char[] walletPassword) {
-        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        final WalletData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ImportPrivateKeysPanel finalImportPanel = importPrivateKeysPanel;
         final MultiBitController finalController = controller;
 

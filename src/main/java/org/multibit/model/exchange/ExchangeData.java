@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.model;
+package org.multibit.model.exchange;
 
 import java.util.ArrayList;
 import java.util.Collection;

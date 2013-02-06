@@ -29,12 +29,17 @@ import javax.swing.Icon;
  *
  * @author Cameron Garnham
  */
-public interface Viewable {
+public interface Viewable { 
 
     /**
      * display the view
      */
     void displayView();
+    
+    /**
+     * Queue a redraw at the next available opportunity
+     */
+    void enqueueRedraw();
 
     /**
      * @returns the icon for the view

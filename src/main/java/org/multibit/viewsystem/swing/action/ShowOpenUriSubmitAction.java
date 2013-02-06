@@ -22,7 +22,7 @@ import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -61,7 +61,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent event) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {

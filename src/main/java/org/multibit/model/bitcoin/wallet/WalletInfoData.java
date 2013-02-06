@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.model;
+package org.multibit.model.bitcoin.wallet;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,6 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
+import org.multibit.model.MultiBitModel;
+import org.multibit.model.MultiBitModel;
 
 /**
  * Wallet info is the companion info to the bitcoinj that multibit uses it
@@ -52,9 +54,9 @@ import com.google.bitcoin.core.Address;
  * @author jim
  * 
  */
-public class WalletInfo {
+public class WalletInfoData {
 
-    private static final Logger log = LoggerFactory.getLogger(WalletInfo.class);
+    private static final Logger log = LoggerFactory.getLogger(WalletInfoData.class);
     private static final String ENCODED_SPACE_CHARACTER = "%20";
     private static final String VALID_HEX_CHARACTERS = "01234567890abcdef";
 
@@ -62,14 +64,14 @@ public class WalletInfo {
      * The total receiving addresses known - from the address book (will include
      * keys that are in other wallets).
      */
-    private Set<AddressBookData> candidateReceivingAddresses;
+    private Set<WalletAddressBookData> candidateReceivingAddresses;
 
     /**
      * The actual receiving addresses exposed for this address book (only keys
      * that occur in this wallet).
      */
-    private ArrayList<AddressBookData> receivingAddresses;
-    private ArrayList<AddressBookData> sendingAddresses;
+    private ArrayList<WalletAddressBookData> receivingAddresses;
+    private ArrayList<WalletAddressBookData> sendingAddresses;
 
     private static final String INFO_FILE_EXTENSION = "info";
     private static final String RECEIVE_ADDRESS_MARKER = "receive";
@@ -101,13 +103,13 @@ public class WalletInfo {
      * @param walletFilename
      *            the filename for the wallet this is the info for
      */
-    public WalletInfo(String walletFilename, MultiBitWalletVersion walletVersion) {
+    public WalletInfoData(String walletFilename, MultiBitWalletVersion walletVersion) {
         this.walletFilename = walletFilename;
         this.walletVersion = walletVersion;
 
-        candidateReceivingAddresses = new HashSet<AddressBookData>();
-        receivingAddresses = new ArrayList<AddressBookData>();
-        sendingAddresses = new ArrayList<AddressBookData>();
+        candidateReceivingAddresses = new HashSet<WalletAddressBookData>();
+        receivingAddresses = new ArrayList<WalletAddressBookData>();
+        sendingAddresses = new ArrayList<WalletAddressBookData>();
 
         walletPreferences = new Properties();
 
@@ -152,15 +154,15 @@ public class WalletInfo {
         walletPreferences.remove(key);
     }
     
-    public ArrayList<AddressBookData> getReceivingAddresses() {
+    public ArrayList<WalletAddressBookData> getReceivingAddresses() {
         return receivingAddresses;
     }
 
-    public ArrayList<AddressBookData> getSendingAddresses() {
+    public ArrayList<WalletAddressBookData> getSendingAddresses() {
         return sendingAddresses;
     }
 
-    public void setSendingAddresses(ArrayList<AddressBookData> sendingAddresses) {
+    public void setSendingAddresses(ArrayList<WalletAddressBookData> sendingAddresses) {
         this.sendingAddresses = sendingAddresses;
     }
 
@@ -172,12 +174,12 @@ public class WalletInfo {
      * @param addToCandidates
      *            - add to the list of candidate receiving addresses
      */
-    public void addReceivingAddress(AddressBookData receivingAddress, boolean addToCandidates, boolean checkAlreadyPresent) {
+    public void addReceivingAddress(WalletAddressBookData receivingAddress, boolean addToCandidates, boolean checkAlreadyPresent) {
         if (receivingAddress == null) {
             return;
         }
 
-        Collection<AddressBookData> addressesToUse;
+        Collection<WalletAddressBookData> addressesToUse;
         if (addToCandidates) {
             addressesToUse = candidateReceivingAddresses;
         } else {
@@ -189,7 +191,7 @@ public class WalletInfo {
         
         if (checkAlreadyPresent) {
             // check the address is not already in the set
-            for (AddressBookData addressBookData : addressesToUse) {
+            for (WalletAddressBookData addressBookData : addressesToUse) {
                 if (addressBookData.getAddress().equals(receivingAddress.getAddress())) {
                     // just update label
                     addressBookData.setLabel(receivingAddress.getLabel());
@@ -220,20 +222,20 @@ public class WalletInfo {
             // see if there is a label in the candidate receiving addresses
             String label = "";
 
-            for (AddressBookData addressBookData : candidateReceivingAddresses) {
+            for (WalletAddressBookData addressBookData : candidateReceivingAddresses) {
                 if (addressBookData.getAddress().equals(receivingAddress.toString())) {
                     label = addressBookData.getLabel();
                     break;
                 }
             }
-            receivingAddresses.add(new AddressBookData(label, receivingAddress.toString()));
+            receivingAddresses.add(new WalletAddressBookData(label, receivingAddress.toString()));
         }
     }
 
     public boolean containsReceivingAddress(String receivingAddress) {
         boolean toReturn = false;
         // see if the receiving address is on the current list
-        for (AddressBookData addressBookData : receivingAddresses) {
+        for (WalletAddressBookData addressBookData : receivingAddresses) {
             if (addressBookData.getAddress().equals(receivingAddress.toString())) {
                 // do nothing
                 toReturn = true;
@@ -244,14 +246,14 @@ public class WalletInfo {
         return toReturn;
     }
 
-    public void addSendingAddress(AddressBookData sendingAddress) {
+    public void addSendingAddress(WalletAddressBookData sendingAddress) {
         if (sendingAddress == null) {
             return;
         }
 
         boolean done = false;
         // check the address is not already in the arraylist
-        for (AddressBookData addressBookData : sendingAddresses) {
+        for (WalletAddressBookData addressBookData : sendingAddresses) {
             if (addressBookData.getAddress() != null && addressBookData.getAddress().equals(sendingAddress.getAddress())) {
                 // just update label
                 addressBookData.setLabel(sendingAddress.getLabel());
@@ -266,7 +268,7 @@ public class WalletInfo {
     }
 
     public String lookupLabelForReceivingAddress(String address) {
-        for (AddressBookData addressBookData : receivingAddresses) {
+        for (WalletAddressBookData addressBookData : receivingAddresses) {
             if (addressBookData.getAddress().equals(address)) {
                 return addressBookData.getLabel();
             }
@@ -276,7 +278,7 @@ public class WalletInfo {
     }
 
     public String lookupLabelForSendingAddress(String address) {
-        for (AddressBookData addressBookData : sendingAddresses) {
+        for (WalletAddressBookData addressBookData : sendingAddresses) {
             if (addressBookData.getAddress().equals(address)) {
                 return addressBookData.getLabel();
             }
@@ -299,15 +301,15 @@ public class WalletInfo {
         BufferedWriter out = null;
         try {
             // We write out the union of the candidate and actual receiving addresses.
-            HashMap<String, AddressBookData> allReceivingAddresses = new HashMap<String, AddressBookData>();
+            HashMap<String, WalletAddressBookData> allReceivingAddresses = new HashMap<String, WalletAddressBookData>();
             if (candidateReceivingAddresses != null) {
-                for (AddressBookData addressBookData : candidateReceivingAddresses) {
-                    allReceivingAddresses.put(addressBookData.address, addressBookData);
+                for (WalletAddressBookData addressBookData : candidateReceivingAddresses) {
+                    allReceivingAddresses.put(addressBookData.getAddress(), addressBookData);
                 }
             }
             if (receivingAddresses != null) {
-                for (AddressBookData addressBookData : receivingAddresses) {
-                    allReceivingAddresses.put(addressBookData.address, addressBookData);
+                for (WalletAddressBookData addressBookData : receivingAddresses) {
+                    allReceivingAddresses.put(addressBookData.getAddress(), addressBookData);
                 }
             }
 
@@ -320,8 +322,8 @@ public class WalletInfo {
             // Write out the wallet version.
             out.write(WALLET_VERSION_MARKER + SEPARATOR + walletVersion.getWalletVersionString() + "\n");
 
-            Collection<AddressBookData> receiveAddressValues = allReceivingAddresses.values();
-            for (AddressBookData addressBookData : receiveAddressValues) {
+            Collection<WalletAddressBookData> receiveAddressValues = allReceivingAddresses.values();
+            for (WalletAddressBookData addressBookData : receiveAddressValues) {
                 String columnOne = RECEIVE_ADDRESS_MARKER;
                 String columnTwo = addressBookData.getAddress();
                 String columnThree = addressBookData.getLabel();
@@ -331,7 +333,7 @@ public class WalletInfo {
                 out.write(columnOne + SEPARATOR + columnTwo + SEPARATOR + encodeURLString(columnThree) + "\n");
             }
 
-            for (AddressBookData addressBookData : sendingAddresses) {
+            for (WalletAddressBookData addressBookData : sendingAddresses) {
                 String columnOne = SEND_ADDRESS_MARKER;
                 String columnTwo = addressBookData.getAddress();
                 String columnThree = addressBookData.getLabel();
@@ -450,10 +452,10 @@ public class WalletInfo {
                         String decodedMultiLineColumnThreeValue = decodeURLString(multilineColumnThreeValue);
 
                         if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {
-                            addReceivingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false, true);
+                            addReceivingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false, true);
                         } else {
                             if (SEND_ADDRESS_MARKER.equals(previousColumnOne)) {
-                                addSendingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo));
+                                addSendingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo));
                             } else {
                                 if (PROPERTY_MARKER.equals(previousColumnOne)) {
                                     walletPreferences.put(previousColumnTwo, decodedMultiLineColumnThreeValue);
@@ -483,10 +485,10 @@ public class WalletInfo {
                     }
                     String decodedColumnThreeValue = decodeURLString(columnThree);
                     if (RECEIVE_ADDRESS_MARKER.equals(columnOne)) {
-                        addReceivingAddress(new AddressBookData(decodedColumnThreeValue, columnTwo), false, true);
+                        addReceivingAddress(new WalletAddressBookData(decodedColumnThreeValue, columnTwo), false, true);
                     } else {
                         if (SEND_ADDRESS_MARKER.equals(columnOne)) {
-                            addSendingAddress(new AddressBookData(decodedColumnThreeValue, columnTwo));
+                            addSendingAddress(new WalletAddressBookData(decodedColumnThreeValue, columnTwo));
                         } else {
                             if (PROPERTY_MARKER.equals(columnOne)) {
                                 walletPreferences.put(columnTwo, decodedColumnThreeValue);
@@ -507,10 +509,10 @@ public class WalletInfo {
                 // Add previous multiline column three to model.
                 String decodedMultiLineColumnThreeValue = decodeURLString(multilineColumnThreeValue);
                 if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {
-                    addReceivingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false, true);
+                    addReceivingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false, true);
                 } else {
                     if (SEND_ADDRESS_MARKER.equals(previousColumnOne)) {
-                        addSendingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo));
+                        addSendingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo));
                     } else {
                         if (PROPERTY_MARKER.equals(previousColumnOne)) {
                             walletPreferences.put(previousColumnTwo, decodedMultiLineColumnThreeValue);

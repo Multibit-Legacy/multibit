@@ -294,6 +294,18 @@ public class WelcomePanel extends JPanel implements Viewable {
     @Override
     public void displayView() {
     }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
 
     @Override
     public Icon getViewIcon() {
