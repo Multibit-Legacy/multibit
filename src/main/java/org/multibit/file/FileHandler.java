@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
+import org.multibit.viewsystem.View;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -579,7 +580,16 @@ public class FileHandler {
 
         // Write the user preference properties.
         Properties userPreferences = controller.getModel().getAllUserPreferences();
-        OutputStream outputStream = null;
+        
+        // If the view is marked as also requiring a backwards compatible numeric field write that.
+        @SuppressWarnings("deprecation")
+        int currentViewNumericFormat = View.toOldViewNumeric(controller.getCurrentView());
+        if (currentViewNumericFormat != 0) {
+            userPreferences.put(MultiBitModel.SELECTED_VIEW, "" + currentViewNumericFormat);
+        } else {
+            // Make sure the old numeric value for a view is not in the user properties.
+            userPreferences.remove(MultiBitModel.SELECTED_VIEW);
+        }        OutputStream outputStream = null;
         try {
             String userPropertiesFilename;
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {

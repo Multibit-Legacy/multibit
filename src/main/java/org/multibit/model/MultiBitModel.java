@@ -70,7 +70,6 @@ public class MultiBitModel {
     // User preferences.
     public static final String SELECTED_VIEW = "selectedView";
     public static final String SELECTED_VIEW_ENUM = "selectedViewEnum";
-    public static final String PREVIOUSLY_SELECTED_VIEW = "previousView";
 
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
@@ -90,11 +89,11 @@ public class MultiBitModel {
     public static final String TICKER_SECOND_ROW_CURRENCY = "tickerSecondRowCurrency";
     
     // Wallets, open wallet and save wallet as dialog.
+    public static final String GRAB_FOCUS_FOR_ACTIVE_WALLET = "grabFocusForActiveWallet";
     public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
     public static final String WALLET_FILENAME_PREFIX = "walletFilename.";
     public static final String WALLET_DESCRIPTION_PREFIX = "walletDescription.";
     public static final String NUMBER_OF_WALLETS = "numberOfWallets";
-    public static final String GRAB_FOCUS_FOR_ACTIVE_WALLET = "grabFocusForActiveWallet";
 
     // Send bitcoin and send bitcoin confirm.
     public static final String SEND_ADDRESS = "sendAddress";
@@ -118,7 +117,8 @@ public class MultiBitModel {
 
     // Default fee.
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000");
-    //Minimum fee.
+    
+    // Minimum fee.
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
 
     public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
@@ -150,8 +150,10 @@ public class MultiBitModel {
     public static final String BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX = "aes.json";
     public static final String BLOCKCHAIN_WALLET_PLAIN_SUFFIX = "json";
 
-    // Connect to single node.
+    // Connect to nodes.
+    @Deprecated
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
+    public static final String PEERS = "peers";
 
     // Sizes and last modified dates of files.
     public static final String WALLET_FILE_SIZE = "walletFileSize";
@@ -181,7 +183,7 @@ public class MultiBitModel {
     // Wallet migration.
     public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
     
-    // Wallet backup
+    // Wallet backup.
     public static final String WALLET_BACKUP_FILE = "walletBackupFile";
   
     // Currency support.
@@ -230,6 +232,7 @@ public class MultiBitModel {
         this(controller, new Properties());
     }
 
+    @SuppressWarnings("deprecation")
     public MultiBitModel(MultiBitController controller, Properties userPreferences) {
         this.controller = controller;
         this.userPreferences = userPreferences;
@@ -244,7 +247,6 @@ public class MultiBitModel {
         // If no properties passed in just initialize to the default view.
 
         if (userPreferences != null) {
-
             // first try and find a old view setting.
             View initialViewInProperties = null;
             Object oldViewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW);
@@ -259,12 +261,14 @@ public class MultiBitModel {
                     // do nothing
                 } finally {
                     initialViewInProperties = View.parseOldView(oldViewInt);
-                    // Remove the old view property.
+                    
+                    // Remove the old view property from the properties - replaced by enum.
+                    // (It may be put back in for backwads compatibility in FileHandler#writeUserPreferences.
                     userPreferences.remove(MultiBitModel.SELECTED_VIEW);
                 }
             }
 
-            // if oldViewInProperties is still null, lest try and find the view.
+            // If oldViewInProperties is still null, try and find the view.
             if (null == initialViewInProperties) {
                 Object viewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW_ENUM);
 
@@ -293,10 +297,9 @@ public class MultiBitModel {
     }
 
     /**
-     * get a user preference
-     * 
-     * @param key
-     *            String key of property
+     * Get a user preference.
+     *
+     * @param key String key of property
      * @return String property value
      */
     public String getUserPreference(String key) {
@@ -304,7 +307,7 @@ public class MultiBitModel {
     }
 
     /**
-     * set a user preference
+     * Set a user preference.
      * 
      * @return
      */
@@ -315,7 +318,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get all user preference
+     * Get all user preference.
      * 
      * @return
      */
@@ -324,7 +327,7 @@ public class MultiBitModel {
     }
 
     /**
-     * set all user preferences
+     * Set all user preferences.
      */
     public void setAllUserPreferences(Properties properties) {
         userPreferences = properties;
@@ -335,10 +338,9 @@ public class MultiBitModel {
     }
 
     /**
-     * get a wallet preference from the active wallet
-     * 
-     * @param key
-     *            String key of property
+     * Get a wallet preference from the active wallet.
+     *
+     * @param key String key of property
      * @return String property value
      */
     public String getActiveWalletPreference(String key) {
@@ -507,6 +509,11 @@ public class MultiBitModel {
 
         perWalletModelDataList.add(newPerWalletModelData);
 
+        // Wire up the controller as a wallet event listener.
+//        if (wallet != null) {
+//            wallet.addEventListener(controller);
+//        }
+        
         // wire up the controller as a wallet event listener
         if (wallet != null) {
             wallet.addEventListener(new WalletEventListener() {
@@ -542,18 +549,23 @@ public class MultiBitModel {
     }
 
     /**
-     * get the active wallet filename
-     * 
-     * 
-     * @return
+     * Get the active wallet filename.
      */
     public String getActiveWalletFilename() {
         return activeWalletModelData.getWalletFilename();
     }
 
     /**
-     * convert the active wallet info into walletdata records as they are easier
-     * to show to the user in tabular form
+     * Convert the active wallet info into walletdata records as they are easier
+     * to show to the user in tabular form.
+     */
+    public ArrayList<WalletTableData> createActiveWalletData() {
+        return createWalletDataInternal(controller.getModel().getActivePerWalletModelData());
+    }
+    
+    /**
+     * Convert the wallet info into walletdata records as they are easier
+     * to show to the user in tabular form.
      */
     public ArrayList<WalletTableData> createWalletData(String walletFilename) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
@@ -571,9 +583,17 @@ public class MultiBitModel {
                 }
             }
         }
+        
+        return createWalletDataInternal(perWalletModelData);
+    }
+
+    public ArrayList<WalletTableData> createWalletDataInternal(PerWalletModelData perWalletModelData) {
+        ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
+
         if (perWalletModelData == null || perWalletModelData.getWallet() == null) {
             return walletData;
         }
+        
         Set<Transaction> transactions = perWalletModelData.getWallet().getTransactions(false, false);
 
         if (transactions != null) {
@@ -601,8 +621,8 @@ public class MultiBitModel {
             }
         }
 
-        // run through all the walletdata to see if both credit and debit are
-        // set (this means change was received)
+        // Run through all the walletdata to see if both credit and debit are
+        // set (this means change was received).
         for (WalletTableData walletDataRow : walletData) {
             if (walletDataRow.getCredit() != null && (walletDataRow.getCredit().compareTo(BigInteger.ZERO) > 0)
                     && (walletDataRow.getDebit() != null) && walletDataRow.getDebit().compareTo(BigInteger.ZERO) > 0) {
@@ -620,8 +640,9 @@ public class MultiBitModel {
         return walletData;
     }
 
+
     /**
-     * add the receiving addresses of all the keys of the specified wallet
+     * Add the receiving addresses of all the keys of the specified wallet.
      */
     public void createAddressBookReceivingAddresses(String walletFilename) {
         if (walletFilename == null) {
@@ -660,7 +681,7 @@ public class MultiBitModel {
     }
 
     /**
-     * create a description for a transaction
+     * Create a description for a transaction.
      * 
      * @param transactionInputs
      * @param transactionOutputs
@@ -699,7 +720,7 @@ public class MultiBitModel {
         }
 
         if (credit != null && credit.compareTo(BigInteger.ZERO) > 0) {
-            // credit
+            // Credit.
             try {
                 String addressString = "";
 
@@ -727,9 +748,9 @@ public class MultiBitModel {
         }
 
         if (debit != null && debit.compareTo(BigInteger.ZERO) > 0) {
-            // debit
+            // Debit.
             try {
-                // see if the address is a known sending address
+                // See if the address is a known sending address.
                 if (theirOutput != null) {
                     String addressString = theirOutput.getScriptPubKey().getToAddress().toString();
                     String label = null;
@@ -752,7 +773,7 @@ public class MultiBitModel {
     }
 
     /**
-     * work out the transaction date
+     * Work out the transaction date.
      * 
      * @param transaction
      * @return Date date of transaction
@@ -763,12 +784,12 @@ public class MultiBitModel {
             return transaction.getUpdateTime();
         }
 
-        // other wise return the date of the block it first appeared in
+        // Other wise return the date of the block it first appeared in.
         Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
         if (appearsIn != null) {
             if (!appearsIn.isEmpty()) {
                 Iterator<Sha256Hash> iterator = appearsIn.iterator();
-                // just take the first i.e. ignore impact of side chains
+                // Just take the first i.e. ignore impact of side chains.
                 if (iterator.hasNext()) {
                     Sha256Hash appearsInHash = iterator.next();
                     StoredBlock appearsInStoredBlock;
@@ -777,12 +798,11 @@ public class MultiBitModel {
                                 && controller.getMultiBitService().getBlockStore() != null) {
                             appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
                             Block appearsInBlock = appearsInStoredBlock.getHeader();
-                            // set the time of the block to be the time of the
-                            // transaction - TODO get transaction time
+                            // Set the time of the block to be the time of the
+                            // transaction - TODO get transaction time.
                             return new Date(appearsInBlock.getTimeSeconds() * 1000);
                         }
                     } catch (BlockStoreException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -792,13 +812,13 @@ public class MultiBitModel {
     }
 
     /**
-     * work out the height of the block chain in which the transaction appears
+     * Work out the height of the block chain in which the transaction appears.
      * 
      * @param transaction
      * @return
      */
     private int workOutHeight(Transaction transaction) {
-        return -1; // -1 = we do not know
+        return -1; // -1 = we do not know.
     }
 
     public void setActiveWalletInfo(WalletInfo walletInfo) {
@@ -872,5 +892,5 @@ public class MultiBitModel {
 
     public void setNumberOfConnectedPeers(int numberOfConnectedPeers) {
         this.numberOfConnectedPeers = numberOfConnectedPeers;
-    }    
+    }
 }

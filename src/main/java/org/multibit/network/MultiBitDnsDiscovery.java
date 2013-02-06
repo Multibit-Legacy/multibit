@@ -47,7 +47,7 @@ import java.util.concurrent.*;
  * to connect to, you need to discover them via other means (like addr broadcasts).
  * </p>
  * 
- * This is a straight copy of the bitcionj 0.7 DnsDiscovery class which is to good to wait for.
+ * This is a straight copy of the bitcoinj 0.7 DnsDiscovery class which is to good to wait for.
  */
 public class MultiBitDnsDiscovery implements PeerDiscovery {
     private static final Logger log = LoggerFactory.getLogger(MultiBitDnsDiscovery.class);

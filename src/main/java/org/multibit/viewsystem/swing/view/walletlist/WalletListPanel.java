@@ -21,9 +21,11 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -35,6 +37,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
@@ -92,6 +95,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         walletPanels = new ArrayList<SingleWalletPanel>();
 
         setOpaque(false);
+        setFocusable(true);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         initUI();
@@ -150,12 +154,14 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
                         if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(filename)) {
                             loopSingleWalletPanel.setSelected(true);
+                            Rectangle bounds = loopSingleWalletPanel.getParent().getBounds();
+                            walletListPanel.scrollRectToVisible(bounds);
                         } else {
                             loopSingleWalletPanel.setSelected(false);
                         }
                     }
                 }
-            } 
+            }
         }
     }
 
@@ -166,7 +172,6 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
     public void initUI() {
         //log.debug(" initUI called");
 
-        this.removeAll();
         setLayout(new BorderLayout());
 
         tabbedPane = new MultiBitTabbedPane(controller);
@@ -174,16 +179,15 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
         buttonPanel = createButtonPanel();
 
-        createWalletListPanel();
-                
+        createWalletListPanel();                
         scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.setViewportView(walletListPanel);
         scrollPane.setAlignmentX(JScrollPane.LEFT_ALIGNMENT);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         scrollPane.getViewport().setOpaque(true);
+        scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         tabPanel.add(scrollPane, BorderLayout.CENTER);
 
         tabPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -191,16 +195,20 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         tabbedPane.addTab(controller.getLocaliser().getString("showYourWalletsAction.text"), ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE),
                 tabPanel);
  
+        removeAll();
         add(tabbedPane, BorderLayout.CENTER);
     }
 
     private JPanel createWalletListPanel() {
         walletListPanel = new JPanel();
         walletListPanel.setLayout(new GridBagLayout());
-        walletListPanel.setOpaque(true);
+        walletListPanel.setOpaque(false);
+        walletListPanel.setFocusable(true);
         walletListPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        walletListPanel.setBorder(BorderFactory.createEmptyBorder());
+        walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
-        // get the wallets from the model
+        // Get the wallets from the model.
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -252,7 +260,6 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                 }
             }
         }
-
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -329,6 +336,44 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         return buttonPanel;
     }
 
+    public final void selectAdjacentWallet(KeyEvent e, String keyStatus) {
+        int keyCode = e.getKeyCode();
+        int modifiersEx = e.getModifiersEx();
+
+        boolean moveToNextWallet = ((keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_KP_DOWN) && modifiersEx == KeyEvent.SHIFT_DOWN_MASK);
+        boolean moveToPreviousWallet = ((keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_KP_UP) && modifiersEx == KeyEvent.SHIFT_DOWN_MASK);
+
+        if (walletPanels != null) {
+            synchronized (walletPanels) {
+                int currentlySelectedWalletIndex = 0;
+                int nextSelectedWalletIndex = -1;
+                for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                    if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
+                        if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename()
+                                .equals(controller.getModel().getActiveWalletFilename())) {
+                            // Found the currently selected panel.
+                            if (moveToNextWallet && currentlySelectedWalletIndex < walletPanels.size() - 1) {
+                                nextSelectedWalletIndex = currentlySelectedWalletIndex + 1;
+                                break;
+                            } else {
+                                if (moveToPreviousWallet && currentlySelectedWalletIndex > 0) {
+                                    nextSelectedWalletIndex = currentlySelectedWalletIndex - 1;
+                                    break;
+                                }   
+                            }
+                        }
+                    }
+                    currentlySelectedWalletIndex++;
+                }
+                if (nextSelectedWalletIndex > -1) {
+                    controller.getModel().setActiveWalletByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
+                    selectWalletPanelByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
+                    controller.fireDataChanged();
+                }
+            }
+        }
+    }
+    
     class WalletMouseListener extends MouseAdapter implements MouseListener {
         public WalletMouseListener() {
             super();
@@ -353,6 +398,8 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
                     controller.fireDataChanged();
                 }
+                // Always select the selectedWalletPanel so that relative key movements work
+                selectedWalletPanel.requestFocusInWindow();
             }
         }
 
@@ -423,11 +470,21 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
     @Override
     public void foundExchangeRate(ExchangeRate exchangeRate) {
-        displayView(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                displayView(false);
+            }
+        });     
     }
 
     @Override
     public void updatedExchangeRate(ExchangeRate exchangeRate) {
-        displayView(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                displayView(false);
+            }
+        });     
     }
 }

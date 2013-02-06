@@ -16,18 +16,15 @@
 package org.multibit.viewsystem;
 
 import java.util.EnumSet;
-import javax.swing.Icon;
 
 /**
- * an interface describing the views that are being presented in this MVC
- *
- * views are used to track the view being presented to the user
+ * An interface describing the views that are being presented in this MVC.
+ * Views are used to track the view being presented to the user.
  *
  * @author jim
  *
  */
 public enum View {
-
     SAME_VIEW, // Not a real view - used to forward to the same view as calling
     UNKNOWN_VIEW,
     TRANSACTIONS_VIEW,
@@ -48,9 +45,6 @@ public enum View {
     SHOW_EXPORT_PRIVATE_KEYS_VIEW,
     WELCOME_VIEW,
     MESSAGES_VIEW,
-    ADD_PASSWORD_VIEW,
-    CHANGE_PASSWORD_VIEW,
-    REMOVE_PASSWORD_VIEW,
     CHARTS_VIEW;
 
     public static final EnumSet<View> OBSOLETE = EnumSet.of(
@@ -60,13 +54,11 @@ public enum View {
             VALIDATION_ERROR_VIEW,
             CREATE_BULK_ADDRESSES_VIEW);
     
-    
     public static View DEFAULT_VIEW() {
         return WELCOME_VIEW;
     }
-    
-    public final boolean isObsolete()
-    {
+
+    public final boolean isObsolete() {
         return OBSOLETE.contains(this);
     }
     
@@ -77,8 +69,7 @@ public enum View {
      * @deprecated (this feature may be removed in a future release)
      */
     @Deprecated
-    public static View parseOldView(Integer viewNumber)
-    {
+    public static View parseOldView(Integer viewNumber) {
         if (null == viewNumber) {
             return null;
         }
@@ -94,7 +85,7 @@ public enum View {
           //case 8  : return OPEN_WALLET_VIEW; (obsolete)
           //case 9  : return SAVE_WALLET_AS_VIEW; (obsolete)
           //case 10 : return VALIDATION_ERROR_VIEW; (obsolete)
-            case 11 : return YOUR_WALLETS_VIEW;
+          //case 11 : return YOUR_WALLETS_VIEW; (obselete)
           //case 12 : return CREATE_BULK_ADDRESSES_VIEW;  (obsolete)
             case 13 : return RESET_TRANSACTIONS_VIEW;
             case 14 : return SHOW_OPEN_URI_DIALOG_VIEW;
@@ -102,17 +93,44 @@ public enum View {
             case 16 : return SHOW_EXPORT_PRIVATE_KEYS_VIEW;
             case 17 : return WELCOME_VIEW;
             case 18 : return MESSAGES_VIEW;
-            case 19 : return ADD_PASSWORD_VIEW;
-            case 20 : return CHANGE_PASSWORD_VIEW;
-            case 21 : return REMOVE_PASSWORD_VIEW;
             case 22 : return CHARTS_VIEW;
                 
-            case 3 : case 8 : case 9 : case 10 : case 12 :
+            case 3 : case 8 : case 9 : case 10 : case 11 : case 12 : case 19 : case 20 : case 21 :
                 return TRANSACTIONS_VIEW;
                 
             default : return null;
         }
     }
     
+    /**
+     * Finds the old view name system from the view.
+     * Used for backwards compatibility.
+     * @param view
+     * @return viewNumber, or 0 if not found
+     * @deprecated (this feature may be removed in a future release)
+     */
+    @Deprecated
+    public static int toOldViewNumeric(View view) {
+        if (null == view) {
+            return 0;
+        }
+        
+        switch (view) {
+            case TRANSACTIONS_VIEW : return 1;
+            case SEND_BITCOIN_VIEW : return 2;
+            case RECEIVE_BITCOIN_VIEW : return 4;
+            case HELP_CONTENTS_VIEW : return 5;
+            case HELP_ABOUT_VIEW : return 6;
+            case PREFERENCES_VIEW : return 7;
+            case RESET_TRANSACTIONS_VIEW : return 13;
+            case SHOW_OPEN_URI_DIALOG_VIEW : return 14;
+            case SHOW_IMPORT_PRIVATE_KEYS_VIEW : return 15;
+            case SHOW_EXPORT_PRIVATE_KEYS_VIEW : return 16;
+            case WELCOME_VIEW : return 17;
+            case MESSAGES_VIEW : return 18;
+            case CHARTS_VIEW : return 22;
 
+            default : return 0;
+        }
+    }
 }
