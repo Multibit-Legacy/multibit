@@ -43,6 +43,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
@@ -52,6 +54,8 @@ import com.google.bitcoin.core.TransactionConfidence;
  * The send bitcoin confirm dialog
  */
 public class SendBitcoinConfirmDialog extends MultiBitDialog {
+
+    private static Logger log = LoggerFactory.getLogger(SendBitcoinConfirmDialog.class);
 
     private static final long serialVersionUID = 191435612345057705L;
 
@@ -651,20 +655,25 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                log.debug("updateDialogDueToTransactionConfidenceChange called.1");
                 if (thisDialog == null || !thisDialog.isVisible() || thisDialog.getSendBitcoinNowAction() == null) {
                     return;
                 }
+                log.debug("updateDialogDueToTransactionConfidenceChange called.2");
                 Transaction sentTransaction = thisDialog.getSendBitcoinNowAction().getTransaction();
 
                 if (sentTransaction == null || !sentTransaction.getHash().equals(transactionWithChangedConfidenceHash)) {
                     return;
                 }
+                log.debug("updateDialogDueToTransactionConfidenceChange called.3");
 
                 MultiBitLabel confirmText2 = thisDialog.getConfirmText2();
                 if (confirmText2 != null) {
                     confirmText2.setText(thisDialog.getConfidenceToolTip(numberOfPeersSeenBy));
                     confirmText2.setIcon(thisDialog.getConfidenceIcon(numberOfPeersSeenBy));
                 }
+                
+                log.debug("Number of peers for transaction " + transactionWithChangedConfidenceHash.toString() + " is " + numberOfPeersSeenBy);
 
                 thisDialog.invalidate();
                 thisDialog.validate();

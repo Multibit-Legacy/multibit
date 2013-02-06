@@ -510,36 +510,8 @@ public class MultiBitModel {
         perWalletModelDataList.add(newPerWalletModelData);
 
         // Wire up the controller as a wallet event listener.
-//        if (wallet != null) {
-//            wallet.addEventListener(controller);
-//        }
-        
-        // wire up the controller as a wallet event listener
         if (wallet != null) {
-            wallet.addEventListener(new WalletEventListener() {
-                public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-                    controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
-                }
-
-                @Override
-                public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-                    controller.onCoinsSent(wallet, transaction, prevBalance, newBalance);
-                }
-
-                @Override
-                public void onReorganize(Wallet wallet) {
-                    controller.onReorganise(wallet);
-                }
-
-                public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
-                   controller.onTransactionConfidenceChanged(wallet, tx); 
-                }
-
-                @Override
-                public void onKeyAdded(ECKey key) {
-                    controller.onKeyAdded(key);
-                }
-            });
+            wallet.addEventListener(controller);
         }
 
         createWalletData(walletFilename);

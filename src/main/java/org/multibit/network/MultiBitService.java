@@ -56,14 +56,13 @@ import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.ProtocolException;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.discovery.DnsDiscovery;
+import com.google.bitcoin.core.Wallet.SendRequest;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
 
@@ -577,10 +576,12 @@ public class MultiBitService {
         Address sendAddress = new Address(networkParameters, sendAddressString);
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
-                Utils.toNanoCoins(amount), fee);
+        SendRequest request = SendRequest.to(sendAddress,  Utils.toNanoCoins(amount));
+        request.fee = fee;
+        Wallet.SendResult sendResult = perWalletModelData.getWallet().sendCoins(peerGroup, request);
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
-
+        Transaction sendTransaction = sendResult.tx;
+ 
         assert sendTransaction != null; 
         // We should never try to send more coins than we have!
         if (sendTransaction != null) {

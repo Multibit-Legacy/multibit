@@ -65,7 +65,7 @@ import com.google.bitcoin.core.Wallet.BalanceType;
  */
 public class MigrateWalletsAction extends AbstractAction {
 
-    public Logger log = LoggerFactory.getLogger(MultiBitFrame.class.getName());
+    public Logger log = LoggerFactory.getLogger(MigrateWalletsAction.class.getName());
 
     private static final long serialVersionUID = 1913592460523457705L;
 
@@ -366,7 +366,7 @@ public class MigrateWalletsAction extends AbstractAction {
            }
         }
         
-        // Th two wallets are equal.
+        // The two wallets are equal.
         return null;       
     }
     

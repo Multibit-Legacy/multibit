@@ -3,8 +3,11 @@ MultiBit release notes.
 Version 0.4.20
 
 + Support for more currency exchanges. Update to XChange 0.4.0.
-+ You can move up and down wallets with Shift-Arrow up and Shift-Arrow down keys.
-+ Fixed bug on fiat amount display in Send/ Request on language change.
++ You can move up and down wallets with the Shift-Arrow up and Shift-Arrow down keys.
+
+Bugs and UI changes:
++ More contrast between the active wallet and the others.
++ Fixed bug on fiat amount display in Send/ Request when changing languages.
 + Less flicky when changing language, font and look-and-feel.
 + Improved font display in dialogs, help, tooltips.
 

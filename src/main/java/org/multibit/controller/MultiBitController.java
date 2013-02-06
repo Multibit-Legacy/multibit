@@ -59,6 +59,7 @@ import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
 
@@ -68,7 +69,7 @@ import com.google.bitcoin.uri.BitcoinURIParseException;
  * @author jim
  */
 public class MultiBitController implements GenericOpenURIEventListener, GenericPreferencesEventListener,
-        GenericAboutEventListener, GenericQuitEventListener {
+        GenericAboutEventListener, GenericQuitEventListener, WalletEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
 
@@ -319,13 +320,11 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
     }
     
-    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        //log.debug("Firing confidence change in onTransactionConfidenceChanged.");
-        
+    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {       
         // Set the depth in blocks as this does not seem to get updated anywhere.
-        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
-            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
-        }
+//        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
+//            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
+//        }
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
@@ -336,7 +335,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         log.debug("Key added : " + ecKey.toString());
     }
 
-    public void onReorganise(Wallet wallet) {
+    public void onReorganize(Wallet wallet) {
         List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             if (loopPerWalletModelData.getWallet().equals(wallet)) {

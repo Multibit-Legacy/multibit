@@ -172,6 +172,7 @@ public class OpenWalletAction extends AbstractAction {
                 }
             }
             
+            @Override
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();
@@ -181,7 +182,7 @@ public class OpenWalletAction extends AbstractAction {
                         messageMessage.setShowInStatusBar(false);
                         MessageManager.INSTANCE.addMessage(messageMessage);  
                         
-                        controller.fireRecreateAllViews(false);
+                        controller.fireRecreateAllViews(true);
                         controller.fireDataChangedUpdateNow();
                     } else {
                         log.error(message);

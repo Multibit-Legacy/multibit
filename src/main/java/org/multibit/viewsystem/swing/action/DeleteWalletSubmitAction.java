@@ -196,6 +196,11 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         // set the first wallet to be the active wallet
         PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
         controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
+        fileHandler.savePerWalletModelData(firstPerWalletModelData, true);
+        
+        // Save the user properties to disk.
+        FileHandler.writeUserPreferences(controller);
+        log.debug("User preferences with old wallet deleted were written successfully");
         controller.fireRecreateAllViews(true);
         controller.fireDataChangedUpdateNow();
         
