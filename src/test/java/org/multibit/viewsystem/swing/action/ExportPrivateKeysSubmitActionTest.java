@@ -69,7 +69,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         ExportPrivateKeysSubmitAction exportAction = exportPanel.getExportPrivateKeySubmitAction();
  
         assertNotNull("exportAction was not created successfully", exportAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
         assertTrue("Wallet password is enabled when it should not be", !exportPanel.isWalletPasswordFieldEnabled());
        
          // Execute - this is with an unencrypted wallet and default settings.
@@ -78,7 +78,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         assertEquals("Wrong message2 after default export execute", "", exportPanel.getMessageText2().trim());    
         
         // Set the output file name.
-        String outputFilename1 = controller.getModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
+        String outputFilename1 = controller.getBitcoinModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
         exportPanel.setOutputFilename(outputFilename1);
  
         // Execute - this should now complain that no export file password is set (as password protect export file is selected by default).
@@ -110,7 +110,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         assertEquals("Wrong message2 after encrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
         
         // Try to read in the encrypted exported private key file with no password - this should fail.
-        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getBitcoinModel().getNetworkParameters());
         Collection<PrivateKeyAndDate> privateKeyAndDates = null; 
         try {
             privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), null);
@@ -130,17 +130,17 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         }
         
         // Read in the encrypted exported private key file with the correct password.
-        privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+        privateKeysHandler = new PrivateKeysHandler(controller.getBitcoinModel().getNetworkParameters());
         privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), EXPORT_FILE_PASSWORD);
         assertEquals("Wrong number of keys read in from encrypted export file", 1, privateKeyAndDates.size());
-        assertEquals("Wrong private key read in from encrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().iterator().next().getPrivKeyBytes()), 
+        assertEquals("Wrong private key read in from encrypted export file", Utils.bytesToHexString(controller.getBitcoinModel().getActiveWallet().getKeychain().iterator().next().getPrivKeyBytes()), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));  
         
         // Set the export file password protect radio to output unencrypted.
         exportPanel.getDoNotPasswordProtect().setSelected(true);
         
         // Set the output file name.
-        String outputFilename2 = controller.getModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
+        String outputFilename2 = controller.getBitcoinModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
         exportPanel.setOutputFilename(outputFilename2);
 
         // Check the export file currently does not exist.
@@ -158,7 +158,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Read in the unencrypted exported private key file.
         privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename2), null);
         assertEquals("Wrong number of keys read in from unencrypted export file", 1, privateKeyAndDates.size());
-        assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().iterator().next().getPrivKeyBytes()), 
+        assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(controller.getBitcoinModel().getActiveWallet().getKeychain().iterator().next().getPrivKeyBytes()), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));          
     }
     
@@ -176,8 +176,8 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
 
         // Remember the private keys for the key - for comparision later.
         // Copy the private key bytes for checking later.
-        EncryptedPrivateKey encryptedPrivateKey = controller.getModel().getActiveWallet().keychain.get(0).getEncryptedPrivateKey();
-        KeyCrypter keyCrypter = controller.getModel().getActiveWallet().getKeyCrypter();
+        EncryptedPrivateKey encryptedPrivateKey = controller.getBitcoinModel().getActiveWallet().keychain.get(0).getEncryptedPrivateKey();
+        KeyCrypter keyCrypter = controller.getBitcoinModel().getActiveWallet().getKeyCrypter();
         byte[] originalPrivateKeyBytes = keyCrypter.decrypt(encryptedPrivateKey, keyCrypter.deriveKey(WALLET_PASSWORD));
 
         // Create a new ExportPrivateKeysSubmitAction to test.
@@ -186,7 +186,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         ExportPrivateKeysSubmitAction exportAction = exportPanel.getExportPrivateKeySubmitAction();
 
         assertNotNull("exportAction was not created successfully", exportAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getBitcoinModel().getActiveWallet().getKeychain().size());
         assertTrue("Wallet password is not enabled when it should be", exportPanel.isWalletPasswordFieldEnabled());
         
         // Execute - this is with an encrypted wallet and default settings. (No wallet password set).
@@ -203,7 +203,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         assertEquals("Wrong message2 after password set execute", "", exportPanel.getMessageText2().trim());    
 
         // Set the output file name.
-        String outputFilename1 = controller.getModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
+        String outputFilename1 = controller.getBitcoinModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
         exportPanel.setOutputFilename(outputFilename1);
  
         // Execute - this should now complain that no export file password is set (as password protect export file is selected by default).
@@ -235,7 +235,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         assertEquals("Wrong message2 after encrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
         
         // Try to read in the encrypted exported private key file with no export file password - this should fail.
-        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getBitcoinModel().getNetworkParameters());
         Collection<PrivateKeyAndDate> privateKeyAndDates = null; 
         try {
             privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), null);
@@ -255,7 +255,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         }
         
         // Read in the encrypted exported private key file with the correct export file password.
-        privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+        privateKeysHandler = new PrivateKeysHandler(controller.getBitcoinModel().getNetworkParameters());
         privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), EXPORT_FILE_PASSWORD);
         assertEquals("Wrong number of keys read in from encrypted export file", 1, privateKeyAndDates.size());
         
@@ -269,7 +269,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         exportPanel.setWalletPassword(WALLET_PASSWORD);
 
         // Set the output file name.
-        String outputFilename2 = controller.getModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
+        String outputFilename2 = controller.getBitcoinModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
         exportPanel.setOutputFilename(outputFilename2);
 
         // Check the export file currently does not exist.
@@ -298,7 +298,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         MultiBitController controller = ActionTestUtils.createController();
 
         // This test runs against an empty PerWalletModelDataList.
-        assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
+        assertTrue("There was an active wallet when there should not be", controller.getBitcoinModel().thereIsNoActiveWallet());
 
         // Create a new ExportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);

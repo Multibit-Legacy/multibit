@@ -19,8 +19,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -53,9 +53,9 @@ public class DeleteSendingAddressActionTest extends TestCase {
         assertEquals("Wrong number of send addresses after initial delete", 0, sendBitcoinPanel.getAddressesTableModel().getRowCount());
         
         // Create two sending addresses.
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData(LABEL1, ADDRESS1));
-        perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData(LABEL2, ADDRESS2));
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
+        perWalletModelData.getWalletInfo().addSendingAddress(new WalletAddressBookData(LABEL1, ADDRESS1));
+        perWalletModelData.getWalletInfo().addSendingAddress(new WalletAddressBookData(LABEL2, ADDRESS2));
 
         assertEquals("Wrong number of send addresses on wallet model after adding new send addresses", 2, perWalletModelData.getWalletInfo().getSendingAddresses().size());
         assertEquals("Wrong number of send addresses on table after adding new send addresses", 2, sendBitcoinPanel.getAddressesTableModel().getRowCount());

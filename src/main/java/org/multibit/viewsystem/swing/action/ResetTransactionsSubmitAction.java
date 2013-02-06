@@ -29,7 +29,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.slf4j.Logger;
@@ -81,7 +81,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
         Date resetDate = resetTransactionsDataProvider.getResetDate();
 
-        PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData activePerWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
         log.debug("RT Ping 3");
 
         Date actualResetDate = null;
@@ -129,7 +129,9 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
             log.debug("RT Ping 10");
 
-            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+            controller.getBitcoinModel().createWalletData(controller.getBitcoinModel().getActiveWalletFilename(),
+                    controller.getLocaliser(), controller.getMultiBitService().getBlockStore());
+            
             log.debug("RT Ping 11");
 
             controller.fireRecreateAllViews(false);

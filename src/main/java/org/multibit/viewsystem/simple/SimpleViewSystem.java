@@ -2,8 +2,8 @@ package org.multibit.viewsystem.simple;
 
 import java.math.BigInteger;
 
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.StatusEnum;
 import org.multibit.viewsystem.ViewSystem;
 
 import com.google.bitcoin.core.ECKey;
@@ -68,7 +68,7 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
+    public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData) {
         System.out.println("SIMPLE. Files have been changed by another process");
     }
 

@@ -31,11 +31,11 @@ import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
@@ -47,6 +47,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
+
 
 /**
  * This {@link Action} represents an action to actually create receiving
@@ -82,7 +83,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         
         // This action is a WalletBusyListener
         controller.registerWalletBusyListener(this);
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(controller.getBitcoinModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -94,11 +95,11 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             return;
         }
 
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
         boolean encryptNewKeys = false;
         
-        if (controller.getModel().getActiveWallet() != null
-                && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (controller.getBitcoinModel().getActiveWallet() != null
+                && controller.getBitcoinModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
                 // User needs to enter password.
                 createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
@@ -108,7 +109,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             encryptNewKeys = true;
 
             try {
-                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                if (!controller.getBitcoinModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
                     // The password supplied is incorrect.
                     createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
                             "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
@@ -123,9 +124,9 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             }
         }
 
-        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfoData(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
         
@@ -139,7 +140,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
             int numberOfAddressesToCreate = createNewReceivingAddressPanel.getNumberOfAddressesToCreate();
             
-            String walletDescription =  controller.getModel().getActiveWalletWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+            String walletDescription =  controller.getBitcoinModel().getActiveWalletWalletInfo().getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
             String shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingShort", new Object[] { new Integer(numberOfAddressesToCreate)});
             String longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
             createNewReceivingAddressPanel.setMessageText(shortMessage);
@@ -160,7 +161,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
      */
     private void createNewReceivingAddressesInBackground(final int numberOfAddressesToCreate, final boolean encryptNewKeys, 
             final char[] walletPassword, final CreateNewReceivingAddressSubmitAction thisAction) {
-        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        final WalletData finalPerWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String shortMessage = null;
@@ -201,8 +202,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         
                         // Add keys to address book.
                         for (ECKey newKey : newKeys) {
-                            lastAddressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
-                            finalPerWalletModelData.getWalletInfo().addReceivingAddress(new AddressBookData("", lastAddressString),
+                            lastAddressString = newKey.toAddress(controller.getBitcoinModel().getNetworkParameters()).toString();
+                            finalPerWalletModelData.getWalletInfo().addReceivingAddress(new WalletAddressBookData("", lastAddressString),
                                 false, false);
                         }
                         
@@ -234,7 +235,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
  
                     String walletDescription =  "";
                     if (finalPerWalletModelData != null && finalPerWalletModelData.getWalletInfo() != null) {
-                        walletDescription = finalPerWalletModelData.getWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+                        walletDescription = finalPerWalletModelData.getWalletInfo().getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
                     }
                     
                     if (wasSuccessful) {
@@ -251,8 +252,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             createNewReceivingAddressPanel.getReceiveBitcoinPanel().selectRows();
                         }
                         
-                        finalPerWalletModelData.getWalletInfo().put(MultiBitModel.RECEIVE_ADDRESS, lastAddressString);
-                        finalPerWalletModelData.getWalletInfo().put(MultiBitModel.RECEIVE_LABEL, "");
+                        finalPerWalletModelData.getWalletInfo().putProperty(BitcoinModel.RECEIVE_ADDRESS, lastAddressString);
+                        finalPerWalletModelData.getWalletInfo().putProperty(BitcoinModel.RECEIVE_LABEL, "");
                         
                         try {
                             controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
@@ -299,13 +300,13 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (controller.getBitcoinModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getBitcoinModel().getActivePerWalletModelData().getBusyOperation()}));
             setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            if (!controller.getBitcoinModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
                 setEnabled(true);
             }

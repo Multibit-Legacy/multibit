@@ -15,7 +15,7 @@
  */
 package org.multibit.file;
 
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 
 /**
  * <p>Exception to provide the following to {@link WalletInfo}:</p>

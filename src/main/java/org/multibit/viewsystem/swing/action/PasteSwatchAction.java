@@ -28,7 +28,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 
@@ -61,7 +61,7 @@ public class PasteSwatchAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {

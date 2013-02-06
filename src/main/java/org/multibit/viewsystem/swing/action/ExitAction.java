@@ -29,7 +29,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.wallet.WalletData;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
@@ -75,9 +75,9 @@ public class ExitAction extends AbstractAction {
         log.debug("exit 2");
 
         // Save all the wallets and put their filenames in the user preferences.
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        List<WalletData> perWalletModelDataList = controller.getBitcoinModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 try {
                     log.debug("exit 3a");
                     controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);

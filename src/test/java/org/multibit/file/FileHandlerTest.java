@@ -29,9 +29,10 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 
@@ -47,6 +48,7 @@ import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+
 
 public class FileHandlerTest extends TestCase {
     private final String WALLET_TESTDATA_DIRECTORY = "wallets";
@@ -97,10 +99,20 @@ public class FileHandlerTest extends TestCase {
         keyCrypter = new KeyCrypterScrypt(scryptParameters);
         
         controller = new MultiBitController();
+        
         Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
         controller.setLocaliser(localiser);
-        controller.setModel(model);
+        
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
+        
+        
         fileHandler = new FileHandler(controller);
     }
     
@@ -116,7 +128,7 @@ public class FileHandlerTest extends TestCase {
         walletFile.createNewFile();
 
         assertTrue(walletFile.exists());
-        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+        WalletData perWalletModelData = fileHandler.loadFromFile(walletFile);
 
         assertNotNull(perWalletModelData);
 
@@ -139,7 +151,7 @@ public class FileHandlerTest extends TestCase {
         walletFile.createNewFile();
 
         assertTrue(walletFile.exists());
-        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+        WalletData perWalletModelData = fileHandler.loadFromFile(walletFile);
 
         assertNotNull(perWalletModelData);
 
@@ -162,8 +174,8 @@ public class FileHandlerTest extends TestCase {
         newWallet.keychain.add(newKey);
         newKey = new ECKey();
         newWallet.keychain.add(newKey);
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.SERIALIZED);
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.SERIALIZED);
         
         perWalletModelData.setWalletInfo(walletInfo);
        
@@ -176,13 +188,13 @@ public class FileHandlerTest extends TestCase {
         File newWalletFile = new File(newWalletFilename);
         assertTrue(newWalletFile.exists());
 
-        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+        String walletInfoFileAsString = WalletInfoData.createWalletInfoFilename(newWalletFilename);
 
         File walletInfoFile = new File(walletInfoFileAsString);
         assertTrue(walletInfoFile.exists());
 
         // Check wallet can be loaded and is still serialised.
-        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        WalletData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_SERIALISED_PREFIX, perWalletModelDataReborn.getWalletDescription());
@@ -206,8 +218,8 @@ public class FileHandlerTest extends TestCase {
         newWallet.keychain.add(newKey);
         newKey = new ECKey();
         newWallet.keychain.add(newKey);
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
         perWalletModelData.setWallet(newWallet);
@@ -225,14 +237,14 @@ public class FileHandlerTest extends TestCase {
         File newWalletFile = new File(newWalletFilename);
         assertTrue(newWalletFile.exists());
 
-        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+        String walletInfoFileAsString = WalletInfoData.createWalletInfoFilename(newWalletFilename);
 
         File walletInfoFile = new File(walletInfoFileAsString);
         assertTrue(walletInfoFile.exists());
 
         // Check wallet can be loaded and is still protobuf and unencrypted.
         // Note - when reborn it is reborn as an EncryptableWallet.
-        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        WalletData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_UNENCRYPTED_PROTOBUF_PREFIX, perWalletModelDataReborn.getWalletDescription());
@@ -275,8 +287,8 @@ public class FileHandlerTest extends TestCase {
         newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
        
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
         perWalletModelData.setWallet(newWallet);
@@ -300,13 +312,13 @@ public class FileHandlerTest extends TestCase {
         File newWalletFile = new File(newWalletFilename);
         assertTrue(newWalletFile.exists());
 
-        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+        String walletInfoFileAsString = WalletInfoData.createWalletInfoFilename(newWalletFilename);
 
         File walletInfoFile = new File(walletInfoFileAsString);
         assertTrue(walletInfoFile.exists());
 
         // Check wallet can be loaded and is still protobuf and encrypted.
-        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        WalletData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX, perWalletModelDataReborn.getWalletDescription());
@@ -370,8 +382,8 @@ public class FileHandlerTest extends TestCase {
         newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
        
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
         perWalletModelData.setWallet(newWallet);
@@ -383,11 +395,11 @@ public class FileHandlerTest extends TestCase {
 
         // Check the wallet and wallet info file exists.
         File newWalletFile = new File(newWalletFilename);
-        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+        String walletInfoFileAsString = WalletInfoData.createWalletInfoFilename(newWalletFilename);
         File walletInfoFile = new File(walletInfoFileAsString);
 
         // Load the wallet and check the default scrypt parameters
-        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        WalletData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         
         KeyCrypter rebornEncrypterDecrypter = perWalletModelDataReborn.getWallet().getKeyCrypter();
@@ -429,8 +441,8 @@ public class FileHandlerTest extends TestCase {
         newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
         
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
         perWalletModelData.setWallet(newWallet);
@@ -442,11 +454,11 @@ public class FileHandlerTest extends TestCase {
 
         // Check the wallet and wallet info file exists.
         File newWalletFile = new File(newWalletFilename);
-        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+        String walletInfoFileAsString = WalletInfoData.createWalletInfoFilename(newWalletFilename);
         File walletInfoFile = new File(walletInfoFileAsString);
 
         // Load the wallet and check the default scrypt parameters
-        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        WalletData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         
         KeyCrypter rebornKeyCrypter = perWalletModelDataReborn.getWallet().getKeyCrypter();
@@ -462,7 +474,7 @@ public class FileHandlerTest extends TestCase {
         deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
     }
     
-    private void deleteWalletAndCheckDeleted(PerWalletModelData perWalletModelData, File walletFile, File walletInfoFile) {
+    private void deleteWalletAndCheckDeleted(WalletData perWalletModelData, File walletFile, File walletInfoFile) {
         // Delete wallet and check it is deleted.
         fileHandler.deleteWalletAndWalletInfo(perWalletModelData);
         assertTrue(!walletFile.exists());
@@ -472,10 +484,16 @@ public class FileHandlerTest extends TestCase {
     public void testIsSerialisdWallet() throws Exception {
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
         controller.setLocaliser(localiser);
-        controller.setModel(model);
+        
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
 
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
@@ -500,7 +518,16 @@ public class FileHandlerTest extends TestCase {
     public void testCannotLoadOrSaveFutureWalletVersions() throws IOException {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
+        
         FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_WALLET_VERSION_PREFIX, ".wallet");
@@ -514,8 +541,8 @@ public class FileHandlerTest extends TestCase {
         newWallet.keychain.add(newKey);
         newKey = new ECKey();
         newWallet.keychain.add(newKey);
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.FUTURE);
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.FUTURE);
         
         perWalletModelData.setWalletInfo(walletInfo);
        
@@ -551,7 +578,16 @@ public class FileHandlerTest extends TestCase {
     public void testWalletVersion2() throws IOException {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+                
+        CoreModel coreModel = new CoreModel();
+        BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
+          
+        controller.setCoreModel(coreModel);
+        controller.setBitcoinModel(bitcoinModel);
+        
+        assertNotNull(coreModel);
+        assertNotNull(bitcoinModel);
+        
         FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_WALLET_VERSION_2_PREFIX, ".wallet");
@@ -565,8 +601,8 @@ public class FileHandlerTest extends TestCase {
         newWallet.keychain.add(newKey);
         newKey = new ECKey();
         newWallet.keychain.add(newKey);
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
        
@@ -578,10 +614,10 @@ public class FileHandlerTest extends TestCase {
         controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
         // Check the version gets round tripped.
-        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(new File(newWalletFilename));
+        WalletData perWalletModelDataReborn = fileHandler.loadFromFile(new File(newWalletFilename));
         assertNotNull(perWalletModelDataReborn);
         
-        WalletInfo rebornWalletInfo = perWalletModelDataReborn.getWalletInfo();
+        WalletInfoData rebornWalletInfo = perWalletModelDataReborn.getWalletInfo();
         assertEquals("Wallet version was not roundtripped", MultiBitWalletVersion.PROTOBUF_ENCRYPTED, rebornWalletInfo.getWalletVersion());;
     }
 }

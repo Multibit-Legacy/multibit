@@ -23,8 +23,10 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
+
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.preferences.modules.CorePreferencesModule;
 import org.multibit.viewsystem.swing.view.components.JFontChooser;
 
 /**
@@ -35,15 +37,17 @@ public class ChooseFontAction extends AbstractAction {
     private static final long serialVersionUID = 114359435465057705L;
 
     private MultiBitController controller;
-    private ShowPreferencesPanel showPreferencesPanel;
+    private MultiBitFrame mainFrame;
+    private CorePreferencesModule corePreferencesPanelModule;
 
     /**
      * Creates a new {@link ChooseFontAction}.
      */
-    public ChooseFontAction(MultiBitController controller, ShowPreferencesPanel showPreferencesPanel, ImageIcon icon) {
+    public ChooseFontAction(MultiBitController controller, MultiBitFrame mainFrame, CorePreferencesModule corePreferencesPanelModule, ImageIcon icon) {
         super(controller.getLocaliser().getString("fontChooser.text"), icon);
         this.controller = controller;
-        this.showPreferencesPanel = showPreferencesPanel;
+        this.mainFrame = mainFrame;
+        this.corePreferencesPanelModule = corePreferencesPanelModule;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("fontChooser.tooltip")));
@@ -56,11 +60,11 @@ public class ChooseFontAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         JFontChooser fontChooser = new JFontChooser(controller);
-        fontChooser.setSelectedFont(showPreferencesPanel.getSelectedFont());
-        int result = fontChooser.showDialog(showPreferencesPanel);
+        fontChooser.setSelectedFont(corePreferencesPanelModule.getSelectedFont());
+        int result = fontChooser.showDialog(mainFrame);
         Font font = fontChooser.getSelectedFont();
         if (result == JFontChooser.OK_OPTION) {
-             showPreferencesPanel.setSelectedFont(font);
+             corePreferencesPanelModule.setSelectedFont(font);
         }
     }
 }

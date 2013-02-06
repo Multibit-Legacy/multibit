@@ -25,8 +25,8 @@ import java.util.TimerTask;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.ExchangeData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 import org.slf4j.Logger;
@@ -37,6 +37,7 @@ import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
+
 
 /**
  * TimerTask to poll currency exchanges for ticker data process
@@ -72,18 +73,20 @@ public class TickerTimerTask extends TimerTask {
         this.mainFrame = mainFrame;
 
         // Set the list of currencies we are interested in.
-        String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        String currency1 = controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
         if (currency1 == null || "".equals(currency1)) {
             currency1 = TickerTableModel.DEFAULT_CURRENCY;
         }
         Collection<String> currency1Collection = new ArrayList<String>();
         currency1Collection.add(currency1);
-        controller.getModel().getExchangeData1().setCurrenciesWeAreInterestedIn(currency1Collection);
+        ExchangeModel exchangeModel = controller.getExchangeModel();
+        ExchangeData exchangeData1 = exchangeModel.getExchangeData1();
+        exchangeData1.setCurrenciesWeAreInterestedIn(currency1Collection);
         
-        String currency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
+        String currency2 = controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
         Collection<String> currency2Collection = new ArrayList<String>();
         currency2Collection.add(currency2);
-        controller.getModel().getExchangeData2().setCurrenciesWeAreInterestedIn(currency2Collection);
+        controller.getExchangeModel().getExchangeData2().setCurrenciesWeAreInterestedIn(currency2Collection);
     }
 
 
@@ -98,11 +101,11 @@ public class TickerTimerTask extends TimerTask {
             synchronized (this) {
                 if (exchange2 == null) {
                     log.debug("exchange2 is null ... creating exchange ...");
-                    ExchangeData exchangeData = controller.getModel().getExchangeData2();
+                    ExchangeData exchangeData = controller.getExchangeModel().getExchangeData2();
                     if (exchangeData != null) {
-                        createExchange2(controller.getModel().getExchangeData2().getShortExchangeName());
+                        createExchange2(controller.getExchangeModel().getExchangeData2().getShortExchangeName());
                     } else {
-                        log.debug("controller.getModel().getExchangeData2() is null");
+                        log.debug("controller.getExchangeModel().getExchangeData2() is null");
                         return;
                     }
 
@@ -119,14 +122,14 @@ public class TickerTimerTask extends TimerTask {
                         // shown.
                         // (This is to minimise the load on the remote
                         // servers).
-                        if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))) {
+                        if (!Boolean.FALSE.toString().equals(controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_SHOW))) {
                             for (CurrencyPair loopSymbolPair : exchangeSymbols2) {
                                 // Get symbol ticker if it is one of the
                                 // currencies we are interested in.
                                 // (This is to save hitting the server for
                                 // every currency).
                                 boolean getItFromTheServer = false;
-                                Collection<String> currenciesWeAreInterestedIn = controller.getModel().getExchangeData2()
+                                Collection<String> currenciesWeAreInterestedIn = controller.getExchangeModel().getExchangeData2()
                                         .getCurrenciesWeAreInterestedIn();
 
                                 Iterator<String> currencyIterator = currenciesWeAreInterestedIn.iterator();
@@ -168,9 +171,9 @@ public class TickerTimerTask extends TimerTask {
                                         currency = loopSymbolPair.counterCurrency;                                      
                                     }
 
-                                    controller.getModel().getExchangeData2().setLastPrice(currency, last);
-                                    controller.getModel().getExchangeData2().setLastBid(currency, bid);
-                                    controller.getModel().getExchangeData2().setLastAsk(currency, ask);
+                                    controller.getExchangeModel().getExchangeData2().setLastPrice(currency, last);
+                                    controller.getExchangeModel().getExchangeData2().setLastBid(currency, bid);
+                                    controller.getExchangeModel().getExchangeData2().setLastAsk(currency, ask);
                                 }
                             }
                         }
@@ -191,11 +194,11 @@ public class TickerTimerTask extends TimerTask {
             synchronized (this) {
                 if (exchange1 == null) {
                     log.debug("exchange1 is null ... creating exchange ...");
-                    ExchangeData exchangeData = controller.getModel().getExchangeData1();
+                    ExchangeData exchangeData = controller.getExchangeModel().getExchangeData1();
                     if (exchangeData != null) {
-                        createExchange1(controller.getModel().getExchangeData1().getShortExchangeName());
+                        createExchange1(controller.getExchangeModel().getExchangeData1().getShortExchangeName());
                     } else {
-                        log.debug("controller.getModel().getExchangeData1() is null");
+                        log.debug("controller.getExchangeModel().getExchangeData1() is null");
                     }
 
                     if (exchange1 == null) {
@@ -209,15 +212,15 @@ public class TickerTimerTask extends TimerTask {
                     // Only get data from server if ticker is being shown or if
                     // currency conversion is switched on.
                     // (This is to minimise the load on the remote servers).
-                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))
+                    if (!Boolean.FALSE.toString().equals(controller.getCoreModel().getUserPreference(ExchangeModel.TICKER_SHOW))
                             || !Boolean.FALSE.toString().equals(
-                                    controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
+                                    controller.getCoreModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
                         for (CurrencyPair loopSymbolPair : exchangeSymbols1) {
                             // Get symbol ticker if it is one of the currencies
                             // we are interested in.
                             // (This is to save hitting the server for every currency).
                             boolean getItFromTheServer = false;
-                            Collection<String> currenciesWeAreInterestedIn = controller.getModel().getExchangeData1()
+                            Collection<String> currenciesWeAreInterestedIn = controller.getExchangeModel().getExchangeData1()
                                     .getCurrenciesWeAreInterestedIn();
 
                             Iterator<String> currencyIterator = currenciesWeAreInterestedIn.iterator();
@@ -255,10 +258,10 @@ public class TickerTimerTask extends TimerTask {
                                     currency = loopSymbolPair.counterCurrency;                                      
                                 }
 
-                                controller.getModel().getExchangeData1().setLastPrice(currency, last);
-                                controller.getModel().getExchangeData1().setLastBid(currency, bid);
-                                controller.getModel().getExchangeData1().setLastAsk(currency, ask);
-                                log.debug("Exchange = " + controller.getModel().getExchangeData1().getShortExchangeName());
+                                controller.getExchangeModel().getExchangeData1().setLastPrice(currency, last);
+                                controller.getExchangeModel().getExchangeData1().setLastBid(currency, bid);
+                                controller.getExchangeModel().getExchangeData1().setLastAsk(currency, ask);
+                                log.debug("Exchange = " + controller.getExchangeModel().getExchangeData1().getShortExchangeName());
                                 if (currencyConverterCurrency.equals(currency)) {
                                     // Put the exchange rate into the currency converter.
                                     CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(currencyConverterCurrency));

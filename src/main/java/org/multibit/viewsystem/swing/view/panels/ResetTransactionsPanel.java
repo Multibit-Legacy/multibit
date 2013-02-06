@@ -44,7 +44,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -61,6 +61,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 import com.toedter.calendar.JCalendar;
+
 
 /**
  * The reset blockchain and transactions view.
@@ -216,8 +217,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }
@@ -289,7 +290,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(controller.getBitcoinModel().getActiveWalletFilename());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 6;
@@ -310,7 +311,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(controller.getBitcoinModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -518,8 +519,20 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
      */
     @Override
     public void displayView() {
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletFilenameLabel.setText(controller.getBitcoinModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(controller.getBitcoinModel().getActivePerWalletModelData().getWalletDescription());
+    }
+    
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
     }
 
     @Override

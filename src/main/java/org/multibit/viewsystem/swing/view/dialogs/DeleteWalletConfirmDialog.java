@@ -84,7 +84,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         int minimumHeight = fontMetrics.getHeight() * 10 + HEIGHT_DELTA;
-        int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getModel().getActiveWalletFilename()),
+        int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getBitcoinModel().getActiveWalletFilename()),
                 fontMetrics.stringWidth(controller.getLocaliser().getString("deleteWalletConfirmDialog.message")))
                 + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
@@ -181,7 +181,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler1, constraints2);
 
-        walletDescriptionText = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionText = new MultiBitLabel(controller.getBitcoinModel().getActivePerWalletModelData().getWalletDescription());
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 0;
@@ -202,7 +202,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(walletFilenameLabel, constraints2);
 
-        sendLabelText = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        sendLabelText = new MultiBitLabel(controller.getBitcoinModel().getActiveWalletFilename());
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 1;
@@ -224,7 +224,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         detailPanel.add(balanceLabel, constraints2);
 
         balanceText = new MultiBitLabel(controller.getLocaliser().bitcoinValueToString(
-                controller.getModel().getActiveWalletEstimatedBalance(), true, false));
+                controller.getBitcoinModel().getActiveWalletEstimatedBalance(), true, false));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 2;

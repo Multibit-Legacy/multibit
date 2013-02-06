@@ -15,8 +15,8 @@
  */
 package org.multibit.viewsystem;
 
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.StatusEnum;
 
 import com.google.bitcoin.core.WalletEventListener;
 
@@ -59,7 +59,7 @@ public interface ViewSystem extends WalletEventListener {
      /**
      * Tells the view system that an external process has modified one of the wallets.
      */
-    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData);
+    public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData);
 
     /**
      * A method called when MultiBit online status changes between online, connecting. error.

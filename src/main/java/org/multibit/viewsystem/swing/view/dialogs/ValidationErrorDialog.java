@@ -30,7 +30,7 @@ import com.google.bitcoin.core.Wallet.BalanceType;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -69,42 +69,42 @@ public class ValidationErrorDialog extends MultiBitDialog {
      */
     private void initUI() {
         // Get the data out of the user preferences.
-        String addressValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
-        String amountValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
+        String addressValue = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.VALIDATION_ADDRESS_VALUE);
+        String amountValue = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_VALUE);
   
         String amountPlusConversionToFiat = CurrencyConverter.INSTANCE.prettyPrint(amountValue);
         
         // Invalid address.
-        String addressIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
+        String addressIsInvalid = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.VALIDATION_ADDRESS_IS_INVALID);
         boolean addressIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(addressIsInvalid)) {
             addressIsInvalidBoolean = true;
         }
 
         // Amount is missing.
-        String amountIsMissing = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING);
+        String amountIsMissing = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_MISSING);
         boolean amountIsMissingBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsMissing)) {
             amountIsMissingBoolean = true;
         }
 
         // Invalid amount i.e. not a number or could not parse.
-        String amountIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
+        String amountIsInvalid = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_INVALID);
         boolean amountIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsInvalid)) {
             amountIsInvalidBoolean = true;
         }
 
         // Amount is negative or zero.
-        String amountIsNegativeOrZero = controller.getModel().getActiveWalletPreference(
-                MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
+        String amountIsNegativeOrZero = controller.getBitcoinModel().getActiveWalletPreference(
+                BitcoinModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
         boolean amountIsNegativeOrZeroBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsNegativeOrZero)) {
             amountIsNegativeOrZeroBoolean = true;
         }
 
         // Amount is more than available funds.
-        String notEnoughFunds = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
+        String notEnoughFunds = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS);
         boolean notEnoughFundsBoolean = false;
         if (Boolean.TRUE.toString().equals(notEnoughFunds)) {
             notEnoughFundsBoolean = true;
@@ -163,9 +163,9 @@ public class ValidationErrorDialog extends MultiBitDialog {
             if (!"".equals(completeMessage)) {
                 completeMessage = completeMessage + "\n";
             }
-            String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+            String fee = controller.getCoreModel().getUserPreference(BitcoinModel.SEND_FEE);
             if (fee == null || fee.equals("")) {
-                fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+                fee = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
             }
             
   
@@ -173,7 +173,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                     new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
-            if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+            if (controller.getBitcoinModel().getActiveWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE).compareTo(controller.getBitcoinModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
                         new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }
@@ -217,7 +217,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
         okButton.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         Object[] options = {okButton};
-        if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+        if (controller.getBitcoinModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getBitcoinModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
             options = new Object[] { okButton, availableToSpendHelpButton};
         }
         MultiBitTextArea completeMessageTextArea = new MultiBitTextArea("\n" + completeMessage + "\n", rows, 20, controller);

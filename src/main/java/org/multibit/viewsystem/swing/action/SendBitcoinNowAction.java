@@ -29,11 +29,11 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletBusyListener;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -43,6 +43,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.crypto.KeyCrypterException;
+
 
 /**
  * This {@link Action} actually spends bitcoin.
@@ -89,7 +90,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         
         // This action is a WalletBusyListener.
         controller.registerWalletBusyListener(this);
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(controller.getBitcoinModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -100,7 +101,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         sendBitcoinConfirmPanel.setMessageText(" ", " ");
 
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -112,26 +113,26 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 
             // Get the data out of the wallet preferences.
-            String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-            String sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-            String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
-            String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+            String sendAddress = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
+            String sendLabel = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
+            String sendAmount = controller.getBitcoinModel().getActiveWalletPreference(BitcoinModel.SEND_AMOUNT);
+            String sendFeeString = controller.getCoreModel().getUserPreference(BitcoinModel.SEND_FEE);
             BigInteger fee;
             if (sendFeeString == null || sendFeeString.equals("")) {
-                fee = MultiBitModel.SEND_FEE_DEFAULT;
+                fee = BitcoinModel.SEND_FEE_DEFAULT;
             } else {
                 fee = Utils.toNanoCoins(sendFeeString);
             }
 
             if (sendLabel != null && !sendLabel.equals("")) {
-                WalletInfo addressBook = perWalletModelData.getWalletInfo();
-                addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
+                WalletInfoData addressBook = perWalletModelData.getWalletInfo();
+                addressBook.addSendingAddress(new WalletAddressBookData(sendLabel, sendAddress));
             }
             
             char[] walletPassword = walletPasswordField.getPassword();
  
-            if (controller.getModel().getActiveWallet() != null
-                    && controller.getModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
+            if (controller.getBitcoinModel().getActiveWallet() != null
+                    && controller.getBitcoinModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
                 // Encrypted wallet.
                 if (walletPassword == null || walletPassword.length == 0) {
                     // User needs to enter password.
@@ -141,7 +142,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                 }
 
                 try {
-                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
+                    if (!controller.getBitcoinModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
                         // The password supplied is incorrect.
                         sendBitcoinConfirmPanel.setMessageText(
                                 controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"),
@@ -174,7 +175,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     /**
      * Send the transaction directly.
      */
-    private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, char[] walletPassword) {
+    private void performSend(WalletData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, char[] walletPassword) {
         String message = null;
         
         boolean sendWasSuccessful = Boolean.FALSE;
@@ -276,13 +277,13 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (controller.getBitcoinModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getBitcoinModel().getActivePerWalletModelData().getBusyOperation()}));
             setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            if (!controller.getBitcoinModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
                 setEnabled(true);
             }

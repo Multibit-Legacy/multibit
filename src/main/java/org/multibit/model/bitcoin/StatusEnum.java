@@ -1,4 +1,4 @@
-package org.multibit.model;
+package org.multibit.model.bitcoin;
 
 public enum StatusEnum {
     ONLINE("multiBitFrame.onlineText"),

@@ -21,9 +21,9 @@ import javax.swing.Action;
 import javax.swing.JTable;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.wallet.WalletAddressBookData;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.dialogs.DeleteSendingAddressConfirmDialog;
@@ -63,11 +63,11 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
             return;
         }
 
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
 
-        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfoData(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
 
@@ -77,11 +77,11 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
             int viewRow = addressesTable.getSelectedRow();
             if (viewRow >= 0) {
                 int selectedAddressRowModel = addressesTable.convertRowIndexToModel(viewRow);
-                AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRowModel, false);
+                WalletAddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRowModel, false);
                 if (rowData != null) {
                     if (selectedAddressRowModel < addressesTableModel.getRowCount()) {
                         walletInfo.getSendingAddresses().remove(rowData);
-                        controller.getModel().getActivePerWalletModelData().setDirty(true);
+                        controller.getBitcoinModel().getActivePerWalletModelData().setDirty(true);
                         addressesTableModel.fireTableDataChanged();
                     } else {
                         log.error("Could not remove row " + selectedAddressRowModel + " as table model only contained " + addressesTableModel.getRowCount() + " rows");
@@ -90,11 +90,11 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
                     int newViewRowToSelect = viewRow == 0 ? 0 : viewRow - 1;
                     if (addressesTableModel.getRowCount() > 0) {
                         int newModelRowtoSelect = addressesTable.convertRowIndexToModel(newViewRowToSelect);
-                        AddressBookData newRowData = addressesTableModel.getAddressBookDataByRow(newModelRowtoSelect, false);
+                        WalletAddressBookData newRowData = addressesTableModel.getAddressBookDataByRow(newModelRowtoSelect, false);
                     
-                        controller.getModel().setActiveWalletPreference(sendBitcoinPanel.getAddressConstant(),
+                        controller.getBitcoinModel().setActiveWalletPreference(sendBitcoinPanel.getAddressConstant(),
                                 newRowData.getAddress());
-                        controller.getModel().setActiveWalletPreference(sendBitcoinPanel.getLabelConstant(),
+                        controller.getBitcoinModel().setActiveWalletPreference(sendBitcoinPanel.getLabelConstant(),
                                 newRowData.getLabel());
 
                         if (sendBitcoinPanel.getAddressTextField() != null) {

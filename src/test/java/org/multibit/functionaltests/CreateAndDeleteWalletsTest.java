@@ -25,10 +25,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
+import org.multibit.Localiser;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
@@ -73,8 +75,18 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
             // create the model - gets hooked up to controller automatically
             @SuppressWarnings("unused")
-            MultiBitModel model = new MultiBitModel(controller);
+            Localiser localiser = new Localiser();
+            controller.setLocaliser(localiser);
 
+            CoreModel coreModel = new CoreModel();
+            BitcoinModel bitcoinModel = new BitcoinModel(coreModel);
+
+            controller.setCoreModel(coreModel);
+            controller.setBitcoinModel(bitcoinModel);
+
+            assertNotNull(coreModel);
+            assertNotNull(bitcoinModel);
+            
             log.debug("Creating Bitcoin service");
             // create the MultiBitService that connects to the bitcoin network
             MultiBitService multiBitService = new MultiBitService(controller);
@@ -99,29 +111,29 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest2.wallet";
 
             // initially there is a blank PerWalletModelData
-            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+            assertEquals(1, controller.getBitcoinModel().getPerWalletModelDataList().size());
 
             // create test1 wallet
             CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, null);
             createNewWalletAction.createNewWallet(test1WalletPath);
             Thread.sleep(1000);
-            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+            assertEquals(1, controller.getBitcoinModel().getPerWalletModelDataList().size());
 
             // create test2 wallet
             createNewWalletAction.createNewWallet(test2WalletPath);
             Thread.sleep(1000);
-            assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
+            assertEquals(2, controller.getBitcoinModel().getPerWalletModelDataList().size());
 
             // delete the test1wallet
             DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null);
             deleteWalletSubmitAction.deleteWallet(test1WalletPath);
             Thread.sleep(1000);
-            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+            assertEquals(1, controller.getBitcoinModel().getPerWalletModelDataList().size());
 
             // delete the test2wallet - a default one should then be created
             deleteWalletSubmitAction.deleteWallet(test2WalletPath);
             Thread.sleep(1000);
-            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+            assertEquals(1, controller.getBitcoinModel().getPerWalletModelDataList().size());
         }
     }
 

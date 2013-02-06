@@ -42,9 +42,9 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletTableData;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.bitcoin.wallet.WalletData;
+import org.multibit.model.bitcoin.wallet.WalletTableData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -64,6 +64,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+
 
 /**
  * The transaction details dialog.
@@ -163,7 +164,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         // get the transaction value out of the wallet data
         BigInteger value = null;
         try {
-            value = rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet());
+            value = rowTableData.getTransaction().getValue(controller.getBitcoinModel().getActiveWallet());
         } catch (ScriptException e) {
             log.error(e.getMessage(), e);
 
@@ -292,13 +293,13 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(totalDebitText, constraints);
 
-        BigInteger fee = rowTableData.getTransaction().calculateFee(controller.getModel().getActiveWallet());
+        BigInteger fee = rowTableData.getTransaction().calculateFee(controller.getBitcoinModel().getActiveWallet());
         feeText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(fee)));
         if (BigInteger.ZERO.compareTo(value) > 0) {
             // debit
             amountLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.amountSent"));
             try {
-                BigInteger totalDebit = rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet()).negate();
+                BigInteger totalDebit = rowTableData.getTransaction().getValue(controller.getBitcoinModel().getActiveWallet()).negate();
                 BigInteger amountSent = totalDebit.subtract(fee);
                 totalDebitText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(totalDebit)));
                 amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(amountSent)));
@@ -314,7 +315,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             // Credit - cannot calculate fee so do not show.
             try {
                 amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(rowTableData.getTransaction().getValue(
-                        controller.getModel().getActiveWallet()))));
+                        controller.getBitcoinModel().getActiveWallet()))));
             } catch (ScriptException e) {
                 e.printStackTrace();
             }
@@ -345,8 +346,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         labelScrollPane.setOpaque(true);
         labelScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         labelScrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        labelScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        labelScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
@@ -384,8 +385,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailScrollPane.setOpaque(true);
         detailScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         detailScrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        detailScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        detailScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        detailScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        detailScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         detailPanel.add(detailScrollPane, constraints);
 
@@ -486,13 +487,13 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private String createTransactionDescription(Transaction transaction) {
         String toReturn = "";
 
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = controller.getBitcoinModel().getActivePerWalletModelData();
 
         if (perWalletModelData == null) {
             return toReturn;
         }
 
-        Wallet wallet = controller.getModel().getActiveWallet();
+        Wallet wallet = controller.getBitcoinModel().getActiveWallet();
         List<TransactionOutput> transactionOutputs = transaction.getOutputs();
 
         BigInteger credit = transaction.getValueSentToMe(wallet);
@@ -523,7 +524,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                 String addressString = "";
 
                 if (controller.getMultiBitService() != null && myOutput != null) {
-                    Address toAddress = new Address(controller.getModel().getNetworkParameters(), myOutput
+                    Address toAddress = new Address(controller.getBitcoinModel().getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();
                 }
