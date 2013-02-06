@@ -43,13 +43,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.IsMultiBitClass;
