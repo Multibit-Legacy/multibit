@@ -86,7 +86,7 @@ public class MultiBitService {
     private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
-    private static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
+    public static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
 
     public static final String MULTIBIT_PREFIX = "multibit";
     public static final String TESTNET_PREFIX = "testnet";
@@ -112,8 +112,6 @@ public class MultiBitService {
     private MultiBitBlockChain blockChain;
 
     private ReplayableBlockStore blockStore;
-
- //   private boolean useTestNet;
 
     private MultiBitController controller;
 
@@ -224,15 +222,37 @@ public class MultiBitService {
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
+        boolean peersSpecified = false;
         String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+        String peers = controller.getModel().getUserPreference(MultiBitModel.PEERS);
         if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
             try {
-                peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
+                peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection.trim())));
                 peerGroup.setMaxConnections(1);
+                peersSpecified = true;
             } catch (UnknownHostException e) {
                 log.error(e.getMessage(), e);
             }
-        } else {
+        } else if (peers != null && !peers.equals("")) {
+            // Split using commas.
+            String[] peerList = peers.split(",");
+            if (peerList != null) {
+                int numberOfPeersAdded = 0;
+            
+                for (int i = 0; i < peerList.length; i++) {
+                    try {
+                        peerGroup.addAddress(new PeerAddress(InetAddress.getByName(peerList[i].trim())));
+                        numberOfPeersAdded++;
+                    } catch (UnknownHostException e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }
+                peerGroup.setMaxConnections(numberOfPeersAdded);
+                peersSpecified = true;
+            }    
+        } 
+        
+        if (!peersSpecified){
             // Use DNS for production, IRC for test.
             if (TESTNET3_GENESIS_HASH.equals(controller.getModel().getNetworkParameters().genesisBlock.getHashAsString())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
@@ -243,7 +263,19 @@ public class MultiBitService {
             }
         }
         // Add the controller as a PeerEventListener.
-        peerGroup.addEventListener(controller);
+        peerGroup.addEventListener(controller.getPeerEventListener());
+        
+        // Add all existing wallets to the PeerGroup.
+        if (controller != null && controller.getModel() != null) {
+            List<PerWalletModelData> perWalletDataModels = controller.getModel().getPerWalletModelDataList();
+            if (perWalletDataModels != null) {
+                for (PerWalletModelData perWalletDataModel : perWalletDataModels) {
+                    if (perWalletDataModel != null && perWalletDataModel.getWallet() != null) {
+                        peerGroup.addWallet(perWalletDataModel.getWallet());
+                    }
+                }
+            }
+        }
         return peerGroup;
     }
 
@@ -470,7 +502,7 @@ public class MultiBitService {
         peerGroup.stop();
 
         // Reset UI to zero peers.
-        controller.onPeerDisconnected(null, 0);
+        controller.getPeerEventListener().onPeerDisconnected(null, 0);
 
         if (dateToReplayFrom != null) {
             message = new Message(controller.getLocaliser().getString(
@@ -485,14 +517,33 @@ public class MultiBitService {
         }
         MessageManager.INSTANCE.addMessage(message);
 
+        log.debug("About to restart PeerGroup.");
+        restartPeerGroup();
+        log.debug("Restarted PeerGroup.");
+
+        log.debug("About to start  blockchain download.");
+        downloadBlockChain();
+        log.debug("Blockchain download started.");
+    }
+    
+    
+    public void restartPeerGroup() {
+        // Restart peerGroup and download.
+        Message message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"),
+                false, 0);
+        MessageManager.INSTANCE.addMessage(message);
+
+        peerGroup.stop();
+
+        // Reset UI to zero peers.
+        controller.getPeerEventListener().onPeerDisconnected(null, 0);
+ 
         peerGroup = createNewPeerGroup();
         peerGroup.start();
- 
-        downloadBlockChain();
     }
-
+    
     /**
-     * download the block chain
+     * Download the block chain.
      */
     public void downloadBlockChain() {
         @SuppressWarnings("rawtypes")
@@ -501,7 +552,7 @@ public class MultiBitService {
             protected Object doInBackground() throws Exception {
                 logger.debug("Downloading blockchain");
                 peerGroup.downloadBlockChain();
-                return null; // Return not used.
+                return null; // return not used
             }
         };
         worker.execute();
@@ -545,7 +596,7 @@ public class MultiBitService {
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
             }
             
-             try {
+            try {
                 // Notify other wallets of the send (it might be a send to or from them).
                 List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 

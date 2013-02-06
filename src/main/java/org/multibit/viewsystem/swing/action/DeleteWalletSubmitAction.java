@@ -75,7 +75,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
             PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
             controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
             controller.fireRecreateAllViews(true);
-            controller.fireDataChanged();
+            controller.fireDataChangedUpdateNow();
             
             String confirm2 = newWalletCreated ? controller.getLocaliser().getString("deleteWalletConfirmDialog.newWalletCreated") : " ";
             if (deleteWalletConfirmDialog != null) {
@@ -119,7 +119,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
                     .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { ioe.getMessage() }));
         } finally {
             controller.fireRecreateAllViews(true);
-            controller.fireDataChanged();
+            controller.fireDataChangedUpdateNow();
         }
     }
     
@@ -197,7 +197,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
         controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
         controller.fireRecreateAllViews(true);
-        controller.fireDataChanged();
+        controller.fireDataChangedUpdateNow();
         
         return newWalletCreated;
     }

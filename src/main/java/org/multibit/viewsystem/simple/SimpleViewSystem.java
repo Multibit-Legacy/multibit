@@ -12,7 +12,7 @@ import com.google.bitcoin.core.Wallet;
 import org.multibit.viewsystem.View;
 
 /**
- * A very simple implementation of a view system
+ * A very simple implementation of a view system.
  */
 public class SimpleViewSystem implements ViewSystem {
     int numberOfBlocksDownloaded = 0;
@@ -42,14 +42,9 @@ public class SimpleViewSystem implements ViewSystem {
         System.out.println("SIMPLE. Wallet " + wallet.hashCode() + " was reorganised");
     }
 
+    @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         System.out.println("SIMPLE. Confidence changed for wallet: " + wallet.hashCode() + ", transaction:\n" + transaction.toString());
-    }
-    
-
-    @Override
-    public void onKeyAdded(ECKey key) {
-        System.out.println("SIMPLE. Key added: " + key.toString());
     }
 
     @Override
@@ -62,13 +57,14 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void fireDataChanged() {
-        System.out.println("SIMPLE. Data has changed");
+    public void fireDataChangedUpdateNow() {
+        System.out.println("SIMPLE. Data has changed - update now.");
     }
+    
 
     @Override
-    public void recreateAllViews(boolean initUI, View initialView) {
-        System.out.println("SIMPLE. All views were recreated");
+    public void fireDataChangedUpdateLater() {
+        System.out.println("SIMPLE. Data has changed - update later.");
     }
 
     @Override
@@ -90,5 +86,14 @@ public class SimpleViewSystem implements ViewSystem {
     @Override
     public void setHelpContext(String helpContextToDisplay) {
         System.out.println("SIMPLE. Help : " + helpContextToDisplay);
+    }
+
+    @Override
+    public void onKeyAdded(ECKey key) {        
+    }
+
+    @Override
+    public void recreateAllViews(boolean initUI, View initialView) {
+        System.out.println("SIMPLE. All views were recreated");
     }
 }

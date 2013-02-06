@@ -129,7 +129,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private int selectedRow = -1;
     
-    public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 333; // milliseconds
+    public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 1000; // milliseconds
     
     private JScrollPane scrollPane;
     
@@ -365,7 +365,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer();
         table.getColumnModel().getColumn(3).setCellRenderer(decimalAlignRenderer);
 
-
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
@@ -505,7 +504,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 primaryLabel.setIcon(getConfidenceIcon(confidence));
                 primaryLabel.setText("");
                 
-                primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(getUnconfirmedConfidenceToolTip(transaction) ));
+                primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(getUnconfirmedConfidenceToolTip(transaction)));
                 
                 if (transaction != null) {
                     if (transaction.getLockTime() > 0) {
@@ -1011,10 +1010,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             outerPanel.add(pane, BorderLayout.LINE_START);
             outerPanel.add(filler, BorderLayout.CENTER);
             
-            // Avoid flicker of first row by doing layout.
-            if (row ==0) {
-                outerPanel.doLayout();
-            }
+            // Avoid flicker by doing layout.
+            outerPanel.doLayout();
+
             return outerPanel;
         }
     }

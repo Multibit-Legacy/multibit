@@ -99,6 +99,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
@@ -113,7 +114,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.82D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
-    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 00.12345678 BTC ($00.01)";
+    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 00.12345678 BTC (000.01 XYZ)";
     
     public static final int WIDTH_OF_LONG_FIELDS = 300;
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;
@@ -124,8 +125,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int HEIGHT_OF_HEADER = 70;
 
     public static final int WIDTH_OF_SPLIT_PANE_DIVIDER = 9;
-
-    public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 50;
 
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
@@ -198,6 +197,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private JPanel headerPanel;
 
     private TickerTablePanel tickerTablePanel;
+
+    /**
+     * For events coming from Peers condense the events into regular updates.
+     * This is to prevent the UI thrashing with hundreds of events per second.
+     */
+    public static final int FIRE_DATA_CHANGED_UPDATE_LATER_DELAY_TIME = 1000; // milliseconds
+ 
+    /**
+     * Timer used to condense multiple updates
+     */
+    private static Timer fireDataChangedTimer;
+
+    private static FireDataChangedTimerTask fireDataChangedTimerTask;
 
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application, View initialView) {
@@ -286,6 +298,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         pack();
 
         setVisible(true);
+        
+        fireDataChangedTimerTask = new FireDataChangedTimerTask(this);
+        fireDataChangedTimer = new Timer();
+        fireDataChangedTimer.scheduleAtFixedRate(fireDataChangedTimerTask, FIRE_DATA_CHANGED_UPDATE_LATER_DELAY_TIME, FIRE_DATA_CHANGED_UPDATE_LATER_DELAY_TIME);
     }
 
     public GenericApplication getApplication() {
@@ -354,27 +370,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewTabbedPane = new MultiBitTabbedPane(controller);
         viewTabbedPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        // Add the send bitcoin tab.
-        JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        Viewable sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
-        sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinView.getViewTooltip(),
-                sendBitcoinOutlinePanel);
-
-        // Add the receive bitcoin tab.
-        JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        Viewable receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
-        receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(),
-                receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
-
-        // Add the transactions tab.
-        JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
-        Viewable transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
-        transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
-                transactionsOutlinePanel);
-
         // Create a split pane with the two scroll panes in it.
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
@@ -404,6 +399,27 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         // Cannot get the RTL wallets drawing nicely so switch off adjustment.
         splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
+
+        // Add the send bitcoin tab.
+        JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
+        Viewable sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
+        sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinView.getViewTooltip(),
+                sendBitcoinOutlinePanel);
+
+        // Add the receive bitcoin tab.
+        JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
+        Viewable receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
+        receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(),
+                receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
+
+        // Add the transactions tab.
+        JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
+        Viewable transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
+        transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
+                transactionsOutlinePanel);
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
@@ -935,12 +951,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (initUI) {
             thisFrame.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
+            viewFactory.initialise();
             contentPane.removeAll();
             viewTabbedPane.removeAllTabs();
-            viewFactory.initialise();
             initUI();
             
-            //String current = controller.getCurrentView().toString();
             if (initialView != null && !initialView.toString().equals(View.TRANSACTIONS_VIEW.toString()) && !initialView.toString().equals(View.SEND_BITCOIN_VIEW.toString())
                     && !initialView.toString().equals(View.RECEIVE_BITCOIN_VIEW)) {
                 JPanel currentTabPanel = new JPanel(new BorderLayout());
@@ -960,14 +975,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         statusBar.refreshOnlineStatusText();
 
         updateHeader();
-        if (tickerTablePanel != null) {
-            tickerTablePanel.update();
-        }
-        
+
         // Tell the wallets list to display.
         if (walletsView != null) {
-            walletsView.initUI();
             walletsView.displayView();
+        }
+
+        if (tickerTablePanel != null) {
+            tickerTablePanel.update();
         }
 
         // Tell all the tabs in the tabbedPane to update.
@@ -1063,8 +1078,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         nextViewFinal.displayView();
 
         //log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
-        thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
+        thisFrame.setCursor(Cursor.getDefaultCursor());
     }
+    
     /**
      * navigate away from view - this may be on another thread hence the
      * SwingUtilities.invokeLater
@@ -1090,7 +1106,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 });
             }
         }
-    }    
+    }
 
     @Override
     public void setOnlineStatus(StatusEnum statusEnum) {
@@ -1113,12 +1129,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        fireDataChanged();
+        fireDataChangedUpdateLater();
     }
 
     @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        fireDataChanged();
+        fireDataChangedUpdateLater();
     }
 
     /**
@@ -1131,14 +1147,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
-    public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ShowTransactionsPanel.updateTransactions();
-                SendBitcoinConfirmDialog.updateDialog(transaction);
-            }
-        });
+    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
+        if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+            ShowTransactionsPanel.updateTransactions(); 
+        } else if (controller.getCurrentView() == View.SEND_BITCOIN_CONFIRM_VIEW) {
+            final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
+            final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
+            SendBitcoinConfirmDialog.updateDialogDueToTransactionConfidenceChange(transactionHash, numberOfPeers); 
+        }
     }
     
     @Override
@@ -1153,29 +1169,43 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"), true);
             MessageManager.INSTANCE.addMessage(message);
         }
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
 
     /**
-     * Update the UI after the model data has changed.
+     * Mark that the UI needs to be updated as soon as possible.
      */
     @Override
-    public void fireDataChanged() {
-        updateHeader();
-
+    public void fireDataChangedUpdateNow() {
         if (EventQueue.isDispatchThread()) {
-            fireDataChangedOnSwingThread();
+            fireDataChangedOnSwingThread();   
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    fireDataChangedOnSwingThread();
+                    fireDataChangedOnSwingThread(); 
                 }
             });
         }
+    }  
+
+    /**
+     * Mark that the UI needs updating the next time the fireDataChangedTimer fires.
+     */
+    @Override
+    public void fireDataChangedUpdateLater() {
+        if (fireDataChangedTimerTask != null) {
+            fireDataChangedTimerTask.setFireDataChanged(true);
+        }    
     }
     
-    private void fireDataChangedOnSwingThread() {  
+    /**
+     * Actually update the UI.
+     * (Called back from the FireDataChangedTimerTask).
+     */
+    private void fireDataChangedOnSwingThread() {
+        updateHeader();
+       
         // Tell the wallets list to display.
         if (walletsView != null) {
             walletsView.displayView();
@@ -1190,10 +1220,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Tell the tab to refresh (gets round bug on replay for transactions panel)
         Viewable tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
         if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
-            //log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
+            log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
             tabbedPaneCurrentView.displayView();
         }
     }
+
 
     /**
      * Update the Ticker Panel after the exchange data has changed.
@@ -1389,7 +1420,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void lostExchangeRate(ExchangeRate exchangeRate) {
-        // TODO Auto-generated method stub    
+        updateHeader();
     }
 
     @Override

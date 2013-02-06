@@ -27,8 +27,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 public class BlinkLabel extends MultiBitLabel {
     private static final long serialVersionUID = 1L;
 
-    private static final int BLINKING_TIME = 2000; // in ms
-    private static final Color ORIGINAL_FOREGROUND_COLOR = Color.BLACK;
+    public static final int BLINKING_TIME = 2000; // in ms
 
     private Color originalBackgroundColor;
     
@@ -81,8 +80,9 @@ public class BlinkLabel extends MultiBitLabel {
             this.blinkLabel = blinkLabel;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
-            blinkLabel.setForeground(ORIGINAL_FOREGROUND_COLOR);
+            blinkLabel.setForeground(Color.BLACK);
             blinkLabel.setBackground(originalBackgroundColor);
             blinkLabel.setOpaque(false);
             

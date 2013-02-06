@@ -368,7 +368,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                 if (nextSelectedWalletIndex > -1) {
                     controller.getModel().setActiveWalletByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
-                    controller.fireDataChanged();
+                    controller.fireDataChangedUpdateNow();
                 }
             }
         }
@@ -396,7 +396,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                             .setActiveWalletByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 
-                    controller.fireDataChanged();
+                    controller.fireDataChangedUpdateNow();
                 }
                 // Always select the selectedWalletPanel so that relative key movements work
                 selectedWalletPanel.requestFocusInWindow();

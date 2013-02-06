@@ -63,11 +63,11 @@ import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
 
 /**
- * the MVC controller for Multibit
+ * The MVC controller for MultiBit.
  * 
  * @author jim
  */
-public class MultiBitController implements PeerEventListener, GenericOpenURIEventListener, GenericPreferencesEventListener,
+public class MultiBitController implements GenericOpenURIEventListener, GenericPreferencesEventListener,
         GenericAboutEventListener, GenericQuitEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
@@ -75,45 +75,50 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
 
     /**
-     * the view systems under control of the MultiBitController
+     * The view systems under control of the MultiBitController.
      */
     private Collection<ViewSystem> viewSystems;
 
     /**
-     * the data model backing the views
+     * The data model backing the views.
      */
     private MultiBitModel model;
 
     /**
-     * the localiser used to localise everything
+     * The localiser used to localise everything.
      */
     private Localiser localiser;
 
     /**
-     * the bitcoinj network interface
+     * The bitcoinj network interface.
      */
     private MultiBitService multiBitService;
 
     /**
-     * class encapsulating File IO
+     * Class encapsulating File IO.
      */
     private FileHandler fileHandler;
+    
+    /**
+     * The listener handling Peer events.
+     */
+    private PeerEventListener peerEventListener;
 
     /**
-     * class encapsulating the location of the Application Data Directory
+     * Class encapsulating the location of the Application Data Directory.
      */
     private ApplicationDataDirectoryLocator applicationDataDirectoryLocator;
 
     /**
      * Multiple threads will write to this variable so require it to be volatile
-     * to ensure that latest write is what gets read
+     * to ensure that latest write is what gets read.
      */
     private volatile URI rawBitcoinURI = null;
 
     private volatile boolean applicationStarting = true;
 
     /**
-     * used for testing only
+     * Used for testing only.
      */
     public MultiBitController() {
         this(null);
@@ -126,12 +131,14 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         fileHandler = new FileHandler(this);
 
-        // by default localise to English
+        peerEventListener = new MultiBitPeerEventListener(this);
+        
+        // By default localise to English.
         localiser = new Localiser(Locale.ENGLISH);
     }
 
     /**
-     * Display the view specified
+     * Display the view specified.
      * 
      * @param viewToDisplay
      *            View to display. Must be one of the View constants
@@ -139,35 +146,35 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public void displayView(View viewToDisplay) {
         // log.debug("Displaying view '" + viewToDisplay + "'");
 
-        // tell all views to close the current view
+        // Tell all views to close the current view.
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
 
         setCurrentView(viewToDisplay);
 
-        // tell all views which view to display
+        // Tell all views which view to display.
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.displayView(getCurrentView());
         }
     }
 
     /**
-     * Display the help context specified
+     * Display the help context specified.
      * 
      * @param helpContextToDisplay
      *            The help context to display. A path in the help
      */
     public void displayHelpContext(String helpContextToDisplay) {
-        log.debug("Displaying help context '" + helpContextToDisplay + "'");
-        // tell all views to close the current view
+        //log.debug("Displaying help context '" + helpContextToDisplay + "'");
+        // Tell all views to close the current view.
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
 
         setCurrentView(View.HELP_CONTENTS_VIEW);
 
-        // tell all views which view to display
+        // Tell all views which view to display.
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.setHelpContext(helpContextToDisplay);
             viewSystem.displayView(View.HELP_CONTENTS_VIEW);
@@ -175,7 +182,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * register a new MultiBitViewSystem from the list of views that are managed
+     * Register a new MultiBitViewSystem from the list of views that are managed.
      * 
      * @param viewSystem
      *            system
@@ -193,7 +200,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * add a wallet to multibit from a filename
+     * Add a wallet to multibit from a filename.
      * 
      * @param walletFilename
      *            The wallet filename
@@ -209,7 +216,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * the language has been changed
+     * The language has been changed.
      */
     public void fireDataStructureChanged() {
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
@@ -223,11 +230,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
 
         setCurrentView(viewToDisplay);
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
 
     /**
-     * fire that all the views need recreating
+     * Fire that the model data has changed and the UI should be updated immediately.
      */
     public void fireRecreateAllViews(boolean initUI) {
         // tell the viewSystems to refresh their views
@@ -237,11 +244,20 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * fire the model data has changed
+     * Fire the model data has changed.
      */
-    public void fireDataChanged() {
+    public void fireDataChangedUpdateNow() {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.fireDataChanged();
+            viewSystem.fireDataChangedUpdateNow();
+        }
+    }
+    
+    /**
+     * Fire that the model data has changed and similar events are to be collapsed.
+     */
+    public void fireDataChangedUpdateLater() {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.fireDataChangedUpdateLater();
         }
     }
 
@@ -250,7 +266,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         }
 
-        fireDataChanged();
+        fireDataChangedUpdateNow();
     }
 
     public Localiser getLocaliser() {
@@ -261,42 +277,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         this.localiser = localiser;
     }
 
-    /**
-     * the controller listens for PeerGroup events and notifies interested
-     * parties
-     */
-
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {              
-        fireBlockDownloaded();
-    }
-
-    public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-        // log.debug("onChainDownloadStarted called");
-        fireBlockDownloaded();
-    }
-
-    public void onPeerConnected(Peer peer, int peerCount) {
-        //log.debug("Peer '" + peer +"' connected. There are now " + peerCount + " peer(s).");
-        if (peerCount >= 1) {
-            setOnlineStatus(StatusEnum.ONLINE);
-        }
-        if (getModel() != null) {
-            getModel().setNumberOfConnectedPeers(peerCount);
-        }   
-        SendBitcoinConfirmDialog.updateDialog(null);
-    }
-
-    public void onPeerDisconnected(Peer peer, int peerCount) {
-        //log.debug("Peer '" + peer +"' disconnected. There are now " + peerCount + " peer(s).");
-        if (peerCount == 0) {
-           setOnlineStatus(StatusEnum.CONNECTING);
-        }
-        if (getModel() != null) {
-            getModel().setNumberOfConnectedPeers(peerCount);
-        } 
-        SendBitcoinConfirmDialog.updateDialog(null);
-    }
-
     public void setOnlineStatus(StatusEnum statusEnum) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.setOnlineStatus(statusEnum);
@@ -304,7 +284,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * method called by downloadListener whenever a block is downloaded
+     * Method called by downloadListener whenever a block is downloaded.
      */
     public void fireBlockDownloaded() {
         // log.debug("Fire blockdownloaded");
@@ -338,7 +318,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
-
+    
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         //log.debug("Firing confidence change in onTransactionConfidenceChanged.");
         
@@ -417,13 +397,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public synchronized void handleOpenURI() {
         log.debug("handleOpenURI called and rawBitcoinURI ='" + rawBitcoinURI + "'");
 
-        // get the open URI configuration information
+        // Get the open URI configuration information
         String showOpenUriDialogText = getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
         String useUriText = getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
 
         if (Boolean.FALSE.toString().equalsIgnoreCase(useUriText)
                 && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
-            // ignore open URI request
+            // Ignore open URI request.
             log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '"
                     + showOpenUriDialogText + "'");
             org.multibit.message.Message message = new org.multibit.message.Message(localiser.getString("showOpenUriView.paymentRequestIgnored"));
@@ -436,13 +416,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             // displayView(getCurrentView());
             return;
         }
-        // Process the URI
+        // Process the URI.
         // TODO Consider handling the possible runtime exception at a suitable
         // level for recovery
 
         // Early MultiBit versions did not URL encode the label hence may
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
-        // be lenient
+        // be lenient.
         String uriString = rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
         BitcoinURI bitcoinURI = null;
         try {
@@ -452,23 +432,23 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             return;
         }
 
-        // Convert the URI data into suitably formatted view data
+        // Convert the URI data into suitably formatted view data.
         String address = bitcoinURI.getAddress().toString();
         String label = "";
         try {
             // No label? Set it to a blank String otherwise perform a URL decode
-            // on it just to be sure
+            // on it just to be sure.
             label = null == bitcoinURI.getLabel() ? "" : URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error("Could not decode the label in UTF-8. Unusual URI entry or platform.");
         }
-        // No amount? Set it to zero
+        // No amount? Set it to zero.
         BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
         String amount = getLocaliser().bitcoinValueToStringNotLocalised(numericAmount, false, false);
 
         if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
-            // do not show confirm dialog - go straight to send view
-            // Populate the model with the URI data
+            // Do not show confirm dialog - go straight to send view.
+            // Populate the model with the URI data.
             getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
             getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
             getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
@@ -479,8 +459,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             displayView(View.SEND_BITCOIN_VIEW);
             return;
         } else {
-            // show the confirm dialog to see if the user wants to use URI
-            // Populate the model with the URI data
+            // Show the confirm dialog to see if the user wants to use URI.
+            // Populate the model with the URI data.
             getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
             getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
             getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
@@ -519,17 +499,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         return true;
     }
 
-    @Override
-    public Message onPreMessageReceived(Peer peer, Message message) {
-        return message;
-    }
-
-    @Override
-    public void onTransaction(Peer peer, Transaction transaction) { 
-    }
-
-    @Override
-    public List<Message> getData(Peer peer, GetDataMessage m) {
-        return null;
+    public PeerEventListener getPeerEventListener() {
+        return peerEventListener;
     }
 }

@@ -158,7 +158,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                     controller.getModel().setActiveWalletByFilename(newWalletFilename);
                     controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
                     controller.fireRecreateAllViews(true);
-                    controller.fireDataChanged();
+                    controller.fireDataChangedUpdateNow();
                 }
             } else {
                 // Create a new wallet.
@@ -183,7 +183,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 log.debug("User preferences with new wallet written successfully");
 
                 controller.fireRecreateAllViews(true);
-                controller.fireDataChanged();
+                controller.fireDataChangedUpdateNow();
             }
         } catch (WalletLoadException e) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",

@@ -44,6 +44,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
+import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 
@@ -426,8 +427,11 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
             String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
             boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
             
+            String peers = model.getUserPreference(MultiBitModel.PEERS);
+            boolean singlePeerOverride = peers != null && peers.split(",").length == 1;
+            
             if (thisDialog.sendBitcoinNowAction != null) {
-                if (!singleNodeConnectionOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                if (!singleNodeConnectionOverride && !singlePeerOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                     // Disable send button
                     enableSend = false;
                 } else {
@@ -640,5 +644,74 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
     public MultiBitLabel getConfirmText2() {
         return confirmText2;
+    }
+    
+    public static void updateDialogDueToTransactionConfidenceChange(final Sha256Hash transactionWithChangedConfidenceHash,
+            final int numberOfPeersSeenBy) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (thisDialog == null || !thisDialog.isVisible() || thisDialog.getSendBitcoinNowAction() == null) {
+                    return;
+                }
+                Transaction sentTransaction = thisDialog.getSendBitcoinNowAction().getTransaction();
+
+                if (sentTransaction == null || !sentTransaction.getHash().equals(transactionWithChangedConfidenceHash)) {
+                    return;
+                }
+
+                MultiBitLabel confirmText2 = thisDialog.getConfirmText2();
+                if (confirmText2 != null) {
+                    confirmText2.setText(thisDialog.getConfidenceToolTip(numberOfPeersSeenBy));
+                    confirmText2.setIcon(thisDialog.getConfidenceIcon(numberOfPeersSeenBy));
+                }
+
+                thisDialog.invalidate();
+                thisDialog.validate();
+                thisDialog.repaint();
+            }
+        });
+    }
+    
+    private String getConfidenceToolTip(int numberOfPeers) {
+        StringBuilder builder = new StringBuilder("");
+        if (numberOfPeers == 0) {
+            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
+        } else {
+            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+            builder.append(numberOfPeers);
+            if (numberOfPeers > 1)
+                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ".");
+            else
+                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ".");
+        }
+        return builder.toString();
+    }
+
+    private ImageIcon getConfidenceIcon(int numberOfPeers) {
+        // By default return a triangle which indicates the least known.
+        ImageIcon iconToReturn;
+
+        if (numberOfPeers >= 4) {
+            return progress0Icon;
+        } else {
+            switch (numberOfPeers) {
+            case 0:
+                iconToReturn = shapeTriangleIcon;
+                break;
+            case 1:
+                iconToReturn = shapeSquareIcon;
+                break;
+            case 2:
+                iconToReturn = shapeHeptagonIcon;
+                break;
+            case 3:
+                iconToReturn = shapeHexagonIcon;
+                break;
+            default:
+                iconToReturn = shapeTriangleIcon;
+            }
+        }
+        return iconToReturn;
     }
 }

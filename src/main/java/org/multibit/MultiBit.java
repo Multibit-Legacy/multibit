@@ -257,7 +257,7 @@ public class MultiBit {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
                         ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                     }
-                    controller.fireDataChanged();
+                    controller.fireDataChangedUpdateNow();
                 }
             } else {
                 try {
@@ -326,7 +326,7 @@ public class MultiBit {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
                         ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                     }
-                    controller.fireDataChanged();
+                    controller.fireDataChangedUpdateNow();
                     
                     ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
