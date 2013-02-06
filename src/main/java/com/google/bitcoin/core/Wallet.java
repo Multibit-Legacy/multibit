@@ -16,25 +16,47 @@
 
 package com.google.bitcoin.core;
 
+import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.multibit.IsMultiBitClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import org.multibit.IsMultiBitClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
-import static com.google.common.base.Preconditions.*;
 
 /**
  * <p>A Wallet stores keys and a record of transactions that send and receive value from those keys. Using these,
