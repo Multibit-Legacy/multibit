@@ -2,7 +2,6 @@ package org.multibit.controller;
 
 import java.util.List;
 
-import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -13,10 +12,7 @@ import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
-import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.VerificationException;
-import com.google.bitcoin.core.Wallet;
 
 public class MultiBitPeerEventListener implements PeerEventListener {
 

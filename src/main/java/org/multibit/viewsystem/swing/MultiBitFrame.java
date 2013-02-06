@@ -208,8 +208,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     
     private MultiBitWalletBusyAction showImportPrivateKeysAction;
     private MultiBitWalletBusyAction showExportPrivateKeysAction;
-
-    
+ 
     /**
      * For events coming from Peers condense the events into regular updates.
      * This is to prevent the UI thrashing with hundreds of events per second.
@@ -1117,7 +1116,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         nextViewFinal.displayView();
 
         //log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
-        thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
+        thisFrame.setCursor(Cursor.getDefaultCursor());
     }
 
     /**
@@ -1205,11 +1204,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     /**
-     * Update due to a block being downloaded
-     * This typically comes in from a Peer so is 'SwingUtilitied' to get the request on the Swing event thread
+     * Update due to a block being downloaded.
+     * This typically comes in from a Peer.
      */
     public void blockDownloaded() {
-        // Update transaction screen in case status bars have changed.
+        // Update transaction screen in case status icons have changed.
         if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
             ShowTransactionsPanel.updateTransactions();
         }
@@ -1257,7 +1256,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     /**
-     * Mark that the UI needs to be updated.
+     * Mark that the UI needs to be updated as soon as possible.
      */
     @Override
     public void fireDataChangedUpdateNow() {
@@ -1271,9 +1270,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 }
             });
         }
-    }
-    
+    }  
 
+    /**
+     * Mark that the UI needs updating the next time the fireDataChangedTimer fires.
+     */
     @Override
     public void fireDataChangedUpdateLater() {
         if (fireDataChangedTimerTask != null) {
@@ -1513,7 +1514,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void lostExchangeRate(ExchangeRate exchangeRate) {
-        // TODO Auto-generated method stub    
+        updateHeader();
     }
 
     @Override

@@ -2264,14 +2264,14 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                 Date updateTime = member.getValue().getUpdateTime();
                 if (updateTime != null && updateTime.after(fromDate)) {
                     iterator.remove();
-                    log.debug("Wallet#removeEntriesAfterDate - Removed tx.1 " + member.getValue());
+                    //log.debug("Wallet#removeEntriesAfterDate - Removed tx.1 " + member.getValue());
                     continue;
                 }
                 
                 // if no updateTime remove them
                 if (updateTime == null || updateTime.getTime() == 0) {
                     iterator.remove();
-                    log.debug("Removed tx.2 " + member.getValue());
+                    //log.debug("Removed tx.2 " + member.getValue());
                     continue;                    
                 }
             }

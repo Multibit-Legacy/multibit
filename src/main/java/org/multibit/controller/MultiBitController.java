@@ -131,7 +131,6 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     public MultiBitController(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
         this.applicationDataDirectoryLocator = applicationDataDirectoryLocator;
 
-        // NO
         viewSystems = new ArrayList<ViewSystem>();
         
         walletBusyListeners = new ArrayList<WalletBusyListener>();
@@ -140,7 +139,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
 
         peerEventListener = new MultiBitPeerEventListener(this);
         
-        // by default localise to English
+        // By default localise to English.
         localiser = new Localiser(Locale.ENGLISH);
     }
 
@@ -151,9 +150,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      *            View to display. Must be one of the View constants
      */
     public void displayView(View viewToDisplay) {
-        log.debug("Displaying view '" + viewToDisplay + "'");
-
-        // NO
+        //log.debug("Displaying view '" + viewToDisplay + "'");
 
         // Tell all views to close the current view.
         for (ViewSystem viewSystem : viewSystems) {
@@ -175,11 +172,9 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      *            The help context to display. A path in the help
      */
     public void displayHelpContext(String helpContextToDisplay) {
-        log.debug("Displaying help context '" + helpContextToDisplay + "'");
+        //log.debug("Displaying help context '" + helpContextToDisplay + "'");
+        
         // Tell all views to close the current view.
-
-        // NO
-
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
@@ -200,7 +195,6 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      *            system
      */
     public void registerViewSystem(ViewSystem viewSystem) {
-        // NO
         viewSystems.add(viewSystem);
     }
     
@@ -287,7 +281,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
-        log.debug("fireFilesHaveBeenChangedByAnotherProcess called");
+        //log.debug("fireFilesHaveBeenChangedByAnotherProcess called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         }
@@ -299,7 +293,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * Fire that a wallet has changed its busy state.
      */
     public void fireWalletBusyChange(boolean newWalletIsBusy) {
-        log.debug("fireWalletBusyChange called");
+        //log.debug("fireWalletBusyChange called");
         for (WalletBusyListener walletBusyListener : walletBusyListeners) {
             walletBusyListener.walletBusyChange(newWalletIsBusy);
         }
@@ -314,7 +308,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     }
 
     public void setOnlineStatus(StatusEnum statusEnum) {
-        log.debug("setOnlineStatus called");
+        //log.debug("setOnlineStatus called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.setOnlineStatus(statusEnum);
         }
@@ -332,7 +326,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
 
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        log.debug("onCoinsReceived called");
+        //log.debug("onCoinsReceived called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
@@ -340,7 +334,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
 
     @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        log.debug("onCoinsSent called");
+        //log.debug("onCoinsSent called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
@@ -540,52 +534,6 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     private boolean isOKToQuit() {
         return true;
-    }
-    
-    /**
-     * Called from replay when a block is replayed from cache.
-     * @param block
-     */
-    public void onBlock(StoredBlock storedBlock, Block block) {
-        // Loop through the transactions in the block.
-        List<Transaction> transactions = block.getTransactions();
-        if (transactions != null) {
-            for (Transaction transaction : transactions) {
-                // loop through all the wallets, seeing if the transaction is relevant
-                if (transaction != null) {
-                    try {
-                        java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-
-                        if (perWalletModelDataList != null) {
-                            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                                Wallet loopWallet = perWalletModelData.getWallet();
-                                if (loopWallet != null) {
-                                    if (loopWallet.isTransactionRelevant(transaction)) {
-                                        // the perWalletModelData is marked as dirty
-                                        if (perWalletModelData.getWalletInfo() != null) {
-                                            synchronized(perWalletModelData.getWalletInfo()) {
-                                                perWalletModelData.setDirty(true);
-                                            }
-                                        } else {
-                                            perWalletModelData.setDirty(true);
-                                        }
-                                        if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                                            log.debug("MultiBit adding a new transaction from a block for the wallet '"
-                                                    + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
-                                            loopWallet.receiveFromBlock(transaction, storedBlock, com.google.bitcoin.core.BlockChain.NewBlockType.BEST_CHAIN);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } catch (ScriptException e) {
-                        log.error(e.getMessage(), e);
-                    } catch (VerificationException e) {
-                        log.error(e.getMessage(), e);
-                    }
-                }            
-            }
-        }
     }
 
     public PeerEventListener getPeerEventListener() {
