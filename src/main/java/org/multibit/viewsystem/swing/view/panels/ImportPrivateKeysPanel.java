@@ -745,6 +745,18 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
     }
 
     @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+
+    @Override
     public void navigateAwayFromView() {
     }
 

@@ -23,47 +23,18 @@
  */
 package org.multibit.viewsystem;
 
-import javax.swing.Icon;
-
 /**
  *
  * @author Cameron Garnham
  */
-public interface Viewable { 
+public interface ModularView<M extends Module> extends Viewable {
+
+    void addModule(M ext);
 
     /**
-     * display the view
+     * Call after all Extentions have been added.
+     * Must be overridden.
      */
-    void displayView();
-    
-    /**
-     * Queue a redraw at the next available opportunity
-     */
-    void enqueueRedraw();
-
-    /**
-     * @returns the icon for the view
-     */
-    Icon getViewIcon();
-
-    /**
-     * @returns the view identifier for the view
-     */
-    View getViewId();
-
-    /**
-     * @returns the title for the view
-     */
-    String getViewTitle();
-
-    /**
-     * @returns the tooltip for the view
-     */
-    String getViewTooltip();
-
-    /**
-     * Navigate away from the view (including releasing any resources used)
-     */
-    void navigateAwayFromView();
+    void finishInit();
     
 }

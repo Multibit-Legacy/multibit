@@ -245,6 +245,18 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
         bringToFront();
     }
     
+    @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+    
     private void bringToFront() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override

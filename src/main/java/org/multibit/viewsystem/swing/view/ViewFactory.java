@@ -17,15 +17,26 @@ package org.multibit.viewsystem.swing.view;
 
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.multibit.controller.MultiBitController;
+
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.preferences.PreferencesViewFactory;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.MessagesPanel;
+import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
+import org.multibit.viewsystem.swing.view.panels.HelpAboutPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
-import org.multibit.viewsystem.swing.view.panels.*;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
+
 
 /**
  * a factory class that lazy loads views
@@ -34,23 +45,25 @@ import org.multibit.viewsystem.swing.view.panels.*;
  * 
  */
 public class ViewFactory {
-    private Map<View, Viewable> viewMap;
 
-    MultiBitController controller;
-    MultiBitFrame mainFrame;
+    private final Map<View, Viewable> viewMap;
+    private final MultiBitController controller;
+    private final MultiBitFrame mainFrame;
+    private final PreferencesViewFactory prefViewFactory;
 
-    public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame, PreferencesViewFactory prefViewFactory) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-        initialise();
+        this.prefViewFactory = prefViewFactory;
+        this.viewMap = new EnumMap<View, Viewable>(View.class);    
     }
     
-    public final void initialise() {
-        viewMap = new EnumMap<View, Viewable>(View.class);        
+    public void reset() {
+        this.viewMap.clear();
     }
 
     public Viewable getView(View viewNumber) {
-        Viewable viewToReturn = viewMap.get(viewNumber);
+        Viewable viewToReturn = this.viewMap.get(viewNumber);
 
         if (viewToReturn == null) {
             viewToReturn = createView(viewNumber);
@@ -60,7 +73,7 @@ public class ViewFactory {
     }
 
     public void addView(View viewNumber, Viewable view) {
-        viewMap.put(viewNumber, view);
+        this.viewMap.put(viewNumber, view);
     }
     
     private Viewable createView(View viewNumber) {
@@ -104,7 +117,7 @@ public class ViewFactory {
         }
         
         case PREFERENCES_VIEW: {
-            viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
+            viewToReturn = this.prefViewFactory.getModularView();
             break;
         }
 

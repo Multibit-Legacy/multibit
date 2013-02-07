@@ -377,6 +377,18 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
     }
 
     @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+
+    @Override
     public Icon getViewIcon() {
 
         return ImageLoader.createImageIcon(ImageLoader.CHART_LINE_ICON_FILE);

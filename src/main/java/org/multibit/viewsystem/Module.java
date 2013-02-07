@@ -23,47 +23,49 @@
  */
 package org.multibit.viewsystem;
 
-import javax.swing.Icon;
-
 /**
  *
+ * This defines a extention that can extend a View
+ * 
+ * 
  * @author Cameron Garnham
  */
-public interface Viewable { 
-
-    /**
-     * display the view
-     */
-    void displayView();
+public interface Module<P extends ModularView, K extends Enum<K>> {
     
     /**
-     * Queue a redraw at the next available opportunity
+     * Sets parent view.
+     * 
+     * @param view
      */
-    void enqueueRedraw();
-
+    void setParentView(Viewable view);
+    
     /**
-     * @returns the icon for the view
+     * Get Viewable parent
+     * 
+     * @return
+     * @throws NullPointerException
      */
-    Icon getViewIcon();
-
+    Viewable getParentView() throws NullPointerException;
+    
     /**
-     * @returns the view identifier for the view
+     * Called when this module is added.
+     * 
+     * @param panel
      */
-    View getViewId();
+    void onBegin(final P panel);
 
+    
     /**
-     * @returns the title for the view
+     * Called a the end of the main 'init'
+     * 
+     * @param panel
      */
-    String getViewTitle();
-
-    /**
-     * @returns the tooltip for the view
-     */
-    String getViewTooltip();
-
-    /**
-     * Navigate away from the view (including releasing any resources used)
-     */
-    void navigateAwayFromView();
+    void onFinishInit(final P panel);
+    
+    void displayView();
+    
+    Boolean getIsInitialised();
+   
+    K getModuleEnum();
     
 }

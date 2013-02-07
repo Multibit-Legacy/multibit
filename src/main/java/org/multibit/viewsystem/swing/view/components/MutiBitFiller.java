@@ -21,49 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
+package org.multibit.viewsystem.swing.view.components;
 
-import javax.swing.Icon;
+import java.awt.Dimension;
+import javax.swing.Box.Filler;
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface Viewable { 
-
-    /**
-     * display the view
-     */
-    void displayView();
+public class MutiBitFiller extends Filler {
     
-    /**
-     * Queue a redraw at the next available opportunity
-     */
-    void enqueueRedraw();
-
-    /**
-     * @returns the icon for the view
-     */
-    Icon getViewIcon();
-
-    /**
-     * @returns the view identifier for the view
-     */
-    View getViewId();
-
-    /**
-     * @returns the title for the view
-     */
-    String getViewTitle();
-
-    /**
-     * @returns the tooltip for the view
-     */
-    String getViewTooltip();
-
-    /**
-     * Navigate away from the view (including releasing any resources used)
-     */
-    void navigateAwayFromView();
+    public MutiBitFiller()
+    {
+        super(new Dimension(0,0),new Dimension(0,0),new Dimension(32767, 32767));
+    }
     
+    public MutiBitFiller(Dimension min, Dimension pref, Dimension max)
+    {
+        super(min,pref,max);
+    }
 }

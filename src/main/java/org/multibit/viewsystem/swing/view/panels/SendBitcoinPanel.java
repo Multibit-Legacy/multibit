@@ -466,6 +466,18 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     }
 
     @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+
+    @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE);
     }

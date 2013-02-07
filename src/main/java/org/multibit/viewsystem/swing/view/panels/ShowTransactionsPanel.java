@@ -375,6 +375,18 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     }
 
     @Override
+    public void enqueueRedraw() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                invalidate();
+                validate();
+                repaint();
+            }
+        });
+    }
+
+    @Override
     public void navigateAwayFromView() {
     }
 

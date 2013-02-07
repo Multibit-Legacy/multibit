@@ -21,49 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
-
-import javax.swing.Icon;
+package org.multibit.viewsystem.swing.preferences.modules;
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface Viewable { 
-
-    /**
-     * display the view
-     */
-    void displayView();
+public enum PreferencesModule {
     
-    /**
-     * Queue a redraw at the next available opportunity
-     */
-    void enqueueRedraw();
+    CORE,
+    BITCOIN,
+    EXCHANGE
 
-    /**
-     * @returns the icon for the view
-     */
-    Icon getViewIcon();
-
-    /**
-     * @returns the view identifier for the view
-     */
-    View getViewId();
-
-    /**
-     * @returns the title for the view
-     */
-    String getViewTitle();
-
-    /**
-     * @returns the tooltip for the view
-     */
-    String getViewTooltip();
-
-    /**
-     * Navigate away from the view (including releasing any resources used)
-     */
-    void navigateAwayFromView();
-    
 }

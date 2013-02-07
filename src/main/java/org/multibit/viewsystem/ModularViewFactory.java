@@ -23,47 +23,22 @@
  */
 package org.multibit.viewsystem;
 
-import javax.swing.Icon;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface Viewable { 
-
-    /**
-     * display the view
-     */
-    void displayView();
+public interface ModularViewFactory<V extends ModularView<M>, M extends Module<V,K>, K extends Enum<K>> {
     
-    /**
-     * Queue a redraw at the next available opportunity
-     */
-    void enqueueRedraw();
-
-    /**
-     * @returns the icon for the view
-     */
-    Icon getViewIcon();
-
-    /**
-     * @returns the view identifier for the view
-     */
-    View getViewId();
-
-    /**
-     * @returns the title for the view
-     */
-    String getViewTitle();
-
-    /**
-     * @returns the tooltip for the view
-     */
-    String getViewTooltip();
-
-    /**
-     * Navigate away from the view (including releasing any resources used)
-     */
-    void navigateAwayFromView();
+    void addAllOf(Set<M> modules);
+    void addModule(M module);
     
+    void reset();
+    
+    Collection<M> getModuleCollection();
+    M getModule(K moduleEnum);
+    
+    V getModularView();
 }
