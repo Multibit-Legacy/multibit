@@ -43,6 +43,7 @@ import org.multibit.platform.listener.GenericPreferencesEventListener;
 import org.multibit.platform.listener.GenericQuitEvent;
 import org.multibit.platform.listener.GenericQuitEventListener;
 import org.multibit.platform.listener.GenericQuitResponse;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
@@ -266,7 +267,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     public void fireDataChangedUpdateNow() {
         log.debug("fireDataChangedUpdateNow called");
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.fireDataChangedUpdateNow();
+            viewSystem.fireDataChangedUpdateNow(DisplayHint.COMPLETE_REDRAW);
         }
     }
 
@@ -276,7 +277,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     public void fireDataChangedUpdateLater() {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.fireDataChangedUpdateLater();
+            viewSystem.fireDataChangedUpdateLater(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
         }
     }
 

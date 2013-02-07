@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.ViewSystem;
 
 import com.google.bitcoin.core.ECKey;
@@ -57,13 +58,13 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void fireDataChangedUpdateNow() {
+    public void fireDataChangedUpdateNow(DisplayHint displayHint) {
         System.out.println("SIMPLE. Data has changed - update now.");
     }
     
 
     @Override
-    public void fireDataChangedUpdateLater() {
+    public void fireDataChangedUpdateLater(DisplayHint displayHint) {
         System.out.println("SIMPLE. Data has changed - update later.");
     }
 

@@ -34,6 +34,7 @@ import org.multibit.message.MessageListener;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -103,7 +104,7 @@ public class MessagesPanel extends JPanel implements Viewable, MessageListener {
     }
 
     @Override
-    public void displayView() {
+    public void displayView(DisplayHint displayHint) {
     }
        
     @Override

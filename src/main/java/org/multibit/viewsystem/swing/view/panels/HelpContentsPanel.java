@@ -32,6 +32,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -140,7 +141,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
     }
 
     @Override
-    public void displayView() {
+    public void displayView(DisplayHint displayHint) {
         if (browser == null) {
             browser = new Browser(controller, mainFrame, HELP_BASE_URL + helpContext);
         }

@@ -42,13 +42,13 @@ public interface ViewSystem extends WalletEventListener {
      * Tells the view system that the model data has changed (but the wallet is still the same).
      * Use this variant for when you want the UI to update immediately (typically after user generated events).
      */   
-    public void fireDataChangedUpdateNow();
+    public void fireDataChangedUpdateNow(DisplayHint displayHint);
     
     /**
      * Tells the view system that the model data has changed (but the wallet is still the same).
      * Use this variant for when you want the UI to collapse multiple events and only update at, say, 1 second interval.
      */   
-    public void fireDataChangedUpdateLater();
+    public void fireDataChangedUpdateLater(DisplayHint displayHint);
     
     /**
      * Tells the view system to recreate all views e.g. after a language change or wallet change.

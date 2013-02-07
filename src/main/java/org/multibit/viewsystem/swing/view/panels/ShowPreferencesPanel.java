@@ -50,6 +50,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -57,6 +58,7 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
@@ -71,11 +73,14 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The show preferences view.
  */
 public class ShowPreferencesPanel extends JPanel implements Viewable, PreferencesDataProvider {
+    private static final Logger log = LoggerFactory.getLogger(ShowPreferencesPanel.class);
 
     private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
 
@@ -168,6 +173,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
      * Creates a new {@link ShowPreferencesPanel}.
      */
     public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+        log.debug("Construct a new ShowPreferencesPanel");
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.controller = controller;
@@ -182,7 +188,12 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
      * Update preferences panel.
      */
     @Override
-    public void displayView() {
+    public void displayView(DisplayHint displayHint) {
+        log.debug("Received a displayView with hint " + displayHint.toString());
+        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
+            return;
+        }
+        
         originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
 
@@ -1539,6 +1550,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     }
 
     public void setSelectedFont(Font selectedFont) {
+        log.debug("setSelectedFont called");
         this.selectedFont = selectedFont;
 
         fontNameTextLabel.setText(selectedFont.getFamily());

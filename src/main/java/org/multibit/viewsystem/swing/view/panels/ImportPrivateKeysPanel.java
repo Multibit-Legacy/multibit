@@ -55,6 +55,7 @@ import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -798,7 +799,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     }
 
     @Override
-    public void displayView() {
+    public void displayView(DisplayHint displayHint) {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 

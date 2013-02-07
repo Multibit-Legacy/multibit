@@ -488,11 +488,24 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         });
     }
 
-    public void setIconForWalletType(EncryptionType walletType, JButton button) {
-        button.setHorizontalAlignment(SwingConstants.LEADING);
-        button.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, 0));
-        button.setBorderPainted(false);
+    private void setIconForWalletType(EncryptionType walletType, JButton button) {
+        button.setHorizontalAlignment(SwingConstants.CENTER);
         button.setContentAreaFilled(false);
+        
+        if (selected) {
+            button.setOpaque(true);
+            button.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+            button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.SELECTION_BACKGROUND_COLOR.darker()),
+                    BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR)));
+            button.setBorderPainted(true);
+        } else {
+            button.setOpaque(false);
+            button.setBackground(inactiveBackGroundColor);
+            button.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+            button.setBorderPainted(false);
+        }
+        
         if (walletType == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             Action helpAction = new HelpContextAction(controller, ImageLoader.LOCK_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",

@@ -25,6 +25,7 @@ import javax.swing.plaf.TabbedPaneUI;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
@@ -84,12 +85,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     if (selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
                         // We are already displaying the correct tab.
                         // Just update the contents.
-                        selectedView.displayView();
+                        selectedView.displayView(DisplayHint.COMPLETE_REDRAW);
                         controller.fireDataChangedUpdateNow();
                     } else {
                         // Select the new tab, update the content.
                         controller.setCurrentView(selectedView.getViewId());
-                        selectedView.displayView();
+                        selectedView.displayView(DisplayHint.COMPLETE_REDRAW);
 
                         // Fire data change but no need to redisplay the view
                         enableUpdates = false;
@@ -184,7 +185,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     Component[] components = selectedTab.getComponents();
                     if (components != null && components.length > 0 && components[0] instanceof Viewable) {
                         Viewable selectedView = (Viewable) components[0];
-                        selectedView.displayView();
+                        selectedView.displayView(DisplayHint.COMPLETE_REDRAW);
 
                         controller.displayView(selectedView.getViewId());
                     }

@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
@@ -224,7 +225,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
     }
 
     @Override
-    public void displayView() { 
+    public void displayView(DisplayHint displayHint) { 
         log.debug("display called for ShowOpenUriDialog " + this.toString());
         adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
         if (adjustedFont != null) {

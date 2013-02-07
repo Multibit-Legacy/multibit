@@ -4,6 +4,8 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
+import org.multibit.viewsystem.DisplayHint;
+
 /**
  * Condense the many fire data change events into something more manageable for a UI to refresh.
  * @author jim
@@ -37,7 +39,7 @@ public class FireDataChangedTimerTask extends TimerTask {
                         // Swing thread.
                         isCurrentlyUpdating = true;
                         try {
-                            mainFrame.fireDataChangedUpdateNow();
+                            mainFrame.fireDataChangedUpdateNow(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
                         } finally {
                             // Swing thread.
                             isCurrentlyUpdating = false;

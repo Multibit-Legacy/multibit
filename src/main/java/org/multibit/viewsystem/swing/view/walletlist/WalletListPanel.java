@@ -45,6 +45,7 @@ import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -106,11 +107,11 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     }
 
     @Override
-    public void displayView() {
-        displayView(true);
+    public void displayView(DisplayHint displayHint) {
+        displayView(displayHint, true);
     }
     
-    public void displayView(boolean blinkEnabled) {
+    private void displayView(DisplayHint displayHint, boolean blinkEnabled) {
         if (walletPanels != null) {
             synchronized(walletPanels) {
                 int amountFiatLabelSize = 0;
@@ -141,7 +142,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
         PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
 
-        if (activePerModelData != null) {
+        if (activePerModelData != null && DisplayHint.COMPLETE_REDRAW == displayHint) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
         
@@ -486,7 +487,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                displayView(false);
+                displayView(DisplayHint.COMPLETE_REDRAW, false);
             }
         });       
     }
@@ -496,7 +497,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                displayView(false);
+                displayView(DisplayHint.COMPLETE_REDRAW, false);
             }
         });     
     }

@@ -5,6 +5,7 @@ import java.util.TimerTask;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
@@ -46,7 +47,7 @@ public class UpdateTransactionsTimerTask extends TimerTask {
                             // Swing thread.
                             isCurrentlyUpdating = true;
                             try {
-                                transactionsPanel.displayView();
+                                transactionsPanel.displayView(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
                             } finally {
                                 // Swing thread.
                                 isCurrentlyUpdating = false;
