@@ -42,6 +42,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
@@ -50,9 +52,10 @@ import com.google.bitcoin.core.Transaction;
  * The send bitcoin confirm panel.
  */
 public class SendBitcoinConfirmPanel extends JPanel {
-
     private static final long serialVersionUID = 191435612399957705L;
    
+    private static final Logger log = LoggerFactory.getLogger(SendBitcoinConfirmPanel.class);
+
     private static final int STENT_WIDTH = 10;
     
     private MultiBitFrame mainFrame;
@@ -129,7 +132,6 @@ public class SendBitcoinConfirmPanel extends JPanel {
 
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, mainPanel)
                 + ExportPrivateKeysPanel.STENT_DELTA;
-
 
         // Get the data out of the wallet preferences.
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
@@ -509,9 +511,12 @@ public class SendBitcoinConfirmPanel extends JPanel {
             String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
             boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
             
+            String peers = model.getUserPreference(MultiBitModel.PEERS);
+            boolean singlePeerOverride = peers != null && peers.split(",").length == 1;
+
             if (thisPanel.sendBitcoinNowAction != null) {
-                if (!singleNodeConnectionOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
-                    // Disable send button
+                if (!singleNodeConnectionOverride && !singlePeerOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                     // Disable send button
                     enableSend = false;
                 } else {
                     // Enable send button
@@ -585,9 +590,12 @@ public class SendBitcoinConfirmPanel extends JPanel {
                         String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
                         boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
                         
+                        String peers = model.getUserPreference(MultiBitModel.PEERS);
+                        boolean singlePeerOverride = peers != null && peers.split(",").length == 1;
+
                         boolean enableSend = false;
                         if (thisPanel.sendBitcoinNowAction != null) {
-                            if (!singleNodeConnectionOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                            if (!singleNodeConnectionOverride && !singlePeerOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                                 // Disable send button
                                 enableSend = false;
                             } else {

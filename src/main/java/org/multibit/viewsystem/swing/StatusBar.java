@@ -318,6 +318,7 @@ public class StatusBar extends JPanel implements MessageListener {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                syncProgressBar.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
                 syncProgressBar.setValue(0);
                 syncProgressBar.setVisible(true);
             }

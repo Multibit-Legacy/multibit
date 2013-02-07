@@ -125,8 +125,9 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                         }
                     }
                     // Make sure the totals displayed and encryption status are correct.
-                    loopSingleWalletPanel.updateFromModel(blinkEnabled);
-                    
+                    boolean modelBlinkEnabled = controller.getModel().isBlinkEnabled();
+                    loopSingleWalletPanel.updateFromModel(blinkEnabled && modelBlinkEnabled);
+                     
                     amountFiatLabelSize = Math.max(amountFiatLabelSize, loopSingleWalletPanel.getFiatLabelWidth());
                 }
                 

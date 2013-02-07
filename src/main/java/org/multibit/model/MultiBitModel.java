@@ -235,7 +235,11 @@ public class MultiBitModel {
      */
     private int numberOfConnectedPeers = UNKNOWN_NUMBER_OF_CONNECTD_PEERS;
     
-    
+    /**
+     * Used to enable/ disable blinking of the SingleWalletPanels when language changes etc.
+     */
+    private boolean blinkEnabled = true;
+
      public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
     }
@@ -880,5 +884,13 @@ public class MultiBitModel {
 
     public void setNumberOfConnectedPeers(int numberOfConnectedPeers) {
         this.numberOfConnectedPeers = numberOfConnectedPeers;
+    }
+
+    public boolean isBlinkEnabled() {
+        return blinkEnabled;
+    }
+
+    public void setBlinkEnabled(boolean blinkEnabled) {
+        this.blinkEnabled = blinkEnabled;
     }
 }

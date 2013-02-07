@@ -1237,7 +1237,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
             ShowTransactionsPanel.updateTransactions(); 
-        } else if (controller.getCurrentView() == View.SEND_BITCOIN_CONFIRM_VIEW) {
+        } else if (controller.getCurrentView() == View.SEND_BITCOIN_VIEW) {
             final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
             final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
             SendBitcoinConfirmPanel.updatePanelDueToTransactionConfidenceChange(transactionHash, numberOfPeers); 
