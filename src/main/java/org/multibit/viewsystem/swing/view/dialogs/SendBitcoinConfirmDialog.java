@@ -62,7 +62,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     private static final int HEIGHT_DELTA = 150;
     private static final int WIDTH_DELTA = 150;
 
-    private MultiBitFrame mainFrame;
+    private static MultiBitFrame mainFrame;
 
     private MultiBitController controller;
 
@@ -103,7 +103,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     public SendBitcoinConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
         super(mainFrame, controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
         this.controller = controller;
-        this.mainFrame = mainFrame;
+        SendBitcoinConfirmDialog.mainFrame = mainFrame;
 
         thisDialog = this;
 
@@ -655,17 +655,14 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                log.debug("updateDialogDueToTransactionConfidenceChange called.1");
-                if (thisDialog == null || !thisDialog.isVisible() || thisDialog.getSendBitcoinNowAction() == null) {
+                 if (thisDialog == null || !thisDialog.isVisible() || thisDialog.getSendBitcoinNowAction() == null) {
                     return;
                 }
-                log.debug("updateDialogDueToTransactionConfidenceChange called.2");
                 Transaction sentTransaction = thisDialog.getSendBitcoinNowAction().getTransaction();
 
                 if (sentTransaction == null || !sentTransaction.getHash().equals(transactionWithChangedConfidenceHash)) {
                     return;
                 }
-                log.debug("updateDialogDueToTransactionConfidenceChange called.3");
 
                 MultiBitLabel confirmText2 = thisDialog.getConfirmText2();
                 if (confirmText2 != null) {
@@ -673,11 +670,14 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
                     confirmText2.setIcon(thisDialog.getConfidenceIcon(numberOfPeersSeenBy));
                 }
                 
-                log.debug("Number of peers for transaction " + transactionWithChangedConfidenceHash.toString() + " is " + numberOfPeersSeenBy);
-
+                //log.debug("Number of peers for transaction " + transactionWithChangedConfidenceHash.toString() + " is " + numberOfPeersSeenBy);
+               
                 thisDialog.invalidate();
                 thisDialog.validate();
                 thisDialog.repaint();
+                
+                // Also update the header as the Available for change may have changed
+                SendBitcoinConfirmDialog.mainFrame.updateHeader();
             }
         });
     }

@@ -61,8 +61,6 @@ import org.slf4j.LoggerFactory;
  * The wallet list view.
  */
 public class WalletListPanel extends JPanel implements Viewable, ComponentListener, CurrencyConverterListener  {
-
-
     private static final long serialVersionUID = 191352298245057705L;
 
     private MultiBitController controller;
@@ -122,7 +120,8 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                         }
                     }
                     // Make sure the totals displayed and encryption status are correct.
-                    loopSingleWalletPanel.updateFromModel(blinkEnabled);
+                    boolean modelBlinkEnabled = controller.getModel().isBlinkEnabled();
+                    loopSingleWalletPanel.updateFromModel(blinkEnabled && modelBlinkEnabled);
                     
                     amountFiatLabelSize = Math.max(amountFiatLabelSize, loopSingleWalletPanel.getFiatLabelWidth());
                 }
@@ -399,7 +398,8 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                     controller.fireDataChangedUpdateNow();
                 }
                 // Always select the selectedWalletPanel so that relative key movements work
-                selectedWalletPanel.requestFocusInWindow();
+                //selectedWalletPanel.requestFocusInWindow();
+                // TODO - need to interact properly with text box
             }
         }
 

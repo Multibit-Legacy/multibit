@@ -39,7 +39,6 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -383,9 +382,17 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 ColorAndFontConstants.init();
                 FontSizer.INSTANCE.initialise(controller);
                 HelpContentsPanel.clearBrowser();
+                
+                // Switch off blinks.
+                controller.getModel().setBlinkEnabled(false);
 
-                controller.fireDataStructureChanged();
-                SwingUtilities.updateComponentTreeUI(mainFrame);
+                try {
+                    controller.fireDataStructureChanged();
+                    SwingUtilities.updateComponentTreeUI(mainFrame);
+                } finally {
+                    // Switch blinks back on.
+                    controller.getModel().setBlinkEnabled(true);
+                }
             }
 
             if (feeValidationError) {
@@ -396,7 +403,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             }
         } finally {
             if (mainFrame != null) {
-                mainFrame.setCursor(Cursor.DEFAULT_CURSOR);
+                mainFrame.setCursor(Cursor.getDefaultCursor());
             }
         }
     }

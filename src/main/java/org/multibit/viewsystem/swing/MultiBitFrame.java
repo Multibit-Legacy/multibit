@@ -1245,6 +1245,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         final BigInteger finalAvailableToSpend = model.getActiveWalletAvailableBalanceWithBoomerangChange();
         final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
 
+        log.debug("updateHeader finalEstimatedBalance = " + finalEstimatedBalance + ", finalAvailableToSpend = " + finalAvailableToSpend);
         if (EventQueue.isDispatchThread()) {
             updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend);
         } else {
@@ -1307,6 +1308,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
             }
             setTitle(titleText);
+            
+            headerPanel.invalidate();
+            headerPanel.validate();
+            headerPanel.repaint();
         }
     }
  
