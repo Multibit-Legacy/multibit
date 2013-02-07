@@ -24,6 +24,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.multibit.ApplicationInstanceManager;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
@@ -44,7 +45,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ExitAction extends AbstractAction {
     private static final long serialVersionUID = 8784284740245520863L;
-    private MultiBitController controller;
+    private final Controller controller;
+    private MultiBitController multiBitController = null;
     private MultiBitFrame mainFrame;
 
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
@@ -52,7 +54,7 @@ public class ExitAction extends AbstractAction {
     /**
      * Creates a new {@link ExitAction}.
      */
-    public ExitAction(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ExitAction(Controller controller, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getString("exitAction.text"));
         this.controller = controller;
         this.mainFrame = mainFrame;
@@ -60,6 +62,12 @@ public class ExitAction extends AbstractAction {
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("exitAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("exitAction.mnemonicKey"));
+    }
+    
+    public void setMultiBitController(MultiBitController multiBitController) {
+        if (null == this.multiBitController){
+            this.multiBitController = multiBitController;
+        }
     }
 
     @Override
@@ -72,27 +80,28 @@ public class ExitAction extends AbstractAction {
                 }});
            
         }
-        
-        // Save all the wallets and put their filenames in the user preferences.
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-        if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-                try {
-                    controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
-                } catch (WalletSaveException wse) {
-                    log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
-                    MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-                    
-                    // Save to backup.
+        if (null != this.multiBitController) {
+            // Save all the wallets and put their filenames in the user preferences.
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                     try {
-                        controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
-                    } catch (WalletSaveException wse2) {
-                        log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
-                        MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " " + wse2.getMessage()));
+                        this.multiBitController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
+                    } catch (WalletSaveException wse) {
+                        log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                        MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+
+                        // Save to backup.
+                        try {
+                            this.multiBitController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
+                        } catch (WalletSaveException wse2) {
+                            log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
+                            MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " " + wse2.getMessage()));
+                        }
+                    } catch (WalletVersionException wve) {
+                        log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
+                        MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
                     }
-                } catch (WalletVersionException wve) {
-                    log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
-                    MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
                 }
             }
         }
@@ -108,17 +117,19 @@ public class ExitAction extends AbstractAction {
             mainFrame.setVisible(false);
         }
 
-        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
-            log.debug("Closing Bitcoin network connection...");
-            @SuppressWarnings("rawtypes")
-            SwingWorker worker = new SwingWorker() {
-                @Override
-                protected Object doInBackground() throws Exception {
-                    controller.getMultiBitService().getPeerGroup().stop();
-                    return null; // Return not used.
-                }
-            };
-            worker.execute();
+        if (null != this.multiBitController) {
+            if (this.multiBitController.getMultiBitService() != null && this.multiBitController.getMultiBitService().getPeerGroup() != null) {
+                log.debug("Closing Bitcoin network connection...");
+                @SuppressWarnings("rawtypes")
+                SwingWorker worker = new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        multiBitController.getMultiBitService().getPeerGroup().stop();
+                        return null; // Return not used.
+                    }
+                };
+                worker.execute();
+            }
         }
 
         if (mainFrame != null) {

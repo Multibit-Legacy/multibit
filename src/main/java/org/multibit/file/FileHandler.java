@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,7 +36,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
-import org.multibit.viewsystem.View;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -47,6 +46,8 @@ import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.network.MultiBitService;
 import org.multibit.utils.DateUtils;
+import org.multibit.viewsystem.View;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -550,7 +551,7 @@ public class FileHandler {
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
     }
 
-    public static void writeUserPreferences(MultiBitController controller) {
+    public static void writeUserPreferences(Controller controller) {
         // Save all the wallets' filenames in the user preferences.
         if (controller.getModel().getPerWalletModelDataList() != null) {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();

@@ -20,18 +20,16 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.multibit.ApplicationDataDirectoryLocator;
-import org.multibit.Localiser;
 import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;
@@ -42,7 +40,6 @@ import org.multibit.platform.listener.GenericPreferencesEventListener;
 import org.multibit.platform.listener.GenericQuitEvent;
 import org.multibit.platform.listener.GenericQuitEventListener;
 import org.multibit.platform.listener.GenericQuitResponse;
-import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
@@ -57,13 +54,12 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
-
 /**
  * The MVC controller for MultiBit.
  * 
  * @author jim
  */
-public class MultiBitController implements GenericOpenURIEventListener, GenericPreferencesEventListener,
+public class MultiBitController extends BaseController<MultiBitController> implements GenericOpenURIEventListener, GenericPreferencesEventListener,
         GenericAboutEventListener, GenericQuitEventListener, WalletEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
@@ -71,19 +67,9 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
 
     /**
-     * The view systems under control of the MultiBitController.
-     */
-    private Collection<ViewSystem> viewSystems;
-
-    /**
      * The data model backing the views.
      */
     private MultiBitModel model;
-
-    /**
-     * The localiser used to localise everything.
-     */
-    private Localiser localiser;
 
     /**
      * The bitcoinj network interface.
@@ -99,11 +85,10 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * The listener handling Peer events.
      */
     private PeerEventListener peerEventListener;
-
-    /**
-     * Class encapsulating the location of the Application Data Directory.
-     */
-    private ApplicationDataDirectoryLocator applicationDataDirectoryLocator;
+    
+    private Set<AbstractEventHandeler> eventHandelers;
+    
+    private EventHandeler eventHandeler;
 
     /**
      * Multiple threads will write to this variable so require it to be volatile
@@ -121,16 +106,15 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     }
 
     public MultiBitController(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
-        this.applicationDataDirectoryLocator = applicationDataDirectoryLocator;
-
-        viewSystems = new ArrayList<ViewSystem>();
+        super(applicationDataDirectoryLocator);
 
         fileHandler = new FileHandler(this);
-
         peerEventListener = new MultiBitPeerEventListener(this);
         
-        // By default localise to English.
-        localiser = new Localiser(Locale.ENGLISH);
+        this.eventHandeler = new EventHandeler(this);
+        this.eventHandelers = new HashSet<AbstractEventHandeler>();
+        
+        this.addEventHandler(this.getEventHandeler());
     }
 
     /**
@@ -139,18 +123,19 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * @param viewToDisplay
      *            View to display. Must be one of the View constants
      */
+    @Override
     public void displayView(View viewToDisplay) {
         // log.debug("Displaying view '" + viewToDisplay + "'");
 
         // Tell all views to close the current view.
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
 
         setCurrentView(viewToDisplay);
 
         // Tell all views which view to display.
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.displayView(getCurrentView());
         }
     }
@@ -161,32 +146,24 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * @param helpContextToDisplay
      *            The help context to display. A path in the help
      */
+    @Override
     public void displayHelpContext(String helpContextToDisplay) {
         //log.debug("Displaying help context '" + helpContextToDisplay + "'");
         // Tell all views to close the current view.
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
 
         setCurrentView(View.HELP_CONTENTS_VIEW);
 
         // Tell all views which view to display.
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.setHelpContext(helpContextToDisplay);
             viewSystem.displayView(View.HELP_CONTENTS_VIEW);
         }
     }
 
-    /**
-     * Register a new MultiBitViewSystem from the list of views that are managed.
-     * 
-     * @param viewSystem
-     *            system
-     */
-    public void registerViewSystem(ViewSystem viewSystem) {
-        viewSystems.add(viewSystem);
-    }
-
+    @Override
     public MultiBitModel getModel() {
         return model;
     }
@@ -214,14 +191,15 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     /**
      * The language has been changed.
      */
+    @Override
     public void fireDataStructureChanged() {
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
-        localiser.setLocale(newLocale);
+        super.getLocaliser().setLocale(newLocale);
 
         View viewToDisplay = getCurrentView();
 
         // tell the viewSystems to refresh their views
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.recreateAllViews(true, viewToDisplay);
         }
 
@@ -229,54 +207,12 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         fireDataChangedUpdateNow();
     }
 
-    /**
-     * Fire that the model data has changed and the UI should be updated immediately.
-     */
-    public void fireRecreateAllViews(boolean initUI) {
-        // tell the viewSystems to refresh their views
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(initUI, getCurrentView());
-        }
-    }
-
-    /**
-     * Fire the model data has changed.
-     */
-    public void fireDataChangedUpdateNow() {
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.fireDataChangedUpdateNow(DisplayHint.COMPLETE_REDRAW);
-        }
-    }
-    
-    /**
-     * Fire that the model data has changed and similar events are to be collapsed.
-     */
-    public void fireDataChangedUpdateLater() {
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.fireDataChangedUpdateLater(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
-        }
-    }
-
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         }
 
         fireDataChangedUpdateNow();
-    }
-
-    public Localiser getLocaliser() {
-        return localiser;
-    }
-
-    public void setLocaliser(Localiser localiser) {
-        this.localiser = localiser;
-    }
-
-    public void setOnlineStatus(StatusEnum statusEnum) {
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.setOnlineStatus(statusEnum);
-        }
     }
 
     /**
@@ -284,7 +220,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     public void fireBlockDownloaded() {
         // log.debug("Fire blockdownloaded");
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.blockDownloaded();
         }
     }
@@ -303,33 +239,38 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
     }
 
+    @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
     }
 
+    @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
     
+    @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {       
         // Set the depth in blocks as this does not seem to get updated anywhere.
 //        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
 //            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
 //        }
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
         checkForDirtyWallets(transaction);
     }
 
+    @Override
     public void onKeyAdded(ECKey ecKey) {
         log.debug("Key added : " + ecKey.toString());
     }
 
+    @Override
     public void onReorganize(Wallet wallet) {
         List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
@@ -338,7 +279,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
                 log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
             }
         }
-        for (ViewSystem viewSystem : viewSystems) {
+        for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.onReorganize(wallet);
         }
     }
@@ -355,25 +296,19 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         return fileHandler;
     }
 
-    public ApplicationDataDirectoryLocator getApplicationDataDirectoryLocator() {
-        return applicationDataDirectoryLocator;
-    }
-
+    @Override
     public View getCurrentView() {
         View view = (null == getModel()) ? null : getModel().getCurrentView();
         
         return (null == view) ? View.DEFAULT_VIEW() : view;
     }
 
+    @Override
     public void setCurrentView(View view) {
         // log.debug("setCurrentView = " + view);
         if (getModel() != null) {
             getModel().setCurrentView(view);
         }
-    }
-
-    public void setApplicationStarting(boolean applicationStarting) {
-        this.applicationStarting = applicationStarting;
     }
 
     @Override
@@ -400,7 +335,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
             // Ignore open URI request.
             log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '"
                     + showOpenUriDialogText + "'");
-            org.multibit.message.Message message = new org.multibit.message.Message(localiser.getString("showOpenUriView.paymentRequestIgnored"));
+            org.multibit.message.Message message = new org.multibit.message.Message(super.getLocaliser().getString("showOpenUriView.paymentRequestIgnored"));
             MessageManager.INSTANCE.addMessage(message);
             
             return;
@@ -478,22 +413,52 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     @Override
     public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
         if (isOKToQuit()) {
-            ExitAction exitAction = new ExitAction(this, null);
+            ExitAction exitAction = new ExitAction(this,null);
+
+            for (AbstractEventHandeler theEventHandeler : this.eventHandelers) {
+                theEventHandeler.handleQuitEvent(exitAction);
+            }
+            
             exitAction.actionPerformed(null);
             response.performQuit();
+            
         } else {
             response.cancelQuit();
         }
     }
 
-    /**
-     * @return True if the application can quit
-     */
-    private boolean isOKToQuit() {
-        return true;
-    }
-
     public PeerEventListener getPeerEventListener() {
         return peerEventListener;
+    }
+
+    @Override
+    protected final void addEventHandler(AbstractEventHandeler eventHandeler) {
+        this.eventHandelers.add(eventHandeler);
+    }
+
+    @Override
+    public final AbstractEventHandeler getEventHandeler() {
+        return this.eventHandeler;
+    }
+
+    private class EventHandeler extends AbstractEventHandeler<MultiBitController> {
+
+        private volatile URI rawBitcoinURI = null;
+
+        public EventHandeler(MultiBitController coreController) {
+            super(coreController);
+        }
+
+        @Override
+        public void handleOpenURIEvent(URI rawBitcoinURI) {
+            this.rawBitcoinURI = rawBitcoinURI;
+            handleOpenURI();
+
+        }
+
+        @Override
+        public void handleQuitEvent(ExitAction exitAction) {
+            exitAction.setMultiBitController(super.controller);
+        }
     }
 }
