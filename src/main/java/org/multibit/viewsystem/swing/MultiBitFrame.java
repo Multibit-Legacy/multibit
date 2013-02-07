@@ -793,8 +793,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (application != null && !application.isMac()) {
             // Non Macs have an Exit Menu item.
             fileMenu.addSeparator();
-
-            menuItem = new JMenuItem(new ExitAction(controller, this));
+            {
+                ExitAction exitAction = new ExitAction(this.controller, this);
+                exitAction.setMultiBitController(controller);
+                menuItem = new JMenuItem(exitAction);
+            }
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             menuItem.setComponentOrientation(componentOrientation);
             fileMenu.add(menuItem);
