@@ -533,6 +533,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     public void actionPerformed(ActionEvent evt) {
         saveChanges();
+        if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
+            walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        }
         requestFocusInWindow();
     }
 
@@ -563,7 +566,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private void saveChanges() {
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-            walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
             walletDescriptionTextField.setForeground(Color.BLACK);
             walletDescriptionTextField.select(0, 0);
             String text = walletDescriptionTextField.getText();
