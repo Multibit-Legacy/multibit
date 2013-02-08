@@ -570,6 +570,10 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
 
     @Override
     public void displayView(DisplayHint displayHint) {
+        // If it is a wallet transaction change no need to update.
+        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
+            return;
+        }
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 

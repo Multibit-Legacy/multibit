@@ -142,6 +142,10 @@ public class HelpContentsPanel extends JPanel implements Viewable {
 
     @Override
     public void displayView(DisplayHint displayHint) {
+        // If it is a wallet transaction change no need to update.
+        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
+            return;
+        }
         if (browser == null) {
             browser = new Browser(controller, mainFrame, HELP_BASE_URL + helpContext);
         }
