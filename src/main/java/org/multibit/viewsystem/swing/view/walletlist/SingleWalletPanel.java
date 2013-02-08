@@ -145,7 +145,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private MultiBitLabel filenameLabel;
     private JLabel filenameSeparator;
     private MultiBitLabel walletFilenameLabel;
-    private JLabel walletTypeText;
     
     private FontMetrics fontMetrics;
 
@@ -544,6 +543,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabelFiat.addMouseListener(mouseListener);
         detailPanel.addMouseListener(mouseListener);
         myRoundedPanel.addMouseListener(mouseListener);
+        
+        if (hourglassLabel != null) {
+            hourglassLabel.addMouseListener(mouseListener);
+        }
+        
+        filenameLabel.addMouseListener(mouseListener);
+        filenameSeparator.addMouseListener(mouseListener);
+        walletFilenameLabel.addMouseListener(mouseListener);
     }
 
     public void setBusy(boolean isBusy) {
@@ -725,11 +732,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                     walletFormatButton.setText(controller.getLocaliser().getString(walletVersion.getLocalisationKey()));
                 }
             }
-        }
-        
-        if (walletTypeText != null) {
-            walletTypeText.setText(encryptionText);
-        }   
+        }  
         
         if (perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
             myRoundedPanel.setOpaque(true);

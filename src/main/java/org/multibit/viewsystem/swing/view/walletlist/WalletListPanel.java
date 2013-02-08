@@ -399,6 +399,10 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
             if (source.getParent() != null) {
                 if (source.getParent() instanceof SingleWalletPanel) {
                     selectedWalletPanel = (SingleWalletPanel) source.getParent();
+                } else {
+                    if (source instanceof RoundedPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent();
+                    }   
                 }
                 if (source.getParent().getParent() != null) {
                     if (source.getParent().getParent() instanceof SingleWalletPanel) {
@@ -410,6 +414,15 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                 if (source.getParent().getParent().getParent() != null) {
                     if (source.getParent().getParent().getParent() instanceof SingleWalletPanel) {
                         selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent().getParent();
+                    } else if (source.getParent().getParent() instanceof RoundedPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent().getParent();
+                    }
+                }
+                if (source.getParent().getParent().getParent().getParent() != null) {
+                    if (source.getParent().getParent().getParent().getParent() instanceof SingleWalletPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent().getParent().getParent();
+                    } else if (source.getParent().getParent().getParent() instanceof RoundedPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent().getParent().getParent();
                     }
                 }
             }
