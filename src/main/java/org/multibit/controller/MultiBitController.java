@@ -234,7 +234,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * The language has been changed.
      */
     public void fireDataStructureChanged() {
-        log.debug("fireDataStructureChanged called");
+        //log.debug("fireDataStructureChanged called");
 
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
         localiser.setLocale(newLocale);
@@ -254,7 +254,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * Fire that all the views need recreating.
      */
     public void fireRecreateAllViews(boolean initUI) {
-        log.debug("fireRecreateAllViews called");
+        //log.debug("fireRecreateAllViews called");
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews(initUI, getCurrentView());
@@ -265,7 +265,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      * Fire that the model data has changed and the UI should be updated immediately.
      */
     public void fireDataChangedUpdateNow() {
-        log.debug("fireDataChangedUpdateNow called");
+        //log.debug("fireDataChangedUpdateNow called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.fireDataChangedUpdateNow(DisplayHint.COMPLETE_REDRAW);
         }
