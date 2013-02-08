@@ -71,6 +71,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.platform.GenericApplication;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.Viewable;
@@ -978,7 +979,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Tell the wallets list to display.
         if (walletsView != null) {
-            walletsView.displayView();
+            walletsView.displayView(DisplayHint.COMPLETE_REDRAW);
         }
 
         if (tickerTablePanel != null) {
@@ -992,7 +993,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 Component[] components = tabComponent.getComponents();
                 if (components != null && components.length > 0 && components[0] instanceof Viewable) {
                     Viewable loopView = ((Viewable) components[0]);
-                    loopView.displayView();
+                    loopView.displayView(DisplayHint.COMPLETE_REDRAW);
                     if (initialView != null && loopView.getViewId().toString().equals(initialView.toString())) {
                         viewTabbedPane.setSelectedIndex(i);
                     }
@@ -1019,7 +1020,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
         // show wallets view always on display
         if (View.YOUR_WALLETS_VIEW == viewToDisplay) {
-            walletsView.displayView();
+            walletsView.displayView(DisplayHint.COMPLETE_REDRAW);
             return;
         }
 
@@ -1075,7 +1076,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewTabbedPane.setSelectedComponent(tabOutlinePanel);
         }
 
-        nextViewFinal.displayView();
+        nextViewFinal.displayView(DisplayHint.COMPLETE_REDRAW);
 
         //log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
         thisFrame.setCursor(Cursor.getDefaultCursor());
@@ -1129,12 +1130,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        fireDataChangedUpdateLater();
+        fireDataChangedUpdateLater(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
     }
 
     @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        fireDataChangedUpdateLater();
+        fireDataChangedUpdateLater(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
     }
 
     /**
@@ -1169,21 +1170,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"), true);
             MessageManager.INSTANCE.addMessage(message);
         }
-        fireDataChangedUpdateNow();
+        fireDataChangedUpdateNow(DisplayHint.COMPLETE_REDRAW);
     }
 
     /**
      * Mark that the UI needs to be updated as soon as possible.
      */
     @Override
-    public void fireDataChangedUpdateNow() {
+    public void fireDataChangedUpdateNow(final DisplayHint displayHint) {
         if (EventQueue.isDispatchThread()) {
-            fireDataChangedOnSwingThread();   
+            fireDataChangedOnSwingThread(displayHint);   
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    fireDataChangedOnSwingThread(); 
+                    fireDataChangedOnSwingThread(displayHint); 
                 }
             });
         }
@@ -1193,7 +1194,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Mark that the UI needs updating the next time the fireDataChangedTimer fires.
      */
     @Override
-    public void fireDataChangedUpdateLater() {
+    public void fireDataChangedUpdateLater(DisplayHint displayHint) {
         if (fireDataChangedTimerTask != null) {
             fireDataChangedTimerTask.setFireDataChanged(true);
         }    
@@ -1203,25 +1204,25 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Actually update the UI.
      * (Called back from the FireDataChangedTimerTask).
      */
-    private void fireDataChangedOnSwingThread() {
+    private void fireDataChangedOnSwingThread(DisplayHint displayHint) {
         updateHeader();
        
         // Tell the wallets list to display.
         if (walletsView != null) {
-            walletsView.displayView();
+            walletsView.displayView(displayHint);
         }
 
         // Tell the current view to update itself.
         Viewable currentViewView = viewFactory.getView(controller.getCurrentView());
         if (currentViewView != null) {
-            currentViewView.displayView();
+            currentViewView.displayView(displayHint);
         }
 
         // Tell the tab to refresh (gets round bug on replay for transactions panel)
         Viewable tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
         if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
             log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
-            tabbedPaneCurrentView.displayView();
+            tabbedPaneCurrentView.displayView(displayHint);
         }
     }
 

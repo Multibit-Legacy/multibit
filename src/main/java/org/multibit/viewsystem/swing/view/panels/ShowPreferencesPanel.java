@@ -57,6 +57,7 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
@@ -182,7 +183,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
      * Update preferences panel.
      */
     @Override
-    public void displayView() {
+    public void displayView(DisplayHint displayHint) {
+        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
+            return;
+        }
+
         originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
 

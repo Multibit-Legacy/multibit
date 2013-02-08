@@ -46,6 +46,7 @@ import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -255,7 +256,7 @@ public class MultiBit {
                     }
                     if (swingViewSystem instanceof MultiBitFrame) {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
-                        ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+                        ((MultiBitFrame) swingViewSystem).getWalletsView().displayView(DisplayHint.COMPLETE_REDRAW);
                     }
                     controller.fireDataChangedUpdateNow();
                 }
@@ -324,7 +325,7 @@ public class MultiBit {
                 } finally {
                     if (swingViewSystem instanceof MultiBitFrame) {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
-                        ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+                        ((MultiBitFrame) swingViewSystem).getWalletsView().displayView(DisplayHint.COMPLETE_REDRAW);
                     }
                     controller.fireDataChangedUpdateNow();
                     

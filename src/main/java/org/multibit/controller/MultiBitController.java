@@ -42,22 +42,17 @@ import org.multibit.platform.listener.GenericPreferencesEventListener;
 import org.multibit.platform.listener.GenericQuitEvent;
 import org.multibit.platform.listener.GenericQuitEventListener;
 import org.multibit.platform.listener.GenericQuitResponse;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.GetDataMessage;
-import com.google.bitcoin.core.Message;
-import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
@@ -249,7 +244,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     public void fireDataChangedUpdateNow() {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.fireDataChangedUpdateNow();
+            viewSystem.fireDataChangedUpdateNow(DisplayHint.COMPLETE_REDRAW);
         }
     }
     
@@ -258,7 +253,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     public void fireDataChangedUpdateLater() {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.fireDataChangedUpdateLater();
+            viewSystem.fireDataChangedUpdateLater(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
         }
     }
 

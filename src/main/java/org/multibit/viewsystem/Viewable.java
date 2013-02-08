@@ -32,9 +32,9 @@ import javax.swing.Icon;
 public interface Viewable {
 
     /**
-     * display the view
+     * Display the view.
      */
-    void displayView();
+    void displayView(DisplayHint displayHint);
 
     /**
      * @returns the icon for the view
@@ -57,7 +57,7 @@ public interface Viewable {
     String getViewTooltip();
 
     /**
-     * Navigate away from the view (including releasing any resources used)
+     * Navigate away from the view (including releasing any resources used).
      */
     void navigateAwayFromView();
     

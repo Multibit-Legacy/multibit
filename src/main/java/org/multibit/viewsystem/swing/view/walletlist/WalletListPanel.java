@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view.walletlist;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -37,6 +36,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
@@ -45,6 +45,7 @@ import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -54,8 +55,6 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The wallet list view.
@@ -101,11 +100,11 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
     }
 
     @Override
-    public void displayView() {
-        displayView(true);
+    public void displayView(DisplayHint displayHint) {
+        displayView(displayHint, true);
     }
     
-    public void displayView(boolean blinkEnabled) {
+    private void displayView(DisplayHint displayHint, boolean blinkEnabled) {
         if (walletPanels != null) {
             synchronized(walletPanels) {
                 int amountFiatLabelSize = 0;
@@ -136,7 +135,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
         PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
 
-        if (activePerModelData != null) {
+        if (activePerModelData != null && DisplayHint.COMPLETE_REDRAW == displayHint) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
         
@@ -381,14 +380,49 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         @Override
         public void mouseClicked(MouseEvent e) {
             SingleWalletPanel selectedWalletPanel = null;
-            if (e.getSource() instanceof SingleWalletPanel) {
-                selectedWalletPanel = (SingleWalletPanel) e.getSource();
-            } else if (((JComponent) e.getSource()).getParent() instanceof SingleWalletPanel) {
-                selectedWalletPanel = (SingleWalletPanel) (((JComponent) e.getSource()).getParent());
-            } else if (((JComponent) e.getSource()).getParent() instanceof RoundedPanel) {
-                selectedWalletPanel = (SingleWalletPanel) (((JComponent) e.getSource()).getParent().getParent());
+            JComponent source = (JComponent)e.getSource();
+            
+            if (source == null) {
+                return;
             }
+            if (source instanceof SingleWalletPanel) {
+                selectedWalletPanel = (SingleWalletPanel)source;
+            } 
+            
+            if (source.getParent() != null) {
+                if (source.getParent() instanceof SingleWalletPanel) {
+                    selectedWalletPanel = (SingleWalletPanel) source.getParent();
+                } else {
+                    if (source instanceof RoundedPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent();
+                    }   
+                }
+                if (source.getParent().getParent() != null) {
+                    if (source.getParent().getParent() instanceof SingleWalletPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent();
+                    } else if (source.getParent() instanceof RoundedPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent();
+                    }
+                }
+                if (source.getParent().getParent().getParent() != null) {
+                    if (source.getParent().getParent().getParent() instanceof SingleWalletPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent().getParent();
+                    } else if (source.getParent().getParent() instanceof RoundedPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent().getParent();
+                    }
+                }
+                if (source.getParent().getParent().getParent().getParent() != null) {
+                    if (source.getParent().getParent().getParent().getParent() instanceof SingleWalletPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent().getParent().getParent();
+                    } else if (source.getParent().getParent().getParent() instanceof RoundedPanel) {
+                        selectedWalletPanel = (SingleWalletPanel) source.getParent().getParent().getParent().getParent();
+                    }
+                }
+            }
+                        
             if (selectedWalletPanel != null) {
+                boolean originallySelected = selectedWalletPanel.isSelectedInternal();
+
                 if (!selectedWalletPanel.getPerWalletModelData().getWalletFilename()
                         .equals(controller.getModel().getActiveWalletFilename())) {
                     controller.getModel()
@@ -397,9 +431,19 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
 
                     controller.fireDataChangedUpdateNow();
                 }
-                // Always select the selectedWalletPanel so that relative key movements work
-                //selectedWalletPanel.requestFocusInWindow();
-                // TODO - need to interact properly with text box
+                
+                if (!originallySelected) {
+                    // If this is a new wallet selection, request the focus.
+                    selectedWalletPanel.requestFocusInWindow();
+                } else {
+                    if (source instanceof JTextField) {
+                        // give the text field focus.
+                        source.requestFocusInWindow();
+                    } else {
+                        // Select the wallet (this makes the Shift up and down subsequently work.
+                        selectedWalletPanel.requestFocusInWindow();
+                    }
+                }
             }
         }
 
@@ -473,7 +517,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                displayView(false);
+                displayView(DisplayHint.COMPLETE_REDRAW, false);
             }
         });     
     }
@@ -483,7 +527,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                displayView(false);
+                displayView(DisplayHint.COMPLETE_REDRAW, false);
             }
         });     
     }

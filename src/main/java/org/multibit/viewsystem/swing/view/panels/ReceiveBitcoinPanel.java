@@ -44,6 +44,7 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -438,8 +439,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
     }
 
     @Override
-    public void displayView() {
-        super.displayView();
+    public void displayView(DisplayHint displayHint) {
+        super.displayView(displayHint);
                 
         JTextField aTextField = new JTextField();
         labelTextArea.setBorder(aTextField.getBorder());

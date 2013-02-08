@@ -42,6 +42,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -372,7 +373,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
     }
 
     @Override
-    public void displayView() {
+    public void displayView(DisplayHint displayHint) {
         updateChart();
     }
 

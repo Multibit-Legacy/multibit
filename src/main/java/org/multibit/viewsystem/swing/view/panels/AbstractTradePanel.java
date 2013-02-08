@@ -86,6 +86,7 @@ import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
@@ -1307,7 +1308,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     }
     
     @Override
-    public void displayView() {
+    public void displayView(DisplayHint displayHint) {
         loadForm();
         setupScrollPane();
         getAddressesTableModel().fireTableDataChanged();

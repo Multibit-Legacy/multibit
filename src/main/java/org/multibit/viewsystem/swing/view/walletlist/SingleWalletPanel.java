@@ -457,6 +457,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabelFiat.addMouseListener(mouseListener);
         detailPanel.addMouseListener(mouseListener);
         myRoundedPanel.addMouseListener(mouseListener);
+        
+        filenameLabel.addMouseListener(mouseListener);
+        filenameSeparator.addMouseListener(mouseListener);
+        walletFilenameLabel.addMouseListener(mouseListener);
     }
 
     public void setSelected(boolean selected) {
@@ -497,8 +501,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletDescriptionTextField.setForeground(Color.BLACK);
                 if (!walletDescriptionTextField.isEditable()) {
                     walletDescriptionTextField.setEditable(true);
-                    // may not have the caret quite right
-                    // send the focus to the panel
                 }
                 requestFocusInWindow();
 
@@ -909,8 +911,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         roundedBottomPanel.add(innerPadBottom, constraints3);
 
         return outerPanel;
-    }
-    
+    }    
 
     public int getFiatLabelWidth() {
         return fontMetrics.stringWidth(amountLabelFiat.getText());
@@ -920,5 +921,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabelFiat.setMinimumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMinimumSize().height));
         amountLabelFiat.setPreferredSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getPreferredSize().height));
         amountLabelFiat.setMaximumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMaximumSize().height));
+    }
+
+    public boolean isSelectedInternal() {
+        return selected;
     }
 }

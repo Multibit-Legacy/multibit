@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -121,7 +122,7 @@ public class HelpAboutPanel extends JPanel implements Viewable {
     }
 
     @Override
-    public void displayView() {    
+    public void displayView(DisplayHint displayHint) {    
     }
        
     @Override
