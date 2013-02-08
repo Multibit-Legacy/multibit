@@ -420,6 +420,10 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     public void displayView(DisplayHint displayHint) {
         super.displayView(displayHint);
         
+        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
+            return;
+        }
+        
         JTextField aTextField = new JTextField();
         labelTextArea.setBorder(aTextField.getBorder());
 
@@ -429,10 +433,10 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
             mainFrame.bringToFront();
         }
 
-        // disable any new changes if another process has changed the wallet
+        // Disable any new changes if another process has changed the wallet.
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-            // files have been changed by another process - disallow edits
+            // Files have been changed by another process - disallow edits.
             mainFrame.setUpdatesStoppedTooltip(addressTextField);
             addressTextField.setEditable(false);
             addressTextField.setEnabled(false);
