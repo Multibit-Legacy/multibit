@@ -446,6 +446,10 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
     public void displayView(DisplayHint displayHint) {
         super.displayView(displayHint);
         
+        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
+            return;
+        }
+        
         JTextField aTextField = new JTextField();
         labelTextArea.setBorder(aTextField.getBorder());
 

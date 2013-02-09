@@ -422,6 +422,10 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     @Override
     public void displayView(DisplayHint displayHint) {
         super.displayView(displayHint);
+        
+        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
+            return;
+        }
 
         JTextField aTextField = new JTextField();
 

@@ -1313,6 +1313,10 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     
     @Override
     public void displayView(DisplayHint displayHint) {
+        if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
+            return;
+        }
+        
         loadForm();
         setupScrollPane();
         getAddressesTableModel().fireTableDataChanged();

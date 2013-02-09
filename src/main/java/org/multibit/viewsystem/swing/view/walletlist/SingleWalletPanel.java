@@ -75,7 +75,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final long serialVersionUID = -7110340338285836548L;
 
     private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 5);
-    private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(7, 7);
+    private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(5, 5);
 
     private PerWalletModelData perWalletModelData;
 
@@ -647,6 +647,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     @Override
     public void actionPerformed(ActionEvent evt) {
         saveChanges();
+        if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
+            walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        }
         requestFocusInWindow();
     }
 
@@ -677,9 +680,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private void saveChanges() {
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-            walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
             walletDescriptionTextField.setForeground(Color.BLACK);
-
             walletDescriptionTextField.select(0, 0);
             String text = walletDescriptionTextField.getText();
             perWalletModelData.setWalletDescription(text);
