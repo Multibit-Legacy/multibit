@@ -276,7 +276,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
         StringBuilder builder = new StringBuilder();
 
         if (MultiBit.getController() != null && MultiBit.getController().getLocaliser() != null) {
-            int peers = numBroadcastPeers();
+            int peers = getBroadcastByCount();
             if (peers > 0) {
                 builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
                 builder.append(peers);

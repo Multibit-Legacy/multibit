@@ -1,16 +1,27 @@
 MultiBit release notes.
 
 Version 0.5.8beta
-+ You can use Shift-ArrowUp and Shift-Arrow-Down to move between wallets.
-+ Bloom filters now active to speed up sync (with bitcoind v0.8 clients).
+
+Bitcoinj v0.7 features:
++ Bloom filters now active to speed up blockchain sync (with bitcoind v0.8rc1 clients).
++ You can now specify particular peers to connect to with the 'peers' property in multibit.properties. (Use a comma separated list).
++ Fix for zero confirmation transaction vulnerability identified by Retep.
+
+XChange 1.4.0 features:
++ More exchanges supported for currency lookup: MtGox, Bitstamp, BTC-E, CampBX, VirtEx.
+
+UI enhancements:
++ You can use Shift-ArrowUp and Shift-ArrowDown to move between wallets when the Wallets panel is selected.
++ Wallet icon now highlighted when wallet is selected, more contrast between selected and unselected.
++ Display less flicky when changing languages, fonts and look-and-feel.
++ User chosen font now set properly in dialogs and Help screens.
+
+General:
 + No longer opens in 'local mode' - it picks up your other MultiBit wallets.
 + Removed cacheManager code - no longer supported
 + Backward compatible wallet changes (description added, minor version dropped).
-+ Serialised wallets now no longer always load - you will have to use an older version of MultiBit and migrate them to protobuf format.
-+ Refactoring of encryption code in response to review comments
-+ Display less flicky when changing languages, fonts and look-and-feel.
-+ User chosen font now set properly in dialogs and Help screens.
-+ Can now specify trusted peers with the 'peers' property in multibit.properties.
++ Serialised wallets now no longer always load - you may have to use an older version of MultiBit and migrate them to protobuf format.
++ Refactoring of encryption code in response to review comments.
 
 
 14 Jan 2013 Version 0.4.19
