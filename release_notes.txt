@@ -3,7 +3,7 @@ MultiBit release notes.
 Version 0.5.8beta
 
 Bitcoinj v0.7 features:
-+ Bloom filters now active to speed up blockchain sync (with bitcoind v0.8rc1 clients).
++ Bloom filters now active to speed up blockchain sync (when talking to bitcoind v0.8rc1 nodes).
 + You can now specify particular peers to connect to with the 'peers' property in multibit.properties. (Use a comma separated list).
 + Fix for zero confirmation transaction vulnerability identified by Retep.
 
