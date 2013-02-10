@@ -54,7 +54,7 @@ public class MultiBitWalletBusyAction extends AbstractAction implements WalletBu
         this.tooltipKey = tooltipKey;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString(tooltipKey)));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString(tooltipKey)));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic(mnemonicKey));
         
         controller.registerWalletBusyListener(this);

@@ -93,6 +93,21 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         add(scrollPane, BorderLayout.CENTER);
     }
     
+    public static String createTooltipTextForMenuItem(String tooltip) {
+        // Mac menu items when they are on the top row of the screen dont render in HTML so dont wrap the tooltip text
+        // Get property apple.laf.useScreenMenuBar - this is set in src/app-resources/MultiBit.app/info.plist
+        String useScreenMenuBar = System.getProperty("apple.laf.useScreenMenuBar");
+        String lookAndFeel = "" + MultiBit.getController().getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL);
+
+        if (Boolean.TRUE.toString().equalsIgnoreCase(useScreenMenuBar) && ("system".equalsIgnoreCase(lookAndFeel))
+                || lookAndFeel.toLowerCase().startsWith("mac")) {
+            // No HTML wrapping of tooltip.
+            return tooltip;
+        } else {
+            return HelpContentsPanel.createTooltipText(tooltip);
+        }
+    }
+    
     public static String createTooltipText(String toolTip) {
         return  createMultilineTooltipText(new String[] {toolTip});
     }

@@ -24,6 +24,7 @@ import javax.swing.ImageIcon;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * This {@link Action} show the delete wallet confirmation dialog.
@@ -40,6 +41,7 @@ public class DeleteWalletAction extends MultiBitSubmitAction {
         super(controller, "deleteWalletAction.text", "deleteWalletAction.tooltip", "deleteWalletAction.mnemonicKey", icon);
         this.controller = controller;
         this.mainFrame = mainFrame;
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("deleteWalletAction.tooltip")));
     }
 
     /**
