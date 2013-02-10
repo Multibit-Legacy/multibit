@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.SystemColor;
 
 import javax.swing.UIManager;
@@ -52,17 +51,23 @@ public class ColorAndFontConstants {
     public static Color DEFAULT_ALTERNATE_TABLE_COLOR = new Color(230, 230, 233);
     public static Color ALTERNATE_TABLE_COLOR;
 
-    //public static Color SEAGLASS_BLUE = new Color(237, 246, 252);
-    //public static Color SEAGLASS_BACKGROUND = new Color(249, 249, 252);
-
+    public static final int BRIGHTEN_CONSTANT = 3;
+    
     public static void init() {
         MULTIBIT_DEFAULT_FONT_NAME = UIManager.get("Label.font") == null ? Font.DIALOG : ((Font) UIManager.get("Label.font"))
                 .getFontName();
         MULTIBIT_DEFAULT_FONT_STYLE = UIManager.get("Label.font") == null ? 0 : ((Font) UIManager.get("Label.font")).getStyle();
         MULTIBIT_DEFAULT_FONT_SIZE = UIManager.get("Label.font") == null ? 13 : ((Font) UIManager.get("Label.font")).getSize() + 1;
 
-        BACKGROUND_COLOR = UIManager.get("Label.background") == null ? new Color(250, 250, 253) : (Color) UIManager
-                .get("Label.background");
+        Color labelBackground = (Color)UIManager.get("Label.background");
+        if (labelBackground != null) {
+            // Brighten it.
+            labelBackground = new Color(Math.min(255, labelBackground.getRed() + BRIGHTEN_CONSTANT), 
+                    Math.min(255, labelBackground.getGreen() + BRIGHTEN_CONSTANT),
+                    Math.min(255, labelBackground.getBlue() + BRIGHTEN_CONSTANT));
+        }
+        
+        BACKGROUND_COLOR = labelBackground == null ? new Color(250, 250, 253) : labelBackground;
         DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
         ALTERNATE_TABLE_COLOR = DEFAULT_ALTERNATE_TABLE_COLOR;
         VERY_LIGHT_BACKGROUND_COLOR = DEFAULT_VERY_LIGHT_BACKGROUND_COLOR;
