@@ -74,7 +74,7 @@ public class OpenWalletAction extends AbstractAction {
         this.mainFrame = mainFrame;
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
-        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("openWalletAction.tooltip")));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("openWalletAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("openWalletAction.mnemonicKey"));
     }
 

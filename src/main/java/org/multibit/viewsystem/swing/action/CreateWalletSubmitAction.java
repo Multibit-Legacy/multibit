@@ -73,7 +73,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("createNewWalletAction.tooltip")));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("createNewWalletAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createNewWalletAction.text"));
     }
 

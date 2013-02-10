@@ -99,11 +99,10 @@ public class TickerTimerTask extends TimerTask {
                 if (exchange2 == null) {
                     log.debug("exchange2 is null ... creating exchange ...");
                     ExchangeData exchangeData = controller.getModel().getExchangeData2();
-                    if (exchangeData != null) {
+                    if (exchangeData != null && exchangeData.getShortExchangeName() != null) {
                         createExchange2(controller.getModel().getExchangeData2().getShortExchangeName());
                     } else {
                         log.debug("controller.getModel().getExchangeData2() is null");
-                        return;
                     }
 
                     if (exchange2 == null) {
@@ -192,10 +191,12 @@ public class TickerTimerTask extends TimerTask {
                 if (exchange1 == null) {
                     log.debug("exchange1 is null ... creating exchange ...");
                     ExchangeData exchangeData = controller.getModel().getExchangeData1();
-                    if (exchangeData != null) {
+                    if (exchangeData != null && exchangeData.getShortExchangeName() != null) {
                         createExchange1(controller.getModel().getExchangeData1().getShortExchangeName());
                     } else {
-                        log.debug("controller.getModel().getExchangeData1() is null");
+                        log.debug("controller.getModel().getExchangeData1() is null, defaulting to " + ExchangeData.DEFAULT_EXCHANGE);
+                        controller.getModel().getExchangeData1().setShortExchangeName(ExchangeData.DEFAULT_EXCHANGE);
+                        createExchange1(ExchangeData.DEFAULT_EXCHANGE);
                     }
 
                     if (exchange1 == null) {
@@ -300,8 +301,8 @@ public class TickerTimerTask extends TimerTask {
                     String baseCurrency = exchangeSymbols1.get(i).baseCurrency;
                     String counterCurrency = exchangeSymbols1.get(i).counterCurrency;
 
-                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols1.get(i).baseCurrency
-                            + ", counterCurrency = " + exchangeSymbols1.get(i).counterCurrency);
+//                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols1.get(i).baseCurrency
+//                            + ", counterCurrency = " + exchangeSymbols1.get(i).counterCurrency);
 
                     if ("BTC".equalsIgnoreCase(baseCurrency)) {
                         availableCurrencies.add(counterCurrency);
@@ -333,8 +334,8 @@ public class TickerTimerTask extends TimerTask {
                     String baseCurrency = exchangeSymbols2.get(i).baseCurrency;
                     String counterCurrency = exchangeSymbols2.get(i).counterCurrency;
 
-                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols2.get(i).baseCurrency
-                            + ", counterCurrency = " + exchangeSymbols2.get(i).counterCurrency);
+//                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols2.get(i).baseCurrency
+//                            + ", counterCurrency = " + exchangeSymbols2.get(i).counterCurrency);
 
                     if ("BTC".equalsIgnoreCase(baseCurrency)) {
                         availableCurrencies.add(counterCurrency);

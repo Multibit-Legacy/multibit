@@ -32,6 +32,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ public class ExitAction extends AbstractAction {
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("exitAction.tooltip"));
+        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("exitAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("exitAction.mnemonicKey"));
     }
 
