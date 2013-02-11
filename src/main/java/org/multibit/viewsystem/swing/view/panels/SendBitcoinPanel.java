@@ -424,6 +424,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
             return;
         }
         
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        
         JTextField aTextField = new JTextField();
         labelTextArea.setBorder(aTextField.getBorder());
 

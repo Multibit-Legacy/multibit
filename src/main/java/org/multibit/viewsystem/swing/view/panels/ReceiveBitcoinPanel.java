@@ -119,6 +119,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
 
     protected JPanel createFormPanel(JPanel formPanel, GridBagConstraints constraints) {
         formPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        formPanel.setOpaque(false);
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -445,7 +446,9 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-                
+         
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+
         JTextField aTextField = new JTextField();
         labelTextArea.setBorder(aTextField.getBorder());
 
