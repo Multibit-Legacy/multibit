@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-Version 0.4.20
+11 Feb 2013 Version 0.4.20
 
 Features:
 + Support for more currency exchanges. (XChange 0.4.0).
