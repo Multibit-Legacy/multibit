@@ -3,7 +3,7 @@ MultiBit release notes.
 Version 0.5.8beta
 
 Bitcoinj v0.7 features:
-+ Bloom filters now active to speed up blockchain sync (when talking to bitcoind v0.8rc1 nodes).
++ Bloom filters now active to speed up blockchain sync (when talking to bitcoind v0.8rc1 nodes or later).
 + You can now specify particular peers to connect to with the 'peers' property in multibit.properties. (Use a comma separated list).
 + Fix for zero confirmation transaction vulnerability identified by Retep.
 
@@ -22,7 +22,23 @@ General:
 + Backward compatible wallet changes (description added, minor version dropped).
 + Serialised wallets now no longer always load - you may have to use an older version of MultiBit and migrate them to protobuf format.
 + Refactoring of encryption code in response to review comments.
++ Fix for 'Transaction cannot be cast to Comparable' bug on wallet reorgs.
 
+
+11 Feb 2013 Version 0.4.20
+
+Features:
++ Support for more currency exchanges. (XChange 0.4.0).
++ You can move up and down wallets with the Shift-ArrowUp and Shift-ArrowDown keys.
+
+UI changes:
++ More contrast between the active wallet and the others.
++ Less flicky when changing language, font and look-and-feel.
++ Improved font display in dialogs, help, tooltips.
+
+Bug fixes:
++ Fixed bug on display of fiat amount in Send/ Request when changing languages.
++ Fix for 'Transaction cannot be cast to Comparable' bug on wallet reorgs.
 
 14 Jan 2013 Version 0.4.19
 

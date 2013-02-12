@@ -50,7 +50,6 @@ import java.util.Set;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.IsMultiBitClass;
-import org.multibit.MultiBit;
 import org.multibit.store.MultiBitWalletProtobufSerializer;
 import org.multibit.store.MultiBitWalletVersion;
 import org.slf4j.Logger;
@@ -406,10 +405,6 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             }
         } else {
             MultiBitWalletProtobufSerializer walletProtobufSerializer = new MultiBitWalletProtobufSerializer();
-            if (MultiBit.getController() != null && MultiBit.getController().getMultiBitService() != null 
-                    && MultiBit.getController().getMultiBitService().getChain() != null) {
-                walletProtobufSerializer.setChainHeight(MultiBit.getController().getMultiBitService().getChain().getBestChainHeight());
-            }
             wallet = walletProtobufSerializer.readWallet(stream);
         }
         
