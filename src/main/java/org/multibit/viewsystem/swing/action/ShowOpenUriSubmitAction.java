@@ -67,7 +67,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent event) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -85,17 +85,17 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             boolean showDialog = dataProvider.isShowUriDialog();
 
             if (sendAddress != null) {
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
+                this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
             }
             if (sendLabel != null) {
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, sendLabel);
+                this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, sendLabel);
             }
             if (sendAmount != null) {
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, sendAmount);
+                this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, sendAmount);
             }
             
             // we want the send view to paste in the send data
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
+            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
 
             // we want to set the user preference to use the uri as the user
             // clicked yes

@@ -479,7 +479,7 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
      * to show to the user in tabular form.
      */
     public ArrayList<WalletTableData> createActiveWalletData() {
-        return createWalletDataInternal(controller.getModel().getActivePerWalletModelData());
+        return createWalletDataInternal(this.getActivePerWalletModelData());
     }
     
     /**

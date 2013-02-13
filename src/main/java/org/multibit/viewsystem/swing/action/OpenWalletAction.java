@@ -117,8 +117,8 @@ public class OpenWalletAction extends AbstractAction {
                 }
                 fileChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-                if (controller.getModel() != null && controller.getModel().getActiveWalletFilename() != null) {
-                    fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
+                if (controller.getModel() != null && this.bitcoinController.getModel().getActiveWalletFilename() != null) {
+                    fileChooser.setCurrentDirectory(new File(this.bitcoinController.getModel().getActiveWalletFilename()));
                 }
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 fileChooser.setFileFilter(new WalletFileFilter(controller));
@@ -170,10 +170,10 @@ public class OpenWalletAction extends AbstractAction {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "'.");
 
                     bitcoinController.addWalletFromFilename(selectedWalletFilenameFinal);
-                    controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
+                    bitcoinController.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
 
                     // Save the user properties to disk.
-                    FileHandler.writeUserPreferences(controller);
+                    FileHandler.writeUserPreferences(bitcoinController);
                     log.debug("User preferences with new wallet written successfully");
  
                     message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal}); 
@@ -205,7 +205,7 @@ public class OpenWalletAction extends AbstractAction {
                         MessageManager.INSTANCE.addMessage(messageMessage);  
                         
                         // Work out the late date/ block the wallet saw to see if it needs syncing.
-                        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+                        PerWalletModelData perWalletModelData = bitcoinController.getModel().getActivePerWalletModelData();
                         Wallet wallet = perWalletModelData.getWallet();
                         int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
                         log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was " + lastBlockSeenHeight);
@@ -308,7 +308,7 @@ public class OpenWalletAction extends AbstractAction {
                     } else {
                         log.error(message);
                         MessageManager.INSTANCE.addMessage(new Message(message));
-                        PerWalletModelData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(selectedWalletFilenameFinal);
+                        PerWalletModelData loopData = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(selectedWalletFilenameFinal);
                         if (loopData != null) {
                             // Clear the backup wallet filename - this prevents it being automatically overwritten.
                             if (loopData.getWalletInfo() != null) {

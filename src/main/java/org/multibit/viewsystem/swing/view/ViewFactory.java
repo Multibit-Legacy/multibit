@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -51,10 +52,13 @@ public class ViewFactory {
 
     private final Controller controller;
     private final BitcoinController bitcoinController;
+    private final ExchangeController exchangeController;
+    
     private final MultiBitFrame mainFrame;
 
-    public ViewFactory(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ViewFactory(BitcoinController bitcoinController, ExchangeController exchangeController, MultiBitFrame mainFrame) {
         this.bitcoinController = bitcoinController;
+        this.exchangeController = exchangeController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         initialise();
@@ -119,7 +123,7 @@ public class ViewFactory {
         }
         
         case PREFERENCES_VIEW: {
-            viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
+            viewToReturn = new ShowPreferencesPanel(this.exchangeController, mainFrame);
             break;
         }
 
@@ -164,7 +168,7 @@ public class ViewFactory {
         }
 
         case CHARTS_VIEW: {
-            viewToReturn = new ChartsPanel(controller, mainFrame);
+            viewToReturn = new ChartsPanel(this.bitcoinController, mainFrame);
             break;
         }
 

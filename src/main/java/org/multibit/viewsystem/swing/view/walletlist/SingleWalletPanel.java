@@ -66,6 +66,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
+import org.multibit.controller.bitcoin.BitcoinController;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, WalletBusyListener {
 
@@ -481,7 +482,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         hourglassLabel.setVisible(isBusy);
         
         // Update the tooltip.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
             if (perWalletModelData != null) {
                 String toolTipText = HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
@@ -589,10 +590,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             perWalletModelData.setWalletDescription(text);
 
             String titleText = controller.getLocaliser().getString("multiBitFrame.title");
-            if (controller.getModel().getActiveWallet() != null) {
+            if (this.bitcoinController.getModel().getActiveWallet() != null) {
                 titleText = titleText + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+                        + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
+                        + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletFilename();
             }
             mainFrame.setTitle(titleText);
         }
@@ -685,7 +686,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             amountLabelBTC.setBlinkEnabled(true);
             amountLabelFiat.setBlinkEnabled(true);
 
-            if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
+            if (perWalletModelData.getWalletFilename().equals(this.bitcoinController.getModel().getActiveWalletFilename())) {
                 mainFrame.updateHeader(message, syncPercent);
             }
         }             

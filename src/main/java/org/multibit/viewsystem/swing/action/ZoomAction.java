@@ -86,9 +86,9 @@ public class ZoomAction extends AbstractAction {
 
         try {
             // Get the current address, label and amount.
-            String address = controller.getModel().getActiveWalletPreference(tradePanel.getAddressConstant());
-            String label = controller.getModel().getActiveWalletPreference(tradePanel.getLabelConstant());
-            String amount = controller.getModel().getActiveWalletPreference(tradePanel.getAmountConstant());
+            String address = this.bitcoinController.getModel().getActiveWalletPreference(tradePanel.getAddressConstant());
+            String label = this.bitcoinController.getModel().getActiveWalletPreference(tradePanel.getLabelConstant());
+            String amount = this.bitcoinController.getModel().getActiveWalletPreference(tradePanel.getAmountConstant());
 
             // Get the bounds of the current frame.
             Dimension mainFrameSize = mainFrame.getSize();
