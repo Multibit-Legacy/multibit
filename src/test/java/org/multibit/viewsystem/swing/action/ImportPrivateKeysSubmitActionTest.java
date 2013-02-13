@@ -30,6 +30,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.ECKey;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.multibit.CreateControllers;
 
 public class ImportPrivateKeysSubmitActionTest extends TestCase {   
     
@@ -47,7 +48,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testImportUnencryptedPrivateKeysWithUnencryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new unencrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnencryptedWallet", false, null);
@@ -95,7 +97,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testImportEncryptedPrivateKeysWithUnencryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnEncryptedWallet", false, null);
@@ -150,7 +153,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testImportUnencryptedPrivateKeysWithEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnencryptedWallet", true, WALLET_PASSWORD);
@@ -213,7 +217,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testImportEncryptedPrivateKeysWithEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnEncryptedWallet", true, WALLET_PASSWORD);
@@ -283,7 +288,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testNoWalletSelected() throws Exception {
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
 
         // This test runs against an empty PerWalletModelDataList.
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
