@@ -27,7 +27,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.text.DefaultCaret;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.message.LimitLinesDocumentListener;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
@@ -47,7 +47,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 public class MessagesPanel extends JPanel implements Viewable, MessageListener {
     private static final long serialVersionUID = 191662512399957705L;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     private JTextArea textArea;
     
@@ -56,7 +56,7 @@ public class MessagesPanel extends JPanel implements Viewable, MessageListener {
   /**
      * Creates a new {@link MessagesPanel}.
      */
-    public MessagesPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
+    public MessagesPanel(Controller controller, MultiBitFrame mainFrame) {        
          setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         this.controller = controller;
        

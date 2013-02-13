@@ -27,6 +27,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -47,7 +48,8 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
     private static final int HEIGHT_DELTA = 100;
     private static final int WIDTH_DELTA = 200;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitLabel labelText;
     private MultiBitLabel addressLabelText;
@@ -62,10 +64,13 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
     /**
      * Creates a new {@link DeleteWalletConfirmDialog}.
      */
-    public DeleteSendingAddressConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame,
+    public DeleteSendingAddressConfirmDialog(MultiBitController multiBitController, MultiBitFrame mainFrame,
             SendBitcoinPanel sendBitcoinPanel) {
-        super(mainFrame, controller.getLocaliser().getString("deleteSendingAddressConfirmDialog.title"));
-        this.controller = controller;
+        super(mainFrame, multiBitController.getLocaliser().getString("deleteSendingAddressConfirmDialog.title"));
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.sendBitcoinPanel = sendBitcoinPanel;
 
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
@@ -252,7 +257,7 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        DeleteSendingAddressSubmitAction deleteWalletSubmitAction = new DeleteSendingAddressSubmitAction(controller,
+        DeleteSendingAddressSubmitAction deleteWalletSubmitAction = new DeleteSendingAddressSubmitAction(this.multiBitController,
                 sendBitcoinPanel, this);
         deleteSendingAddressButton = new MultiBitButton(deleteWalletSubmitAction, controller);
         buttonPanel.add(deleteSendingAddressButton);

@@ -73,6 +73,7 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
@@ -129,7 +130,9 @@ public class StatusBar extends JPanel implements MessageListener {
     private HashMap<String, Component> idToZones;
     private Border zoneBorder;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private MultiBitFrame mainFrame;
     
     private JProgressBar syncProgressBar; 
@@ -140,8 +143,10 @@ public class StatusBar extends JPanel implements MessageListener {
      * Construct a new StatusBar
      * 
      */
-    public StatusBar(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public StatusBar(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.mainFrame = mainFrame;
 
         setLayout(LookAndFeelTweaks.createHorizontalPercentLayout(controller.getLocaliser().getLocale()));
@@ -153,7 +158,7 @@ public class StatusBar extends JPanel implements MessageListener {
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        final MultiBitController finalController = controller;
+        final MultiBitController finalController = this.multiBitController;
         
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 

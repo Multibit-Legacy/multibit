@@ -17,8 +17,6 @@ package org.multibit.exchange;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Map;
 
@@ -26,7 +24,6 @@ import junit.framework.TestCase;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
-import org.joda.money.format.MoneyFormatter;
 import org.junit.Test;
 import org.multibit.CreateControllers;
 import org.multibit.Localiser;

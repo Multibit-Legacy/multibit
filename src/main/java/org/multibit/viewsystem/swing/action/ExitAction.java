@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class ExitAction extends AbstractExitAction {
 
     private static final long serialVersionUID = 8784284740245520863L;
+    
     private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
     

@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.multibit.MultiBit;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
@@ -82,7 +83,9 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private static final int WIDTH_DELTA = 440;
     private static final int FIELD_SEPARATION = 12;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private WalletTableData rowTableData;
 
     private MultiBitLabel confidenceText;
@@ -113,9 +116,12 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     /**
      * Creates a new {@link TransactionDetailsDialog}.
      */
-    public TransactionDetailsDialog(MultiBitController controller, MultiBitFrame mainFrame, WalletTableData rowTableData) {
-        super(mainFrame, controller.getLocaliser().getString("transactionDetailsDialog.title"));
-        this.controller = controller;
+    public TransactionDetailsDialog(MultiBitController multiBitController, MultiBitFrame mainFrame, WalletTableData rowTableData) {
+        super(mainFrame, multiBitController.getLocaliser().getString("transactionDetailsDialog.title"));
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.rowTableData = rowTableData;
 
         try {
@@ -521,7 +527,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             try {
                 String addressString = "";
 
-                if (controller.getMultiBitService() != null && myOutput != null) {
+                if (this.multiBitController.getMultiBitService() != null && myOutput != null) {
                     Address toAddress = new Address(controller.getModel().getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();

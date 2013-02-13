@@ -8,6 +8,7 @@ import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.Localiser;
 import org.multibit.MultiBit;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;

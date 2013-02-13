@@ -27,6 +27,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
@@ -71,10 +72,10 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
     /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
-    public CreateNewReceivingAddressSubmitAction(MultiBitController controller,
+    public CreateNewReceivingAddressSubmitAction(MultiBitController multiBitController,
             CreateNewReceivingAddressDialog createNewReceivingAddressDialog,
             CreateNewReceivingAddressPanel createNewReceivingAddressPanel, JPasswordField walletPassword) {
-        super(controller, "createNewReceivingAddressSubmitAction.text", "createNewReceivingAddressSubmitAction.tooltip",
+        super(multiBitController, "createNewReceivingAddressSubmitAction.text", "createNewReceivingAddressSubmitAction.tooltip",
                 "createNewReceivingAddressSubmitAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.ADD_ICON_FILE));
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
         this.createNewReceivingAddressPanel = createNewReceivingAddressPanel;
@@ -82,7 +83,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         this.lastPrivateKeysBackupFile = null;
         
         // This action is a WalletBusyListener
-        controller.registerWalletBusyListener(this);
+        super.multiBitController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
@@ -149,7 +150,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             logMessage.setShowInStatusBar(false);
             MessageManager.INSTANCE.addMessage(logMessage);
 
-            controller.fireWalletBusyChange(true);                                
+            super.multiBitController.fireWalletBusyChange(true);                                
 
             createNewReceivingAddressesInBackground(createNewReceivingAddressPanel.getNumberOfAddressesToCreate(), encryptNewKeys, 
                 CharBuffer.wrap(walletPassword.getPassword()), this);
@@ -163,6 +164,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             final CharSequence walletPassword, final CreateNewReceivingAddressSubmitAction thisAction) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
 
+        final MultiBitController finalController = super.multiBitController;
+        
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String shortMessage = null;
             private String longMessage = null;
@@ -194,7 +197,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             newKeys.add(newKey);
                         }
                         
-                        FileHandler fileHandler = controller.getFileHandler();
+                        FileHandler fileHandler = finalController.getFileHandler();
                         
                         synchronized (finalPerWalletModelData.getWallet()) {
                             finalPerWalletModelData.getWallet().keychain.addAll(newKeys);
@@ -256,7 +259,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         finalPerWalletModelData.getWalletInfo().put(MultiBitModel.RECEIVE_LABEL, "");
                         
                         try {
-                            controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
+                            finalController.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
                         } catch (WalletSaveException wse) {
                             log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                             MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("createNewReceivingAddressesSubmitAction.failure",
@@ -289,7 +292,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     // Declare that wallet is no longer busy with the task.
                     finalPerWalletModelData.setBusyTask(null);
                     finalPerWalletModelData.setBusy(false);
-                    controller.fireWalletBusyChange(false);                   
+                    finalController.fireWalletBusyChange(false);                   
                 }
             }
         };

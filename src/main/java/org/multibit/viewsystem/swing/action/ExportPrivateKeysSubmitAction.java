@@ -27,6 +27,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
@@ -64,9 +65,9 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
     /**
      * Creates a new {@link ExportPrivateKeysSubmitAction}.
      */ 
-    public ExportPrivateKeysSubmitAction(MultiBitController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
+    public ExportPrivateKeysSubmitAction(MultiBitController multiBitController, ExportPrivateKeysPanel exportPrivateKeysPanel,
             ImageIcon icon, JPasswordField walletPassword, JPasswordField exportFilePassword, JPasswordField exportFileRepeatPassword, MultiBitFrame mainFrame) {
-        super(controller, "showExportPrivateKeysAction.text.camel", "showExportPrivateKeysAction.tooltip", "showExportPrivateKeysAction.mnemonicKey", icon);
+        super(multiBitController, "showExportPrivateKeysAction.text.camel", "showExportPrivateKeysAction.tooltip", "showExportPrivateKeysAction.mnemonicKey", icon);
                 this.exportPrivateKeysPanel = exportPrivateKeysPanel;
         this.walletPassword = walletPassword;
         this.exportFilePassword = exportFilePassword;
@@ -74,7 +75,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         this.mainFrame = mainFrame;
         
         // This action is a WalletBusyListener.
-        controller.registerWalletBusyListener(this);
+        super.multiBitController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
@@ -180,7 +181,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     "exportPrivateKeysSubmitAction.exportingPrivateKeys"));
             exportPrivateKeysPanel.setMessage2("");
             
-            controller.fireWalletBusyChange(true);
+            super.multiBitController.fireWalletBusyChange(true);
 
             CharSequence walletPasswordToUse = null;
             if (walletPassword.getPassword() != null) {
@@ -198,6 +199,8 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             final CharSequence exportPasswordToUse, final CharSequence walletPassword) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ExportPrivateKeysPanel finalExportPanel = exportPrivateKeysPanel;
+        
+        final MultiBitController finalMultiBitController = super.multiBitController;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String uiMessage1 = null;
@@ -208,8 +211,8 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 Boolean successMeasure = Boolean.FALSE;
 
                 MultiBitBlockChain blockChain = null;
-                if (controller.getMultiBitService() != null) {
-                    blockChain = controller.getMultiBitService().getChain();
+                if (finalMultiBitController.getMultiBitService() != null) {
+                    blockChain = finalMultiBitController.getMultiBitService().getChain();
                 }
 
                 try {
@@ -267,7 +270,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Declare that wallet is no longer busy with the task.
                     finalPerWalletModelData.setBusyTask(null);
                     finalPerWalletModelData.setBusy(false);
-                    controller.fireWalletBusyChange(false);
+                    finalMultiBitController.fireWalletBusyChange(false);
                 }
             }
         };

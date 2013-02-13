@@ -17,7 +17,7 @@ package org.multibit.viewsystem.swing.action;
 
 import java.math.BigInteger;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
@@ -36,9 +36,9 @@ import com.google.bitcoin.core.Wallet.BalanceType;
  */
 public class Validator {
 
-    private MultiBitController controller;
+    private Controller controller;
 
-    public Validator(MultiBitController controller) {
+    public Validator(Controller controller) {
         this.controller = controller;
     }
 

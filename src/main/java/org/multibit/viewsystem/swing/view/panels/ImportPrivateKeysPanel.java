@@ -36,7 +36,6 @@ import java.nio.CharBuffer;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
-
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -48,6 +47,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.KeyCrypterOpenSSL;
 import org.multibit.file.PrivateKeyAndDate;
@@ -63,19 +64,17 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ImportPrivateKeysSubmitAction;
+import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
-import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 
 /**
  * The import private keys view.
@@ -84,7 +83,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
     private static final long serialVersionUID = 444992294329957705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitFrame mainFrame;
 
@@ -130,10 +130,10 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
      */
-    public ImportPrivateKeysPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ImportPrivateKeysPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -143,7 +143,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         initUI();
         
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
-        controller.registerWalletBusyListener(this);
+        this.multiBitController.registerWalletBusyListener(this);
         
         enableImportFilePasswordPanel(false);
         passwordField1.setText("");
@@ -790,7 +790,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(controller, this,
+        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(this.multiBitController, this,
                 ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, passwordField1, passwordField2);
         MultiBitButton submitButton = new MultiBitButton(importPrivateKeysSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

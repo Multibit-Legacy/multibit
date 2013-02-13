@@ -142,7 +142,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static final long serialVersionUID = 7621813615342923041L;
 
-    private final MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+
     private MultiBitModel model;
     private Localiser localiser;
 
@@ -245,9 +247,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static FireDataChangedTimerTask fireDataChangedTimerTask;
 
     @SuppressWarnings("deprecation")
-    public MultiBitFrame(MultiBitController controller, GenericApplication application, View initialView) {
-        this.controller = controller;
-        this.quitEventListener = this.controller;
+    public MultiBitFrame(MultiBitController multiBitController, GenericApplication application, View initialView) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        this.quitEventListener = this.multiBitController;
         
         this.model = controller.getModel();
         this.localiser = controller.getLocaliser();
@@ -294,15 +297,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         sizeAndCenter();
 
-        viewFactory = new ViewFactory(controller, this);
+        viewFactory = new ViewFactory(this.multiBitController, this);
 
         initUI();
 
-        controller.registerWalletBusyListener(this);
+        this.multiBitController.registerWalletBusyListener(this);
 
          // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        fileChangeTimer.schedule(new FileChangeTimerTask(this.multiBitController), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
 
          // Initialise the tickers.
         tickerTimer1 = new Timer();
@@ -403,7 +406,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         contentPane.add(headerPanel, constraints);
 
         // Create the wallet list panel.
-        walletsView = new WalletListPanel(controller, this);
+        walletsView = new WalletListPanel(this.multiBitController, this);
 
         // Create the tabbedpane that holds the views.
         viewTabbedPane = new MultiBitTabbedPane(controller);
@@ -461,7 +464,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
                 transactionsOutlinePanel);
 
-        statusBar = new StatusBar(controller, this);
+        statusBar = new StatusBar(this.multiBitController, this);
         statusBar.updateOnlineStatusText(online);
         MessageManager.INSTANCE.addMessageListener(statusBar);
 
@@ -760,7 +763,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuBar.add(helpMenu);
 
         // Create new wallet action.
-        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller,
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.multiBitController,
                 ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), this);
         JMenuItem menuItem = new JMenuItem(createNewWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -768,14 +771,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // Open wallet action.
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller,
+        OpenWalletAction openWalletAction = new OpenWalletAction(this.multiBitController,
                 ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE), this);
         menuItem = new JMenuItem(openWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
-        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller,
+        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(this.multiBitController,
                 ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
         menuItem = new JMenuItem(deleteWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -785,7 +788,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.addSeparator();
         
         // Add password action.
-        addPasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
+        addPasswordAction = new MultiBitWalletBusyAction(this.multiBitController, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
                 "addPasswordAction.tooltip", "addPasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
         menuItem = new JMenuItem(addPasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -793,7 +796,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // Change password action.
-        changePasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
+        changePasswordAction = new MultiBitWalletBusyAction(this.multiBitController, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
                 "changePasswordAction.tooltip", "changePasswordAction.mnemonic", View.CHANGE_PASSWORD_VIEW);
         menuItem = new JMenuItem(changePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -801,7 +804,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // Remove password action.
-        removePasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
+        removePasswordAction = new MultiBitWalletBusyAction(this.multiBitController, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
                 "removePasswordAction.tooltip", "removePasswordAction.mnemonic", View.REMOVE_PASSWORD_VIEW);
         menuItem = new JMenuItem(removePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -993,7 +996,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.add(showTicker);
 
         // Import private keys.
-        showImportPrivateKeysAction = new MultiBitWalletBusyAction(controller, ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE,
+        showImportPrivateKeysAction = new MultiBitWalletBusyAction(this.multiBitController, ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE,
                 "showImportPrivateKeysAction.text", "showImportPrivateKeysAction.tooltip", "showImportPrivateKeysAction.mnemonic",
                 View.SHOW_IMPORT_PRIVATE_KEYS_VIEW);
         menuItem = new JMenuItem(showImportPrivateKeysAction);
@@ -1002,7 +1005,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         toolsMenu.add(menuItem);
 
         // Export private keys.
-        showExportPrivateKeysAction = new MultiBitWalletBusyAction(controller, ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE,
+        showExportPrivateKeysAction = new MultiBitWalletBusyAction(this.multiBitController, ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE,
                 "showExportPrivateKeysAction.text", "showExportPrivateKeysAction.tooltip", "showExportPrivateKeysAction.mnemonic",
                 View.SHOW_EXPORT_PRIVATE_KEYS_VIEW);
         menuItem = new JMenuItem(showExportPrivateKeysAction);

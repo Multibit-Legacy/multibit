@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.view.panels.CreateNewReceivingAddressPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -33,7 +34,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 //    @Test
 //    public void testAddReceivingAddressesWithNonEncryptedWallet() throws Exception {       
 //        // Create MultiBit controller
-//        MultiBitController controller = ActionTestUtils.createController();
+//        Controller controller = ActionTestUtils.createController();
 //        
 //        // Create a new wallet and put it in the model as the active wallet.
 //        ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", false, null);

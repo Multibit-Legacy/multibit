@@ -48,7 +48,7 @@ import javax.swing.border.Border;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.store.MultiBitWalletVersion;
@@ -97,7 +97,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private BlinkLabel amountLabelBTC;
     private BlinkLabel amountLabelFiat;
 
-    private MultiBitController controller;
+    private Controller controller;
     private MultiBitFrame mainFrame;
 
     private int normalHeight;
@@ -150,7 +150,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private final SingleWalletPanel thisPanel;
           
-    public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
+    public SingleWalletPanel(PerWalletModelData perWalletModelData, final Controller controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;

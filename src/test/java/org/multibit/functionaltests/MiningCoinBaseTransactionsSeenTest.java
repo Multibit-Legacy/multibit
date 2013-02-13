@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
 import org.multibit.MultiBit;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;

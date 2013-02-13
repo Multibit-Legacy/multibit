@@ -26,6 +26,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -47,7 +48,8 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
     private static final int HEIGHT_DELTA = 100;
     private static final int WIDTH_DELTA = 200;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitLabel walletDescriptionText;
     private MultiBitLabel sendLabelText;
@@ -62,9 +64,11 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
     /**
      * Creates a new {@link DeleteWalletConfirmDialog}.
      */
-    public DeleteWalletConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame, controller.getLocaliser().getString("deleteWalletConfirmDialog.title"));
-        this.controller = controller;
+    public DeleteWalletConfirmDialog(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        super(mainFrame, multiBitController.getLocaliser().getString("deleteWalletConfirmDialog.title"));
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
 
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
         if (imageIcon != null) {
@@ -260,7 +264,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
+        DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(this.multiBitController, ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
         deleteWalletButton = new MultiBitButton(deleteWalletSubmitAction, controller);
         buttonPanel.add(deleteWalletButton);
 

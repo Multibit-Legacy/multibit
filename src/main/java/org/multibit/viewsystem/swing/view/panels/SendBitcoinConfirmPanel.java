@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.MultiBit;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
@@ -61,7 +62,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
     private MultiBitFrame mainFrame;
     private MultiBitDialog sendBitcoinConfirmDialog;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitLabel sendAddressText;
     private MultiBitLabel sendLabelText;
@@ -100,9 +102,10 @@ public class SendBitcoinConfirmPanel extends JPanel {
     /**
      * Creates a new {@link SendBitcoinConfirmPanel}.
      */
-    public SendBitcoinConfirmPanel(MultiBitController controller, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog) {
+    public SendBitcoinConfirmPanel(MultiBitController multiBitController, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog) {
         super();
-        this.controller = controller;
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
         this.sendBitcoinConfirmDialog = sendBitcoinConfirmDialog;
         
@@ -455,7 +458,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
+        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, this.multiBitController, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 

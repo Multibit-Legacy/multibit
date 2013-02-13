@@ -24,6 +24,7 @@ import java.awt.FontMetrics;
 
 import javax.swing.JComboBox;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -41,16 +42,18 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
  
     private ReceiveBitcoinPanel receiveBitcoinPanel;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
     
     private CreateNewReceivingAddressPanel createNewReceivingAddressPanel; 
 
     /**
      * Creates a new {@link CreateNewReceivingAddressDialog}.
      */
-    public CreateNewReceivingAddressDialog(MultiBitController controller, MultiBitFrame mainFrame, ReceiveBitcoinPanel receiveBitcoinPanel) {
-        super(mainFrame, controller.getLocaliser().getString("createNewReceivingAddressDialog.title"));
-        this.controller = controller;
+    public CreateNewReceivingAddressDialog(MultiBitController multiBitController, MultiBitFrame mainFrame, ReceiveBitcoinPanel receiveBitcoinPanel) {
+        super(mainFrame, multiBitController.getLocaliser().getString("createNewReceivingAddressDialog.title"));
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.receiveBitcoinPanel = receiveBitcoinPanel;
       
         initUI();
@@ -74,7 +77,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
             // FontSizer fail - probably headless in test - carry on.
         }
 
-        createNewReceivingAddressPanel = new CreateNewReceivingAddressPanel(controller, receiveBitcoinPanel, this);
+        createNewReceivingAddressPanel = new CreateNewReceivingAddressPanel(this.multiBitController, receiveBitcoinPanel, this);
         
         setLayout(new BorderLayout());
         add(createNewReceivingAddressPanel, BorderLayout.CENTER);

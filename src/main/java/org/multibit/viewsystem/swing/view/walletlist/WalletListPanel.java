@@ -39,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
@@ -66,7 +67,9 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
     //private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private MultiBitFrame mainFrame;
 
     private MultiBitTabbedPane tabbedPane;
@@ -88,10 +91,10 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     /**
      * Creates a new {@link WalletListPanel}.
      */
-    public WalletListPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public WalletListPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         walletPanels = new ArrayList<SingleWalletPanel>();
 
@@ -102,7 +105,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
         initUI();
         
-        controller.registerWalletBusyListener(this);
+        this.multiBitController.registerWalletBusyListener(this);
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
     }
@@ -293,7 +296,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
-        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.multiBitController, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);
         MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
         createNewWalletButton.setText(controller.getLocaliser().getString("createNewWalletAction.text"));
         createNewWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -308,7 +311,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         constraints.anchor = GridBagConstraints.CENTER;
         buttonPanel.add(createNewWalletButton, constraints);
         
-//        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
+//        OpenWalletAction openWalletAction = new OpenWalletAction(this.multiBitController, null, mainFrame);
 //        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
 //        openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
 //        openWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -323,7 +326,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 //        constraints.anchor = GridBagConstraints.CENTER;
 //        buttonPanel.add(openWalletButton, constraints);
 //        
-//        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller, null, mainFrame);
+//        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(this.multiBitController, null, mainFrame);
 //        MultiBitButton deleteWalletButton = new MultiBitButton(deleteWalletAction, controller);
 //        deleteWalletButton.setText(controller.getLocaliser().getString("crudButton.delete"));
 //        deleteWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

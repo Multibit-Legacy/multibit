@@ -58,6 +58,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterException;
 
+
 /**
  * Class consolidating the File IO in MultiBit for wallets and wallet infos.
  * 
@@ -73,7 +74,8 @@ public class FileHandler {
     private static final String SEPARATOR = "-";
     public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private Date dateForBackupName = null;
     
@@ -100,8 +102,9 @@ public class FileHandler {
         }
     }
     
-    public FileHandler(MultiBitController controller) {
-        this.controller = controller;
+    public FileHandler(MultiBitController multiBitController) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         
         dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         walletProtobufSerializer = new MultiBitWalletProtobufSerializer();
@@ -458,8 +461,8 @@ public class FileHandler {
                         false, false, MultiBitModel.PRIVATE_KEY_FILE_EXTENSION);
                 privateKeysBackupFile = new File(privateKeysBackupFilename);
                 BlockChain blockChain = null;
-                if (controller.getMultiBitService() != null) {
-                    blockChain = controller.getMultiBitService() .getChain();
+                if (this.multiBitController.getMultiBitService() != null) {
+                    blockChain = this.multiBitController.getMultiBitService().getChain();
                 }
                 
                 privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, controller.getModel().getActiveWallet(), blockChain, true, passwordToUse, passwordToUse);

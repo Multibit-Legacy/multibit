@@ -21,7 +21,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
@@ -37,7 +37,7 @@ public class CopySendAddressAction extends AbstractAction {
     /**
      * Creates a new {@link CopySendAddressAction}.
      */
-    public CopySendAddressAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel, ImageIcon icon) {
+    public CopySendAddressAction(Controller controller, SendBitcoinPanel sendBitcoinPanel, ImageIcon icon) {
         super("", icon);
         this.sendBitcoinPanel = sendBitcoinPanel;
 
