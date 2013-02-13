@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -43,9 +44,9 @@ public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link CreateNewReceivingAddressAction}.
      */
-    public CreateNewReceivingAddressAction(MultiBitController controller, MultiBitFrame mainFrame,
+    public CreateNewReceivingAddressAction(MultiBitController multiBitController, MultiBitFrame mainFrame,
             ReceiveBitcoinPanel receiveBitcoinPanel) {
-        super(controller, "createOrEditAddressAction.createReceiving.text", "createOrEditAddressAction.createReceiving.tooltip",
+        super(multiBitController, "createOrEditAddressAction.createReceiving.text", "createOrEditAddressAction.createReceiving.tooltip",
                 "createOrEditAddressAction.createReceiving.mnemonicKey", null);
         this.receiveBitcoinPanel = receiveBitcoinPanel;
         this.mainFrame = mainFrame;
@@ -64,7 +65,7 @@ public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
         setEnabled(false);
 
         try {
-            CreateNewReceivingAddressDialog createNewReceivingAddressDialog = new CreateNewReceivingAddressDialog(controller,
+            CreateNewReceivingAddressDialog createNewReceivingAddressDialog = new CreateNewReceivingAddressDialog(super.multiBitController,
                     mainFrame, receiveBitcoinPanel);
             createNewReceivingAddressDialog.setVisible(true);
         } finally {

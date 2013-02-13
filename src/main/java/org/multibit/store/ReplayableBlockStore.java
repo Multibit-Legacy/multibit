@@ -43,6 +43,7 @@ import org.multibit.file.FileHandler;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 
+
 /**
  * Stores the block chain to disk.<p>
  *
@@ -188,7 +189,7 @@ public class ReplayableBlockStore implements BlockStore {
             boolean blockChainLoadedOk = false;
             if (copyInstalledBlockChain) {
                 // Recopy in the installer blockchain.
-                MultiBitController controller = MultiBit.getController();
+                MultiBitController controller = MultiBit.getMultiBitController();
                 FileHandler fileHandler = controller.getFileHandler();
                 if (fileHandler != null) {
                     fileHandler.copyBlockChainFromInstallationDirectory(file.getAbsolutePath(), true);

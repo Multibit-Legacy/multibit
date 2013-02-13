@@ -39,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
@@ -66,7 +67,9 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
     //private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private MultiBitFrame mainFrame;
 
     private MultiBitTabbedPane tabbedPane;
@@ -88,10 +91,10 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     /**
      * Creates a new {@link WalletListPanel}.
      */
-    public WalletListPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public WalletListPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         walletPanels = new ArrayList<SingleWalletPanel>();
 
@@ -102,7 +105,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
         initUI();
         
-        controller.registerWalletBusyListener(this);
+        this.multiBitController.registerWalletBusyListener(this);
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
     }
@@ -260,7 +263,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                         constraints2.gridheight = 1;
                         constraints2.anchor = GridBagConstraints.CENTER;
 
-                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame, this);
+                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, this.multiBitController, mainFrame, this);
                         loopPanel.setComponentOrientation(ComponentOrientation
                                 .getOrientation(controller.getLocaliser().getLocale()));
 
@@ -309,7 +312,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
-        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.multiBitController, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);
         MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
         createNewWalletButton.setText(controller.getLocaliser().getString("createNewWalletAction.text"));
         createNewWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

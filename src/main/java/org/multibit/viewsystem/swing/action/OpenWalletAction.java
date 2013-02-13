@@ -34,6 +34,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.SwingWorker;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
@@ -69,7 +70,8 @@ public class OpenWalletAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592460523457705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitFrame mainFrame;
 
@@ -82,9 +84,12 @@ public class OpenWalletAction extends AbstractAction {
     /**
      * Creates a new {@link OpenWalletAction}.
      */
-    public OpenWalletAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("openWalletAction.text"), icon);
-        this.controller = controller;
+    public OpenWalletAction(MultiBitController multiBitController, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(multiBitController.getLocaliser().getString("openWalletAction.text"), icon);
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.mainFrame = mainFrame;
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -164,7 +169,7 @@ public class OpenWalletAction extends AbstractAction {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "'.");
 
-                    controller.addWalletFromFilename(selectedWalletFilenameFinal);
+                    multiBitController.addWalletFromFilename(selectedWalletFilenameFinal);
                     controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
 
                     // Save the user properties to disk.
@@ -222,9 +227,9 @@ public class OpenWalletAction extends AbstractAction {
                         log.debug("For wallet '" + perWalletModelData.getWalletFilename() + ", after transactions, the lastBlockSeenHeight was " + lastBlockSeenHeight);
 
                         int currentChainHeight = -1;
-                        if (controller.getMultiBitService().getChain() != null) {
-                            if (controller.getMultiBitService().getChain().getChainHead() != null) {
-                                currentChainHeight = controller.getMultiBitService().getChain().getChainHead().getHeight();
+                        if (multiBitController.getMultiBitService().getChain() != null) {
+                            if (multiBitController.getMultiBitService().getChain().getChainHead() != null) {
+                                currentChainHeight = multiBitController.getMultiBitService().getChain().getChainHead().getHeight();
                             }
                         }
                         log.debug("The current chain height is " + currentChainHeight);
@@ -262,7 +267,7 @@ public class OpenWalletAction extends AbstractAction {
                         if (needToSync) {
                             StoredBlock syncFromStoredBlock = null;
 
-                            MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
+                            MultiBitCheckpointManager checkpointManager = multiBitController.getMultiBitService().getCheckpointManager();
                             if (checkpointManager != null) {
                                 if (lastBlockSeenHeight > 0) {
                                     syncFromStoredBlock = checkpointManager.getCheckpointBeforeOrAtHeight(lastBlockSeenHeight);

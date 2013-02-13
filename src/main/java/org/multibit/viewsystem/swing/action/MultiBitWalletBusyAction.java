@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
@@ -34,22 +35,27 @@ public class MultiBitWalletBusyAction extends AbstractAction implements WalletBu
 
     private static final long serialVersionUID = 191948235465057705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private View viewToDisplay;
     private String tooltipKey;
 
     /**
      * Creates a new {@link MultiBitAction}.
-     * @param controller The MultiBitController
+     * @param controller The Controller
      * @param imagePath The relative path to the image to load for the item. Usually an imageLoader constant
      * @param textKey The localisation key for the text of the action
      * @param tooltipKey The localisation key for the tooltip of the action
      * @param mnemonicKey The localisation key for the mnemonic of the action
      * @param viewToDisplay The view to display on action activation.  One of the View constants
      */
-    public MultiBitWalletBusyAction(MultiBitController controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, View viewToDisplay) {
-        super(textKey == null ? "" : controller.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
-        this.controller = controller;
+    public MultiBitWalletBusyAction(MultiBitController multiBitController, String imagePath, String textKey, String tooltipKey, String mnemonicKey, View viewToDisplay) {
+        super(textKey == null ? "" : multiBitController.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.viewToDisplay = viewToDisplay;
         this.tooltipKey = tooltipKey;
 
@@ -57,7 +63,7 @@ public class MultiBitWalletBusyAction extends AbstractAction implements WalletBu
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString(tooltipKey)));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic(mnemonicKey));
         
-        controller.registerWalletBusyListener(this);
+        this.multiBitController.registerWalletBusyListener(this);
     }
 
     /**

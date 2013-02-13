@@ -18,7 +18,7 @@ package org.multibit.viewsystem.swing.view.components;
 import javax.swing.Action;
 import javax.swing.JButton;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 
 /**
@@ -30,7 +30,7 @@ public class MultiBitLargeButton extends JButton {
 
     private static final long serialVersionUID = 5674557290711815650L;
    
-    public MultiBitLargeButton(Action action, MultiBitController controller) {
+    public MultiBitLargeButton(Action action, Controller controller) {
         super(action);
 
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));

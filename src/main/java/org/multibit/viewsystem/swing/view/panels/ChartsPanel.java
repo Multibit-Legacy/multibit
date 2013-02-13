@@ -38,7 +38,7 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
@@ -79,7 +79,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
 
   private static final String DATE_PATTERN = "dd-MMM";
 
-  private MultiBitController controller;
+    private Controller controller;
 
   private JPanel mainPanel;
 
@@ -88,7 +88,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
   /**
    * Creates a new {@link ChartsPanel}.
    */
-  public ChartsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ChartsPanel(Controller controller, MultiBitFrame mainFrame) {
 
     this.controller = controller;
 

@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
