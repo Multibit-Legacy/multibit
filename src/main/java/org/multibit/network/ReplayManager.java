@@ -28,7 +28,7 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.UUID;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -39,6 +39,7 @@ import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.store.BlockStoreException;
+
 
 /**
  * ReplayManager is responsible for updating Wallets that are not updated to
@@ -64,11 +65,11 @@ public enum ReplayManager {
     private static final int REPLAY_MANAGER_DELAY_TIME = 0; // ms
     private static final int REPLAY_MANAGER_REPEAT_TIME = 333; // ms
     
-    private MultiBitController controller;
+    private BitcoinController controller;
 
     final private Queue<ReplayTask> replayTaskQueue = new LinkedList<ReplayTask>();
 
-    public void initialise(MultiBitController controller) {
+    public void initialise(BitcoinController controller) {
         this.controller = controller;
         replayManagerTimerTask = new ReplayManagerTimerTask(controller, replayTaskQueue);
         replayManagerTimer = new Timer();

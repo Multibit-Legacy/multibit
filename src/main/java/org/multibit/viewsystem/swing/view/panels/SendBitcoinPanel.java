@@ -33,7 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.AddressBookData;
@@ -72,8 +72,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     private MultiBitButton sendButton;
     private SendBitcoinConfirmAction sendBitcoinConfirmAction;
 
-    public SendBitcoinPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        super(mainFrame, multiBitController);
+    public SendBitcoinPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        super(mainFrame, bitcoinController);
         checkDeleteSendingEnabled();
     }
 
@@ -84,13 +84,13 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
     @Override
     public Action getCreateNewAddressAction() {
-        return new CreateNewSendingAddressAction(super.multiBitController, this);
+        return new CreateNewSendingAddressAction(super.bitcoinController, this);
     }
 
     @Override
     protected Action getDeleteAddressAction() {
         if (deleteAddressAction == null) {
-            return new DeleteSendingAddressAction(this.multiBitController, mainFrame, this);
+            return new DeleteSendingAddressAction(this.bitcoinController, mainFrame, this);
         } else {
             return deleteAddressAction;
         }
@@ -191,7 +191,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         formPanel.add(copyAddressButton, constraints);
 
         ImageIcon pasteIcon = ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE);
-        PasteAddressAction pasteAddressAction = new PasteAddressAction(super.multiBitController, this, pasteIcon);
+        PasteAddressAction pasteAddressAction = new PasteAddressAction(super.bitcoinController, this, pasteIcon);
         pasteAddressButton = new MultiBitButton(pasteAddressAction, controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 8;
@@ -320,7 +320,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
         formPanel.add(helpButton, constraints);
 
-        sendBitcoinConfirmAction = new SendBitcoinConfirmAction(super.multiBitController, mainFrame, this);
+        sendBitcoinConfirmAction = new SendBitcoinConfirmAction(super.bitcoinController, mainFrame, this);
         sendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 6;

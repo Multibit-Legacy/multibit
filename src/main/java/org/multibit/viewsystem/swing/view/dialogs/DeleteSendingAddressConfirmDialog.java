@@ -28,7 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -49,7 +49,7 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
     private static final int WIDTH_DELTA = 200;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private MultiBitLabel labelText;
     private MultiBitLabel addressLabelText;
@@ -64,12 +64,12 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
     /**
      * Creates a new {@link DeleteWalletConfirmDialog}.
      */
-    public DeleteSendingAddressConfirmDialog(MultiBitController multiBitController, MultiBitFrame mainFrame,
+    public DeleteSendingAddressConfirmDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame,
             SendBitcoinPanel sendBitcoinPanel) {
-        super(mainFrame, multiBitController.getLocaliser().getString("deleteSendingAddressConfirmDialog.title"));
+        super(mainFrame, bitcoinController.getLocaliser().getString("deleteSendingAddressConfirmDialog.title"));
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.sendBitcoinPanel = sendBitcoinPanel;
 
@@ -257,7 +257,7 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        DeleteSendingAddressSubmitAction deleteSendingAddressSubmitAction = new DeleteSendingAddressSubmitAction(this.multiBitController,
+        DeleteSendingAddressSubmitAction deleteSendingAddressSubmitAction = new DeleteSendingAddressSubmitAction(this.bitcoinController,
                 sendBitcoinPanel, this);
         deleteSendingAddressButton = new MultiBitButton(deleteSendingAddressSubmitAction, controller);
         buttonPanel.add(deleteSendingAddressButton);

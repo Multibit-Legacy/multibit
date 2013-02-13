@@ -23,8 +23,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
-import org.multibit.controller.MultiBitControllerTest;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.BitcoinControllerTest;
 import org.multibit.controller.SimpleWalletBusyListener;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
@@ -58,7 +58,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     public void testExportPrivateKeysWithNonEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        MultiBitController controller = controllers.multiBitController;
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", false, null);
@@ -107,7 +107,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Execute = this should actually write the encrypted export file.
         exportAction.actionPerformed(null);
         
-        MultiBitControllerTest.waitForWalletNotBusy(walletBusyListener);
+        BitcoinControllerTest.waitForWalletNotBusy(walletBusyListener);
         
         assertTrue("Encrypted export file does not exist when it should", (new File(outputFilename1)).exists());
         assertEquals("Wrong message1 after encrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
@@ -153,7 +153,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Execute = this should actually write the unencrypted export file.
         exportAction.actionPerformed(null);
         
-        MultiBitControllerTest.waitForWalletNotBusy(walletBusyListener);
+        BitcoinControllerTest.waitForWalletNotBusy(walletBusyListener);
         
         assertTrue("Unencrypted export file does not exist when it should", (new File(outputFilename2)).exists());
         assertEquals("Wrong message1 after unencrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
@@ -170,7 +170,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     public void testExportPrivateKeysWithEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        MultiBitController controller = controllers.multiBitController;
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithEncryptedWallet", true, WALLET_PASSWORD);
@@ -233,7 +233,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Execute = this should actually write the encrypted export file.
         exportAction.actionPerformed(null);
         
-        MultiBitControllerTest.waitForWalletNotBusy(walletBusyListener);
+        BitcoinControllerTest.waitForWalletNotBusy(walletBusyListener);
         
         assertTrue("Encrypted export file does not exist when it should", (new File(outputFilename1)).exists());
         assertEquals("Wrong message1 after encrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
@@ -283,7 +283,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Execute = this should actually write the unencrypted export file.
         exportAction.actionPerformed(null);
         
-        MultiBitControllerTest.waitForWalletNotBusy(walletBusyListener);
+        BitcoinControllerTest.waitForWalletNotBusy(walletBusyListener);
         
         assertTrue("Unencrypted export file does not exist when it should", (new File(outputFilename2)).exists());
         assertEquals("Wrong message1 after unencrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
@@ -301,7 +301,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     public void testNoWalletSelected() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        MultiBitController controller = controllers.multiBitController;
+        BitcoinController controller = controllers.bitcoinController;
 
         // This test runs against an empty PerWalletModelDataList.
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());

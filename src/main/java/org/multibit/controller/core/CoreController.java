@@ -21,13 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.controller;
+package org.multibit.controller.core;
 
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import org.multibit.ApplicationDataDirectoryLocator;
+import org.multibit.controller.AbstractEventHandler;
+import org.multibit.controller.AbstractEventHandler;
+import org.multibit.controller.BaseController;
+import org.multibit.controller.BaseController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;

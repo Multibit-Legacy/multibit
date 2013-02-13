@@ -19,7 +19,8 @@ package org.multibit.viewsystem.swing.view.walletlist;
 import java.util.Date;
 import java.util.UUID;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.ReplayManager;
@@ -28,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.DownloadListener;
+
+
 
 /**
  * Listen to chain download events and print useful informational messages.
@@ -48,13 +51,17 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
                                                           // cent to cater for
                                                           // rounding
 
-    MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     final SingleWalletPanel singleWalletPanel;
     
     private Object lockObject = new Object();
 
-    public SingleWalletPanelDownloadListener(MultiBitController controller, SingleWalletPanel singleWalletPanel) {
-        this.controller = controller;
+    public SingleWalletPanelDownloadListener(BitcoinController bitcoinController, SingleWalletPanel singleWalletPanel) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.singleWalletPanel = singleWalletPanel;
     }
 

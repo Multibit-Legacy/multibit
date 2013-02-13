@@ -21,7 +21,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.WalletTableData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.TransactionDetailsDialog;
@@ -34,7 +34,7 @@ public class ShowTransactionDetailsAction extends AbstractAction {
     private static final long serialVersionUID = 1913592498732457765L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private MultiBitFrame mainFrame;
     private WalletTableData rowTableData;
@@ -42,10 +42,10 @@ public class ShowTransactionDetailsAction extends AbstractAction {
     /**
      * Creates a new {@link ShowTransactionDetailsAction}.
      */
-    public ShowTransactionDetailsAction(MultiBitController multiBitController, MultiBitFrame mainFrame, WalletTableData rowTableData) {
-        super(multiBitController.getLocaliser().getString("showTransactionsDetailAction.text"));
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public ShowTransactionDetailsAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, WalletTableData rowTableData) {
+        super(bitcoinController.getLocaliser().getString("showTransactionsDetailAction.text"));
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.mainFrame = mainFrame;
         this.rowTableData = rowTableData;
@@ -60,7 +60,7 @@ public class ShowTransactionDetailsAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(this.multiBitController, mainFrame, rowTableData);
+        final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(this.bitcoinController, mainFrame, rowTableData);
         transactionDetailsDialog.setVisible(true);
     }
 }

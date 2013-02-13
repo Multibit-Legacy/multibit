@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
@@ -53,7 +53,7 @@ public class MultiBitDownloadListener extends DownloadListener {
     private static final int CRITERIA_LARGE_NUMBER_OF_BLOCKS = 1000;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private List<SingleWalletPanelDownloadListener> singleWalletPanelDownloadListeners;
 
@@ -61,9 +61,9 @@ public class MultiBitDownloadListener extends DownloadListener {
     
     private int blocksToDownloadAtStart = -1;
 
-    public MultiBitDownloadListener(MultiBitController controller) {
-        this.multiBitController = controller;
-        this.controller = this.multiBitController;
+    public MultiBitDownloadListener(BitcoinController controller) {
+        this.bitcoinController = controller;
+        this.controller = this.bitcoinController;
         this.singleWalletPanelDownloadListeners = new ArrayList<SingleWalletPanelDownloadListener>();
     }
 
@@ -124,7 +124,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                     singleWalletPanelDownloadListener.progress(pct, blocksSoFar, date);
                 }
             }
-            this.multiBitController.fireBlockDownloaded();
+            this.bitcoinController.fireBlockDownloaded();
         }
     }
 
@@ -165,7 +165,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                     singleWalletPanelDownloadListener.startDownload(blocks);
                 }
             }
-            this.multiBitController.fireBlockDownloaded();
+            this.bitcoinController.fireBlockDownloaded();
         }
     }
 
@@ -188,6 +188,6 @@ public class MultiBitDownloadListener extends DownloadListener {
             singleWalletPanelDownloadListener.doneDownload();
         }
                 
-        this.multiBitController.fireBlockDownloaded();
+        this.bitcoinController.fireBlockDownloaded();
     }
 }

@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.CreateControllers;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 
@@ -45,7 +45,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
             // Create MultiBit controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-            MultiBitController controller = controllers.multiBitController;
+        BitcoinController controller = controllers.bitcoinController;
 
             // Create a new unencrypted wallet and put it in the model as the
             // active wallet.
@@ -117,7 +117,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
             // Create MultiBit controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-            MultiBitController controller = controllers.multiBitController;
+        BitcoinController controller = controllers.bitcoinController;
 
             // Create a new encrypted wallet and put it in the model as the
             // active wallet.

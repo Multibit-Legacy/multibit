@@ -16,7 +16,7 @@ import javax.swing.JPasswordField;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressSubmitAction;
@@ -36,7 +36,7 @@ public class CreateNewReceivingAddressPanel extends JPanel {
     private static final long serialVersionUID = -1604698555807842464L;
     
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
  
     private ReceiveBitcoinPanel receiveBitcoinPanel;
     private CreateNewReceivingAddressDialog createNewReceivingAddressDialog;
@@ -54,12 +54,12 @@ public class CreateNewReceivingAddressPanel extends JPanel {
     
     private static final int STENT_WIDTH = 10;
    
-    public CreateNewReceivingAddressPanel(MultiBitController multiBitController, ReceiveBitcoinPanel receiveBitcoinPanel,
+    public CreateNewReceivingAddressPanel(BitcoinController bitcoinController, ReceiveBitcoinPanel receiveBitcoinPanel,
             CreateNewReceivingAddressDialog createNewReceivingAddressDialog) {
         super();
 
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.receiveBitcoinPanel = receiveBitcoinPanel;
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
@@ -231,7 +231,7 @@ public class CreateNewReceivingAddressPanel extends JPanel {
         }
         buttonPanel.add(cancelButton);
 
-        createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(this.multiBitController,
+        createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(this.bitcoinController,
                 createNewReceivingAddressDialog, this, walletPasswordField);
         createNewReceivingAddressSubmitButton = new MultiBitButton(createNewReceivingAddressSubmitAction, controller);
         buttonPanel.add(createNewReceivingAddressSubmitButton);
