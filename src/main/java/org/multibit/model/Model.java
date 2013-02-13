@@ -24,6 +24,7 @@
 package org.multibit.model;
 
 import java.util.Properties;
+import org.multibit.viewsystem.View;
 
 /**
  *
@@ -37,4 +38,7 @@ public interface Model {
     void setUserPreference(String key, String value);
     
     Properties getAllUserPreferences();
+    
+    View getCurrentView();
+    void setCurrentView(View view);
 }

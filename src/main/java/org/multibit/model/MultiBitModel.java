@@ -69,10 +69,6 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
     public static final String PRODUCTION_NETWORK_VALUE = "production";
     public static final String WALLET_FILENAME = "walletFilename";
 
-    // User preferences.
-    public static final String SELECTED_VIEW = "selectedView";
-    public static final String SELECTED_VIEW_ENUM = "selectedViewEnum";
-
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
     
@@ -248,7 +244,8 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
 
     @SuppressWarnings("deprecation")
     public MultiBitModel(BitcoinController bitcoinController, Properties userPreferences) {
-        super(userPreferences);
+        super((null != userPreferences) ? userPreferences : new Properties());
+        
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         
@@ -259,53 +256,9 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
         activeWalletModelData = new PerWalletModelData();
         perWalletModelDataList.add(activeWalletModelData);
 
-
-        // Initialize everything to look at the stored opened view.
-        // If no properties passed in just initialize to the default view.
-        if (userPreferences != null) {
-            // first try and find a old view setting.
-            View initialViewInProperties = null;
-            Object oldViewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW);
-
-            String oldViewString = (null != oldViewObject) ? (String) oldViewObject : null;
-
-            if (null != oldViewString) {
-                Integer oldViewInt = null;
-                try {
-                    oldViewInt = Integer.parseInt(oldViewString);
-                } catch (NumberFormatException nfe) {
-                    // do nothing
-                } finally {
-                    initialViewInProperties = View.parseOldView(oldViewInt);
-                    
-                    // Remove the old view property from the properties - replaced by enum.
-                    // (It may be put back in for backwads compatibility in FileHandler#writeUserPreferences.
-                    userPreferences.remove(MultiBitModel.SELECTED_VIEW);
-                }
-            }
-
-            // If oldViewInProperties is still null,  try and find the view.
-            if (null == initialViewInProperties) {
-                Object viewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW_ENUM);
-
-                String viewString = (null != viewObject) ? (String) viewObject : null;
-
-                if (viewString != null) {
-                    try {
-                        View viewEnum = View.valueOf(viewString);
-                        initialViewInProperties = (!viewEnum.isObsolete()) ? viewEnum : null;
-
-                    } catch (IllegalArgumentException nfe) {
-                        // do nothing.
-                    }
-                }
-            }
-            setCurrentView((null != initialViewInProperties) ? initialViewInProperties : View.DEFAULT_VIEW());
-            log.debug("Initial view from properties file is '" + getCurrentView().toString() + "'");
-        }
-
         ExchangeData exchangeData1 = new ExchangeData();
         ExchangeData exchangeData2 = new ExchangeData();
+
         exchangeData1.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
         exchangeData2.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
         
@@ -805,20 +758,11 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
         }
         return null;
     }
-
-    public View getCurrentView() {
-        return currentView;
-    }
-
-    public final void setCurrentView(View view) {
-        this.currentView = view;
-        setUserPreference(MultiBitModel.SELECTED_VIEW_ENUM, view.name());
-    }
     
     public ExchangeData getExchangeData(String shortExchangeName) {
         return shortExchangeNameToExchangeMap.get(shortExchangeName);
     }
-
+    
     public NetworkParameters getNetworkParameters() {
         // If test or production is not specified, default to production.
         String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
