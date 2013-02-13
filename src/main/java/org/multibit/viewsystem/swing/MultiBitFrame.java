@@ -36,6 +36,7 @@ import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.util.Timer;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -57,10 +58,9 @@ import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.text.DefaultEditorKit;
 
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-import org.joda.money.Money;
 import org.multibit.Localiser;
 import org.multibit.controller.Controller;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
@@ -73,15 +73,17 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.platform.GenericApplication;
+import org.multibit.platform.listener.GenericQuitEventListener;
+import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.Viewable;
+import org.multibit.viewsystem.swing.action.AbstractExitAction;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
-import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
@@ -99,19 +101,21 @@ import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
+
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.joda.money.Money;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-import javax.swing.AbstractAction;
-import org.multibit.platform.listener.GenericQuitEventListener;
-import org.multibit.platform.listener.GenericQuitResponse;
-import org.multibit.viewsystem.swing.action.AbstractExitAction;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -144,6 +148,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private final Controller controller;
     private final MultiBitController multiBitController;
+    private final CoreController coreController;
 
     private MultiBitModel model;
     private Localiser localiser;
@@ -247,10 +252,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static FireDataChangedTimerTask fireDataChangedTimerTask;
 
     @SuppressWarnings("deprecation")
-    public MultiBitFrame(MultiBitController multiBitController, GenericApplication application, View initialView) {
+    public MultiBitFrame(MultiBitController multiBitController, CoreController coreController, GenericApplication application, View initialView) {
         this.multiBitController = multiBitController;
+        this.coreController = coreController;
         this.controller = this.multiBitController;
-        this.quitEventListener = this.multiBitController;
+        
+        this.quitEventListener = this.coreController;
         
         this.model = controller.getModel();
         this.localiser = controller.getLocaliser();

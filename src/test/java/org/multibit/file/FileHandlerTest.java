@@ -15,6 +15,7 @@
  */
 package org.multibit.file;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -23,18 +24,20 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
+
 import org.multibit.Constants;
-import org.multibit.Localiser;
-import org.multibit.controller.Controller;
+import org.multibit.CreateControllers;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
+
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
@@ -43,12 +46,6 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
-import java.util.Locale;
-
-import org.bitcoinj.wallet.Protos;
-import org.bitcoinj.wallet.Protos.ScryptParameters;
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-import org.multibit.CreateControllers;
 
 public class FileHandlerTest extends TestCase {
     private final String WALLET_TESTDATA_DIRECTORY = "wallets";

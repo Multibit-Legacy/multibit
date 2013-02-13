@@ -1,20 +1,19 @@
 /**
  * Copyright 2012 multibit.org
  *
- * Licensed under the MIT license (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the MIT license (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License
+ * at
  *
- *    http://opensource.org/licenses/mit-license.php
+ * http://opensource.org/licenses/mit-license.php
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.multibit.controller;
-
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -23,30 +22,13 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import org.multibit.ApplicationDataDirectoryLocator;
-import org.multibit.Localiser;
 import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.network.MultiBitService;
-import org.multibit.platform.listener.GenericAboutEvent;
-import org.multibit.platform.listener.GenericAboutEventListener;
-import org.multibit.platform.listener.GenericOpenURIEvent;
-import org.multibit.platform.listener.GenericOpenURIEventListener;
-import org.multibit.platform.listener.GenericPreferencesEvent;
-import org.multibit.platform.listener.GenericPreferencesEventListener;
-import org.multibit.platform.listener.GenericQuitEvent;
-import org.multibit.platform.listener.GenericQuitEventListener;
-import org.multibit.platform.listener.GenericQuitResponse;
-import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
@@ -62,115 +44,49 @@ import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
 
-
 /**
  * The MVC controller for MultiBit.
- * 
+ *
  * @author jim
  */
-public class MultiBitController extends BaseController<MultiBitController> implements GenericOpenURIEventListener, GenericPreferencesEventListener,
-        GenericAboutEventListener, GenericQuitEventListener, WalletEventListener {
+public class MultiBitController extends AbstractController<CoreController> implements WalletEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
-
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
-
 
     /**
      * The WalletBusy listeners
      */
     private Collection<WalletBusyListener> walletBusyListeners;
-    
-    private Set<AbstractEventHandeler> eventHandelers;
-    
     private EventHandeler eventHandeler;
-    
-    /**
-     * The data model backing the views.
-     */
-    private MultiBitModel model;
 
     /**
      * The bitcoinj network interface.
      */
     private MultiBitService multiBitService;
-
     /**
      * Class encapsulating File IO.
      */
     private FileHandler fileHandler;
-    
     /**
      * The listener handling Peer events.
      */
     private PeerEventListener peerEventListener;
-    
+
     /**
      * Used for testing only.
      */
-    public MultiBitController() {
-        this(null);
-    }
+    public MultiBitController(CoreController coreController) {
+        super(coreController);
 
-    public MultiBitController(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
-        super(applicationDataDirectoryLocator);
-        
         this.walletBusyListeners = new ArrayList<WalletBusyListener>();
-        this.eventHandelers = new HashSet<AbstractEventHandeler>();
         this.eventHandeler = new EventHandeler(this);
         this.fileHandler = new FileHandler(this);
         this.peerEventListener = new MultiBitPeerEventListener(this);
         
-        this.addEventHandler(this.getEventHandeler());
+        super.addEventHandler(this.getEventHandeler());
     }
 
-    /**
-     * Display the view specified.
-     * 
-     * @param viewToDisplay
-     *            View to display. Must be one of the View constants
-     */
-    @Override
-    public void displayView(View viewToDisplay) {
-        //log.debug("Displaying view '" + viewToDisplay + "'");
-
-        // Tell all views to close the current view.
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.navigateAwayFromView(getCurrentView());
-        }
-
-        setCurrentView(viewToDisplay);
-
-        // Tell all views which view to display.
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.displayView(getCurrentView());
-        }
-    }
-
-    /**
-     * Display the help context specified.
-     * 
-     * @param helpContextToDisplay
-     *            The help context to display. A path in the help
-     */
-    @Override
-    public void displayHelpContext(String helpContextToDisplay) {
-        //log.debug("Displaying help context '" + helpContextToDisplay + "'");
-        
-        // Tell all views to close the current view.
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.navigateAwayFromView(getCurrentView());
-        }
-
-        setCurrentView(View.HELP_CONTENTS_VIEW);
-
-        // Tell all views which view to display.
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.setHelpContext(helpContextToDisplay);
-            viewSystem.displayView(View.HELP_CONTENTS_VIEW);
-        }
-    }
-    
     /**
      * Register a new WalletBusyListener.
      */
@@ -178,21 +94,11 @@ public class MultiBitController extends BaseController<MultiBitController> imple
         walletBusyListeners.add(walletBusyListener);
     }
 
-    @Override
-    public MultiBitModel getModel() {
-        return model;
-    }
-
-    public void setModel(MultiBitModel model) {
-        this.model = model;
-    }
-
     /**
      * Add a wallet to multibit from a filename.
-     * 
-     * @param walletFilename
-     *            The wallet filename
-     * 
+     *
+     * @param walletFilename The wallet filename
+     *
      * @return The model data
      */
     public PerWalletModelData addWalletFromFilename(String walletFilename) throws IOException {
@@ -203,29 +109,6 @@ public class MultiBitController extends BaseController<MultiBitController> imple
         return perWalletModelDataToReturn;
     }
 
-    /**
-     * The language has been changed.
-     */
-    public void fireDataStructureChanged() {
-        //log.debug("fireDataStructureChanged called");
-
-        Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
-        super.getLocaliser().setLocale(newLocale);
-
-        View viewToDisplay = getCurrentView();
-
-        // tell the viewSystems to refresh their views
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.recreateAllViews(true, viewToDisplay);
-        }
-
-        setCurrentView(viewToDisplay);
-        fireDataChangedUpdateNow();
-    }
-
-
-
-
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
         //log.debug("fireFilesHaveBeenChangedByAnotherProcess called");
         for (ViewSystem viewSystem : super.getViewSystem()) {
@@ -234,7 +117,7 @@ public class MultiBitController extends BaseController<MultiBitController> imple
 
         fireDataChangedUpdateNow();
     }
-       
+
     /**
      * Fire that a wallet has changed its busy state.
      */
@@ -244,7 +127,6 @@ public class MultiBitController extends BaseController<MultiBitController> imple
             walletBusyListener.walletBusyChange(newWalletIsBusy);
         }
     }
-
 
     /**
      * Method called by downloadListener whenever a block is downloaded.
@@ -271,7 +153,7 @@ public class MultiBitController extends BaseController<MultiBitController> imple
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
-    
+
     @Override
     public void onWalletChanged(Wallet wallet) {
         if (wallet == null) {
@@ -330,37 +212,6 @@ public class MultiBitController extends BaseController<MultiBitController> imple
         return fileHandler;
     }
 
-
-    @Override
-    public View getCurrentView() {
-        View view = (null == getModel()) ? null : getModel().getCurrentView();
-        
-        return (null == view) ? View.DEFAULT_VIEW() : view;
-    }
-
-    @Override
-    public void setCurrentView(View view) {
-        // log.debug("setCurrentView = " + view);
-        if (getModel() != null) {
-            getModel().setCurrentView(view);
-        }
-    }
-
-    @Override
-    public synchronized void onOpenURIEvent(GenericOpenURIEvent event) {
-        log.debug("Controller received open URI event with URI='{}'", event.getURI().toASCIIString());
-           if (!getApplicationStarting()) {
-            log.debug("Open URI event handled immediately");
-
-            for (AbstractEventHandeler theEventHandeler : this.eventHandelers) {
-                theEventHandeler.handleOpenURIEvent(event.getURI());
-            }
-               
-        } else {
-            log.debug("Open URI event not handled immediately because application is still starting");
-        }
-    }
-
     public synchronized void handleOpenURI() {
         log.debug("handleOpenURI called and rawBitcoinURI ='" + this.eventHandeler.rawBitcoinURI + "'");
 
@@ -375,7 +226,7 @@ public class MultiBitController extends BaseController<MultiBitController> imple
                     + showOpenUriDialogText + "'");
             org.multibit.message.Message message = new org.multibit.message.Message(super.getLocaliser().getString("showOpenUriView.paymentRequestIgnored"));
             MessageManager.INSTANCE.addMessage(message);
-            
+
             return;
         }
         if (this.eventHandeler.rawBitcoinURI == null || this.eventHandeler.rawBitcoinURI.equals("")) {
@@ -438,47 +289,15 @@ public class MultiBitController extends BaseController<MultiBitController> imple
         }
     }
 
-    @Override
-    public void onPreferencesEvent(GenericPreferencesEvent event) {
-        displayView(View.PREFERENCES_VIEW);
-    }
-
-    @Override
-    public void onAboutEvent(GenericAboutEvent event) {
-        displayView(View.HELP_ABOUT_VIEW);
-    }
-
-    @Override
-    public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
-        if (isOKToQuit()) {
-            ExitAction exitAction = new ExitAction(this, null);
-
-            for (AbstractEventHandeler theEventHandeler : this.eventHandelers) {
-                theEventHandeler.handleQuitEvent(exitAction);
-            }
-            
-            exitAction.actionPerformed(null);
-            response.performQuit();
-            
-        } else {
-            response.cancelQuit();
-        }
-    }
-
     public PeerEventListener getPeerEventListener() {
         return peerEventListener;
-    }
-
-    @Override
-    protected final void addEventHandler(AbstractEventHandeler eventHandeler) {
-        this.eventHandelers.add(eventHandeler);
     }
 
     @Override
     public final AbstractEventHandeler getEventHandeler() {
         return this.eventHandeler;
     }
-    
+
     private class EventHandeler extends AbstractEventHandeler<MultiBitController> {
 
         /**
