@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -75,14 +75,14 @@ public class HelpContentsPanel extends JPanel implements Viewable {
     private static Browser browser;
     private String helpContext;
 
-    private MultiBitController controller;
+    private Controller controller;
     private MultiBitFrame mainFrame;
   
     public static final String SPACER = "   "; // 3 spaces
 
     boolean firstTimeLoaded = false;
 
-    public HelpContentsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public HelpContentsPanel(Controller controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
         helpContext = mainFrame.getHelpContext();
@@ -95,7 +95,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
 
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        final MultiBitController finalController = controller;
+        final Controller finalController = controller;
         final MultiBitFrame finalMainFrame = mainFrame;
 
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

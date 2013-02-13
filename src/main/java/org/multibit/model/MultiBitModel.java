@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
@@ -214,7 +215,8 @@ public class MultiBitModel {
     public static final String ALERT_MANAGER_NEW_VERSION_SEEN_COUNT = "alertManagerNewVersionSeenCount";
     
     // Main controller class.
-    private final MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     // User preferences.
     private Properties userPreferences;
@@ -248,13 +250,15 @@ public class MultiBitModel {
      */
     private boolean blinkEnabled = true;
     
-     public MultiBitModel(MultiBitController controller) {
-        this(controller, new Properties());
+     public MultiBitModel(MultiBitController multiBitController) {
+        this(multiBitController, new Properties());
     }
 
     @SuppressWarnings("deprecation")
-    public MultiBitModel(MultiBitController controller, Properties userPreferences) {
-        this.controller = controller;
+    public MultiBitModel(MultiBitController multiBitController, Properties userPreferences) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.userPreferences = userPreferences;
 
         perWalletModelDataList = new CopyOnWriteArrayList<PerWalletModelData>();
@@ -315,8 +319,6 @@ public class MultiBitModel {
         shortExchangeNameToExchangeMap = new HashMap<String, ExchangeData>();
         shortExchangeNameToExchangeMap.put(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, exchangeData1);
         shortExchangeNameToExchangeMap.put(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, exchangeData2);
-        
-        controller.setModel(this);
     }
 
     /**
@@ -325,7 +327,7 @@ public class MultiBitModel {
      * @param key String key of property
      * @return String property value
      */
-    public String getUserPreference(String key) {
+    public final String getUserPreference(String key) {
         return userPreferences.getProperty(key);
     }
 
@@ -544,7 +546,7 @@ public class MultiBitModel {
 
         // Wire up the controller as a wallet event listener.
         if (wallet != null) {
-            wallet.addEventListener(controller);
+            wallet.addEventListener(multiBitController);
         }
 
         createWalletData(walletFilename);
@@ -798,9 +800,9 @@ public class MultiBitModel {
                     Sha256Hash appearsInHash = iterator.next();
                     StoredBlock appearsInStoredBlock;
                     try {
-                        if (controller != null && controller.getMultiBitService() != null
-                                && controller.getMultiBitService().getBlockStore() != null) {
-                            appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
+                        if (multiBitController != null && multiBitController.getMultiBitService() != null
+                                && multiBitController.getMultiBitService().getBlockStore() != null) {
+                            appearsInStoredBlock = multiBitController.getMultiBitService().getBlockStore().get(appearsInHash);
                             Block appearsInBlock = appearsInStoredBlock.getHeader();
                             // Set the time of the block to be the time of the
                             // transaction - TODO get transaction time.

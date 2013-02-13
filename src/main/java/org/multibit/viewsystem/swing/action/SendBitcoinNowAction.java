@@ -26,6 +26,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -54,7 +55,9 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
 
     private static final long serialVersionUID = 1913592460523457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private SendBitcoinConfirmPanel sendBitcoinConfirmPanel;
     private JPasswordField walletPasswordField;
 
@@ -76,10 +79,13 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     /**
      * Creates a new {@link SendBitcoinNowAction}.
      */
-    public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController controller,
+    public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController multiBitController,
             SendBitcoinConfirmPanel sendBitcoinConfirmPanel, JPasswordField walletPasswordField, ImageIcon icon) {
-        super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
-        this.controller = controller;
+        super(multiBitController.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.sendBitcoinConfirmPanel = sendBitcoinConfirmPanel;
         this.walletPasswordField = walletPasswordField;
 
@@ -89,7 +95,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("sendBitcoinConfirmAction.mnemonicKey"));
         
         // This action is a WalletBusyListener.
-        controller.registerWalletBusyListener(this);
+        this.multiBitController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
@@ -102,12 +108,12 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
 
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = this.multiBitController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // Set on the perWalletModelData that files have changed and fire data changed.
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+            this.multiBitController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             // Put sending message and remove the send button.
             sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
@@ -165,7 +171,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
 
                 sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
                 
-                controller.fireWalletBusyChange(true);
+                this.multiBitController.fireWalletBusyChange(true);
 
                 performSend(perWalletModelData, sendAddress, sendAmount, fee, CharBuffer.wrap(walletPassword));
             }
@@ -193,7 +199,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                     log.debug("Using test parameters - saying send failed");  
                 }
             } else {
-                transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
+                transaction = this.multiBitController.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
                 if (transaction == null) {
                     // a null transaction returned indicates there was not
                     // enough money (in spite of our validation)
@@ -224,7 +230,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             // Save the wallet.
 
             try {
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+                this.multiBitController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             } catch (WalletSaveException e) {
                 log.error(e.getMessage(), e);
                 message = e.getMessage();
@@ -258,7 +264,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             // Declare that wallet is no longer busy with the task.
             perWalletModelData.setBusyTaskKey(null);
             perWalletModelData.setBusy(false);
-            controller.fireWalletBusyChange(false);                   
+        this.multiBitController.fireWalletBusyChange(false);                   
 
             log.debug("firing fireRecreateAllViews...");
             controller.fireRecreateAllViews(false);

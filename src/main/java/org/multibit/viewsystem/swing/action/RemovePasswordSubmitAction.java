@@ -23,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
@@ -50,14 +51,14 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
     /**
      * Creates a new {@link RemovePasswordSubmitAction}.
      */
-    public RemovePasswordSubmitAction(MultiBitController controller, RemovePasswordPanel removePasswordPanel,
+    public RemovePasswordSubmitAction(MultiBitController multiBitController, RemovePasswordPanel removePasswordPanel,
             ImageIcon icon, JPasswordField password1, MultiBitFrame mainFrame) {
-        super(controller, "removePasswordSubmitAction.text", "removePasswordSubmitAction.tooltip", "removePasswordSubmitAction.mnemonicKey", icon);
+        super(multiBitController, "removePasswordSubmitAction.text", "removePasswordSubmitAction.tooltip", "removePasswordSubmitAction.mnemonicKey", icon);
         this.removePasswordPanel = removePasswordPanel;
         this.password1 = password1;
         
         // This action is a WalletBusyListener.
-        controller.registerWalletBusyListener(this);
+        super.multiBitController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
@@ -92,12 +93,12 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                             perWalletModelData.setBusy(true);
                             perWalletModelData.setBusyTaskKey("removePasswordSubmitAction.text");
 
-                            controller.fireWalletBusyChange(true);
+                            super.multiBitController.fireWalletBusyChange(true);
 
                             wallet.decrypt(wallet.getKeyCrypter().deriveKey(CharBuffer.wrap(passwordToUse)));
                             controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
                             controller.getModel().getActivePerWalletModelData().setDirty(true);
-                            FileHandler fileHandler = new FileHandler(controller);
+                            FileHandler fileHandler = new FileHandler(super.multiBitController);
                             fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
                         }
                     } catch (KeyCrypterException kce) {
@@ -108,7 +109,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                         // Declare that wallet is no longer busy with the task.
                         perWalletModelData.setBusyTaskKey(null);
                         perWalletModelData.setBusy(false);
-                        controller.fireWalletBusyChange(false);                   
+                        super.multiBitController.fireWalletBusyChange(false);                   
                     }
             }
         }

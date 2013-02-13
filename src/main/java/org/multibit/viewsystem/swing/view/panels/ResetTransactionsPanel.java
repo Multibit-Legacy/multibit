@@ -43,6 +43,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletBusyListener;
@@ -71,7 +72,9 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
 
     private static final long serialVersionUID = 199992298245057705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private MultiBitFrame mainFrame;
 
     private MultiBitLabel walletFilenameLabel;
@@ -97,10 +100,11 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     /**
      * Creates a new {@link ResetTransactionsPanel}.
      */
-    public ResetTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ResetTransactionsPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
-
+        
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -120,7 +124,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
 
         initUI();
         
-        controller.registerWalletBusyListener(this);
+        this.multiBitController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
@@ -373,7 +377,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(controller, mainFrame,
+        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(this.multiBitController, mainFrame,
                 ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
         MultiBitButton submitButton = new MultiBitButton(resetTransactionsSubmitAction, controller);
         buttonPanel.add(submitButton);

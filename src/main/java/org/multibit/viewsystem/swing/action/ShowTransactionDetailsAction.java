@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.WalletTableData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -32,16 +33,20 @@ public class ShowTransactionDetailsAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592498732457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private MultiBitFrame mainFrame;
     private WalletTableData rowTableData;
 
     /**
      * Creates a new {@link ShowTransactionDetailsAction}.
      */
-    public ShowTransactionDetailsAction(MultiBitController controller, MultiBitFrame mainFrame, WalletTableData rowTableData) {
-        super(controller.getLocaliser().getString("showTransactionsDetailAction.text"));
-        this.controller = controller;
+    public ShowTransactionDetailsAction(MultiBitController multiBitController, MultiBitFrame mainFrame, WalletTableData rowTableData) {
+        super(multiBitController.getLocaliser().getString("showTransactionsDetailAction.text"));
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.mainFrame = mainFrame;
         this.rowTableData = rowTableData;
 
@@ -55,7 +60,7 @@ public class ShowTransactionDetailsAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(controller, mainFrame, rowTableData);
+        final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(this.multiBitController, mainFrame, rowTableData);
         transactionDetailsDialog.setVisible(true);
     }
 }
