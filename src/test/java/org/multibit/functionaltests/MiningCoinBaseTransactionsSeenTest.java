@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
 import org.multibit.MultiBit;
-import org.multibit.controller.Controller;
+import org.multibit.CreateControllers;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
@@ -46,7 +46,6 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
-import org.multibit.CreateControllers;
 
 /**
  * Functional test to check that Mining Coinbase Transactions can be seen.
@@ -85,7 +84,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
             // Set the application data directory to be the one we just created.
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
-
+            
             // Create MultiBit controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
             final MultiBitController controller = controllers.multiBitController;
@@ -97,7 +96,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
             // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
-            controller.registerViewSystem(simpleViewSystem);
+            controllers.coreController.registerViewSystem(simpleViewSystem);
 
             //
             // MultiBit runtime is now setup and running.

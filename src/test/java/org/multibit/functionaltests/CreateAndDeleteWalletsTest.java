@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.CreateControllers;
 import org.multibit.controller.MultiBitController;
@@ -50,7 +51,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
     private static SimpleViewSystem simpleViewSystem ;
     
     @Before
-    public void setUp() throws IOException {  
+    public void setUp() throws IOException {
         multiBitDirectory = createMultiBitRuntime();
 
         // set the application data directory to be the one we just created
@@ -67,7 +68,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
         // add the simple view system (no Swing)
         simpleViewSystem = new SimpleViewSystem();
-        controller.registerViewSystem(simpleViewSystem);
+        controllers.coreController.registerViewSystem(simpleViewSystem);
 
         // MultiBit runtime is now setup and running
     }

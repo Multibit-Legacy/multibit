@@ -62,8 +62,7 @@ public class FileHandlerTest extends TestCase {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final MultiBitController controller = controllers.multiBitController;
-
-        FileHandler fileHandler = new FileHandler(controller);
+        final FileHandler fileHandler = new FileHandler(controller);
 
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
@@ -84,12 +83,9 @@ public class FileHandlerTest extends TestCase {
 
     @Test
     public void testLoadTest2() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final MultiBitController controller = controllers.multiBitController;
 
         FileHandler fileHandler = new FileHandler(controller);
 
@@ -287,7 +283,6 @@ public class FileHandlerTest extends TestCase {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final MultiBitController controller = controllers.multiBitController;
-        
         final FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_WALLET_VERSION_PREFIX, ".wallet");

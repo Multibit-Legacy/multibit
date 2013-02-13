@@ -20,29 +20,17 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
-import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.MultiBitService;
-import org.multibit.platform.listener.GenericAboutEvent;
-import org.multibit.platform.listener.GenericAboutEventListener;
-import org.multibit.platform.listener.GenericOpenURIEvent;
-import org.multibit.platform.listener.GenericOpenURIEventListener;
-import org.multibit.platform.listener.GenericPreferencesEvent;
-import org.multibit.platform.listener.GenericPreferencesEventListener;
-import org.multibit.platform.listener.GenericQuitEvent;
-import org.multibit.platform.listener.GenericQuitEventListener;
-import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.action.ExitAction;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,13 +42,14 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
+import org.multibit.viewsystem.swing.action.ExitAction;
+
 /**
  * The MVC controller for MultiBit.
  * 
  * @author jim
  */
-public class MultiBitController extends BaseController<MultiBitController> implements GenericOpenURIEventListener, GenericPreferencesEventListener,
-        GenericAboutEventListener, GenericQuitEventListener, WalletEventListener {
+public class MultiBitController extends AbstractController<CoreController> implements WalletEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
 
@@ -90,86 +79,19 @@ public class MultiBitController extends BaseController<MultiBitController> imple
     
     private EventHandeler eventHandeler;
 
-    /**
-     * Multiple threads will write to this variable so require it to be volatile
-     * to ensure that latest write is what gets read.
-     */
-    private volatile URI rawBitcoinURI = null;
+
 
     private volatile boolean applicationStarting = true;
 
-    /**
-     * Used for testing only.
-     */
-    public MultiBitController() {
-        this(null);
-    }
 
-    public MultiBitController(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
-        super(applicationDataDirectoryLocator);
+    public MultiBitController(CoreController coreController) {
+        super(coreController);
 
         fileHandler = new FileHandler(this);
         peerEventListener = new MultiBitPeerEventListener(this);
         
         this.eventHandeler = new EventHandeler(this);
-        this.eventHandelers = new HashSet<AbstractEventHandeler>();
-        
-        this.addEventHandler(this.getEventHandeler());
-    }
-
-    /**
-     * Display the view specified.
-     * 
-     * @param viewToDisplay
-     *            View to display. Must be one of the View constants
-     */
-    @Override
-    public void displayView(View viewToDisplay) {
-        // log.debug("Displaying view '" + viewToDisplay + "'");
-
-        // Tell all views to close the current view.
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.navigateAwayFromView(getCurrentView());
-        }
-
-        setCurrentView(viewToDisplay);
-
-        // Tell all views which view to display.
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.displayView(getCurrentView());
-        }
-    }
-
-    /**
-     * Display the help context specified.
-     * 
-     * @param helpContextToDisplay
-     *            The help context to display. A path in the help
-     */
-    @Override
-    public void displayHelpContext(String helpContextToDisplay) {
-        //log.debug("Displaying help context '" + helpContextToDisplay + "'");
-        // Tell all views to close the current view.
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.navigateAwayFromView(getCurrentView());
-        }
-
-        setCurrentView(View.HELP_CONTENTS_VIEW);
-
-        // Tell all views which view to display.
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.setHelpContext(helpContextToDisplay);
-            viewSystem.displayView(View.HELP_CONTENTS_VIEW);
-        }
-    }
-
-    @Override
-    public MultiBitModel getModel() {
-        return model;
-    }
-
-    public void setModel(MultiBitModel model) {
-        this.model = model;
+        super.addEventHandler(this.getEventHandeler());
     }
 
     /**
@@ -187,26 +109,7 @@ public class MultiBitController extends BaseController<MultiBitController> imple
         }
         return perWalletModelDataToReturn;
     }
-
-    /**
-     * The language has been changed.
-     */
-    @Override
-    public void fireDataStructureChanged() {
-        Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
-        super.getLocaliser().setLocale(newLocale);
-
-        View viewToDisplay = getCurrentView();
-
-        // tell the viewSystems to refresh their views
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.recreateAllViews(true, viewToDisplay);
-        }
-
-        setCurrentView(viewToDisplay);
-        fireDataChangedUpdateNow();
-    }
-
+    
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
         for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
@@ -296,35 +199,8 @@ public class MultiBitController extends BaseController<MultiBitController> imple
         return fileHandler;
     }
 
-    @Override
-    public View getCurrentView() {
-        View view = (null == getModel()) ? null : getModel().getCurrentView();
-        
-        return (null == view) ? View.DEFAULT_VIEW() : view;
-    }
-
-    @Override
-    public void setCurrentView(View view) {
-        // log.debug("setCurrentView = " + view);
-        if (getModel() != null) {
-            getModel().setCurrentView(view);
-        }
-    }
-
-    @Override
-    public synchronized void onOpenURIEvent(GenericOpenURIEvent event) {
-        rawBitcoinURI = event.getURI();
-        log.debug("Controller received open URI event with URI='{}'", rawBitcoinURI.toASCIIString());
-        if (!applicationStarting) {
-            log.debug("Open URI event handled immediately");
-            handleOpenURI();
-        } else {
-            log.debug("Open URI event not handled immediately because application is still starting");
-        }
-    }
-
     public synchronized void handleOpenURI() {
-        log.debug("handleOpenURI called and rawBitcoinURI ='" + rawBitcoinURI + "'");
+        log.debug("handleOpenURI called and rawBitcoinURI ='" + eventHandeler.rawBitcoinURI + "'");
 
         // Get the open URI configuration information
         String showOpenUriDialogText = getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
@@ -340,7 +216,7 @@ public class MultiBitController extends BaseController<MultiBitController> imple
             
             return;
         }
-        if (rawBitcoinURI == null || "".equals(rawBitcoinURI)) {
+        if (eventHandeler.rawBitcoinURI == null || "".equals(eventHandeler.rawBitcoinURI)) {
             log.debug("No Bitcoin URI found to handle");
             // displayView(getCurrentView());
             return;
@@ -352,7 +228,7 @@ public class MultiBitController extends BaseController<MultiBitController> imple
         // Early MultiBit versions did not URL encode the label hence may
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
         // be lenient.
-        String uriString = rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
+        String uriString = eventHandeler.rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
         BitcoinURI bitcoinURI = null;
         try {
             bitcoinURI = new BitcoinURI(this.getModel().getNetworkParameters(), uriString);
@@ -400,53 +276,21 @@ public class MultiBitController extends BaseController<MultiBitController> imple
         }
     }
 
-    @Override
-    public void onPreferencesEvent(GenericPreferencesEvent event) {
-        displayView(View.PREFERENCES_VIEW);
-    }
-
-    @Override
-    public void onAboutEvent(GenericAboutEvent event) {
-        displayView(View.HELP_ABOUT_VIEW);
-    }
-
-    @Override
-    public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
-        if (isOKToQuit()) {
-            ExitAction exitAction = new ExitAction(this, null);
-
-            for (AbstractEventHandeler theEventHandeler : this.eventHandelers) {
-                theEventHandeler.handleQuitEvent(exitAction);
-            }
-            
-            exitAction.actionPerformed(null);
-            response.performQuit();
-            
-        } else {
-            response.cancelQuit();
-        }
-    }
-
     public PeerEventListener getPeerEventListener() {
         return peerEventListener;
     }
-
-    @Override
-    protected final void addEventHandler(AbstractEventHandeler eventHandeler) {
-        this.eventHandelers.add(eventHandeler);
-    }
-
+    
     @Override
     public final AbstractEventHandeler getEventHandeler() {
         return this.eventHandeler;
     }
-
+    
     private class EventHandeler extends AbstractEventHandeler<MultiBitController> {
 
         private volatile URI rawBitcoinURI = null;
 
-        public EventHandeler(MultiBitController coreController) {
-            super(coreController);
+        public EventHandeler(MultiBitController multiBitController) {
+            super(multiBitController);
         }
 
         @Override

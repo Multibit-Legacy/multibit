@@ -19,6 +19,7 @@ import org.multibit.model.WalletVersion;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
+import org.multibit.controller.CoreController;
 
 /**
  * Class containing utility methods for action tests.
@@ -26,7 +27,7 @@ import com.google.bitcoin.core.Wallet;
  *
  */
 public class ActionTestUtils {
-     
+
      public static void createNewActiveWallet(MultiBitController controller, String descriptor) throws Exception {
          Wallet wallet = new Wallet(NetworkParameters.prodNet());
          wallet.getKeychain().add(new ECKey());

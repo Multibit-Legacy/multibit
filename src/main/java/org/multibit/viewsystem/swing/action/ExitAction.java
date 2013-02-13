@@ -24,6 +24,7 @@ import javax.swing.SwingWorker;
 
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.Controller;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
@@ -47,6 +48,7 @@ public class ExitAction extends AbstractExitAction {
     private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
     
+    private CoreController coreController = null;
     private MultiBitController multiBitController = null;
 
     /**
@@ -57,6 +59,12 @@ public class ExitAction extends AbstractExitAction {
         this.mainFrame = mainFrame;
     }
 
+    public void setCoreController(CoreController coreController) {
+        if (null == this.coreController) {
+            this.coreController = coreController;
+        }
+    }
+    
     public void setMultiBitController(MultiBitController multiBitController) {
         if (null == this.multiBitController) {
             this.multiBitController = multiBitController;
