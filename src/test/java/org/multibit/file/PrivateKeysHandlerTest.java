@@ -15,6 +15,8 @@
  */
 package org.multibit.file;
 
+
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -23,19 +25,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import junit.framework.TestCase;
-
 import org.junit.Test;
+
 import org.multibit.Constants;
+import org.multibit.CreateControllers;
 import org.multibit.Localiser;
-import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+
+import com.piuk.blockchain.MyWallet;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
-import com.piuk.blockchain.MyWallet;
-import org.multibit.CreateControllers;
+
+
 
 public class PrivateKeysHandlerTest extends TestCase {
     public static final String PRIVATE_KEYS_TESTDATA_DIRECTORY = "privateKeys";
@@ -64,9 +68,11 @@ public class PrivateKeysHandlerTest extends TestCase {
     
     @Test
     public void testExport() throws Exception {
+
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final MultiBitController controller = controllers.multiBitController;  
+
 
         PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(NetworkParameters.prodNet());
         assertNotNull(privateKeysHandler);

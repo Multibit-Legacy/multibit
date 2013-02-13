@@ -53,6 +53,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+import org.multibit.controller.CoreController;
 
 public enum AlertManager {
     INSTANCE;
@@ -411,17 +412,18 @@ public enum AlertManager {
         }
         
         // Initialise a few things.
-        MultiBitController controller = new MultiBitController();
+        final CoreController controller = new CoreController();
+        final MultiBitController multiBitController = new MultiBitController(controller);
         
         Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
+        MultiBitModel model = new MultiBitModel(multiBitController);
         
         controller.setLocaliser(localiser);
         controller.setModel(model);   
         
         // Initialise and check
         AlertManager alertManager = AlertManager.INSTANCE;        
-        alertManager.initialise(controller, null);
+        alertManager.initialise(multiBitController, null);
 
         FileWriter fileWriter = null;
         try {
@@ -431,7 +433,7 @@ public enum AlertManager {
             
             // Load up the wallet containing the signing key.
             File walletFile = new File(walletLocation);
-            FileHandler fileHandler = new FileHandler(controller);
+            FileHandler fileHandler = new FileHandler(multiBitController);
             PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
             
             // Find the private key whose Bitcoin address matches the passed in addressPrefix.
