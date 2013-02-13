@@ -16,29 +16,29 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.util.EnumMap;
-import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
-import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.MessagesPanel;
-import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
-import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
-import org.multibit.viewsystem.swing.view.panels.HelpAboutPanel;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
-import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
-import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
-import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
-import org.multibit.viewsystem.swing.view.panels.ChartsPanel;
-import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
-import java.util.HashMap;
 import java.util.Map;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
+import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ChartsPanel;
+import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpAboutPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.MessagesPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
 
 /**
  * a factory class that lazy loads views
@@ -49,11 +49,13 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 public class ViewFactory {
     private Map<View, Viewable> viewMap;
 
-    MultiBitController controller;
-    MultiBitFrame mainFrame;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    private final MultiBitFrame mainFrame;
 
-    public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ViewFactory(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
         initialise();
     }
@@ -92,7 +94,7 @@ public class ViewFactory {
         }
 
         case TRANSACTIONS_VIEW: {
-            viewToReturn = new ShowTransactionsPanel(controller, mainFrame);
+            viewToReturn = new ShowTransactionsPanel(this.multiBitController, mainFrame);
             break;
         }
 
@@ -107,12 +109,12 @@ public class ViewFactory {
         }
                
         case RECEIVE_BITCOIN_VIEW: {
-            viewToReturn = new ReceiveBitcoinPanel(controller, mainFrame);
+            viewToReturn = new ReceiveBitcoinPanel(this.multiBitController, mainFrame);
             break;
         }
         
         case SEND_BITCOIN_VIEW: {
-            viewToReturn = new SendBitcoinPanel(controller, mainFrame);
+            viewToReturn = new SendBitcoinPanel(this.multiBitController, mainFrame);
             break;
         }
         
@@ -122,22 +124,22 @@ public class ViewFactory {
         }
 
         case RESET_TRANSACTIONS_VIEW: {
-            viewToReturn = new ResetTransactionsPanel(controller, mainFrame);
+            viewToReturn = new ResetTransactionsPanel(this.multiBitController, mainFrame);
             break;
         }
 
         case SHOW_OPEN_URI_DIALOG_VIEW: {
-            viewToReturn = new ShowOpenUriDialog(controller, mainFrame);
+            viewToReturn = new ShowOpenUriDialog(this.multiBitController, mainFrame);
             break;
         }
 
         case SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ImportPrivateKeysPanel(controller, mainFrame);
+            viewToReturn = new ImportPrivateKeysPanel(this.multiBitController, mainFrame);
             break;
         }
 
         case SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ExportPrivateKeysPanel(controller, mainFrame);
+            viewToReturn = new ExportPrivateKeysPanel(this.multiBitController, mainFrame);
             break;
         }
 
@@ -147,17 +149,17 @@ public class ViewFactory {
         }
         
         case ADD_PASSWORD_VIEW: {
-            viewToReturn = new AddPasswordPanel(controller, mainFrame);
+            viewToReturn = new AddPasswordPanel(this.multiBitController, mainFrame);
             break;
         }
         
         case CHANGE_PASSWORD_VIEW: {
-            viewToReturn = new ChangePasswordPanel(controller, mainFrame);
+            viewToReturn = new ChangePasswordPanel(this.multiBitController, mainFrame);
             break;
         }
         
         case REMOVE_PASSWORD_VIEW: {
-            viewToReturn = new RemovePasswordPanel(controller, mainFrame);
+            viewToReturn = new RemovePasswordPanel(this.multiBitController, mainFrame);
             break;
         }
 

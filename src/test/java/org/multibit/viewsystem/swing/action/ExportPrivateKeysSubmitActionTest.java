@@ -22,6 +22,7 @@ import java.util.UUID;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.controller.MultiBitControllerTest;
 import org.multibit.controller.SimpleWalletBusyListener;
@@ -37,6 +38,7 @@ import com.google.bitcoin.crypto.EncryptedPrivateKey;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.CreateControllers;
+
 
 public class ExportPrivateKeysSubmitActionTest extends TestCase {   
     

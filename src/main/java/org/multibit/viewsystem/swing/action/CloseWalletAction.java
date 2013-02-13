@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
@@ -38,9 +39,8 @@ public class CloseWalletAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link CloseWalletAction}.
      */
-    public CloseWalletAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(controller, "closeWalletAction.text", "closeWalletAction.tooltip", "closeWalletAction.mnemonicKey", icon);
-        this.controller = controller;
+    public CloseWalletAction(MultiBitController multiBitController, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(multiBitController, "closeWalletAction.text", "closeWalletAction.tooltip", "closeWalletAction.mnemonicKey", icon);
         this.mainFrame = mainFrame;
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("closeWalletAction.tooltip")));
     }
@@ -59,10 +59,10 @@ public class CloseWalletAction extends MultiBitSubmitAction {
             PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
             
             // Unhook it from the PeerGroup.
-            controller.getMultiBitService().getPeerGroup().removeWallet(perWalletModelData.getWallet());
+            super.multiBitController.getMultiBitService().getPeerGroup().removeWallet(perWalletModelData.getWallet());
             
             // Save it.
-            FileHandler fileHandler = new FileHandler(controller);
+            FileHandler fileHandler = new FileHandler(super.multiBitController);
             fileHandler.savePerWalletModelData(perWalletModelData, true);
  
             // Work out which wallet to select after the wallet is removed.

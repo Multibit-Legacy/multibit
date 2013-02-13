@@ -18,20 +18,22 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     private Logger log = LoggerFactory.getLogger(MultiBitPeerEventListener.class);
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
     
-    public MultiBitPeerEventListener(MultiBitController controller) {
-        this.controller = controller;
+    public MultiBitPeerEventListener(MultiBitController multiBitController) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
     }
     
     @Override
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-        controller.fireBlockDownloaded();
+        this.multiBitController.fireBlockDownloaded();
     }
 
     @Override
     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-        controller.fireBlockDownloaded();
+        this.multiBitController.fireBlockDownloaded();
     }
 
     @Override

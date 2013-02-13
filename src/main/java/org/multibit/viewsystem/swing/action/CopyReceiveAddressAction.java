@@ -21,7 +21,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 
@@ -39,7 +39,7 @@ public class CopyReceiveAddressAction extends AbstractAction {
      * 
      * @param copyIcon
      */
-    public CopyReceiveAddressAction(MultiBitController controller, ReceiveBitcoinPanel receiveBitcoinPanel, ImageIcon copyIcon) {
+    public CopyReceiveAddressAction(Controller controller, ReceiveBitcoinPanel receiveBitcoinPanel, ImageIcon copyIcon) {
         super("", copyIcon);
         this.receiveBitcoinPanel = receiveBitcoinPanel;
 
