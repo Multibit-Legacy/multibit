@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.multibit.CreateControllers;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -29,7 +30,8 @@ public class CreateNewReceivingAddressActionTest extends TestCase {
     @Test
     public void testNoWalletSelected() throws Exception {
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final MultiBitController controller = controllers.multiBitController;
 
         // This test runs against an empty PerWalletModelDataList.
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());

@@ -23,6 +23,7 @@ import org.multibit.viewsystem.swing.view.panels.CreateNewReceivingAddressPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.multibit.CreateControllers;
 
 public class CreateNewReceivingAddressSubmitActionTest extends TestCase {      
     public static final CharSequence TEST_PASSWORD1 = "my hovercraft has eels";
@@ -92,7 +93,8 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
     @Test
     public void testAddReceivingAddressesWithEncryptedWallet() throws Exception {   
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithEncryptedWallet", true, TEST_PASSWORD1);

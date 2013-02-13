@@ -31,21 +31,6 @@ import com.google.protobuf.ByteString;
 public class ActionTestUtils {
     
     private static SecureRandom secureRandom;
-
-    public static MultiBitController createController() {
-         MultiBitController controller = new MultiBitController();
-         
-         Localiser localiser = new Localiser(Locale.ENGLISH);
-         MultiBitModel model = new MultiBitModel(controller);
-         
-         controller.setLocaliser(localiser);
-         controller.setModel(model);
-         
-         CurrencyConverter.INSTANCE.initialise(controller);
-         
-         MultiBit.setController(controller);
-         return controller;
-     }
      
      public static void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, CharSequence walletPassword) throws Exception {
          if (secureRandom == null) {
