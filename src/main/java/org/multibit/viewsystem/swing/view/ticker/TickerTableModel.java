@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.view.ticker;
 import javax.swing.table.AbstractTableModel;
 
 import org.multibit.controller.Controller;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 
@@ -51,12 +52,8 @@ public class TickerTableModel extends AbstractTableModel {
     private String exchange2;
     private String currency2;
 
-    /**
-     * the MultiBit model
-     */
-    private MultiBitModel multiBitModel;
-
-    private Controller controller;
+    private final Controller controller;
+    private final ExchangeController exchangeController;
 
     private boolean showCurrency;
     private boolean showLastPrice;
@@ -68,9 +65,9 @@ public class TickerTableModel extends AbstractTableModel {
     private String[] tempColumns = new String[MAX_NUMBER_OF_COLUMNS];
     private int numberOfColumns;
 
-    public TickerTableModel(Controller controller) {
-        this.multiBitModel = controller.getModel();
-        this.controller = controller;
+    public TickerTableModel(ExchangeController exchangeController) {
+        this.exchangeController = exchangeController;
+        this.controller = this.exchangeController;
 
         String tickerColumnsToShow = controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
 
@@ -165,11 +162,11 @@ public class TickerTableModel extends AbstractTableModel {
         if (row == 0) {
             exchange = exchange1;
             currency = currency1;
-            exchangeData = multiBitModel.getExchangeData(exchange1);
+            exchangeData = this.exchangeController.getModel().getExchangeData(exchange1);
         } else {
             exchange = exchange2;
             currency = currency2;
-            exchangeData = multiBitModel.getExchangeData(exchange2);;
+            exchangeData = this.exchangeController.getModel().getExchangeData(exchange2);;
         }
 
         String variable = columnVariables[column];

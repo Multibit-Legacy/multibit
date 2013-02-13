@@ -24,6 +24,7 @@ import java.util.TimerTask;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.multibit.controller.Controller;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -53,6 +54,7 @@ public class TickerTimerTask extends TimerTask {
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
     private final Controller controller;
+    private final ExchangeController exchangeController;
     private final MultiBitFrame mainFrame;
 
     // Is this the first row in the ticker (=true) or the second row (=false).
@@ -67,8 +69,9 @@ public class TickerTimerTask extends TimerTask {
     /**
      * Constructs the TickerTimerTask.
      */
-    public TickerTimerTask(Controller controller, MultiBitFrame mainFrame, boolean isFirstExchange) {
-        this.controller = controller;
+    public TickerTimerTask(ExchangeController exchangeController, MultiBitFrame mainFrame, boolean isFirstExchange) {
+        this.exchangeController = exchangeController;
+        this.controller = this.exchangeController;
         this.mainFrame = mainFrame;
         this.isFirstExchange = isFirstExchange;
 
@@ -243,9 +246,9 @@ public class TickerTimerTask extends TimerTask {
                                 }
                             }
 
-                            controller.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last);
-                            controller.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid);
-                            controller.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask);
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last);
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid);
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask);
                             log.debug("Exchange = " + shortExchangeName);
 
                             // Put the exchange rate into the currency converter.
@@ -355,10 +358,10 @@ public class TickerTimerTask extends TimerTask {
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeClassname);
             }
             
-            if (controller.getModel().getExchangeData(shortExchangeName) == null) {
+            if (this.exchangeController.getModel().getExchangeData(shortExchangeName) == null) {
                 ExchangeData exchangeData = new ExchangeData();
                 exchangeData.setShortExchangeName(shortExchangeName);
-                controller.getModel().getShortExchangeNameToExchangeMap().put(exchangeShortname, exchangeData);
+                this.exchangeController.getModel().getShortExchangeNameToExchangeMap().put(exchangeShortname, exchangeData);
             }
 
             return exchangeToReturn;

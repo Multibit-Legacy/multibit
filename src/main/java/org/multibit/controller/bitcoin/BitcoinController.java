@@ -100,6 +100,11 @@ public class BitcoinController extends AbstractController<CoreController> implem
     private volatile URI rawBitcoinURI = null;
     
     /**
+     * The data model backing the views.
+     */
+    private MultiBitModel model;
+    
+    /**
      * Used for testing only.
      */
     public BitcoinController(CoreController coreController) {
@@ -117,6 +122,16 @@ public class BitcoinController extends AbstractController<CoreController> implem
         
         this.addEventHandler(this.getEventHandler());
     }
+    
+    @Override
+    public MultiBitModel getModel() {
+        return model;
+    }
+
+    public void setModel(MultiBitModel model) {
+        this.model = model;
+    }
+    
 
     
 

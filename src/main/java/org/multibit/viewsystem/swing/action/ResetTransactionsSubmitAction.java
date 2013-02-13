@@ -88,7 +88,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
         Date resetDate = resetTransactionsDataProvider.getResetDate();
 
-        PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData activePerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
         log.debug("RT Ping 3");
 
         Date actualResetDate = null;
@@ -136,7 +136,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             super.bitcoinController.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
             log.debug("RT Ping 10");
 
-            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+            super.bitcoinController.getModel().createWalletData(super.bitcoinController.getModel().getActiveWalletFilename());
             log.debug("RT Ping 11");
 
             controller.fireRecreateAllViews(false);
@@ -150,7 +150,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
@@ -179,7 +179,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
                 log.debug("Starting replay from date = " + resetDate);
                 List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
-                perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
+                perWalletModelDataList.add(bitcoinController.getModel().getActivePerWalletModelData());
 
                 // Initialise the message in the SingleWalletPanel.
                 if (mainFrame != null) {

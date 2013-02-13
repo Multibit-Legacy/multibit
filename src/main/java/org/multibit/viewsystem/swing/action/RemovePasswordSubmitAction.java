@@ -59,7 +59,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
         
         // This action is a WalletBusyListener.
         super.bitcoinController.registerWalletBusyListener(this);
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(super.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -79,15 +79,15 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
             return;
         }
        
-        if (controller.getModel().getActiveWallet() != null) {
-            Wallet wallet = controller.getModel().getActiveWallet();
+        if (super.bitcoinController.getModel().getActiveWallet() != null) {
+            Wallet wallet = super.bitcoinController.getModel().getActiveWallet();
             if (wallet != null) {
 
                     PerWalletModelData perWalletModelData = null;
                     try {
                         // Double check wallet is not busy then declare that the active
                         // wallet is busy with the task
-                        perWalletModelData = controller.getModel().getActivePerWalletModelData();
+                        perWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
 
                         if (!perWalletModelData.isBusy()) {
                             perWalletModelData.setBusy(true);
@@ -96,10 +96,10 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                             super.bitcoinController.fireWalletBusyChange(true);
 
                             wallet.decrypt(wallet.getKeyCrypter().deriveKey(CharBuffer.wrap(passwordToUse)));
-                            controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
-                            controller.getModel().getActivePerWalletModelData().setDirty(true);
+                            super.bitcoinController.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
+                            super.bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
                             FileHandler fileHandler = new FileHandler(super.bitcoinController);
-                            fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
+                            fileHandler.savePerWalletModelData( super.bitcoinController.getModel().getActivePerWalletModelData(), true);
                         }
                     } catch (KeyCrypterException kce) {
                         removePasswordPanel.setMessage1(controller.getLocaliser()
@@ -129,13 +129,13 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (super.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
             putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
+                    new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("removePasswordSubmitAction.text"));
             }
         }

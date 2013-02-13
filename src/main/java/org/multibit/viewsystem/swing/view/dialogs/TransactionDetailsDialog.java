@@ -170,7 +170,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         // get the transaction value out of the wallet data
         BigInteger value = null;
         try {
-            value = rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet());
+            value = rowTableData.getTransaction().getValue(this.bitcoinController.getModel().getActiveWallet());
         } catch (ScriptException e) {
             log.error(e.getMessage(), e);
 
@@ -299,13 +299,13 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(totalDebitText, constraints);
 
-        BigInteger fee = rowTableData.getTransaction().calculateFee(controller.getModel().getActiveWallet());
+        BigInteger fee = rowTableData.getTransaction().calculateFee(this.bitcoinController.getModel().getActiveWallet());
         feeText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(fee)));
         if (BigInteger.ZERO.compareTo(value) > 0) {
             // debit
             amountLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.amountSent"));
             try {
-                BigInteger totalDebit = rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet()).negate();
+                BigInteger totalDebit = rowTableData.getTransaction().getValue(this.bitcoinController.getModel().getActiveWallet()).negate();
                 BigInteger amountSent = totalDebit.subtract(fee);
                 totalDebitText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(totalDebit)));
                 amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(amountSent)));
@@ -321,7 +321,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             // Credit - cannot calculate fee so do not show.
             try {
                 amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(rowTableData.getTransaction().getValue(
-                        controller.getModel().getActiveWallet()))));
+                        this.bitcoinController.getModel().getActiveWallet()))));
             } catch (ScriptException e) {
                 e.printStackTrace();
             }
@@ -492,13 +492,13 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private String createTransactionDescription(Transaction transaction) {
         String toReturn = "";
 
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
 
         if (perWalletModelData == null) {
             return toReturn;
         }
 
-        Wallet wallet = controller.getModel().getActiveWallet();
+        Wallet wallet = this.bitcoinController.getModel().getActiveWallet();
         List<TransactionOutput> transactionOutputs = transaction.getOutputs();
 
         BigInteger credit = transaction.getValueSentToMe(wallet);
@@ -529,7 +529,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                 String addressString = "";
 
                 if (this.bitcoinController.getMultiBitService() != null && myOutput != null) {
-                    Address toAddress = new Address(controller.getModel().getNetworkParameters(), myOutput
+                    Address toAddress = new Address(this.bitcoinController.getModel().getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();
                 }

@@ -127,7 +127,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 FileHandler fileHandler = new FileHandler(this.bitcoinController);
                 
                 for (String walletFilename : walletFilenamesToMigrate) {
-                    PerWalletModelData loopPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
+                    PerWalletModelData loopPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                     
                     if (loopPerWalletModelData != null) {
                         MessageManager.INSTANCE.addMessage(new Message(" "));
@@ -179,8 +179,8 @@ public class MigrateWalletsAction extends AbstractAction {
                         } finally {
                             // Delete test wallet data.
                             if (testWalletFile != null) {
-                                PerWalletModelData testPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(testWalletFile.getAbsolutePath());
-                                controller.getModel().remove(testPerWalletModelData);
+                                PerWalletModelData testPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(testWalletFile.getAbsolutePath());
+                                this.bitcoinController.getModel().remove(testPerWalletModelData);
                                 fileHandler.deleteWalletAndWalletInfo(testPerWalletModelData);
                                 tempDirectory.delete();
                             }
@@ -331,7 +331,7 @@ public class MigrateWalletsAction extends AbstractAction {
             if (ecKey != null) {
                 if (!protobufPrivateKeysAsStrings.contains(ecKey.toStringWithPrivate())) {
                     return controller.getLocaliser().getString("migrateWalletsAction.privateKeyWasMissing", 
-                            new Object[] {ecKey.toAddress(controller.getModel().getNetworkParameters())});
+                            new Object[] {ecKey.toAddress(this.bitcoinController.getModel().getNetworkParameters())});
                 }
             }
         }
@@ -378,7 +378,7 @@ public class MigrateWalletsAction extends AbstractAction {
     
     private List<String> getWalletFilenamesToMigrate() {
         List<String> walletFilenamesToMigrate = new ArrayList<String>();
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             // Is it a serialized wallet ?
             if (loopPerWalletModelData.getWalletInfo() != null) {
