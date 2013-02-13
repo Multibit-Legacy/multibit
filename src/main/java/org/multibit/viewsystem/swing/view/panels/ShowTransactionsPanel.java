@@ -66,7 +66,7 @@ import javax.swing.text.TabStop;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
@@ -97,7 +97,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private MultiBitFrame mainFrame;
 
@@ -144,9 +144,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private static UpdateTransactionsTimerTask updateTransactionsTimerTask;
     
-    public ShowTransactionsPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public ShowTransactionsPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         updateTransactionsTimerTask = new UpdateTransactionsTimerTask(controller, this, mainFrame);
@@ -481,11 +481,11 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 break;
             }
             case BUILDING: {
-                if (multiBitController.getMultiBitService().getChain() == null) {
+                if (bitcoinController.getMultiBitService().getChain() == null) {
                     primaryLabel.setText("?");
                     primaryLabel.setIcon(null);
                 } else {
-                    int numberOfBlocksEmbedded = multiBitController.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
+                    int numberOfBlocksEmbedded = bitcoinController.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
                     if (transaction != null && transaction.isCoinBase()) {
                         // Coinbase tx mature slower than regular blocks
                         numberOfBlocksEmbedded = numberOfBlocksEmbedded / 20;
@@ -1027,7 +1027,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         JMenuItem showTransactionsDetailsMenuItem;
 
         public TransactionPopUp(WalletTableData rowTableData) {
-            Action showTransactionDetailsAction = new ShowTransactionDetailsAction(multiBitController, mainFrame, rowTableData);
+            Action showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, rowTableData);
             showTransactionsDetailsMenuItem = new JMenuItem(showTransactionDetailsAction);
             showTransactionsDetailsMenuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 

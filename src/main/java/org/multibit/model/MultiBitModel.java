@@ -28,7 +28,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,7 +206,7 @@ public class MultiBitModel {
     
     // Main controller class.
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     // User preferences.
     private Properties userPreferences;
@@ -240,14 +240,14 @@ public class MultiBitModel {
      */
     private boolean blinkEnabled = true;
 
-     public MultiBitModel(MultiBitController multiBitController) {
-        this(multiBitController, new Properties());
+     public MultiBitModel(BitcoinController bitcoinController) {
+        this(bitcoinController, new Properties());
     }
 
     @SuppressWarnings("deprecation")
-    public MultiBitModel(MultiBitController multiBitController, Properties userPreferences) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public MultiBitModel(BitcoinController bitcoinController, Properties userPreferences) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.userPreferences = userPreferences;
 
@@ -532,7 +532,7 @@ public class MultiBitModel {
 
         // Wire up the controller as a wallet event listener.
         if (wallet != null) {
-            wallet.addEventListener(multiBitController);
+            wallet.addEventListener(bitcoinController);
         }
 
         createWalletData(walletFilename);
@@ -786,9 +786,9 @@ public class MultiBitModel {
                     Sha256Hash appearsInHash = iterator.next();
                     StoredBlock appearsInStoredBlock;
                     try {
-                        if (multiBitController != null && multiBitController.getMultiBitService() != null
-                                && multiBitController.getMultiBitService().getBlockStore() != null) {
-                            appearsInStoredBlock = multiBitController.getMultiBitService().getBlockStore().get(appearsInHash);
+                        if (bitcoinController != null && bitcoinController.getMultiBitService() != null
+                                && bitcoinController.getMultiBitService().getBlockStore() != null) {
+                            appearsInStoredBlock = bitcoinController.getMultiBitService().getBlockStore().get(appearsInHash);
                             Block appearsInBlock = appearsInStoredBlock.getHeader();
                             // Set the time of the block to be the time of the
                             // transaction - TODO get transaction time.

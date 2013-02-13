@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import org.multibit.CreateControllers;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
@@ -43,9 +43,8 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
     
     @Test
     public void testSendBitcoinWithNonEncryptedWallet() throws Exception {       
-        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        MultiBitController controller = controllers.multiBitController;
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new unencrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", false, null);
@@ -94,9 +93,8 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
     
     @Test
     public void testSendBitcoinWithEncryptedWallet() throws Exception {       
-        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        MultiBitController controller = controllers.multiBitController;
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", true, WALLET_PASSWORD);

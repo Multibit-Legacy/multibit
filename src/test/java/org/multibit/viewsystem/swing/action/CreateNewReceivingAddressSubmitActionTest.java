@@ -19,7 +19,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.swing.view.panels.CreateNewReceivingAddressPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
@@ -95,7 +95,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
     public void testAddReceivingAddressesWithEncryptedWallet() throws Exception {   
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        MultiBitController controller = controllers.multiBitController;
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithEncryptedWallet", true, TEST_PASSWORD1);
@@ -109,7 +109,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
         assertTrue("Wallet is not encrypted but it should be", controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         assertNull("The last private key backup file was not null", createNewAction.getLastPrivateKeysBackupFile());
-System.out.println("ping 1");
+        System.out.println("ping 1");
         // Execute the createNewAction - by default the createNewDialog sould be set to add one key.
         // However as there is no wallet password supplied it will not add the key.
         createNewAction.actionPerformed(null);

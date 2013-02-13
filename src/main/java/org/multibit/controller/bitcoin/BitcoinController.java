@@ -13,8 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.multibit.controller;
+package org.multibit.controller.bitcoin;
 
+import org.multibit.controller.core.CoreController;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -43,16 +44,18 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
+import org.multibit.controller.AbstractController;
+import org.multibit.controller.AbstractEventHandeler;
 
 /**
  * The MVC controller for MultiBit.
  *
  * @author jim
  */
-public class MultiBitController extends AbstractController<CoreController> implements WalletEventListener {
+public class BitcoinController extends AbstractController<CoreController> implements WalletEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
-    private Logger log = LoggerFactory.getLogger(MultiBitController.class);
+    private Logger log = LoggerFactory.getLogger(BitcoinController.class);
 
     /**
      * The WalletBusy listeners
@@ -76,14 +79,14 @@ public class MultiBitController extends AbstractController<CoreController> imple
     /**
      * Used for testing only.
      */
-    public MultiBitController(CoreController coreController) {
+    public BitcoinController(CoreController coreController) {
         super(coreController);
 
         this.walletBusyListeners = new ArrayList<WalletBusyListener>();
         this.eventHandeler = new EventHandeler(this);
         this.fileHandler = new FileHandler(this);
-        this.peerEventListener = new MultiBitPeerEventListener(this);
-        
+        this.peerEventListener = new BitcoinPeerEventListener(this);
+
         super.addEventHandler(this.getEventHandeler());
     }
 
@@ -298,7 +301,7 @@ public class MultiBitController extends AbstractController<CoreController> imple
         return this.eventHandeler;
     }
 
-    private class EventHandeler extends AbstractEventHandeler<MultiBitController> {
+    private class EventHandeler extends AbstractEventHandeler<BitcoinController> {
 
         /**
          * Multiple threads will write to this variable so require it to be
@@ -306,7 +309,7 @@ public class MultiBitController extends AbstractController<CoreController> imple
          */
         private volatile URI rawBitcoinURI = null;
 
-        public EventHandeler(MultiBitController coreController) {
+        public EventHandeler(BitcoinController coreController) {
             super(coreController);
         }
 
@@ -319,7 +322,7 @@ public class MultiBitController extends AbstractController<CoreController> imple
 
         @Override
         public void handleQuitEvent(ExitAction exitAction) {
-            exitAction.setMultiBitController(super.controller);
+            exitAction.setBitcoinController(super.controller);
         }
     }
 }

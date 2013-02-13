@@ -21,7 +21,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -36,7 +36,7 @@ public class MultiBitWalletBusyAction extends AbstractAction implements WalletBu
     private static final long serialVersionUID = 191948235465057705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private View viewToDisplay;
     private String tooltipKey;
@@ -50,11 +50,11 @@ public class MultiBitWalletBusyAction extends AbstractAction implements WalletBu
      * @param mnemonicKey The localisation key for the mnemonic of the action
      * @param viewToDisplay The view to display on action activation.  One of the View constants
      */
-    public MultiBitWalletBusyAction(MultiBitController multiBitController, String imagePath, String textKey, String tooltipKey, String mnemonicKey, View viewToDisplay) {
-        super(textKey == null ? "" : multiBitController.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
+    public MultiBitWalletBusyAction(BitcoinController bitcoinController, String imagePath, String textKey, String tooltipKey, String mnemonicKey, View viewToDisplay) {
+        super(textKey == null ? "" : bitcoinController.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.viewToDisplay = viewToDisplay;
         this.tooltipKey = tooltipKey;
@@ -63,7 +63,7 @@ public class MultiBitWalletBusyAction extends AbstractAction implements WalletBu
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString(tooltipKey)));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic(mnemonicKey));
         
-        this.multiBitController.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
     }
 
     /**

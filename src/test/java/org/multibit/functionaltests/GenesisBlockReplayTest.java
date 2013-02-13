@@ -29,8 +29,8 @@ import org.multibit.Constants;
 import org.multibit.CreateControllers;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
-import org.multibit.controller.CoreController;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
@@ -74,13 +74,12 @@ public class GenesisBlockReplayTest extends TestCase {
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
             // Create MultiBit controller.
-            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
-            final MultiBitController controller = controllers.multiBitController;
-            
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
-            MultiBitService multiBitService = new MultiBitService(controller);
-            controller.setMultiBitService(multiBitService);
+            MultiBitService multiBitService = new MultiBitService(controllers.bitcoinController);
+            controllers.bitcoinController.setMultiBitService(multiBitService);
 
             // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();

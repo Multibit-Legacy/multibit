@@ -17,7 +17,6 @@ package org.multibit.functionaltests;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -26,12 +25,9 @@ import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
 import org.multibit.CreateControllers;
-import org.multibit.MultiBit;
-import org.multibit.controller.Controller;
-import org.multibit.controller.CoreController;
-import org.multibit.controller.MultiBitController;
+
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
@@ -51,7 +47,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
     private static File multiBitDirectory;
 
-    private static MultiBitController controller;
+    private static BitcoinController controller;
 
     private static SimpleViewSystem simpleViewSystem;
 
@@ -69,9 +65,8 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
             // Create MultiBit controller.
-            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
-            controller = controllers.multiBitController;
-
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+            controller = controllers.bitcoinController;
 
             log.debug("Creating Bitcoin service");
             // create the MultiBitService that connects to the bitcoin network

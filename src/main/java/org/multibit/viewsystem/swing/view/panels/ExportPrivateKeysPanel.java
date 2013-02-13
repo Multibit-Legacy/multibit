@@ -48,7 +48,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
@@ -77,7 +77,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     private static final long serialVersionUID = 444992298119957705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -117,9 +117,9 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     /**
      * Creates a new {@link ExportPrivateKeysPanel}.
      */
-    public ExportPrivateKeysPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public ExportPrivateKeysPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -130,7 +130,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
         initUI();
         
-        this.multiBitController.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
         
         boolean walletPasswordRequired = false;
@@ -784,7 +784,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        exportPrivateKeySubmitAction = new ExportPrivateKeysSubmitAction(this.multiBitController, this,
+        exportPrivateKeySubmitAction = new ExportPrivateKeysSubmitAction(this.bitcoinController, this,
                 ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, exportFilePasswordField, repeatExportFilePasswordField, mainFrame);
         MultiBitButton submitButton = new MultiBitButton(exportPrivateKeySubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

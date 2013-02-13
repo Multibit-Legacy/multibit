@@ -28,7 +28,7 @@ import javax.swing.SwingWorker;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -72,10 +72,10 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
     /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
-    public CreateNewReceivingAddressSubmitAction(MultiBitController multiBitController,
+    public CreateNewReceivingAddressSubmitAction(BitcoinController bitcoinController,
             CreateNewReceivingAddressDialog createNewReceivingAddressDialog,
             CreateNewReceivingAddressPanel createNewReceivingAddressPanel, JPasswordField walletPassword) {
-        super(multiBitController, "createNewReceivingAddressSubmitAction.text", "createNewReceivingAddressSubmitAction.tooltip",
+        super(bitcoinController, "createNewReceivingAddressSubmitAction.text", "createNewReceivingAddressSubmitAction.tooltip",
                 "createNewReceivingAddressSubmitAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.ADD_ICON_FILE));
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
         this.createNewReceivingAddressPanel = createNewReceivingAddressPanel;
@@ -83,7 +83,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         this.lastPrivateKeysBackupFile = null;
         
         // This action is a WalletBusyListener
-        super.multiBitController.registerWalletBusyListener(this);
+        super.bitcoinController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
@@ -150,7 +150,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             logMessage.setShowInStatusBar(false);
             MessageManager.INSTANCE.addMessage(logMessage);
 
-            super.multiBitController.fireWalletBusyChange(true);                                
+            super.bitcoinController.fireWalletBusyChange(true);                                
 
             createNewReceivingAddressesInBackground(createNewReceivingAddressPanel.getNumberOfAddressesToCreate(), encryptNewKeys, 
                 CharBuffer.wrap(walletPassword.getPassword()), this);
@@ -164,7 +164,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             final CharSequence walletPassword, final CreateNewReceivingAddressSubmitAction thisAction) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
 
-        final MultiBitController finalController = super.multiBitController;
+        final BitcoinController finalController = super.bitcoinController;
         
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String shortMessage = null;
