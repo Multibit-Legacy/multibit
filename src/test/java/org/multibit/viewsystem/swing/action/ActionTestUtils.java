@@ -26,6 +26,7 @@ import com.google.protobuf.ByteString;
 public class ActionTestUtils {
     
     private static SecureRandom secureRandom;
+
      
      public static void createNewActiveWallet(BitcoinController controller, String descriptor, boolean encrypt, CharSequence walletPassword) throws Exception {
          if (secureRandom == null) {

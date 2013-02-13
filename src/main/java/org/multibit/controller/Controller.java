@@ -26,6 +26,7 @@ package org.multibit.controller;
 import java.util.Collection;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
+import org.multibit.model.Model;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.StatusEnum;
 import org.multibit.viewsystem.View;
@@ -39,7 +40,7 @@ public interface Controller {
     
     Collection<ViewSystem> getViewSystem();
     
-    MultiBitModel getModel();
+    Model getModel();
     
     Localiser getLocaliser();
     

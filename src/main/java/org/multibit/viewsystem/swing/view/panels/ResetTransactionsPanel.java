@@ -293,7 +293,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(this.bitcoinController.getModel().getActiveWalletFilename());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 6;
@@ -314,7 +314,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -526,8 +526,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletFilenameLabel.setText(this.bitcoinController.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
     }
 
     @Override

@@ -33,6 +33,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.joda.money.CurrencyUnit;
 import org.multibit.controller.Controller;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
@@ -48,6 +49,7 @@ import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
 
+
 /**
  * This {@link Action} applies changes to the preferences panel.
  */
@@ -55,17 +57,22 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
 
-    private Controller controller;
+    private final Controller controller;
+    private final ExchangeController exchangeController;
+    
     private PreferencesDataProvider dataProvider;
     private MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(Controller controller, PreferencesDataProvider dataProvider, Icon icon,
+    public ShowPreferencesSubmitAction(ExchangeController exchangeController, PreferencesDataProvider dataProvider, Icon icon,
             MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
-        this.controller = controller;
+        super(exchangeController.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
+        
+        this.exchangeController = exchangeController;
+        this.controller = this.exchangeController;
+        
         this.dataProvider = dataProvider;
         this.mainFrame = mainFrame;
 
@@ -276,7 +283,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
                 ExchangeData newExchangeData = new ExchangeData();
                 newExchangeData.setShortExchangeName(newExchange1);
-                controller.getModel().getShortExchangeNameToExchangeMap().put(newExchange1, newExchangeData);
+                this.exchangeController.getModel().getShortExchangeNameToExchangeMap().put(newExchange1, newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -316,7 +323,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
                 ExchangeData newExchangeData = new ExchangeData();
                 newExchangeData.setShortExchangeName(newExchange2);
-                controller.getModel().getShortExchangeNameToExchangeMap().put(newExchange2, newExchangeData);
+                this.exchangeController.getModel().getShortExchangeNameToExchangeMap().put(newExchange2, newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -355,7 +362,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 Timer tickerTimer1 = new Timer();
                 mainFrame.setTickerTimer1(tickerTimer1);
                 
-                TickerTimerTask tickerTimerTask1 = new TickerTimerTask(controller, mainFrame, true);
+                TickerTimerTask tickerTimerTask1 = new TickerTimerTask(this.exchangeController, mainFrame, true);
                 tickerTimerTask1.createExchangeObjects(controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
                 mainFrame.setTickerTimerTask1(tickerTimerTask1);
 
@@ -368,7 +375,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                     Timer tickerTimer2 = new Timer();
                     mainFrame.setTickerTimer2(tickerTimer2);
 
-                    TickerTimerTask tickerTimerTask2 = new TickerTimerTask(controller, mainFrame, false);
+                    TickerTimerTask tickerTimerTask2 = new TickerTimerTask(this.exchangeController, mainFrame, false);
                     tickerTimerTask2.createExchangeObjects(controller.getModel().getUserPreference(
                             MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
                     mainFrame.setTickerTimerTask2(tickerTimerTask2);
@@ -415,14 +422,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 HelpContentsPanel.clearBrowser();
 
                 // Switch off blinks.
-                controller.getModel().setBlinkEnabled(false);
+                this.exchangeController.getModel().setBlinkEnabled(false);
 
                 try {
                     controller.fireDataStructureChanged();
                     SwingUtilities.updateComponentTreeUI(mainFrame);
                 } finally {
                     // Switch blinks back on.
-                    controller.getModel().setBlinkEnabled(true);
+                    this.exchangeController.getModel().setBlinkEnabled(true);
                 }            
             }
 

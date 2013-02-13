@@ -64,7 +64,7 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
             return;
         }
 
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
 
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
@@ -82,7 +82,7 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
                 if (rowData != null) {
                     if (selectedAddressRowModel < addressesTableModel.getRowCount()) {
                         walletInfo.getSendingAddresses().remove(rowData);
-                        controller.getModel().getActivePerWalletModelData().setDirty(true);
+                        super.bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
                         addressesTableModel.fireTableDataChanged();
                     } else {
                         log.error("Could not remove row " + selectedAddressRowModel + " as table model only contained " + addressesTableModel.getRowCount() + " rows");
@@ -93,9 +93,9 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
                         int newModelRowtoSelect = addressesTable.convertRowIndexToModel(newViewRowToSelect);
                         AddressBookData newRowData = addressesTableModel.getAddressBookDataByRow(newModelRowtoSelect, false);
                     
-                        controller.getModel().setActiveWalletPreference(sendBitcoinPanel.getAddressConstant(),
+                        super.bitcoinController.getModel().setActiveWalletPreference(sendBitcoinPanel.getAddressConstant(),
                                 newRowData.getAddress());
-                        controller.getModel().setActiveWalletPreference(sendBitcoinPanel.getLabelConstant(),
+                        super.bitcoinController.getModel().setActiveWalletPreference(sendBitcoinPanel.getLabelConstant(),
                                 newRowData.getLabel());
 
                         if (sendBitcoinPanel.getAddressTextField() != null) {

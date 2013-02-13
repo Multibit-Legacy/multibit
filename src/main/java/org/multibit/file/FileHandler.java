@@ -174,8 +174,8 @@ public class FileHandler {
             }
   
             // Add the new wallet into the model.
-            wallet.setNetworkParameters(controller.getModel().getNetworkParameters());
-            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilenameToUse);
+            wallet.setNetworkParameters(this.bitcoinController.getModel().getNetworkParameters());
+            PerWalletModelData perWalletModelData = this.bitcoinController.getModel().addWallet(wallet, walletFilenameToUse);
 
             perWalletModelData.setWalletInfo(walletInfo);
 
@@ -409,7 +409,7 @@ public class FileHandler {
                     
                     // Delete the oldBackupFile unless the user has manually opened it.
                     boolean userHasOpenedBackupFile = false;
-                    List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                    List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null) {
                         for (PerWalletModelData perWalletModelDataLoop : perWalletModelDataList) {
                             if ((oldBackupFilename != null && oldBackupFilename.equals(perWalletModelDataLoop.getWalletFilename())) ||
@@ -453,11 +453,11 @@ public class FileHandler {
         // Only encrypted files are backed up, and they must have a non blank password.
         if (passwordToUse != null && passwordToUse.length() > 0) {
             if (controller.getModel() != null
-                    && controller.getModel().getActiveWalletWalletInfo() != null
-                    && controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF_ENCRYPTED) {
+                    && this.bitcoinController.getModel().getActiveWalletWalletInfo() != null
+                    && this.bitcoinController.getModel().getActiveWalletWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF_ENCRYPTED) {
                 // Save a backup copy of the private keys, encrypted with the newPasswordToUse.
-                PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
-                String privateKeysBackupFilename = createBackupFilename(new File(controller.getModel().getActiveWalletFilename()),
+                PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(this.bitcoinController.getModel().getNetworkParameters());
+                String privateKeysBackupFilename = createBackupFilename(new File(this.bitcoinController.getModel().getActiveWalletFilename()),
                         false, false, MultiBitModel.PRIVATE_KEY_FILE_EXTENSION);
                 privateKeysBackupFile = new File(privateKeysBackupFilename);
                 BlockChain blockChain = null;
@@ -465,13 +465,13 @@ public class FileHandler {
                     blockChain = this.bitcoinController.getMultiBitService().getChain();
                 }
                 
-                privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, controller.getModel().getActiveWallet(), blockChain, true, passwordToUse, passwordToUse);
+                privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, this.bitcoinController.getModel().getActiveWallet(), blockChain, true, passwordToUse, passwordToUse);
             } else {
-                log.debug("Wallet '" + controller.getModel().getActiveWalletFilename()
+                log.debug("Wallet '" + this.bitcoinController.getModel().getActiveWalletFilename()
                         + "' private keys not backed up as not PROTOBUF_ENCRYPTED");
             }
         } else {
-            log.debug("Wallet '" + controller.getModel().getActiveWalletFilename()
+            log.debug("Wallet '" + this.bitcoinController.getModel().getActiveWalletFilename()
                     + "' private keys not backed up password was blank or of zero length");
         }
         return privateKeysBackupFile;
@@ -529,7 +529,7 @@ public class FileHandler {
 
         // If the wallet was deleted, delete the model data.
         if (walletInfo.isDeleted()) {
-            controller.getModel().remove(perWalletModelData);
+            this.bitcoinController.getModel().remove(perWalletModelData);
         }
         return;
     }
@@ -644,10 +644,11 @@ public class FileHandler {
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
     }
 
-    public static void writeUserPreferences(Controller controller) {
+    public static void writeUserPreferences(BitcoinController bitcoinController) {
+        final Controller controller = bitcoinController;
         // Save all the wallets' filenames in the user preferences.
-        if (controller.getModel().getPerWalletModelDataList() != null) {
-            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        if (bitcoinController.getModel().getPerWalletModelDataList() != null) {
+            List<PerWalletModelData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
       
             List<String> orderList = new ArrayList<String>();
             List<String> earlyList = new ArrayList<String>();
@@ -702,7 +703,7 @@ public class FileHandler {
                 protobuf3Count++;
             }
             controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_PROTOBUF3_WALLETS, "" + protobuf3List.size());
-            controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME, controller.getModel().getActiveWalletFilename());
+            controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME, bitcoinController.getModel().getActiveWalletFilename());
         }
 
         Properties userPreferences = controller.getModel().getAllUserPreferences();

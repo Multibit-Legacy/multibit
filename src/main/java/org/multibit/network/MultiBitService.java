@@ -174,7 +174,7 @@ public class MultiBitService {
             throw new IllegalStateException("controller.getFileHandler() cannot be null");
         }
 
-        networkParameters = controller.getModel().getNetworkParameters();
+        networkParameters = this.bitcoinController.getModel().getNetworkParameters();
         log.debug("Network parameters = " + networkParameters);
         
         try {
@@ -260,9 +260,9 @@ public class MultiBitService {
         
         if (!peersSpecified){
             // Use DNS for production, IRC for test.
-            if (TESTNET3_GENESIS_HASH.equals(controller.getModel().getNetworkParameters().genesisBlock.getHashAsString())){
+            if (TESTNET3_GENESIS_HASH.equals(this.bitcoinController.getModel().getNetworkParameters().genesisBlock.getHashAsString())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
-            } else if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())){
+            } else if (NetworkParameters.testNet().equals(this.bitcoinController.getModel().getNetworkParameters())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
                 peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
@@ -273,7 +273,7 @@ public class MultiBitService {
         
         // Add all existing wallets to the PeerGroup.
         if (controller != null && controller.getModel() != null) {
-            List<PerWalletModelData> perWalletDataModels = controller.getModel().getPerWalletModelDataList();
+            List<PerWalletModelData> perWalletDataModels = this.bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletDataModels != null) {
                 for (PerWalletModelData perWalletDataModel : perWalletDataModels) {
                     if (perWalletDataModel != null && perWalletDataModel.getWallet() != null) {
@@ -286,12 +286,11 @@ public class MultiBitService {
     }
 
     public static String getFilePrefix() {
-        Controller controller = MultiBit.getController();
-        MultiBitModel model = controller.getModel();
+        BitcoinController bitcoinController = MultiBit.getBitcoinController();
         // testnet3
-        if (TESTNET3_GENESIS_HASH.equals(model.getNetworkParameters().genesisBlock.getHashAsString())) {
+        if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().genesisBlock.getHashAsString())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET3_PREFIX;
-        } else if (NetworkParameters.testNet().equals(model.getNetworkParameters())) {
+        } else if (NetworkParameters.testNet().equals(bitcoinController.getModel().getNetworkParameters())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET_PREFIX;
         } else {
             return MULTIBIT_PREFIX;
@@ -350,7 +349,7 @@ public class MultiBitService {
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
-                perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
+                perWalletModelDataToReturn = this.bitcoinController.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
                 // Create a wallet info.
                 WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), MultiBitWalletVersion.PROTOBUF);
@@ -379,7 +378,7 @@ public class MultiBitService {
             ArrayList<ECKey> keys = wallet.keychain;
             if (keys != null) {
                 if (!newWalletCreated) {
-                    perWalletModelDataToReturn = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
+                    perWalletModelDataToReturn = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                 }
                 if (perWalletModelDataToReturn != null) {
                     WalletInfo walletInfo = perWalletModelDataToReturn.getWalletInfo();
@@ -613,7 +612,7 @@ public class MultiBitService {
             
             try {
                 // Notify other wallets of the send (it might be a send to or from them).
-                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
 
                 if (perWalletModelDataList != null) {
                     for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {

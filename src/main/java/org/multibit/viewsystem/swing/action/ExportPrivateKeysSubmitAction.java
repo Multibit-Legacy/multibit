@@ -76,7 +76,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         
         // This action is a WalletBusyListener.
         super.bitcoinController.registerWalletBusyListener(this);
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(super.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -91,8 +91,8 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         exportPrivateKeysPanel.clearMessages();
 
         // See if a wallet password is required and present.
-        if (controller.getModel().getActiveWallet() != null
-                && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (super.bitcoinController.getModel().getActiveWallet() != null
+                && super.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
                 exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                         "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
@@ -101,7 +101,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
             try {
                 // See if the password is the correct wallet password.
-                if (!controller.getModel().getActiveWallet().checkPassword(CharBuffer.wrap(walletPassword.getPassword()))) {
+                if (!super.bitcoinController.getModel().getActiveWallet().checkPassword(CharBuffer.wrap(walletPassword.getPassword()))) {
                     // The password supplied is incorrect.
                     exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                             "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
@@ -127,7 +127,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
         File exportPrivateKeysFile = new File(exportPrivateKeysFilename);
 
-        privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+        privateKeysHandler = new PrivateKeysHandler(super.bitcoinController.getModel().getNetworkParameters());
 
         boolean performEncryptionOfExportFile = false;
 
@@ -171,7 +171,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
@@ -197,7 +197,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      */
     private void exportPrivateKeysInBackground(final File exportPrivateKeysFile, final boolean performEncryptionOfExportFile,
             final CharSequence exportPasswordToUse, final CharSequence walletPassword) {
-        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        final PerWalletModelData finalPerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
         final ExportPrivateKeysPanel finalExportPanel = exportPrivateKeysPanel;
         
         final BitcoinController finalBitcoinController = super.bitcoinController;
@@ -216,7 +216,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 }
 
                 try {
-                    privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
+                    privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, finalBitcoinController.getModel().getActivePerWalletModelData()
                             .getWallet(), blockChain, performEncryptionOfExportFile, exportPasswordToUse, walletPassword);
 
                     // Success.
@@ -224,7 +224,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
                     // Perform a verification on the exported file to see if it
                     // is correct.
-                    Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
+                    Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, finalBitcoinController.getModel()
                             .getActivePerWalletModelData().getWallet(), blockChain, performEncryptionOfExportFile,
                             exportPasswordToUse, walletPassword);
                     uiMessage2 = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
@@ -260,7 +260,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     
                     // Clear the passwords if the export was successful and the user is still
                     // looking at the same wallet as at start.
-                    if (wasSuccessful && finalPerWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
+                    if (wasSuccessful && finalPerWalletModelData.getWalletFilename().equals(finalBitcoinController.getModel().getActiveWalletFilename())) {
                         finalExportPanel.clearPasswords();
                     }
                 } catch (Exception e) {
@@ -281,13 +281,13 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (super.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{super.bitcoinController.getModel().getActivePerWalletModelData().getBusyOperation()}));
             setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("exportPrivateKeysSubmitAction.text"));
                 setEnabled(true);
             }

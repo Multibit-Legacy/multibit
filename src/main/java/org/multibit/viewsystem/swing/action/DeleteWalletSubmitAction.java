@@ -73,14 +73,14 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            String walletDescription = controller.getModel().getActivePerWalletModelData().getWalletDescription();
+            String walletDescription = this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription();
 
             // Delete the wallet.
             boolean newWalletCreated = deleteActiveWallet();
             
             // Set the first wallet to be the active wallet.
-            PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
-            controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
+            PerWalletModelData firstPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataList().get(0);
+            this.bitcoinController.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
              
             String confirm2 = newWalletCreated ? controller.getLocaliser().getString("deleteWalletConfirmDialog.newWalletCreated") : " ";
             if (deleteWalletConfirmDialog != null) {
@@ -135,7 +135,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      * @throws DeleteWalletException
      * @throws IOException     */
     public boolean deleteWallet(String filename) throws DeleteWalletException, IOException {
-        return deleteWallet(controller.getModel().getPerWalletModelDataByWalletFilename(filename));
+        return deleteWallet(this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(filename));
     }
     
     /**
@@ -146,19 +146,19 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      */
     public boolean deleteActiveWallet()  throws DeleteWalletException, WalletVersionException, IOException {
         boolean newWalletCreated = false;
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         
         MultiBitWalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
         String backupFilename = perWalletModelData.getWalletInfo().getProperty(MultiBitModel.WALLET_BACKUP_FILE);
 
-        newWalletCreated = deleteWallet(controller.getModel().getActivePerWalletModelData());
+        newWalletCreated = deleteWallet(this.bitcoinController.getModel().getActivePerWalletModelData());
     
         if (backupFilename != null && !"".equals(backupFilename)) {
             if (MultiBitWalletVersion.PROTOBUF == walletVersion || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletVersion) {
 
                 // Delete the backupFile unless the user has manually opened it.
                 boolean userHasOpenedBackupFile = false;
-                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
                 if (perWalletModelDataList != null) {
                     for (PerWalletModelData perWalletModelDataLoop : perWalletModelDataList) {
                         if ((backupFilename != null && backupFilename.equals(perWalletModelDataLoop.getWalletFilename()))) {
@@ -189,7 +189,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
 
         // If no wallets, create an empty one.
         boolean newWalletCreated = false;
-        if (controller.getModel().getPerWalletModelDataList().size() == 0) {
+        if (this.bitcoinController.getModel().getPerWalletModelDataList().size() == 0) {
             if (this.bitcoinController.getMultiBitService() != null) {
                 this.bitcoinController.getMultiBitService().addWalletFromFilename(null);
               
@@ -198,13 +198,13 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         }
         
         // Set the first wallet to be the active wallet.
-        PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
-        controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
+        PerWalletModelData firstPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataList().get(0);
+        this.bitcoinController.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
         
         fileHandler.savePerWalletModelData(firstPerWalletModelData, true);
         
         // Save the user properties to disk.
-        FileHandler.writeUserPreferences(controller);
+        FileHandler.writeUserPreferences(this.bitcoinController);
         log.debug("User preferences with old wallet deleted were written successfully");
 
         controller.fireRecreateAllViews(true);

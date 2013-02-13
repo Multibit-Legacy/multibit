@@ -63,7 +63,7 @@ public class FileChangeTimerTask extends TimerTask {
     public void run() {
         log.debug("Start of FileChangeTimerTask - run - enable = " + enable);
         if (enable) {
-            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
 
             if (perWalletModelDataList != null) {
                 for (PerWalletModelData loopModelData : perWalletModelDataList) {

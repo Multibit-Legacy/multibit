@@ -47,7 +47,7 @@ public class BitcoinPeerEventListener implements PeerEventListener {
             controller.setOnlineStatus(StatusEnum.ONLINE);
         }
         if (controller.getModel() != null) {
-            controller.getModel().setNumberOfConnectedPeers(peerCount);
+            this.bitcoinController.getModel().setNumberOfConnectedPeers(peerCount);
         }   
         SendBitcoinConfirmPanel.updatePanel(); 
     }
@@ -61,7 +61,7 @@ public class BitcoinPeerEventListener implements PeerEventListener {
            controller.setOnlineStatus(StatusEnum.CONNECTING);
         }
         if (controller.getModel() != null) {
-            controller.getModel().setNumberOfConnectedPeers(peerCount);
+            this.bitcoinController.getModel().setNumberOfConnectedPeers(peerCount);
         } 
         SendBitcoinConfirmPanel.updatePanel();    
     }

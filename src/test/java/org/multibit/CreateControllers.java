@@ -26,6 +26,7 @@ package org.multibit;
 import java.util.Locale;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
 
@@ -61,30 +62,35 @@ public class CreateControllers {
 
         final CoreController coreController = new CoreController(applicationDataDirectoryLocator);
         final BitcoinController bitcoinController = new BitcoinController(coreController);
+        final ExchangeController exchangeController = new ExchangeController(coreController);
         
         final MultiBitModel multiBitModel = new MultiBitModel(bitcoinController);
-        if (null == multiBitModel) {
-            return null;
-        }
+        
         coreController.setLocaliser((null != localiser) ? localiser : new Localiser(Locale.ENGLISH));
+        
         coreController.setModel(multiBitModel);
+        bitcoinController.setModel(multiBitModel);
+        exchangeController.setModel(multiBitModel);
         
         CurrencyConverter.INSTANCE.initialise(coreController);
 
         MultiBit.setCoreController(coreController);
         MultiBit.setBitcoinController(bitcoinController);
+        MultiBit.setExchangeController(exchangeController);
         
-        return new Controllers(coreController,bitcoinController);
+        return new Controllers(coreController, bitcoinController, exchangeController);
     }
 
     public static class Controllers {
 
         public final CoreController coreController;
         public final BitcoinController bitcoinController;
+        public final ExchangeController exchangeController;
 
-        public Controllers(final CoreController coreController, final BitcoinController bitcoinController) {
+        public Controllers(final CoreController coreController, final BitcoinController bitcoinController, final ExchangeController exchangeController) {
             this.coreController = coreController;
             this.bitcoinController = bitcoinController;
+            this.exchangeController = exchangeController;
         }
     }
 }

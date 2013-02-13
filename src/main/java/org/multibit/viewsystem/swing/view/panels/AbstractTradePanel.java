@@ -635,7 +635,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         addressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        addressesTableModel = new AddressBookTableModel(controller, isReceiveBitcoin());
+        addressesTableModel = new AddressBookTableModel(this.bitcoinController, isReceiveBitcoin());
         addressesTable = new JTable(addressesTableModel);
         addressesTable.setOpaque(true);
         addressesTable.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -815,9 +815,9 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                     AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRowModel,
                             thisAbstractTradePanel.isReceiveBitcoin());
                     if (rowData != null) {
-                        controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(),
+                        bitcoinController.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(),
                                 rowData.getAddress());
-                        controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(),
+                        bitcoinController.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(),
                                 rowData.getLabel());
                         if (addressTextField != null) {
                             addressTextField.setText(rowData.getAddress());
@@ -1332,8 +1332,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         selectRows();
 
         // Disable any new changes if another process has changed the wallet.
-        if (controller.getModel().getActivePerWalletModelData() != null
-                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData() != null
+                && this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
             mainFrame.setUpdatesStoppedTooltip(labelTextArea);
             labelTextArea.setEditable(false);
@@ -1463,20 +1463,20 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             String label = labelTextArea.getText();
             AddressBookData addressBookData = new AddressBookData(label, address);
 
-            WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
+            WalletInfo walletInfo = bitcoinController.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
-                controller.getModel().setActiveWalletInfo(walletInfo);
+                walletInfo = new WalletInfo(bitcoinController.getModel().getActiveWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                bitcoinController.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);
             addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRowModel, isReceiveBitcoin());
 
             selectRowInTableFromModelRow(selectedAddressRowModel);
 
-            controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(), address);
-            controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(), label);
-            controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amount);
-            controller.getModel().getActivePerWalletModelData().setDirty(true);
+            bitcoinController.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(), address);
+            bitcoinController.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(), label);
+            bitcoinController.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amount);
+            bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
 
             displayQRCode(address, amount, label);
         }
@@ -1516,8 +1516,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                     }
                     
                     String label = labelTextArea.getText();
-                    controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amount);
-                    controller.getModel().getActivePerWalletModelData().setDirty(true);
+                    bitcoinController.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amount);
+                    bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
 
                     updateFiatAmount();
                     displayQRCode(address, amount, label);
@@ -1589,8 +1589,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             parsedAmountBTC = converterResult.getBtcMoney();
             String amountBTCAsString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false,
                     false);
-            controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amountBTCAsString);
-            controller.getModel().getActivePerWalletModelData().setDirty(true);
+            bitcoinController.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amountBTCAsString);
+            bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
 
             amountBTCTextField.setText(CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC));
             if (notificationLabel != null) {
@@ -1682,7 +1682,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     public boolean processDecodedString(String decodedString, ImageIcon icon) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -1700,7 +1700,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
             // i.e be lenient
             String uriString = decodedString.toString().replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
-            BitcoinURI bitcoinURI = new BitcoinURI(controller.getModel().getNetworkParameters(), uriString);
+            BitcoinURI bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
 
             log.debug("AbstractTradePanel - ping 1");
             Address address = bitcoinURI.getAddress();
@@ -1755,8 +1755,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 selectRowInTableFromModelRow(rowToSelectModel);
             } else {
                 // add a new row to the table
-                controller.getModel().getActiveWalletWalletInfo().addSendingAddress(addressBookData);
-                controller.getModel().getActivePerWalletModelData().setDirty(true);
+                this.bitcoinController.getModel().getActiveWalletWalletInfo().addSendingAddress(addressBookData);
+                this.bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
 
                 addressesTableModel.fireTableDataChanged();
 
@@ -1776,12 +1776,12 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             mainFrame.repaint();
 
             log.debug("AbstractTradePanel - ping 7");
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, addressString);
+            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, addressString);
             log.debug("AbstractTradePanel - ping 8");
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, decodedLabel);
+            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, decodedLabel);
             log.debug("AbstractTradePanel - ping 9");
 
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amountString);
+            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amountString);
             log.debug("AbstractTradePanel - ping 10");
             addressTextField.setText(addressString);
             log.debug("AbstractTradePanel - ping 11");
@@ -1814,7 +1814,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         // stop listener firing
         addressesListener.setEnabled(false);
 
-        String address = controller.getModel().getActiveWalletPreference(getAddressConstant());
+        String address = this.bitcoinController.getModel().getActiveWalletPreference(getAddressConstant());
         String amount = "";
         if (amountBTCTextField != null) {
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());

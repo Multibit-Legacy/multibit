@@ -92,8 +92,8 @@ public class QRCodeGenerator {
         try {
             Address decodeAddress = null;
             if (address != null && !"".equals(address) && this.bitcoinController.getMultiBitService() != null
-                    && controller.getModel().getNetworkParameters() != null) {
-                decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
+                    && this.bitcoinController.getModel().getNetworkParameters() != null) {
+                decodeAddress = new Address(this.bitcoinController.getModel().getNetworkParameters(), address);
             }
             if (decodeAddress != null && !"".equals(decodeAddress)) {
                 if (amount != null && !"".equals(amount)) {
@@ -106,7 +106,7 @@ public class QRCodeGenerator {
                     bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
                 }
             }
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
         } catch (IllegalArgumentException e) {
             //log.warn("The address '" + address + "' could not be converted to a bitcoin address. (IAE)");
             return null;

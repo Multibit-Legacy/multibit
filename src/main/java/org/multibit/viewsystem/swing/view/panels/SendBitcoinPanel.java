@@ -362,9 +362,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     @Override
     public void loadForm() {
         // get the current address, label and amount from the model
-        String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        String amountNotLocalised = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
+        String address = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+        String label = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
+        String amountNotLocalised = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
 
         if (amountBTCTextField != null) {
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
@@ -398,12 +398,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
         // if there is a pending 'handleopenURI' that needs pasting into the
         // send form, do it
-        String performPasteNow = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW);
+        String performPasteNow = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW);
         if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
             try {
-                Address decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
+                Address decodeAddress = new Address(this.bitcoinController.getModel().getNetworkParameters(), address);
                 processDecodedString(com.google.bitcoin.uri.BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amountNotLocalised), label, null), null);
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+                this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
                 sendButton.requestFocusInWindow();
 
                 mainFrame.bringToFront();
@@ -437,8 +437,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         }
 
         // disable any new changes if another process has changed the wallet
-        if (controller.getModel().getActivePerWalletModelData() != null
-                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData() != null
+                && this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
             mainFrame.setUpdatesStoppedTooltip(addressTextField);
             addressTextField.setEditable(false);

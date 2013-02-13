@@ -67,6 +67,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
+import org.multibit.controller.bitcoin.BitcoinController;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
@@ -97,7 +98,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private BlinkLabel amountLabelBTC;
     private BlinkLabel amountLabelFiat;
 
-    private Controller controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private MultiBitFrame mainFrame;
 
     private int normalHeight;
@@ -150,9 +153,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private final SingleWalletPanel thisPanel;
           
-    public SingleWalletPanel(PerWalletModelData perWalletModelData, final Controller controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
+    public SingleWalletPanel(PerWalletModelData perWalletModelData, final BitcoinController bitcoinController, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
-        this.controller = controller;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
   
         thisPanel = this;
@@ -557,9 +561,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         hourglassLabel.setVisible(isBusy);
         
         // Update the tooltip.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            hourglassLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()})));           
+            hourglassLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{this.bitcoinController.getModel().getActivePerWalletModelData().getBusyOperation()})));           
         } else {
             hourglassLabel.setToolTipText(null);
         }
@@ -686,10 +690,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             perWalletModelData.setWalletDescription(text);
 
             String titleText = controller.getLocaliser().getString("multiBitFrame.title");
-            if (controller.getModel().getActiveWallet() != null) {
+            if (this.bitcoinController.getModel().getActiveWallet() != null) {
                 titleText = titleText + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+                        + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
+                        + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletFilename();
             }
             mainFrame.setTitle(titleText);
         }

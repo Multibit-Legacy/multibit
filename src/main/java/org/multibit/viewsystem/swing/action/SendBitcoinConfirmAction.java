@@ -61,12 +61,12 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
         String sendAddress = dataProvider.getAddress();
         String sendAmount = dataProvider.getAmount();
         
-        Validator validator = new Validator(controller);
+        Validator validator = new Validator(super.bitcoinController);
         if (validator.validate(sendAddress, sendAmount)) {
             sendBitcoinConfirmDialog = new SendBitcoinConfirmDialog(super.bitcoinController, mainFrame);
             sendBitcoinConfirmDialog.setVisible(true);
         } else {
-            validationErrorDialog = new ValidationErrorDialog(controller, mainFrame);
+            validationErrorDialog = new ValidationErrorDialog(super.bitcoinController, mainFrame);
             validationErrorDialog.setVisible(true);
         }
     }

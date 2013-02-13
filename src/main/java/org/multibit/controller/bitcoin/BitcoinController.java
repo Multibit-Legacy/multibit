@@ -76,6 +76,12 @@ public class BitcoinController extends AbstractController<CoreController> implem
      */
     private PeerEventListener peerEventListener;
 
+
+    /**
+     * The data model backing the views.
+     */
+    private MultiBitModel model;
+
     /**
      * Used for testing only.
      */
@@ -89,6 +95,16 @@ public class BitcoinController extends AbstractController<CoreController> implem
 
         super.addEventHandler(this.getEventHandeler());
     }
+    
+    @Override
+    public MultiBitModel getModel() {
+        return model;
+    }
+
+    public void setModel(MultiBitModel model) {
+        this.model = model;
+    }
+    
 
     /**
      * Register a new WalletBusyListener.
@@ -309,8 +325,8 @@ public class BitcoinController extends AbstractController<CoreController> implem
          */
         private volatile URI rawBitcoinURI = null;
 
-        public EventHandeler(BitcoinController coreController) {
-            super(coreController);
+        public EventHandeler(BitcoinController controller) {
+            super(controller);
         }
 
         @Override
