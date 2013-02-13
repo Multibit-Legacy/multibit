@@ -15,6 +15,7 @@
  */
 package org.multibit.functionaltests;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -26,15 +27,13 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
-
 import org.junit.Test;
+
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
-import org.multibit.MultiBit;
-import org.multibit.controller.Controller;
+import org.multibit.CreateControllers;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.network.MultiBitService;
@@ -42,6 +41,7 @@ import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,6 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
-import org.multibit.CreateControllers;
 
 /**
  * Functional test to check that Mining Coinbase Transactions can be seen.
@@ -101,7 +100,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
             // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
-            controller.registerViewSystem(simpleViewSystem);
+            controllers.coreController.registerViewSystem(simpleViewSystem);
             
             ReplayManager.INSTANCE.initialise(controller);
 

@@ -24,6 +24,7 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.Controller;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
@@ -48,6 +49,7 @@ public class ExitAction extends AbstractExitAction {
     private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
 
+    private CoreController coreController = null;
     private MultiBitController multiBitController = null;
 
     /**
@@ -56,6 +58,12 @@ public class ExitAction extends AbstractExitAction {
     public ExitAction(Controller controller, MultiBitFrame mainFrame) {
         super(controller);
         this.mainFrame = mainFrame;
+    }
+
+    public void setCoreController(CoreController coreController) {
+        if (null == coreController) {
+            this.coreController = coreController;
+        }
     }
 
     public void setMultiBitController(MultiBitController multiBitController) {
@@ -82,9 +90,9 @@ public class ExitAction extends AbstractExitAction {
         log.debug("exit 2");
         
         // Stop the peer group so that blocks are notified to wallets correctly.
-        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
+        if (multiBitController.getMultiBitService() != null && multiBitController.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
-            controller.getMultiBitService().getPeerGroup().stopAndWait();
+            multiBitController.getMultiBitService().getPeerGroup().stopAndWait();
             log.debug("PeerGroup is now stopped.");
         }
 

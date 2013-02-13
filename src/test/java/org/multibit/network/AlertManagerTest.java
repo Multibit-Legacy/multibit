@@ -20,35 +20,23 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.bitcoinj.wallet.Protos;
-import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
-
-import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.bitcoin.store.MemoryBlockStore;
-import com.google.bitcoin.utils.BriefLogFormatter;
-import com.google.protobuf.ByteString;
+import org.multibit.CreateControllers;
 
 public class AlertManagerTest extends TestCase {
     MultiBitController controller;
-    Localiser localiser;
     
     @Before
     public void setUp() throws Exception {
-        controller = new MultiBitController();
-        localiser = new TestLocaliser();
-        MultiBitModel model = new MultiBitModel(controller);
-        
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
+        // Create MultiBit controller
+        final Localiser localiser = new TestLocaliser();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers(localiser);
+        controller = controllers.multiBitController;
     }
 
     @Test
@@ -254,6 +242,7 @@ public class AlertManagerTest extends TestCase {
     }
 
     class TestLocaliser extends Localiser {
+        @Override
         public String getVersionNumber() {
             return "0.4.23";
         }
