@@ -55,7 +55,7 @@ import com.google.bitcoin.store.BlockStoreException;
  * @author jim
  * 
  */
-public class MultiBitModel {
+public class MultiBitModel extends BaseModel<MultiBitModel> {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitModel.class);
 
@@ -208,9 +208,6 @@ public class MultiBitModel {
     private final Controller controller;
     private final BitcoinController bitcoinController;
 
-    // User preferences.
-    private Properties userPreferences;
-
     /**
      * List of each wallet's total model data.
      */
@@ -246,6 +243,7 @@ public class MultiBitModel {
 
     @SuppressWarnings("deprecation")
     public MultiBitModel(BitcoinController bitcoinController, Properties userPreferences) {
+        super(userPreferences);
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         
@@ -309,43 +307,6 @@ public class MultiBitModel {
         shortExchangeNameToExchangeMap = new HashMap<String, ExchangeData>();
         shortExchangeNameToExchangeMap.put(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, exchangeData1);
         shortExchangeNameToExchangeMap.put(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, exchangeData2);
-    }
-
-    /**
-     * Get a user preference.
-     *
-     * @param key String key of property
-     * @return String property value
-     */
-    public final String getUserPreference(String key) {
-        return userPreferences.getProperty(key);
-    }
-
-    /**
-     * Set a user preference.
-     *
-     * @return
-     */
-    public void setUserPreference(String key, String value) {
-        if (key != null && value != null) {
-            userPreferences.put(key, value);
-        }
-    }
-
-    /**
-     * Get all user preference.
-     *
-     * @return
-     */
-    public Properties getAllUserPreferences() {
-        return userPreferences;
-    }
-
-    /**
-     * Set all user preferences.
-     */
-    public void setAllUserPreferences(Properties properties) {
-        userPreferences = properties;
     }
 
     public PerWalletModelData getActivePerWalletModelData() {
@@ -888,5 +849,10 @@ public class MultiBitModel {
 
     public Map<String, ExchangeData> getShortExchangeNameToExchangeMap() {
         return shortExchangeNameToExchangeMap;
+    }
+    
+    @Override
+    public ModelEnum getModelEnum() {
+        return ModelEnum.MULTIBIT;
     }
 }
