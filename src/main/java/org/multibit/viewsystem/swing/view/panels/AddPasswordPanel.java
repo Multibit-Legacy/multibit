@@ -38,7 +38,7 @@ import javax.swing.SwingConstants;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -63,7 +63,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
     private static final long serialVersionUID = 444992298432957705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -91,9 +91,9 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
     /**
      * Creates a new {@link AddPasswordPanel}.
      */
-    public AddPasswordPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public AddPasswordPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -104,7 +104,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
         initUI();
         
         walletBusyChange(this.controller.getModel().getActivePerWalletModelData().isBusy());
-        this.multiBitController.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
     }
 
     @Override
@@ -561,7 +561,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        addPasswordSubmitAction = new AddPasswordSubmitAction(this.multiBitController, this,
+        addPasswordSubmitAction = new AddPasswordSubmitAction(this.bitcoinController, this,
                 ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE), passwordField, repeatPasswordField);
         MultiBitButton submitButton = new MultiBitButton(addPasswordSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

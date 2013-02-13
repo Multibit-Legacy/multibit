@@ -36,7 +36,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.multibit.Localiser;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -53,12 +54,12 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import org.multibit.controller.CoreController;
+
 
 public enum AlertManager {
     INSTANCE;
 
-    private MultiBitController controller;
+    private BitcoinController controller;
     private MultiBitFrame mainFrame;
 
     private Logger log = LoggerFactory.getLogger(AlertManager.class);
@@ -86,7 +87,7 @@ public enum AlertManager {
      */
     public String[] WHITELIST_PUBLIC_KEYS = new String[]{};
     
-    public void initialise(MultiBitController controller, MultiBitFrame mainFrame) {
+    public void initialise(BitcoinController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
     }
@@ -106,7 +107,7 @@ public enum AlertManager {
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
 
             private String message = null;
-            private final MultiBitController finalController = controller;
+            private final BitcoinController finalController = controller;
 
             private StringBuffer stringBuffer = new StringBuffer();
 
@@ -413,7 +414,7 @@ public enum AlertManager {
         
         // Initialise a few things.
         final CoreController controller = new CoreController();
-        final MultiBitController multiBitController = new MultiBitController(controller);
+        final BitcoinController multiBitController = new BitcoinController(controller);
         
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(multiBitController);

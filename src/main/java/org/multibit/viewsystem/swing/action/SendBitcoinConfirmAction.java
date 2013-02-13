@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -40,8 +40,8 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link SendBitcoinConfirmAction}.
      */
-    public SendBitcoinConfirmAction(MultiBitController multiBitController, MultiBitFrame mainFrame, BitcoinFormDataProvider dataProvider) {
-        super(multiBitController, "sendBitcoinConfirmAction.text", "sendBitcoinConfirmAction.tooltip","sendBitcoinConfirmAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
+    public SendBitcoinConfirmAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, BitcoinFormDataProvider dataProvider) {
+        super(bitcoinController, "sendBitcoinConfirmAction.text", "sendBitcoinConfirmAction.tooltip","sendBitcoinConfirmAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         this.mainFrame = mainFrame;
         this.dataProvider = dataProvider;
     }
@@ -63,7 +63,7 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
         
         Validator validator = new Validator(controller);
         if (validator.validate(sendAddress, sendAmount)) {
-            sendBitcoinConfirmDialog = new SendBitcoinConfirmDialog(super.multiBitController, mainFrame);
+            sendBitcoinConfirmDialog = new SendBitcoinConfirmDialog(super.bitcoinController, mainFrame);
             sendBitcoinConfirmDialog.setVisible(true);
         } else {
             validationErrorDialog = new ValidationErrorDialog(controller, mainFrame);

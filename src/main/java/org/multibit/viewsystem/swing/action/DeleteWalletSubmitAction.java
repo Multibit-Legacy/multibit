@@ -26,7 +26,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
@@ -49,18 +49,18 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     private static final long serialVersionUID = 1923933460523457765L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private DeleteWalletConfirmDialog deleteWalletConfirmDialog;
 
     /**
      * Creates a new {@link DeleteWalletSubmitAction}.
      */
-    public DeleteWalletSubmitAction(MultiBitController multiBitController, ImageIcon icon, DeleteWalletConfirmDialog deleteWalletConfirmDialog) {
-        super(multiBitController.getLocaliser().getString("deleteWalletAction.text"), icon);
+    public DeleteWalletSubmitAction(BitcoinController bitcoinController, ImageIcon icon, DeleteWalletConfirmDialog deleteWalletConfirmDialog) {
+        super(bitcoinController.getLocaliser().getString("deleteWalletAction.text"), icon);
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.deleteWalletConfirmDialog = deleteWalletConfirmDialog;
 
@@ -229,7 +229,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      * @throws IOException
      */
     private void deleteWallet(PerWalletModelData perWalletModelData) throws DeleteWalletException, WalletVersionException, IOException {
-        FileHandler fileHandler = new FileHandler(this.multiBitController);
+        FileHandler fileHandler = new FileHandler(this.bitcoinController);
         fileHandler.deleteWalletAndWalletInfo(perWalletModelData);
         
         // Set the first wallet to be the active wallet.

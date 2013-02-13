@@ -49,7 +49,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.crypto.KeyCrypterOpenSSL;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
@@ -84,7 +84,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     private static final long serialVersionUID = 444992294329957705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -130,9 +130,9 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
      */
-    public ImportPrivateKeysPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public ImportPrivateKeysPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -143,7 +143,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         initUI();
         
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
-        this.multiBitController.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
         
         enableImportFilePasswordPanel(false);
         passwordField1.setText("");
@@ -790,7 +790,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(this.multiBitController, mainFrame, this,
+        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(this.bitcoinController, mainFrame, this,
                 ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, passwordField1, passwordField2);
         MultiBitButton submitButton = new MultiBitButton(importPrivateKeysSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
