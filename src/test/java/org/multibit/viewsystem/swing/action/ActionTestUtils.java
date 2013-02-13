@@ -25,21 +25,6 @@ import com.google.bitcoin.core.Wallet;
  *
  */
 public class ActionTestUtils {
-    public static MultiBitController createController() {
-        MultiBitController controller = new MultiBitController();
-         
-         Localiser localiser = new Localiser(Locale.ENGLISH);
-         MultiBitModel model = new MultiBitModel(controller);
-         
-         controller.setLocaliser(localiser);
-         controller.setModel(model);
-         
-         CurrencyConverter.INSTANCE.initialise(controller);
-         
-         MultiBit.setController(controller);
-
-         return controller;
-     }
      
      public static void createNewActiveWallet(MultiBitController controller, String descriptor) throws Exception {
          Wallet wallet = new Wallet(NetworkParameters.prodNet());

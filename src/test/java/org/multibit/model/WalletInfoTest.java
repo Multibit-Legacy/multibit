@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.Constants;
+import org.multibit.CreateControllers;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 
@@ -47,13 +48,9 @@ public class WalletInfoTest extends TestCase {
        
     @Test
     public void testRoundTrip() throws Exception {
-        // set up core objects
-        MultiBitController controller = new MultiBitController();
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final MultiBitController controller = controllers.multiBitController;
 
         // get test directory and wallet
         File directory = new File(".");
@@ -112,13 +109,9 @@ public class WalletInfoTest extends TestCase {
 
     @Test
     public void testloadNonExistentInfoFile() throws Exception {
-        // Set up core objects.
-        MultiBitController controller = new MultiBitController();
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final MultiBitController controller = controllers.multiBitController;
 
         // Get test directory and wallet.
         File directory = new File(".");

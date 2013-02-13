@@ -34,6 +34,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.piuk.blockchain.MyWallet;
+import org.multibit.CreateControllers;
 
 public class PrivateKeysHandlerTest extends TestCase {
     public static final String PRIVATE_KEYS_TESTDATA_DIRECTORY = "privateKeys";
@@ -59,13 +60,9 @@ public class PrivateKeysHandlerTest extends TestCase {
     
     @Test
     public void testExport() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-        
-        controller.setLocaliser(localiser);
-        controller.setModel(model);   
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final MultiBitController controller = controllers.multiBitController;   
 
         PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(NetworkParameters.prodNet());
         assertNotNull(privateKeysHandler);
