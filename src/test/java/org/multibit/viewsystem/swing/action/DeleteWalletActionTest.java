@@ -24,8 +24,6 @@ import org.multibit.CreateControllers;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
-import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 public class DeleteWalletActionTest extends TestCase {

@@ -23,7 +23,7 @@ import java.util.TimerTask;
 
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -52,7 +52,7 @@ public class TickerTimerTask extends TimerTask {
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
-    private final MultiBitController controller;
+    private final Controller controller;
     private final MultiBitFrame mainFrame;
 
     // Is this the first row in the ticker (=true) or the second row (=false).
@@ -67,7 +67,7 @@ public class TickerTimerTask extends TimerTask {
     /**
      * Constructs the TickerTimerTask.
      */
-    public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame, boolean isFirstExchange) {
+    public TickerTimerTask(Controller controller, MultiBitFrame mainFrame, boolean isFirstExchange) {
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.isFirstExchange = isFirstExchange;

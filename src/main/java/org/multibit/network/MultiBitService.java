@@ -37,6 +37,7 @@ import javax.swing.SwingWorker;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.MultiBit;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
@@ -75,6 +76,7 @@ import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.SPVBlockStore;
+
 
 /**
  * <p>
@@ -121,7 +123,8 @@ public class MultiBitService {
 
     private BlockStore blockStore;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private final NetworkParameters networkParameters;
 
@@ -150,8 +153,8 @@ public class MultiBitService {
      * @param controller
      *            MutliBitController
      */
-    public MultiBitService(MultiBitController controller) {
-        this(controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
+    public MultiBitService(MultiBitController multiBitController) {
+        this(multiBitController.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), multiBitController);
     }
 
     /**
@@ -161,8 +164,9 @@ public class MultiBitService {
      * @param controller
      *            MutliBitController
      */
-    public MultiBitService(String walletFilename, MultiBitController controller) {
-        this.controller = controller;
+    public MultiBitService(String walletFilename, MultiBitController multiBitController) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
 
         if (controller == null) {
             throw new IllegalStateException("controller cannot be null");
@@ -176,7 +180,7 @@ public class MultiBitService {
             throw new IllegalStateException("controller.getApplicationDataDirectoryLocator() cannot be null");
         }
 
-        if (controller.getFileHandler() == null) {
+        if (this.multiBitController.getFileHandler() == null) {
             throw new IllegalStateException("controller.getFileHandler() cannot be null");
         }
 
@@ -261,7 +265,7 @@ public class MultiBitService {
         // Ensure there is a checkpoints file.
         File checkpointsFile = new File(checkpointsFilename);
         if (!checkpointsFile.exists()) {
-            controller.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
+            this.multiBitController.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
         }
 
         
@@ -308,7 +312,7 @@ public class MultiBitService {
     }
 
     public void createNewPeerGroup() {
-        peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
+        peerGroup = new MultiBitPeerGroup(this.multiBitController, networkParameters, blockChain);
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
@@ -353,7 +357,7 @@ public class MultiBitService {
             }
         }
         // Add the controller as a PeerEventListener.
-        peerGroup.addEventListener(controller.getPeerEventListener());
+        peerGroup.addEventListener(this.multiBitController.getPeerEventListener());
 
         // Add all existing wallets to the PeerGroup.
         if (controller != null && controller.getModel() != null) {
@@ -373,7 +377,7 @@ public class MultiBitService {
     }
 
     public static String getFilePrefix() {
-        MultiBitController controller = MultiBit.getController();
+        Controller controller = MultiBit.getController();
         MultiBitModel model = controller.getModel();
         // testnet3
         if (TESTNET3_GENESIS_HASH.equals(model.getNetworkParameters().genesisBlock.getHashAsString())) {
@@ -404,7 +408,7 @@ public class MultiBitService {
                 walletFileIsADirectory = true;
             } else {
 
-                perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
+                perWalletModelDataToReturn = this.multiBitController.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
                 }
@@ -425,7 +429,7 @@ public class MultiBitService {
 
             if (walletFile.exists()) {
                 // Wallet file exists with default name.
-                perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
+                perWalletModelDataToReturn = this.multiBitController.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
                 }
@@ -448,7 +452,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn.setWalletDescription(defaultDescription);
 
                 try {
-                    controller.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
+                    this.multiBitController.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
 
                     newWalletCreated = true;
                 } catch (WalletSaveException wse) {
@@ -596,7 +600,7 @@ public class MultiBitService {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
 
             try {
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+                this.multiBitController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             } catch (WalletSaveException wse) {
                 log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));

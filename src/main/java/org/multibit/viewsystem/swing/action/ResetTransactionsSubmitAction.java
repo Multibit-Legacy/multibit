@@ -25,6 +25,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.SwingWorker;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -61,9 +62,9 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public ResetTransactionsSubmitAction(MultiBitController controller, MultiBitFrame mainFrame, Icon icon,
+    public ResetTransactionsSubmitAction(MultiBitController multiBitController, MultiBitFrame mainFrame, Icon icon,
             ResetTransactionsDataProvider resetTransactionsDataProvider) {
-        super(controller, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
+        super(multiBitController, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
                 "resetTransactionsSubmitAction.mnemonicKey", icon);
         this.mainFrame = mainFrame;
         this.resetTransactionsDataProvider = resetTransactionsDataProvider;
@@ -132,7 +133,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
         // Save the wallet without the transactions.
         try {
-            controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
+            super.multiBitController.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
             log.debug("RT Ping 10");
 
             controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
@@ -156,7 +157,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             perWalletModelData.setBusyTaskKey("resetTransactionsSubmitAction.text");
             perWalletModelData.setBusyTaskVerbKey("resetTransactionsSubmitAction.verb");
 
-            controller.fireWalletBusyChange(true);
+            this.multiBitController.fireWalletBusyChange(true);
 
             resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate, activePerWalletModelData.getWalletFilename());
             log.debug("RT Ping 14");

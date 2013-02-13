@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+
 import org.multibit.CreateControllers;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;

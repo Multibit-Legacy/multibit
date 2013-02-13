@@ -59,7 +59,11 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.joda.money.Money;
-import org.multibit.controller.MultiBitController;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.multibit.controller.Controller;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.TickerTimerTask;
@@ -84,8 +88,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The show preferences view.
@@ -117,7 +119,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int API_CODE_FIELD_WIDTH = 200;
 
     
-    private MultiBitController controller;
+    private Controller controller;
     private MultiBitFrame mainFrame;
 
     SortedSet<LanguageData> languageDataSet;
@@ -199,11 +201,10 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
-    public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ShowPreferencesPanel(Controller controller, MultiBitFrame mainFrame) {
         log.debug("Construct a new ShowPreferencesPanel");
         this.controller = controller;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         localisedSystemLookAndFeelName = controller.getLocaliser().getString("showPreferencesPanel.systemLookAndFeel");
         originalOERApiCode = controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE);

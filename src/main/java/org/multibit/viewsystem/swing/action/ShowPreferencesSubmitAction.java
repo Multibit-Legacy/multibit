@@ -30,7 +30,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.joda.money.CurrencyUnit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
@@ -54,14 +54,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
 
-    private MultiBitController controller;
+    private Controller controller;
     private PreferencesDataProvider dataProvider;
     private MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(MultiBitController controller, PreferencesDataProvider dataProvider, Icon icon,
+    public ShowPreferencesSubmitAction(Controller controller, PreferencesDataProvider dataProvider, Icon icon,
             MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
         this.controller = controller;

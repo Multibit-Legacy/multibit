@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
@@ -39,8 +40,8 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link CreateNewSendingAddressAction}.
      */
-    public CreateNewSendingAddressAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel) {
-        super(controller, "createOrEditAddressAction.createReceiving.text", "createOrEditAddressAction.createSending.tooltip",
+    public CreateNewSendingAddressAction(MultiBitController multiBitController, SendBitcoinPanel sendBitcoinPanel) {
+        super(multiBitController, "createOrEditAddressAction.createReceiving.text", "createOrEditAddressAction.createSending.tooltip",
                 "createOrEditAddressAction.createSending.mnemonicKey", null);
         this.sendBitcoinPanel = sendBitcoinPanel;
     }
