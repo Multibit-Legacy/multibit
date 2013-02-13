@@ -33,6 +33,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.multibit.controller.Controller;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
@@ -71,14 +72,21 @@ import com.google.bitcoin.core.Wallet;
 public class MultiBit {
     private static final Logger log = LoggerFactory.getLogger(MultiBit.class);
 
-    private static MultiBitController controller = null;
+    private static Controller controller = null;
+    
+    private static CoreController coreController = null;
+    private static MultiBitController multiBitController = null;
     
     public static Controller getController() {
         return controller;
     }
     
+    public static CoreController getCoreController() {
+        return coreController;
+    }
+    
     public static MultiBitController getMultiBitController() {
-        return controller;
+        return multiBitController;
     }
     
     /**
@@ -115,15 +123,18 @@ public class MultiBit {
             // load up the user preferences
             Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
 
-            // create the controller
-            controller = new MultiBitController(applicationDataDirectoryLocator);
+            // create the controllers
+            coreController = new CoreController(applicationDataDirectoryLocator);
+            controller = coreController;
+            multiBitController = new MultiBitController(coreController);
+            
 
             log.info("Configuring native event handling");
             GenericApplicationSpecification specification = new GenericApplicationSpecification();
-            specification.getOpenURIEventListeners().add(controller);
-            specification.getPreferencesEventListeners().add(controller);
-            specification.getAboutEventListeners().add(controller);
-            specification.getQuitEventListeners().add(controller);
+            specification.getOpenURIEventListeners().add(coreController);
+            specification.getPreferencesEventListeners().add(coreController);
+            specification.getAboutEventListeners().add(coreController);
+            specification.getQuitEventListeners().add(coreController);
             GenericApplication genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
 
             log.info("Checking to see if this is the primary MultiBit instance");
@@ -137,7 +148,7 @@ public class MultiBit {
                 System.exit(0);
             }
 
-            final MultiBitController finalController = controller;
+            final MultiBitController finalController = multiBitController;
             ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationInstanceListener() {
                 @Override
                 public void newInstanceCreated(String rawURI) {
@@ -171,22 +182,22 @@ public class MultiBit {
                     localiser = new Localiser(new Locale(userLanguageCode));
                 }
             }
-            controller.setLocaliser(localiser);
+            coreController.setLocaliser(localiser);
 
             log.debug("Creating model");
 
             // Create the model.
             // The model is set to the controller.
             {
-            MultiBitModel model = new MultiBitModel(controller, userPreferences);
-                controller.setModel(model);
+            MultiBitModel model = new MultiBitModel(multiBitController, userPreferences);
+                coreController.setModel(model);
             }
 
             // Initialise currency converter.
             CurrencyConverter.INSTANCE.initialise(finalController);
             
             // Initialise repla manager.
-            ReplayManager.INSTANCE.initialise(controller);
+            ReplayManager.INSTANCE.initialise(multiBitController);
             
             log.debug("Setting look and feel");
             try {
@@ -219,15 +230,15 @@ public class MultiBit {
             
             // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface with initial view : " + controller.getCurrentView());
-            swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());
+            swingViewSystem = new MultiBitFrame(multiBitController, coreController, genericApplication, controller.getCurrentView());
 
             log.debug("Registering with controller");
-            controller.registerViewSystem(swingViewSystem);
+            coreController.registerViewSystem(swingViewSystem);
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
-            MultiBitService multiBitService = new MultiBitService(controller);
-            controller.setMultiBitService(multiBitService);
+            MultiBitService multiBitService = new MultiBitService(multiBitController);
+            multiBitController.setMultiBitService(multiBitService);
 
             log.debug("Locating wallets");
             // Find the active wallet filename in the multibit.properties.
@@ -251,7 +262,7 @@ public class MultiBit {
 
                 try {
                     // ActiveWalletFilename may be null on first time startup.
-                    controller.addWalletFromFilename(activeWalletFilename);
+                    multiBitController.addWalletFromFilename(activeWalletFilename);
                     List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null && !perWalletModelDataList.isEmpty()) {
                         activeWalletFilename = perWalletModelDataList.get(0).getWalletFilename();
@@ -384,10 +395,10 @@ public class MultiBit {
                             MessageManager.INSTANCE.addMessage(message);
                             try {
                                 if (activeWalletFilename != null && activeWalletFilename.equals(actualOrder)) {
-                                    controller.addWalletFromFilename(actualOrder);
+                                    multiBitController.addWalletFromFilename(actualOrder);
                                     controller.getModel().setActiveWalletByFilename(actualOrder);
                                 } else {
-                                    controller.addWalletFromFilename(actualOrder);
+                                    multiBitController.addWalletFromFilename(actualOrder);
                                 }
                                 Message message2 = new Message(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                         new Object[] { actualOrder }));
@@ -444,34 +455,34 @@ public class MultiBit {
                 for (int i = 0; i < args.length; i++) {
                     log.debug("Started with args[{}]: '{}'", i, args[i]);
                 }
-                processCommandLineURI(controller, args[0]);
+                processCommandLineURI(multiBitController, args[0]);
             } else {
                 log.debug("No Bitcoin URI provided as an argument");
             }
 
             // Indicate to the application that startup has completed.
-            controller.setApplicationStarting(false);
+            coreController.setApplicationStarting(false);
 
             // Check for any pending URI operations.
-            controller.handleOpenURI();
+            multiBitController.handleOpenURI();
 
             // Check to see if there is a new version.
-            AlertManager.INSTANCE.initialise(controller, (MultiBitFrame) swingViewSystem);
+            AlertManager.INSTANCE.initialise(multiBitController, (MultiBitFrame) swingViewSystem);
             AlertManager.INSTANCE.checkVersion();
             
             log.debug("Downloading blockchain");
             if (useFastCatchup) {
                 long earliestTimeSecs = controller.getModel().getActiveWallet().getEarliestKeyCreationTime();
-                controller.getMultiBitService().getPeerGroup().setFastCatchupTimeSecs(earliestTimeSecs);
+                multiBitController.getMultiBitService().getPeerGroup().setFastCatchupTimeSecs(earliestTimeSecs);
                 log.debug("Using FastCatchup for blockchain sync with time of " + (new Date(earliestTimeSecs)).toString());
             }
             
             // Work out the late date/ block the wallets saw to see if it needs syncing
             // or if we can use regular downloading
             int currentChainHeight = -1;
-            if (controller.getMultiBitService().getChain() != null) {
-                if (controller.getMultiBitService().getChain().getChainHead() != null) {
-                    currentChainHeight = controller.getMultiBitService().getChain().getChainHead().getHeight();
+            if (multiBitController.getMultiBitService().getChain() != null) {
+                if (multiBitController.getMultiBitService().getChain().getChainHead() != null) {
+                    currentChainHeight = multiBitController.getMultiBitService().getChain().getChainHead().getHeight();
                 }
             }
             
@@ -515,7 +526,7 @@ public class MultiBit {
             if (needToSync) {
                 StoredBlock syncFromStoredBlock = null;
 
-                MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
+                MultiBitCheckpointManager checkpointManager = multiBitController.getMultiBitService().getCheckpointManager();
                 if (checkpointManager != null) {
                     syncFromStoredBlock = checkpointManager.getCheckpointBeforeOrAtHeight(syncFromHeight);
                 }
@@ -586,7 +597,7 @@ public class MultiBit {
             controller.displayView(controller.getCurrentView());
             // Call the event which will attempt validation against the
             // Bitcoin URI specification.
-            controller.onOpenURIEvent(event);
+            coreController.onOpenURIEvent(event);
         } catch (URISyntaxException e) {
             log.error("URI is malformed. Received: '{}'", rawURI);
         } catch (UnsupportedEncodingException e) {

@@ -23,6 +23,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
+import org.multibit.controller.CoreController;
 
 /**
  * Class containing utility methods for action tests.
