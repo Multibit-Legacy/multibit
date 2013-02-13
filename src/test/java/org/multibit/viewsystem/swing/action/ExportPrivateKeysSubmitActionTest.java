@@ -36,6 +36,7 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.crypto.EncryptedPrivateKey;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
+import org.multibit.CreateControllers;
 
 public class ExportPrivateKeysSubmitActionTest extends TestCase {   
     
@@ -54,7 +55,8 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testExportPrivateKeysWithNonEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", false, null);
@@ -165,7 +167,8 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testExportPrivateKeysWithEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithEncryptedWallet", true, WALLET_PASSWORD);
@@ -295,7 +298,8 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testNoWalletSelected() throws Exception {
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
 
         // This test runs against an empty PerWalletModelDataList.
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());

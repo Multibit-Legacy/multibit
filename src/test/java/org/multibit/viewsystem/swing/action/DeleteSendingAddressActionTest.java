@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.multibit.CreateControllers;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.PerWalletModelData;
@@ -34,8 +35,9 @@ public class DeleteSendingAddressActionTest extends TestCase {
        
     @Test
     public void testDeleteSendingAddress() throws Exception {
-        // Create MultiBit controller
-        MultiBitController controller = ActionTestUtils.createController();
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testDeleteSendingAddress", false, null);

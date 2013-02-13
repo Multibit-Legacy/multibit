@@ -45,6 +45,7 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
+import org.multibit.CreateControllers;
 
 /**
  * Functional test to check that Mining Coinbase Transactions can be seen.
@@ -84,13 +85,9 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // Set the application data directory to be the one we just created.
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-            // Create the controller.
-            final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
-            MultiBit.setController(controller);
-
-            // Create the model - gets hooked up to controller automatically.
-            @SuppressWarnings("unused")
-            MultiBitModel model = new MultiBitModel(controller);
+            // Create MultiBit controller.
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
+            final MultiBitController controller = controllers.multiBitController;
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.

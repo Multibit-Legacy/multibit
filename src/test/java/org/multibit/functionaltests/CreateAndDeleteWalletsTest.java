@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
+import org.multibit.CreateControllers;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
@@ -65,15 +66,9 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             // set the application data directory to be the one we just created
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-            // create the controller
-            controller = new MultiBitController(applicationDataDirectoryLocator);
-
-            assertNotNull("Controller is null", controller);
-            MultiBit.setController(controller);
-
-            // create the model - gets hooked up to controller automatically
-            @SuppressWarnings("unused")
-            MultiBitModel model = new MultiBitModel(controller);
+            // Create MultiBit controller.
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
+            controller = controllers.multiBitController;
 
             log.debug("Creating Bitcoin service");
             // create the MultiBitService that connects to the bitcoin network
