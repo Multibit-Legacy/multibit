@@ -18,6 +18,8 @@ package org.multibit.controller;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.multibit.CreateControllers;
+import org.multibit.CreateControllers.Controllers;
 import org.multibit.viewsystem.swing.action.ActionTestUtils;
 
 public class MultiBitControllerTest extends TestCase {     
@@ -27,7 +29,8 @@ public class MultiBitControllerTest extends TestCase {
     @Test
     public void testWalletBusyListener() throws Exception {       
         // Create MultiBit controller
-        MultiBitController controller = ActionTestUtils.createController();
+        Controllers controllers = CreateControllers.createControllers();
+        MultiBitController controller = controllers.multiBitController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testWalletBusyListener", false, null);
