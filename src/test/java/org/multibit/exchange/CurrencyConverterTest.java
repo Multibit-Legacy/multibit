@@ -27,6 +27,7 @@ import org.joda.money.Money;
 import org.junit.Test;
 import org.multibit.CreateControllers;
 import org.multibit.Localiser;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 
@@ -193,9 +194,9 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testAllCurrencies() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.FRENCH));
+        final MultiBitController controller = controllers.multiBitController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
         BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);

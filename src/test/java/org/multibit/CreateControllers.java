@@ -24,6 +24,7 @@
 package org.multibit;
 
 import java.util.Locale;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
@@ -58,26 +59,30 @@ public class CreateControllers {
             )
     {
 
-        final MultiBitController multiBitController = new MultiBitController(applicationDataDirectoryLocator);
+        final CoreController coreController = new CoreController(applicationDataDirectoryLocator);
+        final MultiBitController multiBitController = new MultiBitController(coreController);
+        
         final MultiBitModel multiBitModel = new MultiBitModel(multiBitController);
         if (null == multiBitModel) {
             return null;
         }
-        multiBitController.setLocaliser((null != localiser) ? localiser : new Localiser(Locale.ENGLISH));
-        multiBitController.setModel(multiBitModel);
+        coreController.setLocaliser((null != localiser) ? localiser : new Localiser(Locale.ENGLISH));
+        coreController.setModel(multiBitModel);
         
         CurrencyConverter.INSTANCE.initialise(multiBitController);
 
         MultiBit.setController(multiBitController);
         
-        return new Controllers(multiBitController);
+        return new Controllers(coreController,multiBitController);
     }
 
     public static class Controllers {
 
+        public final CoreController coreController;
         public final MultiBitController multiBitController;
 
-        public Controllers(final MultiBitController multiBitController) {
+        public Controllers(final CoreController coreController, final MultiBitController multiBitController) {
+            this.coreController = coreController;
             this.multiBitController = multiBitController;
         }
     }
