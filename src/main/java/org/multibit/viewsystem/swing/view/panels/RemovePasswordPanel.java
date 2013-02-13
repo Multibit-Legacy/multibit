@@ -34,7 +34,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -59,7 +59,7 @@ public class RemovePasswordPanel extends JPanel implements Viewable, WalletBusyL
     private static final long serialVersionUID = 444992298432957705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -80,9 +80,9 @@ public class RemovePasswordPanel extends JPanel implements Viewable, WalletBusyL
     /**
      * Creates a new {@link RemovePasswordPanel}.
      */
-    public RemovePasswordPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public RemovePasswordPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -91,7 +91,7 @@ public class RemovePasswordPanel extends JPanel implements Viewable, WalletBusyL
         initUI();
         
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
-        this.multiBitController.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
     }
 
     @Override
@@ -472,7 +472,7 @@ public class RemovePasswordPanel extends JPanel implements Viewable, WalletBusyL
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        removePasswordSubmitAction = new RemovePasswordSubmitAction(this.multiBitController, this,
+        removePasswordSubmitAction = new RemovePasswordSubmitAction(this.bitcoinController, this,
                 ImageLoader.createImageIcon(ImageLoader.REMOVE_PASSWORD_ICON_FILE), passwordField, mainFrame);
         MultiBitButton submitButton = new MultiBitButton(removePasswordSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

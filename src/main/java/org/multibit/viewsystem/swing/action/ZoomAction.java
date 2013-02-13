@@ -36,7 +36,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
@@ -49,7 +49,7 @@ public class ZoomAction extends AbstractAction {
     private static final long serialVersionUID = 1923492460523457765L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private MultiBitFrame mainFrame;
 
@@ -61,11 +61,11 @@ public class ZoomAction extends AbstractAction {
     /**
      * Creates a new {@link ZoomAction}.
      */
-    public ZoomAction(MultiBitController multiBitController, ImageIcon icon, MultiBitFrame mainFrame, AbstractTradePanel tradePanel) {
-        super(multiBitController.getLocaliser().getString("zoomAction.text"), icon);
+    public ZoomAction(BitcoinController bitcoinController, ImageIcon icon, MultiBitFrame mainFrame, AbstractTradePanel tradePanel) {
+        super(bitcoinController.getLocaliser().getString("zoomAction.text"), icon);
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         this.tradePanel = tradePanel;
 
@@ -96,7 +96,7 @@ public class ZoomAction extends AbstractAction {
             int scaleWidth = (int) (mainFrameSize.getWidth() - WIDTH_DELTA);
             int scaleHeight = (int) (mainFrameSize.getHeight() - HEIGHT_DELTA);
 
-            QRCodeGenerator qrCodeGenerator = new QRCodeGenerator(this.multiBitController);
+            QRCodeGenerator qrCodeGenerator = new QRCodeGenerator(this.bitcoinController);
 
             Image image = qrCodeGenerator.generateQRcode(address, amount, label, 1);
             if (image != null) {

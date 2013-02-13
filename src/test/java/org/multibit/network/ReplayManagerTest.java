@@ -31,10 +31,9 @@ import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
 import org.multibit.Localiser;
-import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.CreateControllers;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.store.MultiBitWalletVersion;
@@ -46,13 +45,13 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
-import org.multibit.CreateControllers;
-import org.multibit.controller.CoreController;
+
+
 
 public class ReplayManagerTest extends TestCase {
     private static final Logger log = LoggerFactory.getLogger(ReplayManagerTest.class);
 
-    private MultiBitController controller;
+    private BitcoinController controller;
     private Localiser localiser;
     private File multiBitDirectory;
 
@@ -76,7 +75,7 @@ public class ReplayManagerTest extends TestCase {
 
         // Create MultiBit controller
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
-        controller = controllers.multiBitController;
+        controller = controllers.bitcoinController;
         
         log.debug("Creating Bitcoin service");
         // Create the MultiBitService that connects to the bitcoin network.

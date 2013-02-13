@@ -24,8 +24,8 @@
 package org.multibit;
 
 import java.util.Locale;
-import org.multibit.controller.CoreController;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.core.CoreController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
 
@@ -60,30 +60,31 @@ public class CreateControllers {
     {
 
         final CoreController coreController = new CoreController(applicationDataDirectoryLocator);
-        final MultiBitController multiBitController = new MultiBitController(coreController);
+        final BitcoinController bitcoinController = new BitcoinController(coreController);
         
-        final MultiBitModel multiBitModel = new MultiBitModel(multiBitController);
+        final MultiBitModel multiBitModel = new MultiBitModel(bitcoinController);
         if (null == multiBitModel) {
             return null;
         }
         coreController.setLocaliser((null != localiser) ? localiser : new Localiser(Locale.ENGLISH));
         coreController.setModel(multiBitModel);
         
-        CurrencyConverter.INSTANCE.initialise(multiBitController);
+        CurrencyConverter.INSTANCE.initialise(coreController);
 
-        MultiBit.setController(multiBitController);
+        MultiBit.setCoreController(coreController);
+        MultiBit.setBitcoinController(bitcoinController);
         
-        return new Controllers(coreController,multiBitController);
+        return new Controllers(coreController,bitcoinController);
     }
 
     public static class Controllers {
 
         public final CoreController coreController;
-        public final MultiBitController multiBitController;
+        public final BitcoinController bitcoinController;
 
-        public Controllers(final CoreController coreController, final MultiBitController multiBitController) {
+        public Controllers(final CoreController coreController, final BitcoinController bitcoinController) {
             this.coreController = coreController;
-            this.multiBitController = multiBitController;
+            this.bitcoinController = bitcoinController;
         }
     }
 }

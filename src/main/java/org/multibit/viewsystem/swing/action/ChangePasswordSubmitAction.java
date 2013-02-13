@@ -26,7 +26,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
@@ -62,16 +62,16 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
     /**
      * Creates a new {@link ChangePasswordSubmitAction}.
      */
-    public ChangePasswordSubmitAction(MultiBitController multiBitController, ChangePasswordPanel changePasswordPanel,
+    public ChangePasswordSubmitAction(BitcoinController bitcoinController, ChangePasswordPanel changePasswordPanel,
             ImageIcon icon, JPasswordField currentPassword, JPasswordField newPassword, JPasswordField repeatNewPassword) {
-        super(multiBitController, "changePasswordSubmitAction.text", "changePasswordSubmitAction.tooltip", "changePasswordSubmitAction.mnemonicKey", icon);
+        super(bitcoinController, "changePasswordSubmitAction.text", "changePasswordSubmitAction.tooltip", "changePasswordSubmitAction.mnemonicKey", icon);
         this.changePasswordPanel = changePasswordPanel;
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
         this.repeatNewPassword = repeatNewPassword;
         
         // This action is a WalletBusyListener.
-        super.multiBitController.registerWalletBusyListener(this);
+        super.bitcoinController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
         
     }
@@ -120,7 +120,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                 perWalletModelData.setBusy(true);
                 perWalletModelData.setBusyTaskKey("changePasswordSubmitAction.text");
 
-                super.multiBitController.fireWalletBusyChange(true);
+                super.bitcoinController.fireWalletBusyChange(true);
 
                 boolean decryptSuccess = false;
                 KeyCrypter keyCrypterToUse = wallet.getKeyCrypter();
@@ -135,7 +135,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                     // Declare that wallet is no longer busy with the task.
                     perWalletModelData.setBusyTaskKey(null);
                     perWalletModelData.setBusy(false);
-                    super.multiBitController.fireWalletBusyChange(false);
+                    super.bitcoinController.fireWalletBusyChange(false);
                     
                     return;
                 }
@@ -143,7 +143,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                 if (decryptSuccess) {
                     try {
                         wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(CharBuffer.wrap(newPasswordToUse)));
-                        FileHandler fileHandler = new FileHandler(super.multiBitController);
+                        FileHandler fileHandler = new FileHandler(super.bitcoinController);
                         fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
                         
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(newPasswordToUse));
@@ -161,13 +161,13 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                         // Declare that wallet is no longer busy with the task.
                         perWalletModelData.setBusyTaskKey(null);
                         perWalletModelData.setBusy(false);
-                        super.multiBitController.fireWalletBusyChange(false);
+                        super.bitcoinController.fireWalletBusyChange(false);
                     }
                 } else {
                     // Declare that wallet is no longer busy with the task.
                     perWalletModelData.setBusyTaskKey(null);
                     perWalletModelData.setBusy(false);
-                    super.multiBitController.fireWalletBusyChange(false);
+                    super.bitcoinController.fireWalletBusyChange(false);
                 }
             }
         }

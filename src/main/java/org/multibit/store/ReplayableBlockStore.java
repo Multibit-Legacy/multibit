@@ -37,7 +37,7 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkState;
 
 import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 
 import com.google.bitcoin.store.BlockStore;
@@ -189,7 +189,7 @@ public class ReplayableBlockStore implements BlockStore {
             boolean blockChainLoadedOk = false;
             if (copyInstalledBlockChain) {
                 // Recopy in the installer blockchain.
-                MultiBitController controller = MultiBit.getMultiBitController();
+                BitcoinController controller = MultiBit.getBitcoinController();
                 FileHandler fileHandler = controller.getFileHandler();
                 if (fileHandler != null) {
                     fileHandler.copyBlockChainFromInstallationDirectory(file.getAbsolutePath(), true);

@@ -28,7 +28,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
@@ -41,18 +41,18 @@ public class PasteSwatchAction extends AbstractAction {
     private static final long serialVersionUID = 193452235465057705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private AbstractTradePanel tradePanel;
 
     /**
      * Creates a new {@link PasteSwatchAction}.
      */
-    public PasteSwatchAction(MultiBitController multiBitController, AbstractTradePanel tradePanel, Icon icon) {
+    public PasteSwatchAction(BitcoinController bitcoinController, AbstractTradePanel tradePanel, Icon icon) {
         super("", icon);
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.tradePanel = tradePanel;
 
@@ -68,13 +68,13 @@ public class PasteSwatchAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = this.multiBitController.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            this.multiBitController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             // see if an image was pasted
             Image image = getImageFromClipboard();

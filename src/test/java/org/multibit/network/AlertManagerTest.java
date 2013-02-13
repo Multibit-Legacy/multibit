@@ -23,20 +23,20 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.Localiser;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
 import org.multibit.CreateControllers;
 
 public class AlertManagerTest extends TestCase {
-    MultiBitController controller;
+    BitcoinController controller;
     
     @Before
     public void setUp() throws Exception {
         // Create MultiBit controller
         final Localiser localiser = new TestLocaliser();
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(localiser);
-        controller = controllers.multiBitController;
+        controller = controllers.bitcoinController;
     }
 
     @Test

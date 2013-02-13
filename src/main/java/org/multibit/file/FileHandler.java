@@ -38,7 +38,7 @@ import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -75,7 +75,7 @@ public class FileHandler {
     public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private Date dateForBackupName = null;
     
@@ -102,9 +102,9 @@ public class FileHandler {
         }
     }
     
-    public FileHandler(MultiBitController multiBitController) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public FileHandler(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         walletProtobufSerializer = new MultiBitWalletProtobufSerializer();
@@ -460,8 +460,8 @@ public class FileHandler {
                         false, false, MultiBitModel.PRIVATE_KEY_FILE_EXTENSION);
                 privateKeysBackupFile = new File(privateKeysBackupFilename);
                 BlockChain blockChain = null;
-                if (this.multiBitController.getMultiBitService() != null) {
-                    blockChain = this.multiBitController.getMultiBitService().getChain();
+                if (this.bitcoinController.getMultiBitService() != null) {
+                    blockChain = this.bitcoinController.getMultiBitService().getChain();
                 }
                 
                 privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, controller.getModel().getActiveWallet(), blockChain, true, passwordToUse, passwordToUse);
