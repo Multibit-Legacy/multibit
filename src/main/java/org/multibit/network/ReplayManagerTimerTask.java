@@ -6,7 +6,8 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
@@ -14,12 +15,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.store.BlockStoreException;
 
+
+
 /**
  * The timer task used to poll the replay task queue and initiate replays.
  * 
  */
 public class ReplayManagerTimerTask extends TimerTask {
-    final private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private static final Logger log = LoggerFactory.getLogger(ReplayManager.class);
 
@@ -30,8 +34,9 @@ public class ReplayManagerTimerTask extends TimerTask {
 
     final private Queue<ReplayTask> replayTaskQueue;
 
-    public ReplayManagerTimerTask(MultiBitController controller, Queue<ReplayTask> replayTaskQueue) {
-        this.controller = controller;
+    public ReplayManagerTimerTask(BitcoinController bitcoinController, Queue<ReplayTask> replayTaskQueue) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.replayTaskQueue = replayTaskQueue;
     }
 

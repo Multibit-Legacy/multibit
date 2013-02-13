@@ -45,6 +45,7 @@ import javax.swing.border.Border;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
 import org.multibit.model.PerWalletModelData;
@@ -65,7 +66,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
-import org.multibit.controller.MultiBitController;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, WalletBusyListener {
 
@@ -95,7 +95,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private BlinkLabel amountLabelFiat;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private MultiBitFrame mainFrame;
 
@@ -129,12 +129,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     
     private double lastSyncPercent;
           
-    public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController multiBitController, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
+    public SingleWalletPanel(PerWalletModelData perWalletModelData, final BitcoinController bitcoinController, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
-        perWalletModelData.setSingleWalletDownloadListener(new SingleWalletPanelDownloadListener(this.multiBitController, this));
+        perWalletModelData.setSingleWalletDownloadListener(new SingleWalletPanelDownloadListener(this.bitcoinController, this));
   
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         fontMetrics = getFontMetrics(font);

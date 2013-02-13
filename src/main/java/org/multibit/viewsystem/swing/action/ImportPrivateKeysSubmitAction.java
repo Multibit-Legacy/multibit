@@ -33,7 +33,7 @@ import javax.swing.SwingWorker;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
@@ -84,9 +84,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
     /**
      * Creates a new {@link ImportPrivateKeysSubmitAction}.
      */
-    public ImportPrivateKeysSubmitAction(MultiBitController multiBitController, MultiBitFrame mainFrame, ImportPrivateKeysPanel importPrivateKeysPanel,
+    public ImportPrivateKeysSubmitAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, ImportPrivateKeysPanel importPrivateKeysPanel,
             ImageIcon icon, JPasswordField walletPasswordField, JPasswordField passwordField1, JPasswordField passwordField2) {
-        super(multiBitController, "importPrivateKeysSubmitAction.text", "importPrivateKeysSubmitAction.tooltip",
+        super(bitcoinController, "importPrivateKeysSubmitAction.text", "importPrivateKeysSubmitAction.tooltip",
                 "importPrivateKeysSubmitAction.mnemonicKey", icon);
         this.mainFrame = mainFrame;
         this.importPrivateKeysPanel = importPrivateKeysPanel;
@@ -95,7 +95,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         this.passwordField2 = passwordField2;
         
         // This action is a WalletBusyListener.
-        super.multiBitController.registerWalletBusyListener(this);
+        super.bitcoinController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
@@ -263,7 +263,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     "importPrivateKeysSubmitAction.importingPrivateKeys"));
             importPrivateKeysPanel.setMessageText2(" ");
 
-            super.multiBitController.fireWalletBusyChange(true);
+            super.bitcoinController.fireWalletBusyChange(true);
 
             importPrivateKeysInBackground(privateKeyAndDateArray, walletPassword);
         }
@@ -276,7 +276,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             final CharSequence walletPassword) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ImportPrivateKeysPanel finalImportPanel = importPrivateKeysPanel;
-        final MultiBitController finalMultiBitController = super.multiBitController;
+        final BitcoinController finalBitcoinController = super.bitcoinController;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String statusBarMessage = null;
@@ -378,14 +378,14 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
                     log.debug(walletToAddKeysTo.toString());
 
-                    finalMultiBitController.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
+                    finalBitcoinController.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
 
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
 
                     // Import was successful.
-                    uiMessage = finalMultiBitController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
+                    uiMessage = finalBitcoinController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
 
-                    privateKeysBackupFile = finalMultiBitController.getFileHandler().backupPrivateKeys(CharBuffer.wrap(walletPassword));
+                    privateKeysBackupFile = finalBitcoinController.getFileHandler().backupPrivateKeys(CharBuffer.wrap(walletPassword));
 
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);

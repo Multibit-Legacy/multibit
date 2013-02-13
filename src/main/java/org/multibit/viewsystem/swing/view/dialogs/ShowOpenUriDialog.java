@@ -32,7 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -59,7 +59,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
     private MultiBitFrame mainFrame;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private JButton submitButton;
     private JButton cancelButton;
@@ -77,11 +77,11 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
     /**
      * Creates a new {@link ShowOpenUriDialog}.
      */
-    public ShowOpenUriDialog(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        super(mainFrame, multiBitController.getLocaliser().getString("showOpenUriView.title"));
+    public ShowOpenUriDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        super(mainFrame, bitcoinController.getLocaliser().getString("showOpenUriView.title"));
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         
         setAlwaysOnTop(true);
@@ -206,7 +206,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
         cancelButton.setText(controller.getLocaliser().getString("showOpenUriView.noText"));
         buttonPanel.add(cancelButton);
 
-        ShowOpenUriSubmitAction showOpenUriSubmitAction = new ShowOpenUriSubmitAction(mainFrame, this.multiBitController, this, this);
+        ShowOpenUriSubmitAction showOpenUriSubmitAction = new ShowOpenUriSubmitAction(mainFrame, this.bitcoinController, this, this);
         submitButton = new JButton(showOpenUriSubmitAction);
         submitButton.setText(controller.getLocaliser().getString("showOpenUriView.yesText"));
         buttonPanel.add(submitButton);

@@ -16,7 +16,7 @@
 package org.multibit.network;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.NetworkParameters;
@@ -25,14 +25,14 @@ import com.google.bitcoin.core.PeerGroup;
 
 public class MultiBitPeerGroup extends PeerGroup {
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     MultiBitDownloadListener multiBitDownloadListener = null;
         
-    public MultiBitPeerGroup(MultiBitController multiBitController, NetworkParameters params, BlockChain chain) {
+    public MultiBitPeerGroup(BitcoinController bitcoinController, NetworkParameters params, BlockChain chain) {
         super(params, chain);
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
-        multiBitDownloadListener = new MultiBitDownloadListener(this.multiBitController);
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        multiBitDownloadListener = new MultiBitDownloadListener(this.bitcoinController);
     }
     
     /**

@@ -27,8 +27,8 @@ import org.joda.money.Money;
 import org.junit.Test;
 import org.multibit.CreateControllers;
 import org.multibit.Localiser;
-import org.multibit.controller.CoreController;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.MultiBitModel;
 
 public class CurrencyConverterTest extends TestCase {
@@ -36,7 +36,7 @@ public class CurrencyConverterTest extends TestCase {
     public void testBasic() throws IOException {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        final MultiBitController controller = controllers.multiBitController;
+        final BitcoinController controller = controllers.bitcoinController;
 
         // set the default currency to USD
         controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, "USD");
@@ -67,7 +67,7 @@ public class CurrencyConverterTest extends TestCase {
     public void testConvert() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        final MultiBitController controller = controllers.multiBitController;
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -90,7 +90,7 @@ public class CurrencyConverterTest extends TestCase {
     public void testFormatter() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        final MultiBitController controller = controllers.multiBitController;
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -109,7 +109,7 @@ public class CurrencyConverterTest extends TestCase {
     public void testGetBTCAsLocalisedStringEnglish() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.ENGLISH));
-        final MultiBitController controller = controllers.multiBitController;
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -136,8 +136,8 @@ public class CurrencyConverterTest extends TestCase {
     public void testGetBTCAsLocalisedStringGerman() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.GERMAN));
-        final MultiBitController controller = controllers.multiBitController;
-
+        final BitcoinController controller = controllers.bitcoinController;
+        
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
         converter.initialise(controller, "EUR");
@@ -164,7 +164,7 @@ public class CurrencyConverterTest extends TestCase {
     public void testGetBTCAsLocalisedStringFrench() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.FRENCH));
-        final MultiBitController controller = controllers.multiBitController;
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -196,7 +196,7 @@ public class CurrencyConverterTest extends TestCase {
     public void testAllCurrencies() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.FRENCH));
-        final MultiBitController controller = controllers.multiBitController;
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
         BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);

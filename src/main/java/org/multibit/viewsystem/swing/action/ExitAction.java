@@ -24,8 +24,8 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.Controller;
-import org.multibit.controller.CoreController;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -50,7 +50,7 @@ public class ExitAction extends AbstractExitAction {
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
 
     private CoreController coreController = null;
-    private MultiBitController multiBitController = null;
+    private BitcoinController bitcoinController = null;
 
     /**
      * Creates a new {@link ExitAction}.
@@ -66,9 +66,9 @@ public class ExitAction extends AbstractExitAction {
         }
     }
 
-    public void setMultiBitController(MultiBitController multiBitController) {
-        if (null == this.multiBitController) {
-            this.multiBitController = multiBitController;
+    public void setBitcoinController(BitcoinController bitcoinController) {
+        if (null == this.bitcoinController) {
+            this.bitcoinController = bitcoinController;
         }
     }
 
@@ -90,21 +90,20 @@ public class ExitAction extends AbstractExitAction {
         log.debug("exit 2");
         
         // Stop the peer group so that blocks are notified to wallets correctly.
-        if (multiBitController.getMultiBitService() != null && multiBitController.getMultiBitService().getPeerGroup() != null) {
+        if (this.bitcoinController.getMultiBitService() != null && this.bitcoinController.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
-            multiBitController.getMultiBitService().getPeerGroup().stopAndWait();
+            this.bitcoinController.getMultiBitService().getPeerGroup().stopAndWait();
             log.debug("PeerGroup is now stopped.");
         }
 
-        if (null != this.multiBitController) {
-
+        if (null != this.bitcoinController) {
         // Save all the wallets and put their filenames in the user preferences.
             List<PerWalletModelData> perWalletModelDataList = super.controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 try {
                     log.debug("exit 3a");
-                        multiBitController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
+                        this.bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
                     log.debug("exit 3b");
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
@@ -113,7 +112,7 @@ public class ExitAction extends AbstractExitAction {
                     // Save to backup.
                     try {
                         log.debug("exit 4a");
-                            multiBitController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
+                            this.bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
                         log.debug("exit 4b");
                     } catch (WalletSaveException wse2) {
                         log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());

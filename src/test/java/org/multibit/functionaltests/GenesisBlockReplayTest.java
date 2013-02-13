@@ -31,8 +31,8 @@ import org.multibit.Constants;
 import org.multibit.CreateControllers;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
-import org.multibit.controller.CoreController;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -79,19 +79,18 @@ public class GenesisBlockReplayTest extends TestCase {
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
             // Create MultiBit controller.
-            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
-            final MultiBitController controller = controllers.multiBitController;
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
-            MultiBitService multiBitService = new MultiBitService(controller);
-            controller.setMultiBitService(multiBitService);
+            MultiBitService multiBitService = new MultiBitService(controllers.bitcoinController);
+            controllers.bitcoinController.setMultiBitService(multiBitService);
 
             // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
             controllers.coreController.registerViewSystem(simpleViewSystem);
             
-            ReplayManager.INSTANCE.initialise(controller);
+            ReplayManager.INSTANCE.initialise(controllers.bitcoinController);
 
             //
             // MultiBit runtime is now setup and running.
@@ -107,7 +106,7 @@ public class GenesisBlockReplayTest extends TestCase {
             log.debug("Replaying blockchain from genesis block");
             //multiBitService.replayBlockChain(null);
             List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
-            perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
+            perWalletModelDataList.add(controllers.bitcoinController.getModel().getActivePerWalletModelData());
             ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, 0);
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
