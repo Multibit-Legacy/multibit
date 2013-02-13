@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.multibit.controller.Controller;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -38,12 +38,12 @@ public class ViewFactory {
     private Map<View, Viewable> viewMap;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     private final MultiBitFrame mainFrame;
 
-    public ViewFactory(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public ViewFactory(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         initialise();
     }
@@ -82,7 +82,7 @@ public class ViewFactory {
         }
 
         case TRANSACTIONS_VIEW: {
-            viewToReturn = new ShowTransactionsPanel(this.multiBitController, mainFrame);
+            viewToReturn = new ShowTransactionsPanel(this.bitcoinController, mainFrame);
             break;
         }
 
@@ -97,37 +97,37 @@ public class ViewFactory {
         }
                
         case RECEIVE_BITCOIN_VIEW: {
-            viewToReturn = new ReceiveBitcoinPanel(mainFrame, this.multiBitController);
+            viewToReturn = new ReceiveBitcoinPanel(mainFrame, this.bitcoinController);
             break;
         }
         
         case SEND_BITCOIN_VIEW: {
-            viewToReturn = new SendBitcoinPanel(mainFrame, this.multiBitController);
+            viewToReturn = new SendBitcoinPanel(mainFrame, this.bitcoinController);
             break;
         }
         
         case PREFERENCES_VIEW: {
-            viewToReturn = new ShowPreferencesPanel(this.multiBitController, mainFrame);
+            viewToReturn = new ShowPreferencesPanel(this.bitcoinController, mainFrame);
             break;
         }
 
         case RESET_TRANSACTIONS_VIEW: {
-            viewToReturn = new ResetTransactionsPanel(this.multiBitController, mainFrame);
+            viewToReturn = new ResetTransactionsPanel(this.bitcoinController, mainFrame);
             break;
         }
 
         case SHOW_OPEN_URI_DIALOG_VIEW: {
-            viewToReturn = new ShowOpenUriDialog(this.multiBitController, mainFrame);
+            viewToReturn = new ShowOpenUriDialog(this.bitcoinController, mainFrame);
             break;
         }
 
         case SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ImportPrivateKeysPanel(this.multiBitController, mainFrame);
+            viewToReturn = new ImportPrivateKeysPanel(this.bitcoinController, mainFrame);
             break;
         }
 
         case SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ExportPrivateKeysPanel(this.multiBitController, mainFrame);
+            viewToReturn = new ExportPrivateKeysPanel(this.bitcoinController, mainFrame);
             break;
         }
 

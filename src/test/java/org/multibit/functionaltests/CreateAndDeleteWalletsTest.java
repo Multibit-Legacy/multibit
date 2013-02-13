@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.CreateControllers;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
@@ -46,7 +46,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
     private static File multiBitDirectory;
     
-    private static MultiBitController controller;
+    private static BitcoinController controller;
     
     private static SimpleViewSystem simpleViewSystem ;
     
@@ -59,7 +59,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
-        controller = controllers.multiBitController;
+        controller = controllers.bitcoinController;
 
         log.debug("Creating Bitcoin service");
         // create the MultiBitService that connects to the bitcoin network

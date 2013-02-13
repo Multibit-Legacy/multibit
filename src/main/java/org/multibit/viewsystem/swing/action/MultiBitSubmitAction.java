@@ -6,7 +6,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -23,15 +23,15 @@ public abstract class MultiBitSubmitAction extends AbstractAction {
     private static final long serialVersionUID = 3750799470657961967L;
 
     protected final Controller controller;
-    protected final MultiBitController multiBitController;
+    protected final BitcoinController bitcoinController;
     
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public MultiBitSubmitAction(MultiBitController multiBitController, String textKey, String tooltipKey, String mnemonicKey,  Icon icon) {
-        super(multiBitController.getLocaliser().getString(textKey), icon);
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public MultiBitSubmitAction(BitcoinController bitcoinController, String textKey, String tooltipKey, String mnemonicKey,  Icon icon) {
+        super(bitcoinController.getLocaliser().getString(textKey), icon);
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString(tooltipKey)));
@@ -51,13 +51,13 @@ public abstract class MultiBitSubmitAction extends AbstractAction {
 
         // check to see if another process has changed the active wallet
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = this.multiBitController.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
         
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            this.multiBitController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData); 
+            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData); 
  
             return true;
         }

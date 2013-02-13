@@ -31,7 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
@@ -71,7 +71,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link ImportPrivateKeysSubmitAction}.
      */
-    public ImportPrivateKeysSubmitAction(MultiBitController controller, ImportPrivateKeysPanel importPrivateKeysPanel,
+    public ImportPrivateKeysSubmitAction(BitcoinController controller, ImportPrivateKeysPanel importPrivateKeysPanel,
             ImageIcon icon, JPasswordField passwordField, JPasswordField passwordField2) {
         super(controller, "importPrivateKeysSubmitAction.text", "importPrivateKeysSubmitAction.tooltip",
                 "importPrivateKeysSubmitAction.mnemonicKey", icon);
@@ -179,7 +179,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
     private void importPrivateKeysInBackground(final Collection<PrivateKeyAndDate> privateKeyAndDateArray) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ImportPrivateKeysPanel finalThisPanel = importPrivateKeysPanel;
-        final MultiBitController finalController = this.multiBitController;
+        final BitcoinController finalController = this.bitcoinController;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String statusBarMessage = null;
@@ -225,7 +225,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
 
                     log.debug(walletToAddKeysTo.toString());
 
-                    multiBitController.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
+                    bitcoinController.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -239,7 +239,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                     // Begin blockchain replay - returns quickly - just kicks it
                     // off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
-                    multiBitController.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                    bitcoinController.getMultiBitService().replayBlockChain(earliestTransactionDate);
                     successMeasure = Boolean.TRUE;
                     statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                 } catch (WalletSaveException wse) {

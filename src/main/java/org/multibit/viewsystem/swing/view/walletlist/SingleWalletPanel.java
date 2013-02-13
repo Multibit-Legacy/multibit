@@ -47,7 +47,7 @@ import javax.swing.border.Border;
 
 import org.joda.money.Money;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletVersion;
@@ -137,7 +137,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private FontMetrics fontMetrics;
 
-    public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
+    public SingleWalletPanel(PerWalletModelData perWalletModelData, final BitcoinController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;

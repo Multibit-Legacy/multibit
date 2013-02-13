@@ -37,7 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -71,7 +71,7 @@ public class MigrateWalletsAction extends AbstractAction {
     private static final long serialVersionUID = 1913592460523457705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -80,11 +80,11 @@ public class MigrateWalletsAction extends AbstractAction {
     /**
      * Creates a new {@link MigrateWalletAction}.
      */
-    public MigrateWalletsAction(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        super(multiBitController.getLocaliser().getString("migrateWalletsAction.text"));
+    public MigrateWalletsAction(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        super(bitcoinController.getLocaliser().getString("migrateWalletsAction.text"));
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -124,7 +124,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.start") + " " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
                        
-                FileHandler fileHandler = new FileHandler(this.multiBitController);
+                FileHandler fileHandler = new FileHandler(this.bitcoinController);
                 
                 for (String walletFilename : walletFilenamesToMigrate) {
                     PerWalletModelData loopPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);

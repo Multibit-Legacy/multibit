@@ -24,7 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
 import org.multibit.utils.ImageLoader;
@@ -54,7 +54,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link ExportPrivateKeysSubmitAction}.
      */
-    public ExportPrivateKeysSubmitAction(MultiBitController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
+    public ExportPrivateKeysSubmitAction(BitcoinController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
             ImageIcon icon, JPasswordField password1, JPasswordField password2, MultiBitFrame mainFrame) {
         super(controller, "showExportPrivateKeysAction.text.camel", "showExportPrivateKeysAction.tooltip", "showExportPrivateKeysAction.mnemonicKey", icon);
         this.exportPrivateKeysPanel = exportPrivateKeysPanel;
@@ -129,7 +129,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             }
 
             privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
-                    .getWallet(), super.multiBitController.getMultiBitService().getChain(), performEncryption, passwordToUse);
+                    .getWallet(), super.bitcoinController.getMultiBitService().getChain(), performEncryption, passwordToUse);
 
             // success
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
@@ -147,7 +147,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
         if (performVerification) {
             // perform a verification on the exported file to see if it is correct
             Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
-                    .getActivePerWalletModelData().getWallet(), super.multiBitController.getMultiBitService().getChain(), performEncryption,
+                    .getActivePerWalletModelData().getWallet(), super.bitcoinController.getMultiBitService().getChain(), performEncryption,
                     passwordToUse);
             String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
             exportPrivateKeysPanel.setMessage2(verifyMessage);

@@ -20,7 +20,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.slf4j.Logger;
@@ -50,13 +50,13 @@ public class MultiBitDownloadListener extends DownloadListener {
     private static final int CRITERIA_LARGE_NUMBER_OF_BLOCKS = 1000;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private Object lockObject = new Object();
 
-    public MultiBitDownloadListener(MultiBitController multiBitController) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public MultiBitDownloadListener(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
     }
 
     /**
@@ -90,7 +90,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                     MessageManager.INSTANCE.addMessage(message);
                 }
             }
-            this.multiBitController.fireBlockDownloaded();
+            this.bitcoinController.fireBlockDownloaded();
         }
     }
 
@@ -124,7 +124,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                     MessageManager.INSTANCE.addMessage(message);
                 }
             }
-            this.multiBitController.fireBlockDownloaded();
+            this.bitcoinController.fireBlockDownloaded();
         }
     }
 
@@ -140,6 +140,6 @@ public class MultiBitDownloadListener extends DownloadListener {
         message = new Message(downloadStatusText, 100);
         MessageManager.INSTANCE.addMessage(message);
 
-        this.multiBitController.fireBlockDownloaded();
+        this.bitcoinController.fireBlockDownloaded();
     }
 }

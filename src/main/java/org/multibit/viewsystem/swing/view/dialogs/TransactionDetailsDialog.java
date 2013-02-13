@@ -39,7 +39,7 @@ import javax.swing.JScrollPane;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -84,7 +84,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private static final int FIELD_SEPARATION = 12;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private WalletTableData rowTableData;
 
@@ -116,11 +116,11 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     /**
      * Creates a new {@link TransactionDetailsDialog}.
      */
-    public TransactionDetailsDialog(MultiBitController multiBitController, MultiBitFrame mainFrame, WalletTableData rowTableData) {
-        super(mainFrame, multiBitController.getLocaliser().getString("transactionDetailsDialog.title"));
+    public TransactionDetailsDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame, WalletTableData rowTableData) {
+        super(mainFrame, bitcoinController.getLocaliser().getString("transactionDetailsDialog.title"));
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.rowTableData = rowTableData;
 
@@ -528,7 +528,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             try {
                 String addressString = "";
 
-                if (this.multiBitController.getMultiBitService() != null && myOutput != null) {
+                if (this.bitcoinController.getMultiBitService() != null && myOutput != null) {
                     Address toAddress = new Address(controller.getModel().getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();

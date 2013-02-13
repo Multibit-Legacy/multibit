@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
@@ -49,8 +49,8 @@ public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link CreateNewReceivingAddressAction}.
      */
-    public CreateNewReceivingAddressAction(MultiBitController multiBitController, AbstractTradePanel receiveBitcoinPanel) {
-        super(multiBitController, "createOrEditAddressAction.createReceiving.text", "createOrEditAddressAction.createReceiving.tooltip",
+    public CreateNewReceivingAddressAction(BitcoinController bitcoinController, AbstractTradePanel receiveBitcoinPanel) {
+        super(bitcoinController, "createOrEditAddressAction.createReceiving.text", "createOrEditAddressAction.createReceiving.tooltip",
                 "createOrEditAddressAction.createReceiving.mnemonicKey", null);
         this.receiveBitcoinPanel = receiveBitcoinPanel;
     }
@@ -83,7 +83,7 @@ public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
         controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
 
         try {
-            super.multiBitController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+            super.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
         } catch (WalletSaveException wse) {
             log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
             MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));

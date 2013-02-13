@@ -28,11 +28,9 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
-import org.multibit.MultiBit;
 import org.multibit.CreateControllers;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
@@ -87,7 +85,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             
             // Create MultiBit controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
-            final MultiBitController controller = controllers.multiBitController;
+            final BitcoinController controller = controllers.bitcoinController;
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.

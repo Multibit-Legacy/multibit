@@ -74,7 +74,7 @@ import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
 import org.multibit.model.StatusEnum;
@@ -131,7 +131,7 @@ public class StatusBar extends JPanel implements MessageListener {
     private Border zoneBorder;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private MultiBitFrame mainFrame;
     
@@ -143,9 +143,9 @@ public class StatusBar extends JPanel implements MessageListener {
      * Construct a new StatusBar
      * 
      */
-    public StatusBar(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public StatusBar(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.mainFrame = mainFrame;
 
@@ -158,7 +158,7 @@ public class StatusBar extends JPanel implements MessageListener {
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        final MultiBitController finalController = this.multiBitController;
+        final BitcoinController finalController = this.bitcoinController;
         
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 

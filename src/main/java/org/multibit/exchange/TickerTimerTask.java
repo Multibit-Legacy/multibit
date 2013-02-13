@@ -25,7 +25,6 @@ import java.util.TimerTask;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;

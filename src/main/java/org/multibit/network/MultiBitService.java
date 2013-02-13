@@ -34,7 +34,7 @@ import javax.swing.SwingWorker;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.file.WalletVersionException;
@@ -115,7 +115,7 @@ public class MultiBitService {
     private ReplayableBlockStore blockStore;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private final NetworkParameters networkParameters;
     
@@ -140,8 +140,8 @@ public class MultiBitService {
      * @param controller
      *            MutliBitController
      */
-    public MultiBitService(MultiBitController multiBitController) {
-        this(multiBitController.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), multiBitController);
+    public MultiBitService(BitcoinController bitcoinController) {
+        this(bitcoinController.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), bitcoinController);
     }
 
     /**
@@ -151,9 +151,9 @@ public class MultiBitService {
      * @param controller
      *            MutliBitController
      */
-    public MultiBitService(String walletFilename, MultiBitController multiBitController) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public MultiBitService(String walletFilename, BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
 
         if (controller == null) {
             throw new IllegalStateException("controller cannot be null");
@@ -167,7 +167,7 @@ public class MultiBitService {
             throw new IllegalStateException("controller.getApplicationDataDirectoryLocator() cannot be null");
         }
         
-        if (this.multiBitController.getFileHandler() == null) {
+        if (this.bitcoinController.getFileHandler() == null) {
             throw new IllegalStateException("controller.getFileHandler() cannot be null");
         }
         
@@ -187,7 +187,7 @@ public class MultiBitService {
             }
 
             // Check to see if the user has a blockchain and copy over the sinstalled one if they do not.
-            this.multiBitController.getFileHandler().copyBlockChainFromInstallationDirectory(blockchainFilename, false);
+            this.bitcoinController.getFileHandler().copyBlockChainFromInstallationDirectory(blockchainFilename, false);
 
             log.debug("Reading block store '{}' from disk", blockchainFilename);
 
@@ -221,7 +221,7 @@ public class MultiBitService {
     }
 
     private MultiBitPeerGroup createNewPeerGroup() {
-        MultiBitPeerGroup peerGroup = new MultiBitPeerGroup(this.multiBitController, networkParameters, blockChain);
+        MultiBitPeerGroup peerGroup = new MultiBitPeerGroup(this.bitcoinController, networkParameters, blockChain);
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
@@ -266,7 +266,7 @@ public class MultiBitService {
             }
         }
         // Add the controller as a PeerEventListener.
-        peerGroup.addEventListener(this.multiBitController.getPeerEventListener());
+        peerGroup.addEventListener(this.bitcoinController.getPeerEventListener());
         
         // Add all existing wallets to the PeerGroup.
         if (controller != null && controller.getModel() != null) {
@@ -313,7 +313,7 @@ public class MultiBitService {
             if (walletFile.isDirectory()) {
                 walletFileIsADirectory = true;
             } else {
-                perWalletModelDataToReturn = this.multiBitController.getFileHandler().loadFromFile(walletFile);
+                perWalletModelDataToReturn = this.bitcoinController.getFileHandler().loadFromFile(walletFile);
 
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
@@ -335,7 +335,7 @@ public class MultiBitService {
 
             if (walletFile.exists()) {
                 // Wallet file exists with default name.
-                perWalletModelDataToReturn = this.multiBitController.getFileHandler().loadFromFile(walletFile);
+                perWalletModelDataToReturn = this.bitcoinController.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
                 }
@@ -358,7 +358,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn.setWalletDescription(defaultDescription);
 
                 try {
-                    this.multiBitController.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
+                    this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
 
                     newWalletCreated = true;
                 } catch (WalletSaveException wse) {
@@ -506,7 +506,7 @@ public class MultiBitService {
         peerGroup.stop();
 
         // Reset UI to zero peers.
-        this.multiBitController.getPeerEventListener().onPeerDisconnected(null, 0);
+        this.bitcoinController.getPeerEventListener().onPeerDisconnected(null, 0);
 
         if (dateToReplayFrom != null) {
             message = new Message(controller.getLocaliser().getString(
@@ -540,7 +540,7 @@ public class MultiBitService {
         peerGroup.stop();
 
         // Reset UI to zero peers.
-        this.multiBitController.getPeerEventListener().onPeerDisconnected(null, 0);
+        this.bitcoinController.getPeerEventListener().onPeerDisconnected(null, 0);
  
         peerGroup = createNewPeerGroup();
         peerGroup.start();
@@ -593,7 +593,7 @@ public class MultiBitService {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
 
             try {
-                this.multiBitController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+                this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             } catch (WalletSaveException wse) {
                 log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));

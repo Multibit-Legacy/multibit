@@ -25,8 +25,8 @@ import org.multibit.Constants;
 import org.multibit.CreateControllers;
 import org.multibit.Localiser;
 import org.multibit.controller.Controller;
-import org.multibit.controller.CoreController;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
 
 public class WalletInfoTest extends TestCase {
     public static final String WALLET_TESTDATA_DIRECTORY = "wallets";
@@ -52,7 +52,7 @@ public class WalletInfoTest extends TestCase {
     public void testRoundTrip() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        final MultiBitController controller = controllers.multiBitController;
+        final BitcoinController controller = controllers.bitcoinController;
 
 
         // get test directory and wallet
@@ -114,8 +114,8 @@ public class WalletInfoTest extends TestCase {
     public void testloadNonExistentInfoFile() throws Exception {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        final MultiBitController controller = controllers.multiBitController;
-
+        final BitcoinController controller = controllers.bitcoinController;
+        
         // Get test directory and wallet.
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();

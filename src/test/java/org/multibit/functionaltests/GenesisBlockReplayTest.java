@@ -29,8 +29,8 @@ import org.multibit.Constants;
 import org.multibit.CreateControllers;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
-import org.multibit.controller.CoreController;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
@@ -75,8 +75,8 @@ public class GenesisBlockReplayTest extends TestCase {
 
             // Create MultiBit controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
-            final MultiBitController controller = controllers.multiBitController;
-            
+            final BitcoinController controller = controllers.bitcoinController;
+
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
             MultiBitService multiBitService = new MultiBitService(controller);

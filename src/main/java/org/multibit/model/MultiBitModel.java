@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
@@ -196,7 +196,7 @@ public class MultiBitModel {
 
     // Main controller class.
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     // User preferences.
     private Properties userPreferences;
@@ -235,14 +235,14 @@ public class MultiBitModel {
      */
     private boolean blinkEnabled = true;
     
-     public MultiBitModel(MultiBitController multiBitController) {
-        this(multiBitController, new Properties());
+     public MultiBitModel(BitcoinController bitcoinController) {
+        this(bitcoinController, new Properties());
     }
 
     @SuppressWarnings("deprecation")
-    public MultiBitModel(MultiBitController multiBitController, Properties userPreferences) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public MultiBitModel(BitcoinController bitcoinController, Properties userPreferences) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.userPreferences = userPreferences;
 
@@ -518,7 +518,7 @@ public class MultiBitModel {
 
         // Wire up the controller as a wallet event listener.
         if (wallet != null) {
-            wallet.addEventListener(multiBitController);
+            wallet.addEventListener(bitcoinController);
         }
 
         createWalletData(walletFilename);
@@ -641,7 +641,7 @@ public class MultiBitModel {
         if (!(perWalletModelData == null)) {
             ArrayList<ECKey> keyChain = perWalletModelData.getWallet().keychain;
             if (keyChain != null) {
-                MultiBitService multiBitService = this.multiBitController.getMultiBitService();
+                MultiBitService multiBitService = this.bitcoinController.getMultiBitService();
                 if (multiBitService != null) {
                     NetworkParameters networkParameters = getNetworkParameters();
                     if (networkParameters != null) {
@@ -703,7 +703,7 @@ public class MultiBitModel {
             try {
                 String addressString = "";
 
-                if (this.multiBitController.getMultiBitService() != null && myOutput != null) {
+                if (this.bitcoinController.getMultiBitService() != null && myOutput != null) {
                     Address toAddress = new Address(getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();
@@ -773,9 +773,9 @@ public class MultiBitModel {
                     Sha256Hash appearsInHash = iterator.next();
                     StoredBlock appearsInStoredBlock;
                     try {
-                        if (multiBitController != null && multiBitController.getMultiBitService() != null
-                                && multiBitController.getMultiBitService().getBlockStore() != null) {
-                            appearsInStoredBlock = multiBitController.getMultiBitService().getBlockStore().get(appearsInHash);
+                        if (bitcoinController != null && bitcoinController.getMultiBitService() != null
+                                && bitcoinController.getMultiBitService().getBlockStore() != null) {
+                            appearsInStoredBlock = bitcoinController.getMultiBitService().getBlockStore().get(appearsInHash);
                             Block appearsInBlock = appearsInStoredBlock.getHeader();
                             // Set the time of the block to be the time of the
                             // transaction - TODO get transaction time.

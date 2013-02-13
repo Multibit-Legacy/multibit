@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.controller;
+package org.multibit.controller.bitcoin;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -23,6 +23,9 @@ import java.net.URLDecoder;
 import java.util.List;
 import java.util.Set;
 
+import org.multibit.controller.AbstractEventHandeler;
+import org.multibit.controller.AbstractController;
+import org.multibit.controller.core.CoreController;
 import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -30,6 +33,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.action.ExitAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,18 +46,19 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
-import org.multibit.viewsystem.swing.action.ExitAction;
+
+
 
 /**
  * The MVC controller for MultiBit.
  * 
  * @author jim
  */
-public class MultiBitController extends AbstractController<CoreController> implements WalletEventListener {
+public class BitcoinController extends AbstractController<CoreController> implements WalletEventListener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
 
-    private Logger log = LoggerFactory.getLogger(MultiBitController.class);
+    private Logger log = LoggerFactory.getLogger(BitcoinController.class);
 
     /**
      * The data model backing the views.
@@ -84,11 +89,11 @@ public class MultiBitController extends AbstractController<CoreController> imple
     private volatile boolean applicationStarting = true;
 
 
-    public MultiBitController(CoreController coreController) {
+    public BitcoinController(CoreController coreController) {
         super(coreController);
 
         fileHandler = new FileHandler(this);
-        peerEventListener = new MultiBitPeerEventListener(this);
+        peerEventListener = new BitcoinEventListener(this);
         
         this.eventHandeler = new EventHandeler(this);
         super.addEventHandler(this.getEventHandeler());
@@ -285,11 +290,11 @@ public class MultiBitController extends AbstractController<CoreController> imple
         return this.eventHandeler;
     }
     
-    private class EventHandeler extends AbstractEventHandeler<MultiBitController> {
+    private class EventHandeler extends AbstractEventHandeler<BitcoinController> {
 
         private volatile URI rawBitcoinURI = null;
 
-        public EventHandeler(MultiBitController multiBitController) {
+        public EventHandeler(BitcoinController multiBitController) {
             super(multiBitController);
         }
 
@@ -302,7 +307,7 @@ public class MultiBitController extends AbstractController<CoreController> imple
 
         @Override
         public void handleQuitEvent(ExitAction exitAction) {
-            exitAction.setMultiBitController(super.controller);
+            exitAction.setBitcoinController(super.controller);
         }
     }
 }

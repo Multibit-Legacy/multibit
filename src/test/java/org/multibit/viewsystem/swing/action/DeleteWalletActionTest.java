@@ -20,8 +20,9 @@ import java.awt.GraphicsEnvironment;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+
 import org.multibit.CreateControllers;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -35,7 +36,7 @@ public class DeleteWalletActionTest extends TestCase {
         
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        MultiBitController controller = controllers.multiBitController;
+        final BitcoinController controller = controllers.bitcoinController;
 
         // This test runs against an empty PerWalletModelDataList.
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());

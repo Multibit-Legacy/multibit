@@ -1,4 +1,4 @@
-package org.multibit.controller;
+package org.multibit.controller.bitcoin;
 
 import java.util.List;
 
@@ -13,27 +13,28 @@ import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.Transaction;
+import org.multibit.controller.Controller;
 
-public class MultiBitPeerEventListener implements PeerEventListener {
+public class BitcoinEventListener implements PeerEventListener {
 
-    private Logger log = LoggerFactory.getLogger(MultiBitPeerEventListener.class);
+    private Logger log = LoggerFactory.getLogger(BitcoinEventListener.class);
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
-    public MultiBitPeerEventListener(MultiBitController multiBitController) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public BitcoinEventListener(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
     }
     
     @Override
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-        this.multiBitController.fireBlockDownloaded();
+        this.bitcoinController.fireBlockDownloaded();
     }
 
     @Override
     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-        this.multiBitController.fireBlockDownloaded();
+        this.bitcoinController.fireBlockDownloaded();
     }
 
     @Override

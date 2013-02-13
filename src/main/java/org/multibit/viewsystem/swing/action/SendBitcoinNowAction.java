@@ -24,7 +24,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
@@ -53,7 +53,7 @@ public class SendBitcoinNowAction extends AbstractAction {
     private static final long serialVersionUID = 1913592460523457765L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
     
     private SendBitcoinConfirmDialog sendBitcoinConfirmView;
     
@@ -64,11 +64,11 @@ public class SendBitcoinNowAction extends AbstractAction {
     /**
      * Creates a new {@link SendBitcoinNowAction}.
      */
-    public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController multiBitController,
+    public SendBitcoinNowAction(MultiBitFrame mainFrame, BitcoinController bitcoinController,
             SendBitcoinConfirmDialog sendBitcoinConfirmView, ImageIcon icon) {
-        super(multiBitController.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        super(bitcoinController.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.sendBitcoinConfirmView = sendBitcoinConfirmView;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -86,13 +86,13 @@ public class SendBitcoinNowAction extends AbstractAction {
 
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = this.multiBitController.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            this.multiBitController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             // Put sending message and remove the send button.
             sendBitcoinConfirmView.setSendConfirmText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
@@ -128,7 +128,7 @@ public class SendBitcoinNowAction extends AbstractAction {
         try {
             log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
                     + fee + " to address = " + sendAddress);
-            transaction = this.multiBitController.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
+            transaction = this.bitcoinController.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
             if (transaction == null) {
                 // a null transaction returned indicates there was not
                 // enough money (in spite of our validation)
@@ -140,7 +140,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             }
 
             // save the wallet
-            this.multiBitController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+            this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
         } catch (WalletSaveException e) {
             log.error(e.getMessage(), e);
             message = e.getMessage();

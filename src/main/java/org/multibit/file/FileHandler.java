@@ -37,7 +37,7 @@ import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -71,7 +71,7 @@ public class FileHandler {
     public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private Date dateForBackupName = null;
     
@@ -98,9 +98,9 @@ public class FileHandler {
         }
     }
 
-    public FileHandler(MultiBitController multiBitController) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public FileHandler(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         walletProtobufSerializer = new WalletProtobufSerializer();

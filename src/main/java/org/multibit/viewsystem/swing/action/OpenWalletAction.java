@@ -31,7 +31,7 @@ import javax.swing.JFileChooser;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -57,7 +57,7 @@ public class OpenWalletAction extends AbstractAction {
     private static final long serialVersionUID = 1913592460523457705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -70,11 +70,11 @@ public class OpenWalletAction extends AbstractAction {
     /**
      * Creates a new {@link OpenWalletAction}.
      */
-    public OpenWalletAction(MultiBitController multiBitController, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(multiBitController.getLocaliser().getString("openWalletAction.text"), icon);
+    public OpenWalletAction(BitcoinController bitcoinController, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(bitcoinController.getLocaliser().getString("openWalletAction.text"), icon);
         
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         this.mainFrame = mainFrame;
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -152,7 +152,7 @@ public class OpenWalletAction extends AbstractAction {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
 
-                    multiBitController.addWalletFromFilename(selectedWalletFilenameFinal);
+                    bitcoinController.addWalletFromFilename(selectedWalletFilenameFinal);
                     controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
 
                     // save the user properties to disk

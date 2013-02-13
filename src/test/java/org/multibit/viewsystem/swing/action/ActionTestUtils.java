@@ -7,7 +7,7 @@ import java.util.Locale;
 import org.multibit.Localiser;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
@@ -19,7 +19,7 @@ import org.multibit.model.WalletVersion;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
-import org.multibit.controller.CoreController;
+import org.multibit.controller.core.CoreController;
 
 /**
  * Class containing utility methods for action tests.
@@ -28,7 +28,7 @@ import org.multibit.controller.CoreController;
  */
 public class ActionTestUtils {
 
-     public static void createNewActiveWallet(MultiBitController controller, String descriptor) throws Exception {
+     public static void createNewActiveWallet(BitcoinController controller, String descriptor) throws Exception {
          Wallet wallet = new Wallet(NetworkParameters.prodNet());
          wallet.getKeychain().add(new ECKey());
   

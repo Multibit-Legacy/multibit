@@ -47,7 +47,7 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
@@ -81,7 +81,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
     private static final long serialVersionUID = 444992294329957705L;
 
     private final Controller controller;
-    private final MultiBitController multiBitController;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -123,9 +123,9 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
      */
-    public ImportPrivateKeysPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
-        this.multiBitController = multiBitController;
-        this.controller = this.multiBitController;
+    public ImportPrivateKeysPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -725,7 +725,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(this.multiBitController, this,
+        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(this.bitcoinController, this,
                 ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), passwordField, passwordField2);
         MultiBitButton submitButton = new MultiBitButton(importPrivateKeysSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
