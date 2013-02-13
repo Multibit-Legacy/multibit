@@ -37,6 +37,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -84,14 +85,14 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
     
     @Override
     protected Action getCreateNewAddressAction() {
-        createNewReceivingAddressAction = new CreateNewReceivingAddressAction(controller, this);
+        createNewReceivingAddressAction = new CreateNewReceivingAddressAction(this.multiBitController, this);
         return createNewReceivingAddressAction;
     }
     
     @Override
     protected Action getDeleteAddressAction() {
         // Return a delete sending address action - it gets turned into a stent
-        return new DeleteSendingAddressAction(controller, mainFrame, null);
+        return new DeleteSendingAddressAction(super.multiBitController, mainFrame, null);
     }
 
     @Override
@@ -308,7 +309,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
         formPanel.add(helpButton, constraints);
         
-        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
+        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(super.multiBitController, mainFrame, this);
         MultiBitButton notUsedSendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
         JPanel sendButtonStent = MultiBitTitledPanel.createStent((int)notUsedSendButton.getPreferredSize().getWidth(), (int)notUsedSendButton.getPreferredSize().getHeight());
         constraints.fill = GridBagConstraints.BOTH;

@@ -60,10 +60,9 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
         controller = controllers.multiBitController;
 
-
         log.debug("Creating Bitcoin service");
         // create the MultiBitService that connects to the bitcoin network
-        MultiBitService multiBitService = new MultiBitService(controller);
+        final MultiBitService multiBitService = new MultiBitService(controller);
         controller.setMultiBitService(multiBitService);
 
         // add the simple view system (no Swing)

@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
-
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -47,6 +46,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
@@ -80,7 +80,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
 
     private static final long serialVersionUID = 444992294329957705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitFrame mainFrame;
 
@@ -122,10 +123,10 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
      */
-    public ImportPrivateKeysPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ImportPrivateKeysPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -724,7 +725,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable {
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(controller, this,
+        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(this.multiBitController, this,
                 ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), passwordField, passwordField2);
         MultiBitButton submitButton = new MultiBitButton(importPrivateKeysSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

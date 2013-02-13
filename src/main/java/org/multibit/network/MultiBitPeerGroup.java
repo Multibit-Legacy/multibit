@@ -15,21 +15,25 @@
  */
 package org.multibit.network;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerGroup;
 
+
 public class MultiBitPeerGroup extends PeerGroup {
-    MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
     MultiBitDownloadListener multiBitDownloadListener = null;
     
     private static int CONNECTION_DELAY_TIME = 2500; // milliseconds
     
-    public MultiBitPeerGroup(MultiBitController controller, NetworkParameters params, BlockChain chain) {
+    public MultiBitPeerGroup(MultiBitController multiBitController, NetworkParameters params, BlockChain chain) {
         super(params, chain, CONNECTION_DELAY_TIME);
-        this.controller = controller;
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
     }
     
     /**
@@ -41,7 +45,7 @@ public class MultiBitPeerGroup extends PeerGroup {
     @Override
     public void downloadBlockChain() {
         if (multiBitDownloadListener == null) {
-            multiBitDownloadListener = new MultiBitDownloadListener(controller);
+            multiBitDownloadListener = new MultiBitDownloadListener(this.multiBitController);
         }
         startBlockChainDownload(multiBitDownloadListener);
     }

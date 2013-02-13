@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

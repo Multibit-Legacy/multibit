@@ -17,15 +17,15 @@ package org.multibit.viewsystem.swing.view;
 
 import java.io.File;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.MultiBitModel;
 
 public class PrivateKeyFileFilter extends javax.swing.filechooser.FileFilter {
 
     private static final String MAC_APPLICATION_SUFFIX = ".app";
-    private MultiBitController controller;
+    private Controller controller;
     
-    public PrivateKeyFileFilter(MultiBitController controller) {
+    public PrivateKeyFileFilter(Controller controller) {
         this.controller = controller;
     }
     

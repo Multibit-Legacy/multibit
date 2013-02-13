@@ -30,6 +30,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.SwingWorker;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
@@ -55,7 +56,8 @@ public class OpenWalletAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592460523457705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitFrame mainFrame;
 
@@ -68,9 +70,12 @@ public class OpenWalletAction extends AbstractAction {
     /**
      * Creates a new {@link OpenWalletAction}.
      */
-    public OpenWalletAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("openWalletAction.text"), icon);
-        this.controller = controller;
+    public OpenWalletAction(MultiBitController multiBitController, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(multiBitController.getLocaliser().getString("openWalletAction.text"), icon);
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.mainFrame = mainFrame;
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -147,7 +152,7 @@ public class OpenWalletAction extends AbstractAction {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
 
-                    controller.addWalletFromFilename(selectedWalletFilenameFinal);
+                    multiBitController.addWalletFromFilename(selectedWalletFilenameFinal);
                     controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
 
                     // save the user properties to disk

@@ -24,6 +24,7 @@ import java.util.TimerTask;
 
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
@@ -37,6 +38,7 @@ import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
+
 
 /**
  * TimerTask to poll currency exchanges for ticker data process
@@ -52,7 +54,7 @@ public class TickerTimerTask extends TimerTask {
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
-    private final MultiBitController controller;
+    private final Controller controller;
     private final MultiBitFrame mainFrame;
     private final boolean isFirstExchange;
 
@@ -69,7 +71,7 @@ public class TickerTimerTask extends TimerTask {
     /**
      * Constructs the TickerTimerTask and initialises currencies of interest.
      */
-    public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame, boolean isFirstExchange) {
+    public TickerTimerTask(Controller controller, MultiBitFrame mainFrame, boolean isFirstExchange) {
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.isFirstExchange = isFirstExchange;

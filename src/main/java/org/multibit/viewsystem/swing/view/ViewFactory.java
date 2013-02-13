@@ -19,6 +19,7 @@ package org.multibit.viewsystem.swing.view;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
@@ -36,11 +37,13 @@ import org.multibit.viewsystem.swing.view.panels.*;
 public class ViewFactory {
     private Map<View, Viewable> viewMap;
 
-    MultiBitController controller;
-    MultiBitFrame mainFrame;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    private final MultiBitFrame mainFrame;
 
-    public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ViewFactory(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
         initialise();
     }
@@ -79,7 +82,7 @@ public class ViewFactory {
         }
 
         case TRANSACTIONS_VIEW: {
-            viewToReturn = new ShowTransactionsPanel(controller, mainFrame);
+            viewToReturn = new ShowTransactionsPanel(this.multiBitController, mainFrame);
             break;
         }
 
@@ -94,37 +97,37 @@ public class ViewFactory {
         }
                
         case RECEIVE_BITCOIN_VIEW: {
-            viewToReturn = new ReceiveBitcoinPanel(mainFrame, controller);
+            viewToReturn = new ReceiveBitcoinPanel(mainFrame, this.multiBitController);
             break;
         }
         
         case SEND_BITCOIN_VIEW: {
-            viewToReturn = new SendBitcoinPanel(mainFrame, controller);
+            viewToReturn = new SendBitcoinPanel(mainFrame, this.multiBitController);
             break;
         }
         
         case PREFERENCES_VIEW: {
-            viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
+            viewToReturn = new ShowPreferencesPanel(this.multiBitController, mainFrame);
             break;
         }
 
         case RESET_TRANSACTIONS_VIEW: {
-            viewToReturn = new ResetTransactionsPanel(controller, mainFrame);
+            viewToReturn = new ResetTransactionsPanel(this.multiBitController, mainFrame);
             break;
         }
 
         case SHOW_OPEN_URI_DIALOG_VIEW: {
-            viewToReturn = new ShowOpenUriDialog(controller, mainFrame);
+            viewToReturn = new ShowOpenUriDialog(this.multiBitController, mainFrame);
             break;
         }
 
         case SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ImportPrivateKeysPanel(controller, mainFrame);
+            viewToReturn = new ImportPrivateKeysPanel(this.multiBitController, mainFrame);
             break;
         }
 
         case SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ExportPrivateKeysPanel(controller, mainFrame);
+            viewToReturn = new ExportPrivateKeysPanel(this.multiBitController, mainFrame);
             break;
         }
 

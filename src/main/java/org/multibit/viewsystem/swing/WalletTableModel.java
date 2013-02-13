@@ -22,7 +22,7 @@ import java.util.Date;
 import javax.swing.table.AbstractTableModel;
 
 import org.joda.money.Money;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyInfo;
 import org.multibit.model.MultiBitModel;
@@ -47,9 +47,9 @@ public class WalletTableModel extends AbstractTableModel {
      */
     private MultiBitModel multiBitModel;
 
-    private MultiBitController controller;
+    private Controller controller;
 
-    public WalletTableModel(MultiBitController controller) {
+    public WalletTableModel(Controller controller) {
         this.multiBitModel = controller.getModel();
         this.controller = controller;
 

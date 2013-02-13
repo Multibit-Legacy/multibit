@@ -129,7 +129,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             }
 
             privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
-                    .getWallet(), controller.getMultiBitService().getChain(), performEncryption, passwordToUse);
+                    .getWallet(), super.multiBitController.getMultiBitService().getChain(), performEncryption, passwordToUse);
 
             // success
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
@@ -147,7 +147,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
         if (performVerification) {
             // perform a verification on the exported file to see if it is correct
             Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
-                    .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
+                    .getActivePerWalletModelData().getWallet(), super.multiBitController.getMultiBitService().getChain(), performEncryption,
                     passwordToUse);
             String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
             exportPrivateKeysPanel.setMessage2(verifyMessage);

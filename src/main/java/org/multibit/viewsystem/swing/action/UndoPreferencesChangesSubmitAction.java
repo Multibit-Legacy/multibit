@@ -23,7 +23,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -38,12 +38,12 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492412423457765L;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     /**
      * Creates a new {@link UndoPreferencesChangesSubmitAction}.
      */
-    public UndoPreferencesChangesSubmitAction(MultiBitController controller, ImageIcon icon) {
+    public UndoPreferencesChangesSubmitAction(Controller controller, ImageIcon icon) {
         super(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"), icon);
         this.controller = controller;
 

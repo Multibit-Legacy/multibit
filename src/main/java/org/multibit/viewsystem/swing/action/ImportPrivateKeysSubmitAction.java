@@ -30,6 +30,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
@@ -178,7 +179,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
     private void importPrivateKeysInBackground(final Collection<PrivateKeyAndDate> privateKeyAndDateArray) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ImportPrivateKeysPanel finalThisPanel = importPrivateKeysPanel;
-        final MultiBitController finalController = controller;
+        final MultiBitController finalController = this.multiBitController;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String statusBarMessage = null;
@@ -224,7 +225,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
 
                     log.debug(walletToAddKeysTo.toString());
 
-                    controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
+                    multiBitController.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -238,7 +239,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                     // Begin blockchain replay - returns quickly - just kicks it
                     // off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
-                    controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                    multiBitController.getMultiBitService().replayBlockChain(earliestTransactionDate);
                     successMeasure = Boolean.TRUE;
                     statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                 } catch (WalletSaveException wse) {

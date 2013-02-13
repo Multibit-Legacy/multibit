@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import javax.swing.table.DefaultTableModel;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.WalletInfo;
 
@@ -34,9 +34,9 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     private boolean isReceiving;
 
-    private MultiBitController controller;
+    private Controller controller;
 
-    public AddressBookTableModel(MultiBitController controller, boolean isReceiving) {
+    public AddressBookTableModel(Controller controller, boolean isReceiving) {
         this.controller = controller;
         for (String tableHeaderKey : tableHeaderKeys) {
             headers.add(controller.getLocaliser().getString(tableHeaderKey));

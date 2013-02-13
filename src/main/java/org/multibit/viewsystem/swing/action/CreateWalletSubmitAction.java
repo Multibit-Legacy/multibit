@@ -29,6 +29,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
@@ -59,7 +60,9 @@ public class CreateWalletSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private MultiBitFrame mainFrame;
     
     private Font adjustedFont;
@@ -67,9 +70,11 @@ public class CreateWalletSubmitAction extends AbstractAction {
     /**
      * Creates a new {@link CreateWalletSubmitAction}.
      */
-    public CreateWalletSubmitAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("createNewWalletAction.text"), icon);
-        this.controller = controller;
+    public CreateWalletSubmitAction(MultiBitController multiBitController, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(multiBitController.getLocaliser().getString("createNewWalletAction.text"), icon);
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -151,10 +156,10 @@ public class CreateWalletSubmitAction extends AbstractAction {
         try {
             // If file exists, load the existing wallet.
             if (newWalletFile.exists()) {
-                PerWalletModelData perWalletModelData = controller.getFileHandler().loadFromFile(newWalletFile);
+                PerWalletModelData perWalletModelData = this.multiBitController.getFileHandler().loadFromFile(newWalletFile);
                 if (perWalletModelData != null) {
                     // use the existing wallet
-                    controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
+                    this.multiBitController.addWalletFromFilename(newWalletFile.getAbsolutePath());
                     controller.getModel().setActiveWalletByFilename(newWalletFilename);
                     controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
                     controller.fireRecreateAllViews(true);
@@ -171,10 +176,10 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 perWalletModelData.setWalletFilename(newWalletFilename);
                 perWalletModelData.setWalletDescription(controller.getLocaliser().getString(
                         "createNewWalletSubmitAction.defaultDescription"));
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+                this.multiBitController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
                 // Start using the new file as the wallet.
-                controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
+                this.multiBitController.addWalletFromFilename(newWalletFile.getAbsolutePath());
                 controller.getModel().setActiveWalletByFilename(newWalletFilename);
                 controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
 

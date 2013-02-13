@@ -32,6 +32,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
@@ -66,7 +67,11 @@ public class MultiBit {
 
     private static MultiBitController controller = null;
     
-    public static MultiBitController getController() {
+    public static Controller getController() {
+        return controller;
+    }
+    
+    public static MultiBitController getMultiBitController() {
         return controller;
     }
     
@@ -158,8 +163,13 @@ public class MultiBit {
             controller.setLocaliser(localiser);
 
             log.debug("Creating model");
-            @SuppressWarnings("unused")
-            MultiBitModel model = new MultiBitModel(controller, userPreferences);
+
+            // Create the model.
+            // The model is set to the controller.
+            {
+                MultiBitModel model = new MultiBitModel(controller, userPreferences);
+                controller.setModel(model);
+            }
             
             log.debug("Setting look and feel");
             try {

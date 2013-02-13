@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.multibit.Localiser;
 import org.multibit.MultiBit;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.exchange.CurrencyConverter;

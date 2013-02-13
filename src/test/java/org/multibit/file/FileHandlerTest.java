@@ -116,7 +116,7 @@ public class FileHandlerTest extends TestCase {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final MultiBitController controller = controllers.multiBitController;
-        FileHandler fileHandler = new FileHandler(controller);
+        final FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_CREATE_AND_DELETE1_WALLET_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
@@ -160,7 +160,7 @@ public class FileHandlerTest extends TestCase {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final MultiBitController controller = controllers.multiBitController;
-        FileHandler fileHandler = new FileHandler(controller);
+        final FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_CREATE_SERIALISED_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
@@ -212,7 +212,7 @@ public class FileHandlerTest extends TestCase {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final MultiBitController controller = controllers.multiBitController;
-        FileHandler fileHandler = new FileHandler(controller);
+        final FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_CREATE_PROTOBUF_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();

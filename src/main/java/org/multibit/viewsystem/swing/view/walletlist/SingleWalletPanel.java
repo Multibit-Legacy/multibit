@@ -46,6 +46,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.joda.money.Money;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.PerWalletModelData;
@@ -95,7 +96,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private BlinkLabel amountLabelBTC;
     private BlinkLabel amountLabelFiat;
 
-    private MultiBitController controller;
+    private Controller controller;
     private MultiBitFrame mainFrame;
 
     private int normalHeight;

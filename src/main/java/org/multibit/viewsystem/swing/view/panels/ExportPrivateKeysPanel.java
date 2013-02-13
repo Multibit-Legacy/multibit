@@ -47,6 +47,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -71,7 +72,8 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable {
 
     private static final long serialVersionUID = 444992298119957705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitFrame mainFrame;
 
@@ -108,14 +110,13 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable {
     /**
      * Creates a new {@link ExportPrivateKeysPanel}.
      */
-    public ExportPrivateKeysPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ExportPrivateKeysPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        this.controller = controller;
 
         outputFilename = "";
         walletFilenameForChosenOutputFilename = "";
@@ -732,7 +733,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable {
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        exportPrivateKeysSubmitAction = new ExportPrivateKeysSubmitAction(controller, this,
+        exportPrivateKeysSubmitAction = new ExportPrivateKeysSubmitAction(this.multiBitController, this,
                 ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), passwordField, repeatPasswordField, mainFrame);
         MultiBitButton submitButton = new MultiBitButton(exportPrivateKeysSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

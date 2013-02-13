@@ -17,7 +17,7 @@ package org.multibit.viewsystem.swing.view.ticker;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 
@@ -62,7 +62,7 @@ public class TickerTableModel extends AbstractTableModel {
      */
     private MultiBitModel multiBitModel;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     private boolean showCurrency;
     private boolean showLastPrice;
@@ -74,7 +74,7 @@ public class TickerTableModel extends AbstractTableModel {
     private String[] tempColumns = new String[MAX_NUMBER_OF_COLUMNS];
     private int numberOfColumns;
 
-    public TickerTableModel(MultiBitController controller) {
+    public TickerTableModel(Controller controller) {
         this.multiBitModel = controller.getModel();
         this.controller = controller;
 

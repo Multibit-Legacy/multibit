@@ -24,7 +24,7 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -50,12 +50,12 @@ public class ValidationErrorDialog extends MultiBitDialog {
     private static final int HEIGHT_DELTA = 150;
     private static final int WIDTH_DELTA = 160;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     /**
      * Creates a new {@link ValidationErrorDialog}.
      */
-    public ValidationErrorDialog(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ValidationErrorDialog(Controller controller, MultiBitFrame mainFrame) {
         super(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
         this.controller = controller;
 

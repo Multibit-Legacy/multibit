@@ -37,7 +37,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.joda.money.BigMoney;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -54,7 +54,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 public class TickerTablePanel extends JPanel {
     private static final long serialVersionUID = 1235108820207842662L;
 
-    private MultiBitController controller;
+    private Controller controller;
     private MultiBitFrame mainFrame;
 
     private JTable table;
@@ -70,7 +70,7 @@ public class TickerTablePanel extends JPanel {
     FontMetrics fontMetrics;
     Font font;
 
-    public TickerTablePanel(MultiBitFrame mainFrame, MultiBitController controller) {
+    public TickerTablePanel(MultiBitFrame mainFrame, Controller controller) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 

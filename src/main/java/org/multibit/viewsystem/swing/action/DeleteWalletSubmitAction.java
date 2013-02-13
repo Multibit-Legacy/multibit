@@ -24,6 +24,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
@@ -45,15 +46,20 @@ public class DeleteWalletSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923933460523457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
+    
     private DeleteWalletConfirmDialog deleteWalletConfirmDialog;
 
     /**
      * Creates a new {@link DeleteWalletSubmitAction}.
      */
-    public DeleteWalletSubmitAction(MultiBitController controller, ImageIcon icon, DeleteWalletConfirmDialog deleteWalletConfirmDialog) {
-        super(controller.getLocaliser().getString("deleteWalletAction.text"), icon);
-        this.controller = controller;
+    public DeleteWalletSubmitAction(MultiBitController multiBitController, ImageIcon icon, DeleteWalletConfirmDialog deleteWalletConfirmDialog) {
+        super(multiBitController.getLocaliser().getString("deleteWalletAction.text"), icon);
+        
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
+        
         this.deleteWalletConfirmDialog = deleteWalletConfirmDialog;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -180,14 +186,14 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      * @throws IOException
      */
     private boolean deleteWallet(PerWalletModelData perWalletModelData) throws DeleteWalletException, WalletVersionException, IOException {
-        FileHandler fileHandler = new FileHandler(controller);
+        FileHandler fileHandler = new FileHandler(this.multiBitController);
         fileHandler.deleteWalletAndWalletInfo(perWalletModelData);
 
         // if no wallets, create an empty one
         boolean newWalletCreated = false;
         if (controller.getModel().getPerWalletModelDataList().size() == 0) {
-            if (controller.getMultiBitService() != null) {
-                controller.getMultiBitService().addWalletFromFilename(null);
+            if (this.multiBitController.getMultiBitService() != null) {
+                this.multiBitController.getMultiBitService().addWalletFromFilename(null);
               
                 newWalletCreated = true;
              }

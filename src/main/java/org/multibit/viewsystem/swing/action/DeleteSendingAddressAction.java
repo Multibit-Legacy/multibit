@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.DeleteSendingAddressConfirmDialog;
@@ -37,9 +38,8 @@ public class DeleteSendingAddressAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link DeleteSendingAddressAction}.
      */
-    public DeleteSendingAddressAction(MultiBitController controller, MultiBitFrame mainFrame, SendBitcoinPanel sendBitcoinPanel) {
-        super(controller, "deleteSendingAddressSubmitAction.text", "deleteSendingAddressSubmitAction.tooltip", "deleteSendingAddressSubmitAction.mnemonic", null);
-        this.controller = controller;
+    public DeleteSendingAddressAction(MultiBitController multiBitController, MultiBitFrame mainFrame, SendBitcoinPanel sendBitcoinPanel) {
+        super(multiBitController, "deleteSendingAddressSubmitAction.text", "deleteSendingAddressSubmitAction.tooltip", "deleteSendingAddressSubmitAction.mnemonic", null);
         this.mainFrame = mainFrame;
         this.sendBitcoinPanel = sendBitcoinPanel;
     }
@@ -55,7 +55,7 @@ public class DeleteSendingAddressAction extends MultiBitSubmitAction {
         setEnabled(false);
   
         try {
-            DeleteSendingAddressConfirmDialog deleteSendingAddressConfirmDialog = new DeleteSendingAddressConfirmDialog(controller, mainFrame, sendBitcoinPanel);
+            DeleteSendingAddressConfirmDialog deleteSendingAddressConfirmDialog = new DeleteSendingAddressConfirmDialog(super.multiBitController, mainFrame, sendBitcoinPanel);
             deleteSendingAddressConfirmDialog.setVisible(true);
         } finally {
             setEnabled(true);

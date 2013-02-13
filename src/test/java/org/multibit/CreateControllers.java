@@ -64,7 +64,8 @@ public class CreateControllers {
             return null;
         }
         multiBitController.setLocaliser((null != localiser) ? localiser : new Localiser(Locale.ENGLISH));
-
+        multiBitController.setModel(multiBitModel);
+        
         CurrencyConverter.INSTANCE.initialise(multiBitController);
 
         MultiBit.setController(multiBitController);

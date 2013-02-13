@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.multibit.MultiBit;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
@@ -64,7 +65,8 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
     private static MultiBitFrame mainFrame;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitLabel sendAddressText;
     private MultiBitLabel sendLabelText;
@@ -100,9 +102,10 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     /**
      * Creates a new {@link SendBitcoinConfirmDialog}.
      */
-    public SendBitcoinConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame, controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
-        this.controller = controller;
+    public SendBitcoinConfirmDialog(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        super(mainFrame, multiBitController.getLocaliser().getString("sendBitcoinConfirmView.title"));
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         SendBitcoinConfirmDialog.mainFrame = mainFrame;
 
         thisDialog = this;
@@ -361,7 +364,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this,
+        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, this.multiBitController, this,
                 ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);

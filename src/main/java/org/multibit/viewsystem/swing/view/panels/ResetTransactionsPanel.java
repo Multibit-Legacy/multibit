@@ -43,6 +43,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -70,7 +71,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
 
     private static final long serialVersionUID = 199992298245057705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private MultiBitLabel walletFilenameLabel;
 
@@ -95,8 +97,9 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     /**
      * Creates a new {@link ResetTransactionsPanel}.
      */
-    public ResetTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ResetTransactionsPanel(MultiBitController multiBitController, MultiBitFrame mainFrame) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
@@ -367,7 +370,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(controller,
+        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(this.multiBitController,
                 ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
         MultiBitButton submitButton = new MultiBitButton(resetTransactionsSubmitAction, controller);
         buttonPanel.add(submitButton);

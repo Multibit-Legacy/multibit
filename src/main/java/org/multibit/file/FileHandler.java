@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 
+
 /**
  * Class consolidating the File IO in MultiBit for wallets and wallet infos.
  * 
@@ -69,7 +70,8 @@ public class FileHandler {
     private static final String SEPARATOR = "-";
     public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final MultiBitController multiBitController;
 
     private Date dateForBackupName = null;
     
@@ -96,8 +98,9 @@ public class FileHandler {
         }
     }
 
-    public FileHandler(MultiBitController controller) {
-        this.controller = controller;
+    public FileHandler(MultiBitController multiBitController) {
+        this.multiBitController = multiBitController;
+        this.controller = this.multiBitController;
         
         dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         walletProtobufSerializer = new WalletProtobufSerializer();
