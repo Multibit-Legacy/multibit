@@ -38,6 +38,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.joda.money.BigMoney;
 import org.multibit.controller.Controller;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -54,7 +55,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 public class TickerTablePanel extends JPanel {
     private static final long serialVersionUID = 1235108820207842662L;
 
-    private Controller controller;
+    private final Controller controller;
+    private final ExchangeController exchangeController;
+    
     private MultiBitFrame mainFrame;
 
     private JTable table;
@@ -72,8 +75,10 @@ public class TickerTablePanel extends JPanel {
     
     private int idealHeight;
 
-    public TickerTablePanel(MultiBitFrame mainFrame, Controller controller) {
-        this.controller = controller;
+    public TickerTablePanel(MultiBitFrame mainFrame, ExchangeController exchangeController) {
+        this.exchangeController = exchangeController;
+        this.controller = this.exchangeController;
+        
         this.mainFrame = mainFrame;
 
         font = FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1);
@@ -114,7 +119,7 @@ public class TickerTablePanel extends JPanel {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tickerTableModel = new TickerTableModel(controller);
+        tickerTableModel = new TickerTableModel(this.exchangeController);
         
         table = new JTable(tickerTableModel);
         table.setOpaque(true);

@@ -176,7 +176,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
 
-        walletTableModel = new WalletTableModel(controller);
+        walletTableModel = new WalletTableModel(this.bitcoinController);
         table = new JTable(walletTableModel);
         table.setOpaque(false);
         table.setBorder(BorderFactory.createEmptyBorder());
@@ -360,7 +360,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     @Override
     public void displayView(DisplayHint displayHint) {
         //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
-        if (controller.getModel().getActiveWallet() == null) {
+        if (this.bitcoinController.getModel().getActiveWallet() == null) {
             return;
         }
         justifyColumnHeaders();

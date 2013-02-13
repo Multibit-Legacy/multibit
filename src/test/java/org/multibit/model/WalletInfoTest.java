@@ -112,7 +112,7 @@ public class WalletInfoTest extends TestCase {
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final BitcoinController controller = controllers.bitcoinController;
-
+        
         // Get test directory and wallet.
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();

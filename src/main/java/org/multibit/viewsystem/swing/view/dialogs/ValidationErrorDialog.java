@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import com.google.bitcoin.core.Wallet.BalanceType;
 
 import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -52,14 +53,17 @@ public class ValidationErrorDialog extends MultiBitDialog {
     private static final int HEIGHT_DELTA = 150;
     private static final int WIDTH_DELTA = 160;
 
-    private Controller controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     /**
      * Creates a new {@link ValidationErrorDialog}.
      */
-    public ValidationErrorDialog(Controller controller, MultiBitFrame mainFrame) {
-        super(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
-        this.controller = controller;
+    public ValidationErrorDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        super(mainFrame, bitcoinController.getLocaliser().getString("validationErrorView.title"));
+        
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
 
         initUI();
     }
@@ -69,34 +73,34 @@ public class ValidationErrorDialog extends MultiBitDialog {
      */
     private void initUI() {
         // Get the data out of the user preferences.
-        String addressValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
-        String amountValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
+        String addressValue = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
+        String amountValue = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
   
         String amountPlusConversionToFiat = CurrencyConverter.INSTANCE.prettyPrint(amountValue);
         
         // Invalid address.
-        String addressIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
+        String addressIsInvalid = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
         boolean addressIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(addressIsInvalid)) {
             addressIsInvalidBoolean = true;
         }
 
         // Amount is missing.
-        String amountIsMissing = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING);
+        String amountIsMissing = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING);
         boolean amountIsMissingBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsMissing)) {
             amountIsMissingBoolean = true;
         }
 
         // Invalid amount i.e. not a number or could not parse.
-        String amountIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
+        String amountIsInvalid = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
         boolean amountIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsInvalid)) {
             amountIsInvalidBoolean = true;
         }
 
         // Amount is negative or zero.
-        String amountIsNegativeOrZero = controller.getModel().getActiveWalletPreference(
+        String amountIsNegativeOrZero = this.bitcoinController.getModel().getActiveWalletPreference(
                 MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
         boolean amountIsNegativeOrZeroBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsNegativeOrZero)) {
@@ -104,7 +108,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
         }
 
         // Amount is more than available funds.
-        String notEnoughFunds = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
+        String notEnoughFunds = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
         boolean notEnoughFundsBoolean = false;
         if (Boolean.TRUE.toString().equals(notEnoughFunds)) {
             notEnoughFundsBoolean = true;
@@ -173,7 +177,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                     new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
-            if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+            if (this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
                         new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }
@@ -217,7 +221,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
         okButton.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         Object[] options = {okButton};
-        if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+        if (this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
             options = new Object[] { okButton, availableToSpendHelpButton};
         }
         MultiBitTextArea completeMessageTextArea = new MultiBitTextArea("\n" + completeMessage + "\n", rows, 20, controller);

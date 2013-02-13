@@ -64,7 +64,7 @@ public class PasteAddressAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -85,7 +85,7 @@ public class PasteAddressAction extends AbstractAction {
 
             // put it in the user preferences - will then get loaded when view
             // form loads
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, stringToPaste);
+            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, stringToPaste);
 
             // forward back to the view currently being displayed
             controller.displayView(controller.getCurrentView());

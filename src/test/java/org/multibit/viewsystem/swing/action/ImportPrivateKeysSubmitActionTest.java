@@ -309,7 +309,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         assertEquals("Wrong message after receive bitcoin confirm with no active wallet", ResetTransactionsSubmitActionTest.EXPECTED_NO_WALLET_IS_SELECTED, ((Message)messages[messages.length - 1]).getText());
     }
     
-    private void checkEveryExpectedKeyIsPresent(Controller controller) {
+    private void checkEveryExpectedKeyIsPresent(BitcoinController controller) {
         // Check every key on the expected list is now on the wallet.
         for (int i = 0; i < PrivateKeysHandlerTest.EXPECTED_ADDRESSES_FOR_TEST1_WALLET.length; i++) {
             boolean foundIt = false;

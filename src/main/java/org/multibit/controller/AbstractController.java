@@ -53,11 +53,6 @@ public abstract class AbstractController<C extends BaseController<C>> implements
     }
 
     @Override
-    public final MultiBitModel getModel() {
-        return this.baseController.getModel();
-    }
-
-    @Override
     public final Localiser getLocaliser() {
         return this.baseController.getLocaliser();
     }

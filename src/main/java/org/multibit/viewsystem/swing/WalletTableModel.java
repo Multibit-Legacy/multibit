@@ -23,14 +23,14 @@ import javax.swing.table.AbstractTableModel;
 
 import org.joda.money.Money;
 import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyInfo;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
+
 
 public class WalletTableModel extends AbstractTableModel {
 
@@ -42,20 +42,16 @@ public class WalletTableModel extends AbstractTableModel {
 
     private ArrayList<WalletTableData> walletData;
 
-    /**
-     * The MultiBit model.
-     */
-    private MultiBitModel multiBitModel;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
-    private Controller controller;
-
-    public WalletTableModel(Controller controller) {
-        this.multiBitModel = controller.getModel();
-        this.controller = controller;
+    public WalletTableModel(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
 
         createHeaders();
 
-        walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
+        walletData = this.bitcoinController.getModel().createWalletData(this.bitcoinController.getModel().getActiveWalletFilename());
     }
     
     @Override
@@ -156,7 +152,7 @@ public class WalletTableModel extends AbstractTableModel {
 
     public void recreateWalletData() {
         // Recreate the wallet data as the underlying wallet has changed.
-        walletData = multiBitModel.createActiveWalletData();
+        walletData = this.bitcoinController.getModel().createActiveWalletData();
         fireTableDataChanged();
     }
 

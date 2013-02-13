@@ -182,8 +182,8 @@ public class CreateNewReceivingAddressPanel extends JPanel {
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler5, constraints);
 
-        if (controller.getModel().getActiveWallet() != null) {
-            if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (this.bitcoinController.getModel().getActiveWallet() != null) {
+            if (this.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                 // Need wallet password.
                 walletPasswordField.setEnabled(true);
                 walletPasswordPromptLabel.setEnabled(true);
