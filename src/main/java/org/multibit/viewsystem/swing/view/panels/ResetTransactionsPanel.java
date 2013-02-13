@@ -125,7 +125,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         initUI();
         
         this.bitcoinController.registerWalletBusyListener(this);
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
     }
 
     private void initUI() {
@@ -300,7 +300,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(this.bitcoinController.getModel().getActiveWalletFilename());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 6;
@@ -321,7 +321,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -533,10 +533,10 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletFilenameLabel.setText(this.bitcoinController.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
         
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
     }
 
     @Override
@@ -596,14 +596,14 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {       
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
             resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
+                    new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
             resetTransactionsSubmitAction.setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip")));
                 resetTransactionsSubmitAction.setEnabled(true);
             }

@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
@@ -79,7 +80,8 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
 
   private static final String DATE_PATTERN = "dd-MMM";
 
-    private Controller controller;
+  private final Controller controller;
+  private final BitcoinController bitcoinController;
 
   private JPanel mainPanel;
 
@@ -88,9 +90,9 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
   /**
    * Creates a new {@link ChartsPanel}.
    */
-    public ChartsPanel(Controller controller, MultiBitFrame mainFrame) {
-
-    this.controller = controller;
+    public ChartsPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    this.bitcoinController = bitcoinController;
+    this.controller = this.bitcoinController;
 
     setLayout(new BorderLayout());
     setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -259,11 +261,11 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
    */
   private Collection<ChartData> getChartData() {
 
-    if (controller.getModel() == null || controller.getModel().getActiveWallet() == null) {
+    if (controller.getModel() == null || this.bitcoinController.getModel().getActiveWallet() == null) {
       return new ArrayList<ChartData>();
     }
 
-    ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet().getTransactions(false, false));
+    ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(this.bitcoinController.getModel().getActiveWallet().getTransactions(false, false));
 
     // Order by date.
     Collections.sort(allTransactions, new Comparator<Transaction>() {
@@ -313,7 +315,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
         chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
       } else {
         for (Transaction loop : allTransactions) {
-          balance = balance.add(loop.getValue(controller.getModel().getActiveWallet()));
+          balance = balance.add(loop.getValue(this.bitcoinController.getModel().getActiveWallet()));
 
           Date loopUpdateTime = loop.getUpdateTime();
           if (loopUpdateTime != null) {

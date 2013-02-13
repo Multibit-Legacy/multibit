@@ -67,7 +67,7 @@ public class PasteSwatchAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {

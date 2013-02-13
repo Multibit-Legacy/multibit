@@ -64,6 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.multibit.controller.Controller;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.TickerTimerTask;
@@ -118,8 +119,9 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int API_CODE_FIELD_HEIGHT = 30;
     private static final int API_CODE_FIELD_WIDTH = 200;
 
+    private final Controller controller;
+    private final ExchangeController exchangeController;
     
-    private Controller controller;
     private MultiBitFrame mainFrame;
 
     SortedSet<LanguageData> languageDataSet;
@@ -201,9 +203,10 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
-    public ShowPreferencesPanel(Controller controller, MultiBitFrame mainFrame) {
+    public ShowPreferencesPanel(ExchangeController exchangeController, MultiBitFrame mainFrame) {
         log.debug("Construct a new ShowPreferencesPanel");
-        this.controller = controller;
+        this.exchangeController = exchangeController;
+        this.controller = this.exchangeController;
         this.mainFrame = mainFrame;
 
         localisedSystemLookAndFeelName = controller.getLocaliser().getString("showPreferencesPanel.systemLookAndFeel");
@@ -1664,7 +1667,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this,
+        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(this.exchangeController, this,
                 ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE), mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);

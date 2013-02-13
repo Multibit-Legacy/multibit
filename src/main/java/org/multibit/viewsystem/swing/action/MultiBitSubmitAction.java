@@ -41,13 +41,13 @@ public abstract class MultiBitSubmitAction extends AbstractAction {
      */
     public boolean abort() {
         // Check if there is an active wallet.
-        if (controller.getModel().thereIsNoActiveWallet()) {
+        if (this.bitcoinController.getModel().thereIsNoActiveWallet()) {
             MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitSubmitAction.thereIsNoActiveWallet")));
             return true;
         }
 
         // check to see if another process has changed the active wallet
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
         
         if (haveFilesChanged) {

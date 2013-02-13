@@ -131,10 +131,10 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         initUI();
         
         this.bitcoinController.registerWalletBusyListener(this);
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         
         boolean walletPasswordRequired = false;
-        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (this.bitcoinController.getModel().getActiveWallet() != null && this.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             walletPasswordRequired = true;
         }
         enableWalletPassword(walletPasswordRequired);
@@ -343,7 +343,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         constraints.anchor = GridBagConstraints.LINE_END;
         inputWalletPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
         walletDescriptionLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -366,7 +366,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         constraints.anchor = GridBagConstraints.LINE_END;
         inputWalletPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(this.bitcoinController.getModel().getActiveWalletFilename());
         walletFilenameLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -799,21 +799,21 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletFilenameLabel.setText(this.bitcoinController.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
 
         boolean walletPasswordRequired = false;
-        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (this.bitcoinController.getModel().getActiveWallet() != null && this.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             walletPasswordRequired = true;
         }
         enableWalletPassword(walletPasswordRequired);
         
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
 
         if (outputFilename == null || "".equals(outputFilename) || 
-                (walletFilenameForChosenOutputFilename != null && !walletFilenameForChosenOutputFilename.equals(controller.getModel().getActiveWalletFilename()))) {
-            outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
-            walletFilenameForChosenOutputFilename = controller.getModel().getActiveWalletFilename(); 
+                (walletFilenameForChosenOutputFilename != null && !walletFilenameForChosenOutputFilename.equals(this.bitcoinController.getModel().getActiveWalletFilename()))) {
+            outputFilename = createDefaultKeyFilename(this.bitcoinController.getModel().getActiveWalletFilename());
+            walletFilenameForChosenOutputFilename = this.bitcoinController.getModel().getActiveWalletFilename(); 
             outputFilenameLabel.setText(outputFilename);
         }
 
@@ -857,8 +857,8 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
             fileChooser.setCurrentDirectory(new File(outputFilename));
             fileChooser.setSelectedFile(new File(outputFilename));
         } else {
-            if (controller.getModel().getActiveWalletFilename() != null) {
-                fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
+            if (this.bitcoinController.getModel().getActiveWalletFilename() != null) {
+                fileChooser.setCurrentDirectory(new File(this.bitcoinController.getModel().getActiveWalletFilename()));
             }
             String defaultFileName = fileChooser.getCurrentDirectory().getAbsoluteFile() + File.separator
                     + controller.getLocaliser().getString("saveWalletAsView.untitled") + "."
@@ -878,7 +878,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                     outputFilename = outputFilename + "." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
                 }
                 
-                walletFilenameForChosenOutputFilename = controller.getModel().getActiveWalletFilename(); 
+                walletFilenameForChosenOutputFilename = this.bitcoinController.getModel().getActiveWalletFilename(); 
 
                 outputFilenameLabel.setText(outputFilename);
                 clearMessages();
@@ -1059,14 +1059,14 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {       
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
             exportPrivateKeySubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
+                    new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
             exportPrivateKeySubmitAction.setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 exportPrivateKeySubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip")));
                 exportPrivateKeySubmitAction.setEnabled(true);
             }

@@ -103,7 +103,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
 
         initUI();
         
-        walletBusyChange(this.controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         this.bitcoinController.registerWalletBusyListener(this);
     }
 
@@ -288,7 +288,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
         constraints.anchor = GridBagConstraints.LINE_END;
         inputWalletPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
         walletDescriptionLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -311,7 +311,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
         constraints.anchor = GridBagConstraints.LINE_END;
         inputWalletPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(this.bitcoinController.getModel().getActiveWalletFilename());
         walletFilenameLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -576,10 +576,10 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletFilenameLabel.setText(this.bitcoinController.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
 
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         
         clearMessages();
     }
@@ -675,8 +675,8 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
 
     @Override
     public final void walletBusyChange(boolean newWalletIsBusy) {
-        if (controller.getModel().getActiveWallet() != null) {
-            if (controller.getModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
+        if (this.bitcoinController.getModel().getActiveWallet() != null) {
+            if (this.bitcoinController.getModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
                 // Is already an encrypted wallet so cannot add a password
                 // regardless.
                 addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
@@ -685,18 +685,18 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
             } else {
                 // Update the enable status of the action to match the wallet
                 // busy status.
-                if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+                if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
                     // Wallet is busy with another operation that may change the
                     // private keys - Action is disabled.
                     addPasswordSubmitAction.putValue(
                             Action.SHORT_DESCRIPTION,
                             controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
-                                    new Object[] { controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
+                                    new Object[] { controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
                     addPasswordSubmitAction.setEnabled(false);
                 } else {
                     // Enable unless wallet has been modified by another
                     // process.
-                    if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                    if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                         addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
                                 controller.getLocaliser().getString("addPasswordSubmitAction.text"));
 

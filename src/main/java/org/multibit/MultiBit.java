@@ -36,6 +36,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.multibit.controller.Controller;
 import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.file.FileHandler;
@@ -78,6 +79,7 @@ public class MultiBit {
     
     private static CoreController coreController = null;
     private static BitcoinController bitcoinController = null;
+    private static ExchangeController exchangeController = null;
     
     public static Controller getController() {
         return controller;
@@ -91,6 +93,10 @@ public class MultiBit {
         return bitcoinController;
     }
     
+    public static ExchangeController getExchangeController() {
+        return exchangeController;
+    }
+    
     /**
      * Used in testing
      */
@@ -101,6 +107,10 @@ public class MultiBit {
     
      public static void setBitcoinController(BitcoinController bitcoinController) {
         MultiBit.bitcoinController = bitcoinController;
+    }
+     
+     public static void setExchangeController(ExchangeController exchangeController) {
+        MultiBit.exchangeController = exchangeController;
     }
     
     /**
@@ -134,6 +144,8 @@ public class MultiBit {
             coreController = new CoreController(applicationDataDirectoryLocator);
             controller = coreController;
             bitcoinController = new BitcoinController(coreController);
+            exchangeController = new ExchangeController(coreController);
+
 
             log.info("Configuring native event handling");
             GenericApplicationSpecification specification = new GenericApplicationSpecification();
@@ -197,6 +209,8 @@ public class MultiBit {
             {
             MultiBitModel model = new MultiBitModel(bitcoinController, userPreferences);
                 coreController.setModel(model);
+                bitcoinController.setModel(model);
+                exchangeController.setModel(model);
             }
 
             // Initialise currency converter.
@@ -265,7 +279,7 @@ public class MultiBit {
 
             // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface with initial view : " + controller.getCurrentView());
-            swingViewSystem = new MultiBitFrame(coreController, bitcoinController, genericApplication, controller.getCurrentView());
+            swingViewSystem = new MultiBitFrame(coreController, bitcoinController, exchangeController, genericApplication, controller.getCurrentView());
 
             log.debug("Registering with controller");
             coreController.registerViewSystem(swingViewSystem);
@@ -298,10 +312,10 @@ public class MultiBit {
                 try {
                     // ActiveWalletFilename may be null on first time startup.
                     bitcoinController.addWalletFromFilename(activeWalletFilename);
-                    List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                    List<PerWalletModelData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null && !perWalletModelDataList.isEmpty()) {
                         activeWalletFilename = perWalletModelDataList.get(0).getWalletFilename();
-                        controller.getModel().setActiveWalletByFilename(activeWalletFilename);
+                        bitcoinController.getModel().setActiveWalletByFilename(activeWalletFilename);
                         log.debug("Created/loaded wallet '" + activeWalletFilename + "'");
                         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
                                 "multiBit.createdWallet", new Object[] { activeWalletFilename })));
@@ -327,8 +341,8 @@ public class MultiBit {
                 } finally {
                     if (thereWasAnErrorLoadingTheWallet) {
                         // Clear the backup wallet filename - this prevents it being automatically overwritten.
-                        if (controller.getModel().getActiveWalletWalletInfo() != null) {
-                            controller.getModel().getActiveWalletWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                        if (bitcoinController.getModel().getActiveWalletWalletInfo() != null) {
+                            bitcoinController.getModel().getActiveWalletWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
                         }
                     }
                     if (swingViewSystem instanceof MultiBitFrame) {
@@ -431,7 +445,7 @@ public class MultiBit {
                             try {
                                 if (activeWalletFilename != null && activeWalletFilename.equals(actualOrder)) {
                                     bitcoinController.addWalletFromFilename(actualOrder);
-                                    controller.getModel().setActiveWalletByFilename(actualOrder);
+                                    bitcoinController.getModel().setActiveWalletByFilename(actualOrder);
                                 } else {
                                     bitcoinController.addWalletFromFilename(actualOrder);
                                 }
@@ -460,7 +474,7 @@ public class MultiBit {
                             }
                             
                             if (thereWasAnErrorLoadingTheWallet) {
-                                PerWalletModelData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(actualOrder);
+                                PerWalletModelData loopData = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(actualOrder);
                                 if (loopData != null) {
                                     // Clear the backup wallet filename - this prevents it being automatically overwritten.
                                     if (loopData.getWalletInfo() != null) {
@@ -507,7 +521,7 @@ public class MultiBit {
             
             log.debug("Downloading blockchain");
             if (useFastCatchup) {
-                long earliestTimeSecs = controller.getModel().getActiveWallet().getEarliestKeyCreationTime();
+                long earliestTimeSecs = bitcoinController.getModel().getActiveWallet().getEarliestKeyCreationTime();
                 bitcoinController.getMultiBitService().getPeerGroup().setFastCatchupTimeSecs(earliestTimeSecs);
                 log.debug("Using FastCatchup for blockchain sync with time of " + (new Date(earliestTimeSecs)).toString());
             }
@@ -523,7 +537,7 @@ public class MultiBit {
             
             log.debug("The current chain height is " + currentChainHeight);
             
-            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            List<PerWalletModelData> perWalletModelDataList = exchangeController.getModel().getPerWalletModelDataList();
             boolean needToSync = false;
             int syncFromHeight = -1;
 

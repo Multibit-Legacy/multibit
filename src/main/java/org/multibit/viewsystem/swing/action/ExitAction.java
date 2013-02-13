@@ -98,7 +98,7 @@ public class ExitAction extends AbstractExitAction {
 
         if (null != this.bitcoinController) {
         // Save all the wallets and put their filenames in the user preferences.
-            List<PerWalletModelData> perWalletModelDataList = super.controller.getModel().getPerWalletModelDataList();
+            List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 try {
@@ -127,10 +127,12 @@ public class ExitAction extends AbstractExitAction {
         log.debug("exit 5");
         }
 
-        // Write the user properties.
-        log.debug("Saving user preferences ...");
-        FileHandler.writeUserPreferences(super.controller);
-        log.debug("exit 6");
+        if (null != this.bitcoinController) {
+            // Write the user properties.
+            log.debug("Saving user preferences ...");
+            FileHandler.writeUserPreferences(this.bitcoinController);
+            log.debug("exit 6");
+        }
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
