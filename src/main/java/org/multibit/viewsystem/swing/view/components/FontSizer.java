@@ -18,7 +18,7 @@ package org.multibit.viewsystem.swing.view.components;
 import java.awt.Font;
 
 import org.multibit.controller.Controller;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 
 public enum FontSizer {
@@ -35,7 +35,7 @@ public enum FontSizer {
     private Font createAdjustedDefaultFont() {
         String fontSizeString = null;
         if (controller != null) {
-            fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+            fontSizeString = controller.getModel().getUserPreference(CoreModel.FONT_SIZE);
         }
         int unadjustedFontSize =  ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
         
@@ -47,7 +47,7 @@ public enum FontSizer {
             }
         }
 
-        String fontStyleString = controller.getModel().getUserPreference(MultiBitModel.FONT_STYLE);
+        String fontStyleString = controller.getModel().getUserPreference(CoreModel.FONT_STYLE);
         int fontStyle = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_STYLE;
 
         try {
@@ -56,7 +56,7 @@ public enum FontSizer {
             // use default
         }
 
-        String fontName = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
+        String fontName = controller.getModel().getUserPreference(CoreModel.FONT_NAME);
         if (fontName == null || "".equals(fontName)) {
             fontName = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
         }
