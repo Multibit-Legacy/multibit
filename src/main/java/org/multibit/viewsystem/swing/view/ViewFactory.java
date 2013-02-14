@@ -123,7 +123,7 @@ public class ViewFactory {
         }
         
         case PREFERENCES_VIEW: {
-            viewToReturn = new ShowPreferencesPanel(this.exchangeController, mainFrame);
+            viewToReturn = new ShowPreferencesPanel(this.bitcoinController, this.exchangeController, mainFrame);
             break;
         }
 
