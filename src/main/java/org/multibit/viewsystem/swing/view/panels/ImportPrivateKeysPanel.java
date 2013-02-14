@@ -55,7 +55,7 @@ import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;

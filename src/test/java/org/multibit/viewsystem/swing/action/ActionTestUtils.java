@@ -7,8 +7,8 @@ import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletInfo;
 import org.multibit.store.MultiBitWalletVersion;
 
 import com.google.bitcoin.core.ECKey;

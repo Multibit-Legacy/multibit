@@ -15,8 +15,8 @@
  */
 package org.multibit.viewsystem;
 
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.core.StatusEnum;
 
 import com.google.bitcoin.core.WalletEventListener;
 

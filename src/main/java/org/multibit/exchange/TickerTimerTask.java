@@ -25,7 +25,7 @@ import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.exchange.ExchangeController;
-import org.multibit.model.ExchangeData;
+import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;

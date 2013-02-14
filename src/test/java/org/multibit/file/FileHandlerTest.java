@@ -31,8 +31,8 @@ import org.multibit.Constants;
 
 import org.multibit.CreateControllers;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletInfo;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 

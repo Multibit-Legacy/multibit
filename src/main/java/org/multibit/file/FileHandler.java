@@ -42,8 +42,8 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletInfo;
 import org.multibit.network.MultiBitService;
 import org.multibit.store.MultiBitWalletProtobufSerializer;
 import org.multibit.store.MultiBitWalletVersion;
@@ -57,7 +57,7 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterException;
-import org.multibit.model.CoreModel;
+import org.multibit.model.core.CoreModel;
 
 
 /**

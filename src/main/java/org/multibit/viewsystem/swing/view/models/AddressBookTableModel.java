@@ -21,8 +21,8 @@ import javax.swing.table.DefaultTableModel;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.AddressBookData;
+import org.multibit.model.bitcoin.WalletInfo;
 
 public class AddressBookTableModel extends DefaultTableModel {
 

@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import javax.swing.SwingUtilities;
 import org.multibit.controller.Controller;
-import org.multibit.model.ExchangeData;
+import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
