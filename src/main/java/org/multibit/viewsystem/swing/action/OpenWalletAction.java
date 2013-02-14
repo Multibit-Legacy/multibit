@@ -139,7 +139,7 @@ public class OpenWalletAction extends AbstractAction {
                         // See if the wallet is already open.
                         boolean walletIsAlreadyOpen = false;
                         if (controller != null && controller.getModel() != null) {
-                            List<PerWalletModelData> perWalletDataModels = controller.getModel().getPerWalletModelDataList();
+                            List<PerWalletModelData> perWalletDataModels = bitcoinController.getModel().getPerWalletModelDataList();
                             if (perWalletDataModels != null) {
                                 Iterator<PerWalletModelData> iterator = perWalletDataModels.iterator();
                                 if (iterator != null) {
@@ -148,7 +148,7 @@ public class OpenWalletAction extends AbstractAction {
                                         if (perWalletModelData != null && perWalletModelData.getWalletFilename() != null) {
                                             if (perWalletModelData.getWalletFilename().equals(selectedWalletFilename)) {
                                                 walletIsAlreadyOpen = true;
-                                                controller.getModel().setActiveWalletByFilename(selectedWalletFilename);
+                                                bitcoinController.getModel().setActiveWalletByFilename(selectedWalletFilename);
                                                 controller.fireDataChangedUpdateNow();
                                                 break;
                                             }
@@ -201,7 +201,7 @@ public class OpenWalletAction extends AbstractAction {
 
                     // Save the user properties to disk.
                     log.debug("Writing user preferences. . .");
-                    FileHandler.writeUserPreferences(controller);
+                    FileHandler.writeUserPreferences(bitcoinController);
                     log.debug("User preferences with new wallet written successfully");
  
                     message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal}); 

@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -30,14 +31,18 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.joda.money.CurrencyUnit;
+
 import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -47,9 +52,6 @@ import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
-import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.exchange.ExchangeModel;
-
 
 /**
  * This {@link Action} applies changes to the preferences panel.
@@ -101,7 +103,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String updateStatusText = "";
 
             if (dataProvider != null) {
-                controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT,
+                controller.getModel().setUserPreference(CoreModel.PREVIOUS_UNDO_CHANGES_TEXT,
                         dataProvider.getPreviousUndoChangesText());
 
                 String previousSendFee = dataProvider.getPreviousSendFee();
@@ -159,11 +161,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
             String previousLanguageCode = dataProvider.getPreviousUserLanguageCode();
             String newLanguageCode = dataProvider.getNewUserLanguageCode();
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE, previousLanguageCode);
+            controller.getModel().setUserPreference(CoreModel.PREVIOUS_USER_LANGUAGE_CODE, previousLanguageCode);
 
             if (previousLanguageCode != null && !previousLanguageCode.equals(newLanguageCode)) {
                 // New language to set on model.
-                controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE, newLanguageCode);
+                controller.getModel().setUserPreference(CoreModel.USER_LANGUAGE_CODE, newLanguageCode);
                 wantToFireDataStructureChanged = true;
             }
 
@@ -184,10 +186,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousFontName = dataProvider.getPreviousFontName();
             String newFontName = dataProvider.getNewFontName();
 
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_NAME, previousFontName);
+            controller.getModel().setUserPreference(CoreModel.PREVIOUS_FONT_NAME, previousFontName);
 
             if (newFontName != null) {
-                controller.getModel().setUserPreference(MultiBitModel.FONT_NAME, newFontName);
+                controller.getModel().setUserPreference(CoreModel.FONT_NAME, newFontName);
 
                 if (!newFontName.equals(previousFontName)) {
                     fontHasChanged = true;
@@ -197,10 +199,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousFontStyle = dataProvider.getPreviousFontStyle();
             String newFontStyle = dataProvider.getNewFontStyle();
 
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE, previousFontStyle);
+            controller.getModel().setUserPreference(CoreModel.PREVIOUS_FONT_STYLE, previousFontStyle);
 
             if (newFontStyle != null) {
-                controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE, newFontStyle);
+                controller.getModel().setUserPreference(CoreModel.FONT_STYLE, newFontStyle);
 
                 if (!newFontStyle.equals(previousFontStyle)) {
                     fontHasChanged = true;
@@ -210,10 +212,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousFontSize = dataProvider.getPreviousFontSize();
             String newFontSize = dataProvider.getNewFontSize();
 
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, previousFontSize);
+            controller.getModel().setUserPreference(CoreModel.PREVIOUS_FONT_SIZE, previousFontSize);
 
             if (newFontSize != null) {
-                controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE, newFontSize);
+                controller.getModel().setUserPreference(CoreModel.FONT_SIZE, newFontSize);
 
                 if (!newFontSize.equals(previousFontSize)) {
                     fontHasChanged = true;
@@ -225,11 +227,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousLookAndFeel = dataProvider.getPreviousLookAndFeel();
             String newLookAndFeel = dataProvider.getNewLookAndFeel();
 
-            controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, previousLookAndFeel);
+            controller.getModel().setUserPreference(CoreModel.LOOK_AND_FEEL, previousLookAndFeel);
 
             if (newLookAndFeel != null
                     && (!newLookAndFeel.equals(previousLookAndFeel) && !newLookAndFeel.equals(UIManager.getLookAndFeel().getName()))) {
-                controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, newLookAndFeel);
+                controller.getModel().setUserPreference(CoreModel.LOOK_AND_FEEL, newLookAndFeel);
 
                 lookAndFeelHasChanged = true;
             }
@@ -273,7 +275,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             } 
 
             controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, new Boolean(showTicker).toString());
-            controller.getModel().setUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
+            controller.getModel().setUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
                     new Boolean(showBitcoinConvertedToFiat).toString());
 
             String columnsToShow = "";
@@ -362,11 +364,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
 
-                controller.getModel().setUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE, newOerApiCode);
+                controller.getModel().setUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE, newOerApiCode);
             }
 
             // Can undo.
-            controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
+            controller.getModel().setUserPreference(CoreModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
 
             if (restartTickerTimer) {
                 // Reinitialise the currency converter.
@@ -410,7 +412,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
             if (lookAndFeelHasChanged) {
                 try {
-                    if (MultiBitModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
+                    if (CoreModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     } else {
                         for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
