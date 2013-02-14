@@ -21,15 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.model;
+package org.multibit.model.bitcoin;
+
+import org.multibit.model.AbstractModel;
+import org.multibit.model.ModelEnum;
+import org.multibit.model.core.CoreModel;
 
 /**
  *
  * @author Cameron Garnham
  */
-public enum ModelEnum {
-    CORE,
-    BITCOIN,
-    EXCHANGE,
-    MULTIBIT
+public class BitcoinModel extends AbstractModel<CoreModel> {
+
+    public BitcoinModel(CoreModel coreModel){
+        super(coreModel);
+    }
+    
+    @Override
+    public ModelEnum getModelEnum() {
+        return ModelEnum.BITCOIN;
+    }
+    
 }

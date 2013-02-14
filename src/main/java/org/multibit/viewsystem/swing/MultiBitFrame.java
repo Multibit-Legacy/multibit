@@ -70,10 +70,10 @@ import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.core.StatusEnum;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.ReplayManager;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.listener.GenericQuitEventListener;
@@ -970,7 +970,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.addSeparator();
 
         // show ticker
-        String viewTicker = controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW);
+        String viewTicker = controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW);
         boolean isTickerVisible = !Boolean.FALSE.toString().equals(viewTicker);
 
         String tickerKey;
@@ -997,11 +997,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 if (tickerTablePanel != null) {
                     if (tickerTablePanel.isVisible()) {
                         tickerTablePanel.setVisible(false);
-                        controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.FALSE.toString());
+                        controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.FALSE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
                     } else {
                         tickerTablePanel.setVisible(true);
-                        controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.TRUE.toString());
+                        controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.TRUE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
                         // Cancel any existing timer.
                         if (tickerTimer1 != null) {
@@ -1015,7 +1015,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         tickerTimer1.schedule(new TickerTimerTask(exchangeController, thisFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
                         
                         boolean showSecondRow = Boolean.TRUE.toString().equals(
-                                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                                controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
                         
                         if (showSecondRow) {
                             tickerTimer2 = new Timer();

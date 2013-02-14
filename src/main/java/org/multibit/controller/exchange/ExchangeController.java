@@ -28,6 +28,7 @@ import org.multibit.controller.AbstractController;
 import org.multibit.controller.AbstractEventHandler;
 import org.multibit.controller.core.CoreController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.action.ExitAction;
 
 /**
@@ -42,7 +43,7 @@ public class ExchangeController extends AbstractController<CoreController> {
     /**
      * The data model backing the views.
      */
-    private MultiBitModel model;
+    private ExchangeModel model;
     
     
     public ExchangeController(CoreController coreController){
@@ -59,11 +60,11 @@ public class ExchangeController extends AbstractController<CoreController> {
     }
 
     @Override
-    public MultiBitModel getModel() {
+    public ExchangeModel getModel() {
         return model;
     }
 
-    public void setModel(MultiBitModel model) {
+    public void setModel(ExchangeModel model) {
         this.model = model;
     }
     
