@@ -41,6 +41,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.model.CoreModel;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.AlertManager;
@@ -205,8 +206,9 @@ public class MultiBit {
             // Create the model.
             // The model is set to the controller.
             {
-            MultiBitModel model = new MultiBitModel(bitcoinController, userPreferences);
-                coreController.setModel(model);
+            final CoreModel coreModel = new CoreModel(userPreferences);
+            final MultiBitModel model = new MultiBitModel(coreModel);
+                coreController.setModel(coreModel);
                 bitcoinController.setModel(model);
                 exchangeController.setModel(model);
             }

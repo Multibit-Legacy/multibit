@@ -23,11 +23,47 @@
  */
 package org.multibit.model;
 
+import java.util.Properties;
+import org.multibit.viewsystem.View;
+
 /**
  *
  * @author Cameron Garnham
  */
-public enum ModelEnum {
-    CORE,
-    MULTIBIT
+public abstract class AbstractModel<M extends BaseModel<M>> implements Model {
+
+    private final M baseModel;
+
+    protected AbstractModel(M baseModel) {
+        if (null == baseModel) {
+            throw new NullPointerException();
+        }
+        this.baseModel = baseModel;
+    }
+
+    @Override
+    public String getUserPreference(String key) {
+        return this.baseModel.getUserPreference(key);
+    }
+
+    @Override
+    public void setUserPreference(String key, String value) {
+        this.baseModel.setUserPreference(key, value);
+    }
+
+    @Override
+    public Properties getAllUserPreferences() {
+        return this.baseModel.getAllUserPreferences();
+    }
+
+    @Override
+    public View getCurrentView() {
+        return this.baseModel.getCurrentView();
+    }
+
+    @Override
+    public void setCurrentView(View view) {
+        this.baseModel.setCurrentView(view);
+    }
+    
 }
