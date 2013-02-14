@@ -21,8 +21,8 @@ import org.junit.Test;
 
 import org.multibit.CreateControllers;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.AddressBookData;
+import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;

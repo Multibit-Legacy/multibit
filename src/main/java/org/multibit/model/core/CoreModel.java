@@ -21,9 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.model;
+package org.multibit.model.core;
 
 import java.util.Properties;
+import org.multibit.model.BaseModel;
+import org.multibit.model.ModelEnum;
 
 /**
  *

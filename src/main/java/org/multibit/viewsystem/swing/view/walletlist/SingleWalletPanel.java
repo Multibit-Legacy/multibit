@@ -48,8 +48,8 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.network.MultiBitDownloadListener;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
@@ -67,6 +67,7 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 import org.multibit.controller.bitcoin.BitcoinController;
+
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, WalletBusyListener {
 

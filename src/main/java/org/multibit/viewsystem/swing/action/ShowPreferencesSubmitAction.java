@@ -36,7 +36,7 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.ExchangeData;
+import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;

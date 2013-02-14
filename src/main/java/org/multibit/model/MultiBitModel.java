@@ -15,6 +15,11 @@
  */
 package org.multibit.model;
 
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.bitcoin.WalletTableData;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletInfo;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;

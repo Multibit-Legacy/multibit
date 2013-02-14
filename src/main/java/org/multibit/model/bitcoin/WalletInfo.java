@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.model;
+package org.multibit.model.bitcoin;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
+import org.multibit.model.MultiBitModel;
 
 /**
  * Wallet info is the companion info to the bitcoinj that multibit uses it
