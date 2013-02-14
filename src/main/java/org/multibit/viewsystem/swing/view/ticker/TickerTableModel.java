@@ -21,6 +21,7 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.exchange.ExchangeModel;
 
 /**
  * Table model for ticker.
@@ -69,7 +70,7 @@ public class TickerTableModel extends AbstractTableModel {
         this.exchangeController = exchangeController;
         this.controller = this.exchangeController;
 
-        String tickerColumnsToShow = controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
+        String tickerColumnsToShow = controller.getModel().getUserPreference(ExchangeModel.TICKER_COLUMNS_TO_SHOW);
 
         if (tickerColumnsToShow == null || tickerColumnsToShow.equals("")) {
             tickerColumnsToShow = DEFAULT_COLUMNS_TO_SHOW;
@@ -108,24 +109,24 @@ public class TickerTableModel extends AbstractTableModel {
         }
 
         showSecondRow = Boolean.TRUE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
 
-        exchange1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+        exchange1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
         if (exchange1 == null || "".equals(exchange1) || "null".equals(exchange1)) {
             exchange1 = ExchangeData.DEFAULT_EXCHANGE;
         }
 
-        currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        currency1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
         if (currency1 == null || "".equals(currency1) || "null".equals(currency1)) {
             currency1 = ExchangeData.DEFAULT_CURRENCY;
         }
 
-        exchange2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
+        exchange2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
         if (exchange2 == null || "".equals(exchange2) || "null".equals(exchange2)) {
             exchange2 = ExchangeData.DEFAULT_EXCHANGE;
         }
 
-        currency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
+        currency2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
         if (currency2 == null || "".equals(currency2) || "null".equals(currency2)) {
             currency2 = ExchangeData.DEFAULT_CURRENCY;
         }
