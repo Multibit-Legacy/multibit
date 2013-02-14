@@ -17,9 +17,11 @@ package org.multibit.model;
 
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.model.bitcoin.WalletTableData;
 import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.model.bitcoin.WalletInfo;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,14 +84,7 @@ public class MultiBitModel extends AbstractModel<CoreModel> {
     
     public static final int SCROLL_INCREMENT = 12;
 
-    // Currency ticker.
-    public static final String TICKER_SHOW = "tickerShow";
-    public static final String TICKER_COLUMNS_TO_SHOW = "tickerColumnsToShow";
-    public static final String TICKER_FIRST_ROW_EXCHANGE = "tickerFirstRowExchange";
-    public static final String TICKER_FIRST_ROW_CURRENCY = "tickerFirstRowCurrency";
-    public static final String TICKER_SHOW_SECOND_ROW = "tickerShowSecondRow";
-    public static final String TICKER_SECOND_ROW_EXCHANGE = "tickerSecondRowExchange";
-    public static final String TICKER_SECOND_ROW_CURRENCY = "tickerSecondRowCurrency";
+
     
     // Wallets, open wallet and save wallet as dialog.
     public static final String GRAB_FOCUS_FOR_ACTIVE_WALLET = "grabFocusForActiveWallet";
@@ -224,8 +219,6 @@ public class MultiBitModel extends AbstractModel<CoreModel> {
      * The currently displayed view. One of the View constants.
      */
     private View currentView = null;
-    
-    private Map<String, ExchangeData> shortExchangeNameToExchangeMap;
 
     public static final int UNKNOWN_NUMBER_OF_CONNECTD_PEERS = -1;
     
@@ -248,15 +241,7 @@ public class MultiBitModel extends AbstractModel<CoreModel> {
         activeWalletModelData = new PerWalletModelData();
         perWalletModelDataList.add(activeWalletModelData);
 
-        ExchangeData exchangeData1 = new ExchangeData();
-        ExchangeData exchangeData2 = new ExchangeData();
 
-        exchangeData1.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
-        exchangeData2.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
-        
-        shortExchangeNameToExchangeMap = new HashMap<String, ExchangeData>();
-        shortExchangeNameToExchangeMap.put(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, exchangeData1);
-        shortExchangeNameToExchangeMap.put(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, exchangeData2);
     }
 
     public PerWalletModelData getActivePerWalletModelData() {
@@ -751,10 +736,6 @@ public class MultiBitModel extends AbstractModel<CoreModel> {
         return null;
     }
     
-    public ExchangeData getExchangeData(String shortExchangeName) {
-        return shortExchangeNameToExchangeMap.get(shortExchangeName);
-    }
-    
     public NetworkParameters getNetworkParameters() {
         // If test or production is not specified, default to production.
         String testOrProduction = super.getUserPreference(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
@@ -790,10 +771,6 @@ public class MultiBitModel extends AbstractModel<CoreModel> {
 
     public void setBlinkEnabled(boolean blinkEnabled) {
         this.blinkEnabled = blinkEnabled;
-    }
-
-    public Map<String, ExchangeData> getShortExchangeNameToExchangeMap() {
-        return shortExchangeNameToExchangeMap;
     }
     
     @Override

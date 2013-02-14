@@ -38,6 +38,7 @@ import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
+import org.multibit.model.exchange.ExchangeModel;
 
 /**
  * TimerTask to poll currency exchanges for ticker data process
@@ -76,15 +77,15 @@ public class TickerTimerTask extends TimerTask {
         this.isFirstExchange = isFirstExchange;
 
         if (isFirstExchange) {
-            currency = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+            currency = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
             if (currency == null || currency.length() == 0) {
                 currency = ExchangeData.DEFAULT_CURRENCY;
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, currency);
+                controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, currency);
             }
-            shortExchangeName = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+            shortExchangeName = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
         } else {
-            currency = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
-            shortExchangeName = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
+            currency = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
+            shortExchangeName = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
         }
     }
 
@@ -96,7 +97,7 @@ public class TickerTimerTask extends TimerTask {
     public void run() {
         // If this is the second row and is not showing, do not do anything.
         if (!isFirstExchange && !Boolean.TRUE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW))) {
+                controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW))) {
             return;
         }
         
@@ -123,7 +124,7 @@ public class TickerTimerTask extends TimerTask {
                     // Only get data from server if ticker is being shown if
                     // currency conversion is switched on.
                     // (This is to minimise the load on the remote servers).
-                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))
+                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW))
                             || !Boolean.FALSE.toString().equals(
                                     controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
                         // Get symbol ticker if it is one of the
