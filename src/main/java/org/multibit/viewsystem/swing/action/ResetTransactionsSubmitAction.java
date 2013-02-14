@@ -30,7 +30,7 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;

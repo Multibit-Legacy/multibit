@@ -28,7 +28,7 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.model.CoreModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.MultiBitModel;
 
 /**

@@ -35,7 +35,7 @@ import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.network.MultiBitService;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;

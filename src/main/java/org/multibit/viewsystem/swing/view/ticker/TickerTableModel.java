@@ -19,7 +19,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.exchange.ExchangeController;
-import org.multibit.model.ExchangeData;
+import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
 
 /**

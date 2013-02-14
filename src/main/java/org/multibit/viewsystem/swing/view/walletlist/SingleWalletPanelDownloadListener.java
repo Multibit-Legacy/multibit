@@ -22,7 +22,7 @@ import java.util.UUID;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.slf4j.Logger;
