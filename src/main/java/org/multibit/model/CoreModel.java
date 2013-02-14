@@ -23,11 +23,25 @@
  */
 package org.multibit.model;
 
+import java.util.Properties;
+
 /**
  *
  * @author Cameron Garnham
  */
-public enum ModelEnum {
-    CORE,
-    MULTIBIT
+public class CoreModel extends BaseModel<CoreModel> {
+    
+    public CoreModel() {
+        this(null);
+    }
+
+    public CoreModel(Properties userPreferences) {
+        super((null != userPreferences) ? userPreferences : new Properties());
+    }
+
+    @Override
+    public ModelEnum getModelEnum() {
+        return ModelEnum.CORE;
+    }
+    
 }
