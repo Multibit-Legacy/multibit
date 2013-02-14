@@ -33,6 +33,30 @@ import org.multibit.model.ModelEnum;
  */
 public class CoreModel extends BaseModel<CoreModel> {
     
+    public static final String USER_LANGUAGE_CODE = "languageCode";
+    public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
+    
+    public static final String LOOK_AND_FEEL = "lookAndFeel";
+    public static final String SYSTEM_LOOK_AND_FEEL = "system";
+    
+    public static final int SCROLL_INCREMENT = 12;
+    
+    // User preference font.
+    public static final String FONT = "font";
+    public static final String FONT_NAME = "fontName";
+    public static final String FONT_STYLE = "fontStyle";
+    public static final String FONT_SIZE = "fontSize";
+
+    public static final String PREVIOUS_FONT_NAME = "previousFontName";
+    public static final String PREVIOUS_FONT_STYLE = "previousFontStyle";
+    public static final String PREVIOUS_FONT_SIZE = "previousFontSize";
+    
+    public static final String PREVIOUS_USER_LANGUAGE_CODE = "previousLanguageCode";
+    public static final String PREVIOUS_UNDO_CHANGES_TEXT = "previousUndoChangesText";
+    public static final String CAN_UNDO_PREFERENCES_CHANGES = "canUndoPreferencesChanges";
+    
+    
+    
     public CoreModel() {
         this(null);
     }

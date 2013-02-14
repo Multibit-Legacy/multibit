@@ -15,29 +15,25 @@
  */
 package org.multibit.model;
 
-import org.multibit.model.core.CoreModel;
-import org.multibit.model.exchange.ExchangeData;
-import org.multibit.model.exchange.ExchangeModel;
-import org.multibit.model.bitcoin.WalletTableData;
-import org.multibit.model.bitcoin.PerWalletModelData;
-import org.multibit.model.bitcoin.WalletInfo;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.WalletTableData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.viewsystem.View;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,22 +72,12 @@ public class MultiBitModel extends AbstractModel<CoreModel> {
     public static final String PRODUCTION_NETWORK_VALUE = "production";
     public static final String WALLET_FILENAME = "walletFilename";
 
-    public static final String USER_LANGUAGE_CODE = "languageCode";
-    public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
-    
-    public static final String LOOK_AND_FEEL = "lookAndFeel";
-    public static final String SYSTEM_LOOK_AND_FEEL = "system";
-    
-    public static final String SHOW_DELETE_WALLET = "showDeleteWallet";
-    
-    public static final int SCROLL_INCREMENT = 12;
 
-
-    
     // Wallets, open wallet and save wallet as dialog.
     public static final String GRAB_FOCUS_FOR_ACTIVE_WALLET = "grabFocusForActiveWallet";
     public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
     public static final String WALLET_DESCRIPTION_PREFIX = "walletDescription.";
+    public static final String SHOW_DELETE_WALLET = "showDeleteWallet";
 
     // The number of serialised and protobuf2 wallets in the multibit.properties.
     public static final String EARLY_WALLET_FILENAME_PREFIX = "walletFilename.";
@@ -174,23 +160,10 @@ public class MultiBitModel extends AbstractModel<CoreModel> {
     public static final String WALLET_INFO_FILE_SIZE = "walletInfoFileSize";
     public static final String WALLET_INFO_FILE_LAST_MODIFIED = "walletInfoFileLastModified";
 
-    // User preference font.
-    public static final String FONT = "font";
-    public static final String FONT_NAME = "fontName";
-    public static final String FONT_STYLE = "fontStyle";
-    public static final String FONT_SIZE = "fontSize";
-
-    public static final String PREVIOUS_FONT_NAME = "previousFontName";
-    public static final String PREVIOUS_FONT_STYLE = "previousFontStyle";
-    public static final String PREVIOUS_FONT_SIZE = "previousFontSize";
-
     // User preferences undo.
     public static final String PREVIOUS_OPEN_URI_SHOW_DIALOG = "previousOpenUriShowDialog";
     public static final String PREVIOUS_OPEN_URI_USE_URI = "previousOpenUriUseUri";
     public static final String PREVIOUS_SEND_FEE = "previousSendFee";
-    public static final String PREVIOUS_USER_LANGUAGE_CODE = "previousLanguageCode";
-    public static final String PREVIOUS_UNDO_CHANGES_TEXT = "previousUndoChangesText";
-    public static final String CAN_UNDO_PREFERENCES_CHANGES = "canUndoPreferencesChanges";
 
     // Wallet migration.
     public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
@@ -198,13 +171,6 @@ public class MultiBitModel extends AbstractModel<CoreModel> {
     // Wallet backup.
     public static final String WALLET_BACKUP_FILE = "walletBackupFile";
        
-    // Currency support.
-    public static final String SHOW_BITCOIN_CONVERTED_TO_FIAT = "showBitcoinConvertedToFiat";   // boolean
-    public static final String USE_LAST_AS_EXCHANGE_RATE = "useLastAsExchangeRate";             // boolean
-    public static final String USE_BID_AS_EXCHANGE_RATE = "useBidAsExchangeRate";               // boolean
-    public static final String USE_ASK_AS_EXCHANGE_RATE = "useAskAsExchangeRate";               // boolean
-    public static final String SHOW_BTC_IN_WALLET_PANEL = "showBTCinWalletPanel";               // boolean
-    public static final String OPEN_EXCHANGE_RATES_API_CODE = "openExchangeRatesApiCode";
     
     // AlertManager and versions
     public static final String ALERT_MANAGER_NEW_VERSION_VALUE = "alertManagerNewVersionValue";

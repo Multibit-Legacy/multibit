@@ -69,6 +69,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.joda.money.Money;
+
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
@@ -78,10 +79,11 @@ import org.multibit.exchange.CurrencyInfo;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.AddressBookData;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.AddressBookData;
 import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.core.CoreModel;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.store.MultiBitWalletVersion;
@@ -97,6 +99,7 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.action.ZoomAction;
+import org.multibit.viewsystem.swing.view.ImageSelection;
 import org.multibit.viewsystem.swing.view.components.DashedBorder;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
@@ -105,7 +108,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
-import org.multibit.viewsystem.swing.view.ImageSelection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -738,8 +741,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     private void setupScrollPane() {
         addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         addressesScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
-        addressesScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        addressesScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        addressesScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        addressesScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
     }
 
@@ -988,8 +991,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         qrCodeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         qrCodeScrollPane.setBorder(BorderFactory.createEmptyBorder());
         qrCodeScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
-        qrCodeScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        qrCodeScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        qrCodeScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        qrCodeScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         panel.add(qrCodeScrollPane, constraints);
 

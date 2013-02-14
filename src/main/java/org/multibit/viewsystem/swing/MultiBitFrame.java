@@ -70,6 +70,7 @@ import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.core.StatusEnum;

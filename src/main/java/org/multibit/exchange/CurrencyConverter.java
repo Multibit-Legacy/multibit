@@ -13,9 +13,9 @@ import java.util.Locale;
 import java.util.Map;
 import javax.swing.SwingUtilities;
 import org.multibit.controller.Controller;
-import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.model.exchange.ExchangeData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.exchange.ExchangeModel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +25,8 @@ import org.joda.money.Money;
 import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
+
+
 
 public enum CurrencyConverter {
     INSTANCE;
@@ -614,7 +616,7 @@ public enum CurrencyConverter {
     }
 
     public boolean isShowingFiat() {
-        return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
+        return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
     }
     
     public CurrencyUnit getCurrencyUnit() {
