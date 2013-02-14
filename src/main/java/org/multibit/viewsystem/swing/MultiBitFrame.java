@@ -1341,7 +1341,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public void updateHeader() {
         final BigInteger finalEstimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
-        final BigInteger finalAvailableToSpend = model.getActiveWalletAvailableBalanceWithBoomerangChange();
+        final BigInteger finalAvailableToSpend = model.getActiveWalletAvailableBalance();
         final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
 
         if (EventQueue.isDispatchThread()) {

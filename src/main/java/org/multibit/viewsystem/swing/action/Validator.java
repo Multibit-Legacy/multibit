@@ -117,7 +117,7 @@ public class Validator {
                         feeBigInteger = Utils.toNanoCoins(fee);
                     }
                     BigInteger totalSpend = amountBigInteger.add(feeBigInteger);
-                    BigInteger availableBalance = controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE);
+                    BigInteger availableBalance = controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
                     if (totalSpend.compareTo(availableBalance) > 0) {
                         // not enough funds
                         amountValidatesOk = Boolean.FALSE;

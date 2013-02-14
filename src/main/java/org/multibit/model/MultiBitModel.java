@@ -398,11 +398,11 @@ public class MultiBitModel {
      *
      * @return
      */
-    public BigInteger getActiveWalletAvailableBalanceWithBoomerangChange() {
+    public BigInteger getActiveWalletAvailableBalance() {
         if (activeWalletModelData.getWallet() == null) {
             return BigInteger.ZERO;
         } else {
-            return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE);
+            return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE);
         }
     }
 

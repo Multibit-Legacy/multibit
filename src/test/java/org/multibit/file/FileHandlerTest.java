@@ -56,10 +56,8 @@ public class FileHandlerTest extends TestCase {
     private static final String WALLET_FUTURE = "future.wallet";
 
     private final String WALLET_SERIALISED1 = "serialised1.wallet";
-    private final BigInteger WALLET_SERIALISED1_BALANCE = new BigInteger("6700000");;
 
     private final String WALLET_SERIALISED2 = "serialised2.wallet";
-    private final BigInteger WALLET_SERIALISED2_BALANCE = new BigInteger("2000000");;
 
 
     private final String TEST_CREATE_SERIALISED_PREFIX = "testCreateSerialised";
@@ -119,9 +117,7 @@ public class FileHandlerTest extends TestCase {
         PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
 
         assertNotNull(perWalletModelData);
-
-        assertEquals(WALLET_SERIALISED1_BALANCE, perWalletModelData.getWallet().getBalance());
-        
+       
         // Check wallet type.
         assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
     }
@@ -142,9 +138,7 @@ public class FileHandlerTest extends TestCase {
         PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
 
         assertNotNull(perWalletModelData);
-
-        assertEquals(WALLET_SERIALISED2_BALANCE, perWalletModelData.getWallet().getBalance());
-        
+   
         // Check wallet type.
         assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
     }
