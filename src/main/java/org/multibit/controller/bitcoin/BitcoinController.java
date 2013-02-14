@@ -112,13 +112,8 @@ public class BitcoinController extends AbstractController<CoreController> implem
 
         this.walletBusyListeners = new ArrayList<WalletBusyListener>();
         this.fileHandler = new FileHandler(this);
-<<<<<<< HEAD:src/main/java/org/multibit/controller/MultiBitController.java
-        this.eventHandler = new EventHandler(this);
-        this.peerEventListener = new MultiBitPeerEventListener(this);
-=======
         this.eventHandler = new EventHandler(this);
         this.peerEventListener = new BitcoinPeerEventListener(this);
->>>>>>> 7130c9c... refactor bitcoin controller:src/main/java/org/multibit/controller/bitcoin/BitcoinController.java
         
         this.addEventHandler(this.getEventHandler());
     }
@@ -373,11 +368,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
         return this.eventHandler;
     }
     
-<<<<<<< HEAD:src/main/java/org/multibit/controller/MultiBitController.java
-    private class EventHandler extends AbstractEventHandler<MultiBitController> {
-=======
     private class EventHandler extends AbstractEventHandler<BitcoinController> {
->>>>>>> 7130c9c... refactor bitcoin controller:src/main/java/org/multibit/controller/bitcoin/BitcoinController.java
 
     /**
          * Multiple threads will write to this variable so require it to be
@@ -385,11 +376,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
      */
         private volatile URI rawBitcoinURI = null;
 
-<<<<<<< HEAD:src/main/java/org/multibit/controller/MultiBitController.java
-        public EventHandler(MultiBitController coreController) {
-=======
         public EventHandler(BitcoinController coreController) {
->>>>>>> 7130c9c... refactor bitcoin controller:src/main/java/org/multibit/controller/bitcoin/BitcoinController.java
             super(coreController);
     }
 

@@ -27,13 +27,11 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.AbstractEventHandler;
-import org.multibit.controller.AbstractEventHandler;
-import org.multibit.controller.BaseController;
 import org.multibit.controller.BaseController;
 import org.multibit.model.core.CoreModel;
-import org.multibit.model.MultiBitModel;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;
 import org.multibit.platform.listener.GenericOpenURIEvent;
@@ -46,6 +44,7 @@ import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +144,7 @@ public class CoreController extends BaseController<CoreController> implements Ge
     public void fireDataStructureChanged() {
         //log.debug("fireDataStructureChanged called");
 
-        Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
+        Locale newLocale = new Locale(model.getUserPreference(CoreModel.USER_LANGUAGE_CODE));
         super.getLocaliser().setLocale(newLocale);
 
         View viewToDisplay = getCurrentView();

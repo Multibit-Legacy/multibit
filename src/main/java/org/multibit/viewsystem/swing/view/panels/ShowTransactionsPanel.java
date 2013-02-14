@@ -70,8 +70,8 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.WalletTableData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -84,6 +84,7 @@ import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.ShowTransactionDetailsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -351,8 +352,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         scrollPane.setOpaque(true);
         scrollPane.getViewport().setOpaque(true);
     }

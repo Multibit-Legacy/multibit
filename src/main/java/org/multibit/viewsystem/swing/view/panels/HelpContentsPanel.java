@@ -30,7 +30,7 @@ import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
@@ -104,8 +104,8 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         JScrollPane scrollPane = new JScrollPane(browser);
         scrollPane.setPreferredSize(new Dimension(800, 400));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         add(scrollPane, BorderLayout.CENTER);
     }
     
@@ -113,7 +113,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         // Mac menu items when they are on the top row of the screen dont render in HTML so dont wrap the tooltip text
         // Get property apple.laf.useScreenMenuBar - this is set in src/app-resources/MultiBit.app/info.plist
         String useScreenMenuBar = System.getProperty("apple.laf.useScreenMenuBar");
-        String lookAndFeel = "" + MultiBit.getController().getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL);
+        String lookAndFeel = "" + MultiBit.getController().getModel().getUserPreference(CoreModel.LOOK_AND_FEEL);
 
         //log.debug("apple.laf.useScreenMenuBar = " + useScreenMenuBar + ", lookAndFeel = " + lookAndFeel);
 

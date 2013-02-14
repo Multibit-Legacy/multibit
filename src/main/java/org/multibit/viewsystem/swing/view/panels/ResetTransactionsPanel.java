@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
+
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -45,7 +46,7 @@ import javax.swing.border.Border;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -227,8 +228,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }
