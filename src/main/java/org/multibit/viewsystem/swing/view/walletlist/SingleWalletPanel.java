@@ -50,7 +50,7 @@ import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.controller.Controller;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;

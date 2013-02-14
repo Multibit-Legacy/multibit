@@ -15,6 +15,8 @@
  */
 package org.multibit.model;
 
+import org.multibit.model.bitcoin.AddressBookData;
+import org.multibit.model.bitcoin.WalletInfo;
 import java.io.File;
 import java.util.ArrayList;
 

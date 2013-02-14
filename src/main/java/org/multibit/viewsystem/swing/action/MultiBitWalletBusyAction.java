@@ -22,7 +22,7 @@ import javax.swing.Action;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;

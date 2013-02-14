@@ -22,7 +22,7 @@ import javax.swing.Action;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
 import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
