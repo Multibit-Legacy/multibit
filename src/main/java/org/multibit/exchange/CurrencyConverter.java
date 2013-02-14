@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import javax.swing.SwingUtilities;
 import org.multibit.controller.Controller;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.slf4j.Logger;
@@ -24,7 +25,6 @@ import org.joda.money.Money;
 import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
-
 
 public enum CurrencyConverter {
     INSTANCE;
@@ -83,8 +83,8 @@ public enum CurrencyConverter {
 
     public void initialise(Controller controller) {
         // Initialise conversion currency.
-        String currencyCode = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
-        String exchange = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+        String currencyCode = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
+        String exchange = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
         String newCurrencyCode = currencyCode;
         if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(exchange)) {
             // Use only the last three characters - the currency code.

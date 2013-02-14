@@ -44,6 +44,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
@@ -98,7 +99,7 @@ public class MultiBit {
         MultiBit.coreController = coreController;
     }
     
-     public static void setBitcoinController(BitcoinController bitcoinController) {
+    public static void setBitcoinController(BitcoinController bitcoinController) {
         MultiBit.bitcoinController = bitcoinController;
     }
      
@@ -201,9 +202,10 @@ public class MultiBit {
             {
             final CoreModel coreModel = new CoreModel(userPreferences);
             final MultiBitModel model = new MultiBitModel(coreModel);
+            final ExchangeModel exchangeModel = new ExchangeModel(coreModel);
                 coreController.setModel(coreModel);
                 bitcoinController.setModel(model);
-                exchangeController.setModel(model);
+                exchangeController.setModel(exchangeModel);
             }
 
             // Initialise currency converter.

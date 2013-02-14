@@ -69,7 +69,7 @@ public abstract class BaseModel<M extends BaseModel<M>> implements Model {
         if (userPreferences != null) {
             // first try and find a old view setting.
             View initialViewInProperties = null;
-            Object oldViewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW);
+            Object oldViewObject = userPreferences.get(BaseModel.SELECTED_VIEW);
 
             String oldViewString = (null != oldViewObject) ? (String) oldViewObject : null;
 
@@ -84,13 +84,13 @@ public abstract class BaseModel<M extends BaseModel<M>> implements Model {
                     
                     // Remove the old view property from the properties - replaced by enum.
                     // (It may be put back in for backwads compatibility in FileHandler#writeUserPreferences.
-                    userPreferences.remove(MultiBitModel.SELECTED_VIEW);
+                    userPreferences.remove(BaseModel.SELECTED_VIEW);
                 }
             }
 
             // If oldViewInProperties is still null,  try and find the view.
             if (null == initialViewInProperties) {
-                Object viewObject = userPreferences.get(MultiBitModel.SELECTED_VIEW_ENUM);
+                Object viewObject = userPreferences.get(BaseModel.SELECTED_VIEW_ENUM);
 
                 String viewString = (null != viewObject) ? (String) viewObject : null;
 
@@ -157,6 +157,6 @@ public abstract class BaseModel<M extends BaseModel<M>> implements Model {
     @Override
     public final void setCurrentView(View view) {
         this.currentView = view;
-        this.setUserPreference(SELECTED_VIEW_ENUM, view.name());
+        this.setUserPreference(BaseModel.SELECTED_VIEW_ENUM, view.name());
     }
 }

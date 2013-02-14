@@ -57,6 +57,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -65,6 +66,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.DisplayHint;
@@ -114,6 +116,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int API_CODE_FIELD_WIDTH = 200;
 
     private final Controller controller;
+    private final BitcoinController bitcoinController;
     private final ExchangeController exchangeController;
     
     private MultiBitFrame mainFrame;
@@ -197,10 +200,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
-    public ShowPreferencesPanel(ExchangeController exchangeController, MultiBitFrame mainFrame) {
+    public ShowPreferencesPanel(BitcoinController bitcoinController, ExchangeController exchangeController, MultiBitFrame mainFrame) {
         log.debug("Construct a new ShowPreferencesPanel");
         this.exchangeController = exchangeController;
-        this.controller = this.exchangeController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         localisedSystemLookAndFeelName = controller.getLocaliser().getString("showPreferencesPanel.systemLookAndFeel");
@@ -220,7 +224,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             return;
         }
         
-        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
+        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
 
         originalShowBitcoinConvertedToFiat = !Boolean.FALSE.toString().equals(
@@ -848,13 +852,13 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     private JPanel createTickerPanel(int stentWidth) {
         // load up the original values
-        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
-        originalExchange1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
-        originalCurrency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW));
+        originalExchange1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
+        originalCurrency1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
         originalShowSecondRow = Boolean.TRUE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
-        originalExchange2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
-        originalCurrency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
+                controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
+        originalExchange2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
+        originalCurrency2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
 
         MultiBitTitledPanel tickerPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showPreferencesPanel.ticker.title2"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -925,7 +929,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         showAsk.setOpaque(false);
         showAsk.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        String tickerColumnsToShow = controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
+        String tickerColumnsToShow = controller.getModel().getUserPreference(ExchangeModel.TICKER_COLUMNS_TO_SHOW);
         if (tickerColumnsToShow == null || tickerColumnsToShow.equals("")) {
             tickerColumnsToShow = TickerTableModel.DEFAULT_COLUMNS_TO_SHOW;
         }
@@ -1645,7 +1649,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(this.exchangeController, this,
+        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(this.bitcoinController, this.exchangeController, this,
                 ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE), mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
