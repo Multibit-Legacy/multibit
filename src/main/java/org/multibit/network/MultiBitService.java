@@ -349,7 +349,7 @@ public class MultiBitService {
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
-                perWalletModelDataToReturn = this.bitcoinController.getModel().addWallet(wallet, walletFile.getAbsolutePath());
+                perWalletModelDataToReturn = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet, walletFile.getAbsolutePath());
 
                 // Create a wallet info.
                 WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), MultiBitWalletVersion.PROTOBUF);

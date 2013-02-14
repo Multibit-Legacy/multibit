@@ -32,6 +32,7 @@ import org.multibit.controller.AbstractEventHandeler;
 import org.multibit.controller.AbstractEventHandeler;
 import org.multibit.controller.BaseController;
 import org.multibit.controller.BaseController;
+import org.multibit.model.CoreModel;
 import org.multibit.model.MultiBitModel;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;
@@ -63,7 +64,7 @@ public class CoreController extends BaseController<CoreController> implements Ge
     /**
      * The data model backing the views.
      */
-    private MultiBitModel model;
+    private CoreModel model;
     
     public CoreController() {
         this(null);
@@ -80,11 +81,11 @@ public class CoreController extends BaseController<CoreController> implements Ge
     
     
     @Override
-    public MultiBitModel getModel() {
+    public CoreModel getModel() {
         return model;
     }
 
-    public void setModel(MultiBitModel model) {
+    public void setModel(CoreModel model) {
         this.model = model;
     }
     

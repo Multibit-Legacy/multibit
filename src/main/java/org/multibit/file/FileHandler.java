@@ -57,6 +57,7 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterException;
+import org.multibit.model.CoreModel;
 
 
 /**
@@ -175,7 +176,7 @@ public class FileHandler {
   
             // Add the new wallet into the model.
             wallet.setNetworkParameters(this.bitcoinController.getModel().getNetworkParameters());
-            PerWalletModelData perWalletModelData = this.bitcoinController.getModel().addWallet(wallet, walletFilenameToUse);
+            PerWalletModelData perWalletModelData = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet, walletFilenameToUse);
 
             perWalletModelData.setWalletInfo(walletInfo);
 
@@ -712,10 +713,10 @@ public class FileHandler {
         @SuppressWarnings("deprecation")
         int currentViewNumericFormat = View.toOldViewNumeric(controller.getCurrentView());
         if (currentViewNumericFormat != 0) {
-            userPreferences.put(MultiBitModel.SELECTED_VIEW, "" + currentViewNumericFormat);
+            userPreferences.put(CoreModel.SELECTED_VIEW, "" + currentViewNumericFormat);
         } else {
             // Make sure the old numeric value for a view is not in the user properties.
-            userPreferences.remove(MultiBitModel.SELECTED_VIEW);
+            userPreferences.remove(CoreModel.SELECTED_VIEW);
         }
         // Write the user preference properties.
         OutputStream outputStream = null;
