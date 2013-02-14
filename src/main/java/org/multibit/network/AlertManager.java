@@ -41,6 +41,7 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.model.CoreModel;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
@@ -54,6 +55,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+
 
 
 public enum AlertManager {
@@ -414,17 +416,19 @@ public enum AlertManager {
         
         // Initialise a few things.
         final CoreController controller = new CoreController();
-        final BitcoinController multiBitController = new BitcoinController(controller);
+        final BitcoinController bitcoinController = new BitcoinController(controller);
         
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(multiBitController);
+        final Localiser localiser = new Localiser();
+        final CoreModel coreModel = new CoreModel();
+        final MultiBitModel model = new MultiBitModel(coreModel);
         
         controller.setLocaliser(localiser);
-        controller.setModel(model);   
+        controller.setModel(coreModel);
+        bitcoinController.setModel(model);
         
         // Initialise and check
         AlertManager alertManager = AlertManager.INSTANCE;        
-        alertManager.initialise(multiBitController, null);
+        alertManager.initialise(bitcoinController, null);
 
         FileWriter fileWriter = null;
         try {
@@ -434,7 +438,7 @@ public enum AlertManager {
             
             // Load up the wallet containing the signing key.
             File walletFile = new File(walletLocation);
-            FileHandler fileHandler = new FileHandler(multiBitController);
+            FileHandler fileHandler = new FileHandler(bitcoinController);
             PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
             
             // Find the private key whose Bitcoin address matches the passed in addressPrefix.

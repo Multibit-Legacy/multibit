@@ -56,7 +56,7 @@ import com.google.bitcoin.store.BlockStoreException;
  * @author jim
  * 
  */
-public class MultiBitModel extends BaseModel<MultiBitModel> {
+public class MultiBitModel extends AbstractModel<CoreModel> {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitModel.class);
 
@@ -205,10 +205,6 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
     public static final String ALERT_MANAGER_NEW_VERSION_VALUE = "alertManagerNewVersionValue";
     public static final String ALERT_MANAGER_NEW_VERSION_SEEN_COUNT = "alertManagerNewVersionSeenCount";
     
-    // Main controller class.
-    private final Controller controller;
-    private final BitcoinController bitcoinController;
-
     /**
      * List of each wallet's total model data.
      */
@@ -237,19 +233,10 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
      * Used to enable/ disable blinking of the SingleWalletPanels when language changes etc.
      */
     private boolean blinkEnabled = true;
-    
-     public MultiBitModel(BitcoinController bitcoinController) {
-        this(bitcoinController, new Properties());
-    }
 
     @SuppressWarnings("deprecation")
-    public MultiBitModel(BitcoinController bitcoinController, Properties userPreferences) {
-        super((null != userPreferences) ? userPreferences : new Properties());
-        
-        this.bitcoinController = bitcoinController;
-        this.controller = this.bitcoinController;
-        
-        this.userPreferences = userPreferences;
+    public MultiBitModel(CoreModel coreModel) {
+        super(coreModel);
 
         perWalletModelDataList = new CopyOnWriteArrayList<PerWalletModelData>();
 
@@ -425,7 +412,7 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
     /**
      * Add a new wallet to the list of managed wallets.
      */
-    public PerWalletModelData addWallet(Wallet wallet, String walletFilename) {
+    public PerWalletModelData addWallet(final BitcoinController bitcoinController, Wallet wallet, String walletFilename) {
         if (walletFilename == null) {
             return null;
         }
@@ -458,7 +445,7 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
             wallet.addEventListener(bitcoinController);
         }
 
-        createWalletData(walletFilename);
+        createWalletData(bitcoinController, walletFilename);
         createAddressBookReceivingAddresses(walletFilename);
 
         return newPerWalletModelData;
@@ -478,15 +465,15 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
      * Convert the active wallet info into walletdata records as they are easier
      * to show to the user in tabular form.
      */
-    public ArrayList<WalletTableData> createActiveWalletData() {
-        return createWalletDataInternal(this.getActivePerWalletModelData());
+    public ArrayList<WalletTableData> createActiveWalletData(final BitcoinController bitcoinController) {
+        return createWalletDataInternal(bitcoinController, this.getActivePerWalletModelData());
     }
     
     /**
      * Convert the wallet info into walletdata records as they are easier
      * to show to the user in tabular form.
      */
-    public ArrayList<WalletTableData> createWalletData(String walletFilename) {
+    public ArrayList<WalletTableData> createWalletData(final BitcoinController bitcoinController, String walletFilename) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (walletFilename == null) {
@@ -503,10 +490,10 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
             }
         }
         
-        return createWalletDataInternal(perWalletModelData);
+        return createWalletDataInternal(bitcoinController, perWalletModelData);
     }
 
-    public ArrayList<WalletTableData> createWalletDataInternal(PerWalletModelData perWalletModelData) {
+    public ArrayList<WalletTableData> createWalletDataInternal(final BitcoinController bitcoinController, PerWalletModelData perWalletModelData) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (perWalletModelData == null || perWalletModelData.getWallet() == null) {
@@ -531,11 +518,11 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
                 if (transactionInputs != null) {
                     TransactionInput firstInput = transactionInputs.get(0);
                     if (firstInput != null) {
-                        walletDataRow.setDescription(createDescription(perWalletModelData.getWallet(), transactionInputs,
+                        walletDataRow.setDescription(createDescription(bitcoinController, perWalletModelData.getWallet(), transactionInputs,
                                 transactionOutputs, walletDataRow.getCredit(), walletDataRow.getDebit()));
                     }
                 }
-                walletDataRow.setDate(createDate(loopTransaction));
+                walletDataRow.setDate(createDate(bitcoinController, loopTransaction));
                 walletDataRow.setHeight(workOutHeight(loopTransaction));
             }
         }
@@ -604,7 +591,7 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
      * @param debit
      * @return A description of the transaction
      */
-    public String createDescription(Wallet wallet, List<TransactionInput> transactionInputs,
+    public String createDescription(final Controller controller, Wallet wallet, List<TransactionInput> transactionInputs,
             List<TransactionOutput> transactionOutputs, BigInteger credit, BigInteger debit) {
         String toReturn = "";
 
@@ -693,7 +680,7 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
      * @param transaction
      * @return Date date of transaction
      */
-    private Date createDate(Transaction transaction) {
+    private Date createDate(final BitcoinController bitcoinController, Transaction transaction) {
         // If transaction has altered date - return that.
         if (transaction.getUpdateTime() != null) {
             return transaction.getUpdateTime();
@@ -765,10 +752,10 @@ public class MultiBitModel extends BaseModel<MultiBitModel> {
     
     public NetworkParameters getNetworkParameters() {
         // If test or production is not specified, default to production.
-        String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
+        String testOrProduction = super.getUserPreference(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
         if (testOrProduction == null) {
             testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
-            userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
+            super.setUserPreference(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
         }
         if (MultiBitModel.TEST_NETWORK_VALUE.equalsIgnoreCase(testOrProduction)) {
             return NetworkParameters.testNet2();
