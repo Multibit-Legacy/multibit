@@ -29,7 +29,7 @@ import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
-import org.multibit.model.StatusEnum;
+import org.multibit.model.core.StatusEnum;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;

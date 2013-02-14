@@ -33,7 +33,7 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;

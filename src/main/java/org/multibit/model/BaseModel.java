@@ -24,6 +24,7 @@
 package org.multibit.model;
 
 import java.util.Properties;
+import org.multibit.model.core.CoreModel;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

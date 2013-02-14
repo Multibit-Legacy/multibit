@@ -2,8 +2,8 @@ package org.multibit.viewsystem.simple;
 
 import java.math.BigInteger;
 
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.core.StatusEnum;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.ViewSystem;
 

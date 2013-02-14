@@ -32,7 +32,7 @@ import org.multibit.controller.AbstractEventHandeler;
 import org.multibit.controller.AbstractEventHandeler;
 import org.multibit.controller.BaseController;
 import org.multibit.controller.BaseController;
-import org.multibit.model.CoreModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.MultiBitModel;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;

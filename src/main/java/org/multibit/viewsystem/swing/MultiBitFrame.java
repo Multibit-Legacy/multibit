@@ -71,9 +71,9 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.core.StatusEnum;
 import org.multibit.network.ReplayManager;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.listener.GenericQuitEventListener;
@@ -120,6 +120,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+
 
 /*
  * JFrame displaying Swing version of MultiBit
