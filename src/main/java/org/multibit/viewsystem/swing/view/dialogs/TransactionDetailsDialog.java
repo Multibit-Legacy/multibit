@@ -43,9 +43,9 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.PerWalletModelData;
 import org.multibit.model.bitcoin.WalletTableData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -56,6 +56,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -351,8 +352,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         labelScrollPane.setOpaque(true);
         labelScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         labelScrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        labelScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        labelScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
@@ -390,8 +391,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailScrollPane.setOpaque(true);
         detailScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         detailScrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        detailScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        detailScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        detailScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        detailScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         detailPanel.add(detailScrollPane, constraints);
 

@@ -47,7 +47,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.crypto.KeyCrypterOpenSSL;
@@ -56,6 +55,7 @@ import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
@@ -72,6 +72,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 import com.google.bitcoin.crypto.KeyCrypterException;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
@@ -310,8 +313,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }

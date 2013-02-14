@@ -33,17 +33,17 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.multibit.controller.Controller;
-import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.core.CoreController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.core.CoreModel;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
@@ -177,7 +177,7 @@ public class MultiBit {
             });
 
             Localiser localiser;
-            String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
+            String userLanguageCode = userPreferences.getProperty(CoreModel.USER_LANGUAGE_CODE);
             log.debug("userLanguageCode = {}", userLanguageCode);
 
             if (userLanguageCode == null) {
@@ -185,9 +185,9 @@ public class MultiBit {
                 // use the user default, else Localiser will set it to English.
                 localiser = new Localiser(Locale.getDefault());
 
-                userPreferences.setProperty(MultiBitModel.USER_LANGUAGE_CODE, localiser.getLocale().getLanguage());
+                userPreferences.setProperty(CoreModel.USER_LANGUAGE_CODE, localiser.getLocale().getLanguage());
             } else {
-                if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
+                if (CoreModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
                     localiser = new Localiser(Locale.getDefault());
                 } else {
                     localiser = new Localiser(new Locale(userLanguageCode));
@@ -213,7 +213,7 @@ public class MultiBit {
             
             log.debug("Setting look and feel");
             try {
-                String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
+                String lookAndFeel = userPreferences.getProperty(CoreModel.LOOK_AND_FEEL);
  
                 // No need to load look and feel if system - will be used by default.
                 if (!"system".equalsIgnoreCase(lookAndFeel)) {

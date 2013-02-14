@@ -23,11 +23,13 @@ import java.util.TimerTask;
 
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
+
 import org.multibit.controller.Controller;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.model.exchange.ExchangeData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,6 @@ import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
-import org.multibit.model.exchange.ExchangeModel;
 
 /**
  * TimerTask to poll currency exchanges for ticker data process
@@ -122,7 +123,7 @@ public class TickerTimerTask extends TimerTask {
                     // (This is to minimise the load on the remote servers).
                     if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW))
                             || !Boolean.FALSE.toString().equals(
-                                    controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
+                                    controller.getModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
                         // Get symbol ticker if it is one of the
                         // currencies we are interested in.
                         // (This is to save hitting the server for every
@@ -349,7 +350,7 @@ public class TickerTimerTask extends TimerTask {
                 ExchangeSpecification exchangeSpecification = new ExchangeSpecification(exchangeClassname);
                 exchangeSpecification.setUri("http://openexchangerates.org");
                 exchangeSpecification
-                        .setApiKey(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE));
+                        .setApiKey(controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE));
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeSpecification);
             } else {
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeClassname);
