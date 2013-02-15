@@ -196,8 +196,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private Timer fileChangeTimer;
 
-    private Timer tickerTimer;
-    private TickerTimerTask tickerTimerTask;
+    private Timer tickerTimer1;
+    private Timer tickerTimer2;
+    private TickerTimerTask tickerTimerTask1;
+    private TickerTimerTask tickerTimerTask2;
 
     private JPanel headerPanel;
 
@@ -279,17 +281,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         controller.registerWalletBusyListener(this);
 
-        // Initialise status bar.
-        statusBar.initialise();
-
-        // Initialise the file change timer.
+         // Initialise the file change timer.
         fileChangeTimer = new Timer();
         fileChangeTimer.schedule(new FileChangeTimerTask(controller), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
 
-         // Initialise the ticker.
-        tickerTimer = new Timer();
-        tickerTimerTask = new TickerTimerTask(controller, this);
-        tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
+         // Initialise the tickers.
+        tickerTimer1 = new Timer();
+        tickerTimerTask1 = new TickerTimerTask(controller, this, true);
+        tickerTimer1.schedule(tickerTimerTask1, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        tickerTimer2 = new Timer();
+        tickerTimerTask2 = new TickerTimerTask(controller, this, false);
+        tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+
+        // Initialise status bar.
+        statusBar.initialise();
 
         estimatedBalanceLabelLabel.setFocusable(false);
         estimatedBalanceBTCLabel.setFocusable(false);
@@ -934,12 +939,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.TRUE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
                         // Cancel any existing timer.
-                        if (tickerTimer != null) {
-                            tickerTimer.cancel();
+                        if (tickerTimer1 != null) {
+                            tickerTimer1.cancel();
+                        }                        
+                        if (tickerTimer2 != null) {
+                            tickerTimer2.cancel();
                         }
                         // Start ticker timer.
-                        tickerTimer = new Timer();
-                        tickerTimer.schedule(new TickerTimerTask(controller, thisFrame), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                        tickerTimer1 = new Timer();
+                        tickerTimer1.schedule(new TickerTimerTask(controller, thisFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                        tickerTimer2 = new Timer();
+                        tickerTimer2.schedule(new TickerTimerTask(controller, thisFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
                     }
                 }
             }
@@ -1541,15 +1551,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         updateHeader();
     }
 
-    public Timer getTickerTimer() {
-        return tickerTimer;
+    public Timer getTickerTimer1() {
+        return tickerTimer1;
     }
 
-    public void setTickerTimer(Timer tickerTimer) {
-        this.tickerTimer = tickerTimer;
+    public void setTickerTimer1(Timer tickerTimer1) {
+        this.tickerTimer1 = tickerTimer1;
     }
     
-    public TickerTimerTask getTickerTimerTask() {
-        return tickerTimerTask;
+    public Timer getTickerTimer2() {
+        return tickerTimer2;
+    }
+
+    public void setTickerTimer2(Timer tickerTimer2) {
+        this.tickerTimer2 = tickerTimer2;
+    }
+    
+    public TickerTimerTask getTickerTimerTask1() {
+        return tickerTimerTask1;
+    }
+    public TickerTimerTask getTickerTimerTask2() {
+        return tickerTimerTask2;
     }
 }

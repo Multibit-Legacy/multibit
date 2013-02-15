@@ -337,13 +337,18 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 CurrencyConverter.INSTANCE.initialise(controller);
 
                 // Cancel any existing timer.
-                if (mainFrame.getTickerTimer() != null) {
-                    mainFrame.getTickerTimer().cancel();
+                if (mainFrame.getTickerTimer1() != null) {
+                    mainFrame.getTickerTimer1().cancel();
                 }
-                // Start ticker timer.
-                Timer tickerTimer = new Timer();
-                mainFrame.setTickerTimer(tickerTimer);
-                tickerTimer.schedule(new TickerTimerTask(controller, mainFrame), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                if (mainFrame.getTickerTimer2() != null) {
+                    mainFrame.getTickerTimer2().cancel();
+                }                // Start ticker timer.
+                Timer tickerTimer1 = new Timer();
+                mainFrame.setTickerTimer1(tickerTimer1);
+                tickerTimer1.schedule(new TickerTimerTask(controller, mainFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                Timer tickerTimer2 = new Timer();
+                mainFrame.setTickerTimer2(tickerTimer2);
+                tickerTimer2.schedule(new TickerTimerTask(controller, mainFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
             }
 
             if (fontHasChanged) {

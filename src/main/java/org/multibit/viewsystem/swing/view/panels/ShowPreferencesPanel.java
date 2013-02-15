@@ -1075,8 +1075,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
         // Make sure the exchange1 has been created and initialised the list of
         // currencies.
-        if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
-            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+        if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
+            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
             synchronized (tickerTimerTask) {
                 if (tickerTimerTask.getExchange1() == null) {
                     tickerTimerTask.createExchange1(exchangeToUse1);
@@ -1114,8 +1114,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                     String exchangeShortName = item.toString();
                     // Make sure the exchange1 has been created and initialised
                     // the list of currencies.
-                    if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
-                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+                    if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
+                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
                         synchronized (tickerTimerTask) {
                             tickerTimerTask.createExchange1(exchangeShortName);
                             currencyComboBox1.removeAllItems();
@@ -1213,8 +1213,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                     String exchangeShortName = item.toString();
                     // Make sure the exchange2 has been created and initialised
                     // the list of currencies.
-                    if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
-                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+                    if (mainFrame != null && mainFrame.getTickerTimerTask2() != null) {
+                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask2();
                         synchronized (tickerTimerTask) {
                             tickerTimerTask.createExchange2(exchangeShortName);
                             currencyComboBox2.removeAllItems();
@@ -1252,8 +1252,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
         // Make sure the exchange2 has been created and initialised the list of
         // currencies.
-        if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
-            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+        if (mainFrame != null && mainFrame.getTickerTimerTask2() != null) {
+            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask2();
             synchronized (tickerTimerTask) {
                 if (tickerTimerTask.getExchange2() == null) {
                     tickerTimerTask.createExchange2(exchangeToUse2);

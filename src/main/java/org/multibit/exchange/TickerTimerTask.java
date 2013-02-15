@@ -45,7 +45,8 @@ public class TickerTimerTask extends TimerTask {
 
     public static final int DEFAULT_REPEAT_RATE = 600000; // milliseconds
 
-    public static final int INITIAL_DELAY = 500; // milliseconds
+    public static final int INITIAL_DELAY = 0; // milliseconds
+    public static final int TASK_SEPARATION = 1000; // milliseconds
     
     public static final int NUMBER_OF_SIGNIFICANT_DIGITS = 20;
 
@@ -53,6 +54,7 @@ public class TickerTimerTask extends TimerTask {
 
     private final MultiBitController controller;
     private final MultiBitFrame mainFrame;
+    private final boolean isFirstExchange;
 
     // Exchange dealing with the first row of the ticker
     private Exchange exchange1;
@@ -67,9 +69,10 @@ public class TickerTimerTask extends TimerTask {
     /**
      * Constructs the TickerTimerTask and initialises currencies of interest.
      */
-    public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
+    public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame, boolean isFirstExchange) {
         this.controller = controller;
         this.mainFrame = mainFrame;
+        this.isFirstExchange = isFirstExchange;
 
         // Set the list of currencies we are interested in.
         String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
@@ -93,52 +96,62 @@ public class TickerTimerTask extends TimerTask {
      */
     @Override
     public void run() {
-        try {
-            // Create exchange.
-            synchronized (this) {
-                if (exchange2 == null) {
-                    log.debug("exchange2 is null ... creating exchange ...");
-                    ExchangeData exchangeData = controller.getModel().getExchangeData2();
-                    if (exchangeData != null && exchangeData.getShortExchangeName() != null) {
-                        createExchange2(controller.getModel().getExchangeData2().getShortExchangeName());
-                    } else {
-                        log.debug("controller.getModel().getExchangeData2() is null");
-                    }
+        if (isFirstExchange) {
+            try {
+                // Create exchange.
+                synchronized (this) {
+                    if (exchange1 == null) {
+                        log.debug("exchange1 is null ... creating exchange ...");
+                        ExchangeData exchangeData = controller.getModel().getExchangeData1();
+                        if (exchangeData != null && exchangeData.getShortExchangeName() != null) {
+                            createExchange1(controller.getModel().getExchangeData1().getShortExchangeName());
+                        } else {
+                            log.debug("controller.getModel().getExchangeData1() is null, defaulting to "
+                                    + ExchangeData.DEFAULT_EXCHANGE);
+                            controller.getModel().getExchangeData1().setShortExchangeName(ExchangeData.DEFAULT_EXCHANGE);
+                            createExchange1(ExchangeData.DEFAULT_EXCHANGE);
+                        }
 
-                    if (exchange2 == null) {
-                        log.debug("Cannot create exchange2");
+                        if (exchange1 == null) {
+                            log.debug("Cannot create exchange1");
+                        }
                     }
                 }
-            }
 
-            if (exchange2 != null) {
-                if (marketDataService2 != null) {
-                    if (exchangeSymbols2 != null) {
-                        // Only get data from server if ticker is being
-                        // shown.
-                        // (This is to minimise the load on the remote
-                        // servers).
-                        if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))) {
-                            for (CurrencyPair loopSymbolPair : exchangeSymbols2) {
+                if (marketDataService1 != null) {
+                    if (exchangeSymbols1 != null) {
+                        // Only get data from server if ticker is being shown or
+                        // if
+                        // currency conversion is switched on.
+                        // (This is to minimise the load on the remote servers).
+                        if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))
+                                || !Boolean.FALSE.toString().equals(
+                                        controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
+                            for (CurrencyPair loopSymbolPair : exchangeSymbols1) {
                                 // Get symbol ticker if it is one of the
-                                // currencies we are interested in.
-                                // (This is to save hitting the server for
-                                // every currency).
+                                // currencies
+                                // we are interested in.
+                                // (This is to save hitting the server for every
+                                // currency).
                                 boolean getItFromTheServer = false;
-                                Collection<String> currenciesWeAreInterestedIn = controller.getModel().getExchangeData2()
+                                Collection<String> currenciesWeAreInterestedIn = controller.getModel().getExchangeData1()
                                         .getCurrenciesWeAreInterestedIn();
 
                                 Iterator<String> currencyIterator = currenciesWeAreInterestedIn.iterator();
-                                // Normally BTC is the base currency and the other is the counterCurrency but some exchanges quote the other way round.
+                                String currencyConverterCurrency = currencyIterator.next();
+
+                                currencyIterator = currenciesWeAreInterestedIn.iterator();
                                 boolean invertedRates = false;
                                 while (currencyIterator.hasNext()) {
                                     String loopCurrency = currencyIterator.next();
-                                    if ("BTC".equals(loopSymbolPair.baseCurrency) && loopSymbolPair.counterCurrency.equals(loopCurrency)) {
+                                    if ("BTC".equals(loopSymbolPair.baseCurrency)
+                                            && loopSymbolPair.counterCurrency.equals(loopCurrency)) {
                                         getItFromTheServer = true;
 
                                         break;
                                     }
-                                    if ("BTC".equals(loopSymbolPair.counterCurrency) && loopSymbolPair.baseCurrency.equals(loopCurrency)) {
+                                    if ("BTC".equals(loopSymbolPair.counterCurrency)
+                                            && loopSymbolPair.baseCurrency.equals(loopCurrency)) {
                                         getItFromTheServer = true;
                                         invertedRates = true;
 
@@ -146,139 +159,153 @@ public class TickerTimerTask extends TimerTask {
                                     }
                                 }
                                 if (getItFromTheServer) {
-                                    Ticker loopTicker;
-                                    if (invertedRates) {
-                                        loopTicker = marketDataService2.getTicker(loopSymbolPair.counterCurrency, loopSymbolPair.baseCurrency);
-                                    } else {
-                                        loopTicker = marketDataService2.getTicker(loopSymbolPair.baseCurrency, loopSymbolPair.counterCurrency);                                        
-                                    }
-                                            
+                                    log.debug("Getting ticker for " + loopSymbolPair.baseCurrency + " " + loopSymbolPair.counterCurrency);
+                                    Ticker loopTicker = marketDataService1.getTicker(loopSymbolPair.baseCurrency,
+                                            loopSymbolPair.counterCurrency);
+                                    log.debug("got it");
                                     BigMoney last = loopTicker.getLast();
                                     BigMoney bid = loopTicker.getBid();
                                     BigMoney ask = loopTicker.getAsk();
-                                    
+
                                     String currency;
                                     if (invertedRates) {
                                         currency = loopSymbolPair.baseCurrency;
-                                        last = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(last.getAmount(), NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                        bid = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(bid.getAmount(), NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                        ask = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(ask.getAmount(), NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                        last = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(last.getAmount(),
+                                                NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                        bid = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(bid.getAmount(),
+                                                NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                        ask = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(ask.getAmount(),
+                                                NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
                                     } else {
-                                        currency = loopSymbolPair.counterCurrency;                                      
+                                        currency = loopSymbolPair.counterCurrency;
                                     }
 
-                                    controller.getModel().getExchangeData2().setLastPrice(currency, last);
-                                    controller.getModel().getExchangeData2().setLastBid(currency, bid);
-                                    controller.getModel().getExchangeData2().setLastAsk(currency, ask);
+                                    controller.getModel().getExchangeData1().setLastPrice(currency, last);
+                                    controller.getModel().getExchangeData1().setLastBid(currency, bid);
+                                    controller.getModel().getExchangeData1().setLastAsk(currency, ask);
+                                    log.debug("Exchange = " + controller.getModel().getExchangeData1().getShortExchangeName());
+                                    if (currencyConverterCurrency.equals(currency)) {
+                                        // Put the exchange rate into the
+                                        // currency converter.
+                                        CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(currencyConverterCurrency));
+                                        CurrencyConverter.INSTANCE.setRate(last.getAmount());
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // First currency fires exchange rate data changed - used by
+                    // rest of MultiBit.
+                    mainFrame.fireExchangeDataChanged();
+                }
+            } catch (Exception e) {
+                // Stop any xchange errors percolating out.
+                log.error(e.getClass().getName() + " " + e.getMessage());
+                if (e.getCause() != null) {
+                    log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());
+                }
+            }
+
+        } else {
+            try {
+                // Create exchange.
+                synchronized (this) {
+                    if (exchange2 == null) {
+                        log.debug("exchange2 is null ... creating exchange ...");
+                        ExchangeData exchangeData = controller.getModel().getExchangeData2();
+                        if (exchangeData != null && exchangeData.getShortExchangeName() != null) {
+                            createExchange2(controller.getModel().getExchangeData2().getShortExchangeName());
+                        } else {
+                            log.debug("controller.getModel().getExchangeData2() is null");
+                        }
+
+                        if (exchange2 == null) {
+                            log.debug("Cannot create exchange2");
+                        }
+                    }
+                }
+
+                if (exchange2 != null) {
+                    if (marketDataService2 != null) {
+                        if (exchangeSymbols2 != null) {
+                            // Only get data from server if ticker is being
+                            // shown.
+                            // (This is to minimise the load on the remote
+                            // servers).
+                            if (!Boolean.FALSE.toString()
+                                    .equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))) {
+                                for (CurrencyPair loopSymbolPair : exchangeSymbols2) {
+                                    // Get symbol ticker if it is one of the
+                                    // currencies we are interested in.
+                                    // (This is to save hitting the server for
+                                    // every currency).
+                                    boolean getItFromTheServer = false;
+                                    Collection<String> currenciesWeAreInterestedIn = controller.getModel().getExchangeData2()
+                                            .getCurrenciesWeAreInterestedIn();
+
+                                    Iterator<String> currencyIterator = currenciesWeAreInterestedIn.iterator();
+                                    // Normally BTC is the base currency and the
+                                    // other is the counterCurrency but some
+                                    // exchanges quote the other way round.
+                                    boolean invertedRates = false;
+                                    while (currencyIterator.hasNext()) {
+                                        String loopCurrency = currencyIterator.next();
+                                        if ("BTC".equals(loopSymbolPair.baseCurrency)
+                                                && loopSymbolPair.counterCurrency.equals(loopCurrency)) {
+                                            getItFromTheServer = true;
+
+                                            break;
+                                        }
+                                        if ("BTC".equals(loopSymbolPair.counterCurrency)
+                                                && loopSymbolPair.baseCurrency.equals(loopCurrency)) {
+                                            getItFromTheServer = true;
+                                            invertedRates = true;
+
+                                            break;
+                                        }
+                                    }
+                                    if (getItFromTheServer) {
+                                        log.debug("Getting ticker for " + loopSymbolPair.baseCurrency + " " + loopSymbolPair.counterCurrency);
+                                        
+                                        Ticker loopTicker = marketDataService2.getTicker(loopSymbolPair.baseCurrency,
+                                                loopSymbolPair.counterCurrency);
+                                        log.debug("got it");
+                                        
+
+                                        BigMoney last = loopTicker.getLast();
+                                        BigMoney bid = loopTicker.getBid();
+                                        BigMoney ask = loopTicker.getAsk();
+
+                                        String currency;
+                                        if (invertedRates) {
+                                            currency = loopSymbolPair.baseCurrency;
+                                            last = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(last.getAmount(),
+                                                    NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                            bid = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(bid.getAmount(),
+                                                    NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                            ask = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(ask.getAmount(),
+                                                    NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                        } else {
+                                            currency = loopSymbolPair.counterCurrency;
+                                        }
+
+                                        controller.getModel().getExchangeData2().setLastPrice(currency, last);
+                                        controller.getModel().getExchangeData2().setLastBid(currency, bid);
+                                        controller.getModel().getExchangeData2().setLastAsk(currency, ask);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            mainFrame.fireExchangeDataChanged();
-        } catch (Exception e) {
-            // Stop any xchange errors percolating out.
-            log.error(e.getClass().getName() + " " + e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());
-            }
-        }
-
-        try {
-            // Create exchange.
-            synchronized (this) {
-                if (exchange1 == null) {
-                    log.debug("exchange1 is null ... creating exchange ...");
-                    ExchangeData exchangeData = controller.getModel().getExchangeData1();
-                    if (exchangeData != null && exchangeData.getShortExchangeName() != null) {
-                        createExchange1(controller.getModel().getExchangeData1().getShortExchangeName());
-                    } else {
-                        log.debug("controller.getModel().getExchangeData1() is null, defaulting to " + ExchangeData.DEFAULT_EXCHANGE);
-                        controller.getModel().getExchangeData1().setShortExchangeName(ExchangeData.DEFAULT_EXCHANGE);
-                        createExchange1(ExchangeData.DEFAULT_EXCHANGE);
-                    }
-
-                    if (exchange1 == null) {
-                        log.debug("Cannot create exchange1");
-                    }
-                }
-            }
-
-            if (marketDataService1 != null) {
-                if (exchangeSymbols1 != null) {
-                    // Only get data from server if ticker is being shown or if
-                    // currency conversion is switched on.
-                    // (This is to minimise the load on the remote servers).
-                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))
-                            || !Boolean.FALSE.toString().equals(
-                                    controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
-                        for (CurrencyPair loopSymbolPair : exchangeSymbols1) {
-                            // Get symbol ticker if it is one of the currencies
-                            // we are interested in.
-                            // (This is to save hitting the server for every currency).
-                            boolean getItFromTheServer = false;
-                            Collection<String> currenciesWeAreInterestedIn = controller.getModel().getExchangeData1()
-                                    .getCurrenciesWeAreInterestedIn();
-
-                            Iterator<String> currencyIterator = currenciesWeAreInterestedIn.iterator();
-                            String currencyConverterCurrency = currencyIterator.next();
-
-                            currencyIterator = currenciesWeAreInterestedIn.iterator();
-                            boolean invertedRates = false;
-                            while (currencyIterator.hasNext()) {
-                                String loopCurrency = currencyIterator.next();
-                                if ("BTC".equals(loopSymbolPair.baseCurrency) && loopSymbolPair.counterCurrency.equals(loopCurrency)) {
-                                    getItFromTheServer = true;
-
-                                    break;
-                                }
-                                if ("BTC".equals(loopSymbolPair.counterCurrency) && loopSymbolPair.baseCurrency.equals(loopCurrency)) {
-                                    getItFromTheServer = true;
-                                    invertedRates = true;
-
-                                    break;
-                                }
-                            }
-                            if (getItFromTheServer) {
-                                Ticker loopTicker = marketDataService1.getTicker(loopSymbolPair.baseCurrency, loopSymbolPair.counterCurrency);                                        
-                                BigMoney last = loopTicker.getLast();
-                                BigMoney bid = loopTicker.getBid();
-                                BigMoney ask = loopTicker.getAsk();
-                                
-                                String currency;
-                                if (invertedRates) {
-                                    currency = loopSymbolPair.baseCurrency;
-                                    last = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(last.getAmount(), NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                    bid = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(bid.getAmount(), NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                    ask = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(ask.getAmount(), NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                } else {
-                                    currency = loopSymbolPair.counterCurrency;                                      
-                                }
-
-                                controller.getModel().getExchangeData1().setLastPrice(currency, last);
-                                controller.getModel().getExchangeData1().setLastBid(currency, bid);
-                                controller.getModel().getExchangeData1().setLastAsk(currency, ask);
-                                log.debug("Exchange = " + controller.getModel().getExchangeData1().getShortExchangeName());
-                                if (currencyConverterCurrency.equals(currency)) {
-                                    // Put the exchange rate into the currency converter.
-                                    CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(currencyConverterCurrency));
-                                    CurrencyConverter.INSTANCE.setRate(last.getAmount());
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // First currency fires exchange rate data changed - used by
-                // rest of MultiBit.
                 mainFrame.fireExchangeDataChanged();
-            }
-        } catch (Exception e) {
-            // Stop any xchange errors percolating out.
-            log.error(e.getClass().getName() + " " + e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());
+            } catch (Exception e) {
+                // Stop any xchange errors percolating out.
+                log.error(e.getClass().getName() + " " + e.getMessage());
+                if (e.getCause() != null) {
+                    log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());
+                }
             }
         }
     }
@@ -373,7 +400,6 @@ public class TickerTimerTask extends TimerTask {
             
             Exchange exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeClassname);
 
-            log.debug("exchangeToReturn = " + exchangeToReturn);
             return exchangeToReturn;            
         } catch (NoClassDefFoundError e) {
             // Probably xchange is not on classpath - ticker will not run
