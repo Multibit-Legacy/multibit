@@ -163,7 +163,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     /**
      * Used by BitcoinSerializer.  The serializer has to calculate a hash for checksumming so to
      * avoid wasting the considerable effort a set method is provided so the serializer can set it.
-	 *
+     *
      * No verification is performed on this hash.
      */
     void setHash(Sha256Hash hash) {
@@ -375,7 +375,8 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     }
 
     /**
-     * Returns true if every output owned by the given wallet is spent.
+     * Returns false if this transaction has at least one output that is owned by the given wallet and unspent, true
+     * otherwise.
      */
     public boolean isEveryOwnedOutputSpent(Wallet wallet) {
         maybeParse();
@@ -558,6 +559,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         return toString(null);
     }
 
+    /**
+     * A human readable version of the transaction useful for debugging. The format is not guaranteed to be stable.
+     * @param chain If provided, will be used to estimate lock times (if set). Can be null.
+     */
     public String toString(AbstractBlockChain chain) {
         // Basic info about the tx.
         StringBuffer s = new StringBuffer();
@@ -698,9 +703,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      *
      * @param hashType This should always be set to SigHash.ALL currently. Other types are unused.
      * @param wallet   A wallet is required to fetch the keys needed for signing.
-     * @param aesKey The AES key to using for decrypting
-     * @throws EncrypterDecrypterException 
-     * @throws IllegalStateException 
+     * @param aesKey The AES key to use to decrypt the key before signing. Null if no decryption is required.
      */
     public synchronized void signInputs(SigHash hashType, Wallet wallet, KeyParameter aesKey) throws ScriptException, IllegalStateException, KeyCrypterException {
         Preconditions.checkState(inputs.size() > 0);
@@ -963,7 +966,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         maybeParse();
         return outputs.get(index);
     }
-
+    
     public synchronized TransactionConfidence getConfidence() {
         if (confidence == null) {
             confidence = new TransactionConfidence(this);
@@ -1141,9 +1144,9 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     }
 
     /**
-     * make the TransactionOutputs spendable This is used in an intrawallet
+     * Make the TransactionOutputs spendable This is used in an intrawallet
      * transfer as what is spent from the senders's perspetive is avaiable to
-     * spend from the recipients
+     * spend from the recipients.
      */
     public void markOutputsAsSpendable() {
         if (outputs != null) {

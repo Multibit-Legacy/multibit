@@ -208,6 +208,14 @@ public class WalletTest {
         assertEquals(v3, wallet.getBalance());
         Transaction t3 = wallet.createSend(new ECKey().toAddress(params), v3);
         assertNotNull(t3);
+        wallet.commitTx(t3);
+        assertTrue(wallet.isConsistent());
+        // t2 and  t3 gets confirmed in the same block.
+        BlockPair bp = CoreTestUtils.createFakeBlock(params, blockStore, t2, t3);
+        wallet.receiveFromBlock(t2, bp.storedBlock, AbstractBlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(t3, bp.storedBlock, AbstractBlockChain.NewBlockType.BEST_CHAIN);
+        wallet.notifyNewBestBlock(bp.block);
+        assertTrue(wallet.isConsistent());
     }
     
     @Test
@@ -881,10 +889,11 @@ public class WalletTest {
         assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.3", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
 
         // Decrypt wallet.
+        assertTrue("The keyCrypter is missing but should not be", keyCrypter != null);
         encryptedWallet.decrypt(aesKey);
 
-        // Wallet should now be of type WalletType.UNENCRYPTED.
-        assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
+        // Wallet should now be unencrypted.
+        assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getKeyCrypter() == null);
 
         // Correct password should not decrypt first private key as wallet is unencrypted.
          assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with correct password", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
@@ -919,16 +928,18 @@ public class WalletTest {
         assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
 
         // Decrypt wallet.
+        assertTrue("The keyCrypter is missing but should not be.1", keyCrypter != null);
         encryptedWallet.decrypt(aesKey);
 
         // Try decrypting it again
         try {
+            assertTrue("The keyCrypter is missing but should not be.2", keyCrypter != null);
             encryptedWallet.decrypt(aesKey);
             fail("Should not be able to decrypt a decrypted wallet");
         } catch (WalletIsAlreadyDecryptedException e) {
             assertTrue("Expected behaviour", true);
         }
-        assertTrue("Wallet is not an unencrypted wallet.2", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
+        assertTrue("Wallet is not an unencrypted wallet.2", encryptedWallet.getKeyCrypter() == null);
 
         // Encrypt wallet.
         encryptedWallet.encrypt(keyCrypter, aesKey);

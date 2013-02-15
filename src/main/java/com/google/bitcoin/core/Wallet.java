@@ -755,8 +755,9 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             // A transaction we created appeared in a block. Probably this is a spend we broadcast that has been
             // accepted by the network.
             if (bestChain) {
-                if (valueSentToMe.equals(BigInteger.ZERO)) {
-                    // There were no change transactions so this tx is fully spent.
+                // Was confirmed.
+                if (tx.isEveryOwnedOutputSpent(this)) {
+                    // There were no change transactions so this tx is fully spent
                     log.info("  ->spent");
                     addWalletTransaction(Pool.SPENT, tx);
                 } else {
@@ -911,7 +912,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
         updateForSpends(tx, true);
 
-        if (!tx.getValueSentToMe(this).equals(BigInteger.ZERO)) {
+        if (!tx.isEveryOwnedOutputSpent(this)) {
             // It's sending us coins.
             log.info("  new tx {} ->unspent", tx.getHashAsString());
             addWalletTransaction(Pool.UNSPENT, tx);
@@ -939,9 +940,9 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                 invokeOnTransactionConfidenceChanged(doubleSpend);
             } else {
                 if (tx.isMine(this)) {
-                     // a transaction that does not spend or send us coins but is ours none the less
+                     // A transaction that does not spend or send us coins but is ours none the less
                      // this can occur when a transaction is sent from outputs in our wallet to
-                     // an address in the wallet - it burns a fee but is valid
+                     // an address in the wallet - it burns a fee but is valid.
                      log.info(" new tx -> spent (transfer within wallet - simply burns fee)");
                      boolean alreadyPresent = spent.put(tx.getHash(), tx) != null;
                      assert !alreadyPresent : "TX was received twice (transfer within wallet - simply burns fee";
@@ -1525,101 +1526,6 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @throws KeyCrypterException if you try to sign an encrypted key without an AES key.
      * @return False if we cannot afford this send, true otherwise.
      */
-//    public synchronized boolean completeTx(SendRequest req) throws IllegalStateException, KeyCrypterException {
-//        // Calculate the transaction total
-//        BigInteger nanocoins = BigInteger.ZERO;
-//        for(TransactionOutput output : req.tx.getOutputs()) {
-//            nanocoins = nanocoins.add(output.getValue());
-//        }
-//        final BigInteger total = nanocoins.add(req.fee);
-//
-//        log.info("Completing send tx with {} outputs totalling {}", req.tx.getOutputs().size(), bitcoinValueToFriendlyString(nanocoins));
-//
-//        // To send money to somebody else, we need to do gather up transactions with unspent outputs until we have
-//        // sufficient value. Many coin selection algorithms are possible, we use a simple but suboptimal one.
-//        // TODO: Sort coins so we use the smallest first, to combat wallet fragmentation and reduce fees.
-//        BigInteger valueGathered = BigInteger.ZERO;
-//        List<TransactionOutput> gathered = new LinkedList<TransactionOutput>();
-//        for (Transaction tx : unspent.values()) {
-//            // Do not try and spend coinbases that were mined too recently, the protocol forbids it.
-//            if (!tx.isMature()) {
-//                continue;
-//            }
-//            for (TransactionOutput output : tx.getOutputs()) {
-//                if (!output.isAvailableForSpending()) continue;
-//                if (!output.isMine(this)) continue;
-//                gathered.add(output);
-//                valueGathered = valueGathered.add(output.getValue());
-//            }
-//            if (valueGathered.compareTo(total) >= 0) break;
-//        }
-//        // Can we afford this?
-//        if (valueGathered.compareTo(total) < 0) {
-//            // If there are insufficient unspent coins, see if there are any pending coins that have change-back-to-self 
-//            // and that have been seen by two or more peers. These are eligible for spending ("The Boomerang Rule")
-//            for (Transaction tx : pending.values()) {
-//                // Do not try and spend coinbases that were mined too recently, the protocol forbids it.
-//                if (!tx.isMature()) {
-//                    continue;
-//                }
-//                
-//                if (transactionSpendsFromThisWalletAndHasBoomerangedBack(tx)) {
-//                    for (TransactionOutput output : tx.getOutputs()) {
-//                        if (!output.isAvailableForSpending())
-//                            continue;
-//                        if (!output.isMine(this))
-//                            continue;
-//
-//                        gathered.add(output);
-//                        valueGathered = valueGathered.add(output.getValue());
-//                    }
-//                    if (valueGathered.compareTo(total) >= 0)
-//                        break;
-//                }
-//            }   
-//            
-//            if (valueGathered.compareTo(total) < 0) {
-//                // Still not enough funds.
-//                log.info("Insufficient value in wallet for send, missing "
-//                        + bitcoinValueToFriendlyString(nanocoins.subtract(valueGathered)));
-//                // TODO: Should throw an exception here.
-//                return false;
-//            }
-//        }
-//        checkState(gathered.size() > 0);
-//        req.tx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
-//        BigInteger change = valueGathered.subtract(total);
-//        if (change.compareTo(BigInteger.ZERO) > 0) {
-//            // The value of the inputs is greater than what we want to send. Just like in real life then,
-//            // we need to take back some coins ... this is called "change". Add another output that sends the change
-//            // back to us. The address comes either from the request or getChangeAddress() as a default.
-//            Address changeAddress = req.changeAddress != null ? req.changeAddress : getChangeAddress();
-//            log.info("  with {} coins change", bitcoinValueToFriendlyString(change));
-//            req.tx.addOutput(new TransactionOutput(params, req.tx, change, changeAddress));
-//        }
-//        for (TransactionOutput output : gathered) {
-//            req.tx.addInput(output);
-//        }
-//
-//        // Now sign the inputs, thus proving that we are entitled to redeem the connected outputs.
-//        try {
-//            req.tx.signInputs(Transaction.SigHash.ALL, this, req.aesKey);
-//        } catch (ScriptException e) {
-//            // If this happens it means an output script in a wallet tx could not be understood. That should never
-//            // happen, if it does it means the wallet has got into an inconsistent state.
-//            throw new RuntimeException(e);
-//        } catch (KeyCrypterException kce) {
-//            // This can occur if the key being used is encrypted.
-//            throw new RuntimeException(kce);
-//        }
-//
-//        // Keep a track of the date the tx was created (used in MultiBitService
-//        // to work out the block it appears in).
-//        req.tx.setUpdateTime(new Date());
-//        req.completed = true;
-//        log.info("  completed {}", req.tx.getHashAsString());
-//        return true;
-//    }
 
     public synchronized boolean completeTx(SendRequest req) throws KeyCrypterException {
         Preconditions.checkArgument(!req.completed, "Given SendRequest has already been completed.");
@@ -1700,41 +1606,6 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         }
         return candidates;
     }
-
-//    private boolean transactionSpendsFromThisWalletAndHasBoomerangedBack(Transaction tx) {
-//        TransactionConfidence confidence = tx.getConfidence();
-//        if (confidence == null || confidence.getBroadcastByCount() < MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND) {
-//            // Transaction has not been seen by enough peers.
-//            return false;
-//        }
-//         
-//        boolean wasSentFromMyWallet = true;
-//        // Check all transaction inputs are from your own wallet
-//        for (TransactionInput input : tx.getInputs()) {
-//            TransactionOutPoint outPoint = input.getOutpoint();
-//            try {
-//                TransactionOutput transactionOutput = outPoint.getConnectedOutput();
-//                if (transactionOutput == null) {
-//                    wasSentFromMyWallet = false;
-//                    break;
-//                }
-//                ECKey ecKey = outPoint.getConnectedKey(this);
-//                // if no ecKey was found then the transaction uses a transaction output from somewhere else
-//                if (ecKey == null) {
-//                    wasSentFromMyWallet = false;
-//                    break;
-//                }
-//            } catch (ScriptException e) {
-//                wasSentFromMyWallet = false;
-//                break;
-//            }
-//        }
-//        
-//        if (!wasSentFromMyWallet) return false;
-//        
-//        // Transaction is both from out wallet and has boomeranged back.
-//        return true;
-//    }
 
     synchronized Address getChangeAddress() {
         // For now let's just pick the first key in our keychain. In future we might want to do something else to
