@@ -26,8 +26,6 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
@@ -72,11 +70,14 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The show preferences view.
  */
 public class ShowPreferencesPanel extends JPanel implements Viewable, PreferencesDataProvider {
+    private static final Logger log = LoggerFactory.getLogger(ShowPreferencesPanel.class);
 
     private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
 
@@ -169,6 +170,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
      * Creates a new {@link ShowPreferencesPanel}.
      */
     public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+        log.debug("Construct a new ShowPreferencesPanel");
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.controller = controller;
@@ -184,10 +186,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
      */
     @Override
     public void displayView(DisplayHint displayHint) {
+        log.debug("Received a displayView with hint " + displayHint.toString());
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-
+        
         originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
 
@@ -1069,8 +1072,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
         // Make sure the exchange1 has been created and initialised the list of
         // currencies.
-        if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
-            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+        if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
+            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
             synchronized (tickerTimerTask) {
                 if (tickerTimerTask.getExchange1() == null) {
                     tickerTimerTask.createExchange1(exchangeToUse1);
@@ -1108,8 +1111,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                     String exchangeShortName = item.toString();
                     // Make sure the exchange1 has been created and initialised
                     // the list of currencies.
-                    if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
-                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+                    if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
+                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
                         synchronized (tickerTimerTask) {
                             tickerTimerTask.createExchange1(exchangeShortName);
                             currencyComboBox1.removeAllItems();
@@ -1207,8 +1210,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                     String exchangeShortName = item.toString();
                     // Make sure the exchange2 has been created and initialised
                     // the list of currencies.
-                    if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
-                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+                    if (mainFrame != null && mainFrame.getTickerTimerTask2() != null) {
+                        TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask2();
                         synchronized (tickerTimerTask) {
                             tickerTimerTask.createExchange2(exchangeShortName);
                             currencyComboBox2.removeAllItems();
@@ -1246,8 +1249,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
         // Make sure the exchange2 has been created and initialised the list of
         // currencies.
-        if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
-            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+        if (mainFrame != null && mainFrame.getTickerTimerTask2() != null) {
+            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask2();
             synchronized (tickerTimerTask) {
                 if (tickerTimerTask.getExchange2() == null) {
                     tickerTimerTask.createExchange2(exchangeToUse2);
@@ -1544,6 +1547,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     }
 
     public void setSelectedFont(Font selectedFont) {
+        log.debug("setSelectedFont called");
         this.selectedFont = selectedFont;
 
         fontNameTextLabel.setText(selectedFont.getFamily());

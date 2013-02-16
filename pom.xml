@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.4.20</version>
+  <version>0.4.21</version>
   <name>MultiBit</name>
   <description>A Java Swing client for Bitcoin</description>
-  <url>http://www.multibit.org</url>
+  <url>https://multibit.org</url>
   <!--
 
   Use "mvn clean package" to build the code packaged into a basic multibit.jar
