@@ -189,7 +189,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
      */
     @Override
     public void displayView(DisplayHint displayHint) {
-        log.debug("Received a displayView with hint " + displayHint.toString());
+        //log.debug("Received a displayView with hint " + displayHint.toString());
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
@@ -1550,7 +1550,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     }
 
     public void setSelectedFont(Font selectedFont) {
-        log.debug("setSelectedFont called");
+        //log.debug("setSelectedFont called");
         this.selectedFont = selectedFont;
 
         fontNameTextLabel.setText(selectedFont.getFamily());

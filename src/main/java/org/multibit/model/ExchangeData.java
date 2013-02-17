@@ -115,11 +115,23 @@ public class ExchangeData {
         currencyToAskMap.put(currency, lastAsk);
     }
 
+    /**
+     * Exchanges normally use a CurrencyPair with BTC as the base currency and the other as the countercurrency. e.g. BTCUSD = 20 i.e 1 BTC is worth 20 USD.
+     * Some exchanges use reverse rates i.e they quote USDBTC = 20.
+     * 
+     * @return does this exchange use reverse rates
+     */
+    public static boolean doesExchangeUseReverseRates(String shortExchangeName) {
+        if (shortExchangeName == null) {
+            throw new IllegalArgumentException("Exchange name cannot be null");
+        }
+        return BITCOIN_CHARTS_EXCHANGE_NAME.equals(shortExchangeName);
+    }
+    
     public static String[] getAvailableExchanges() {
 //        return new String[] { MT_GOX_EXCHANGE_NAME, BITCOIN_CENTRAL_EXCHANGE_NAME, BITCOIN_CHARTS_EXCHANGE_NAME, BITSTAMP_EXCHANGE_NAME, BTCE_EXCHANGE_NAME,  
 //                CAMPBX_EXCHANGE_NAME, OPEN_EXCHANGE_RATES_EXCHANGE_NAME, VIRTEX_EXCHANGE_NAME};
         return new String[] { MT_GOX_EXCHANGE_NAME,
-            //BITCOIN_CENTRAL_EXCHANGE_NAME,
             BITSTAMP_EXCHANGE_NAME,
             BTCE_EXCHANGE_NAME,
             CAMPBX_EXCHANGE_NAME,

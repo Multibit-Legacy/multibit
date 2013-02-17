@@ -69,6 +69,8 @@ public class TickerTablePanel extends JPanel {
     
     FontMetrics fontMetrics;
     Font font;
+    
+    private int idealHeight;
 
     public TickerTablePanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
@@ -137,12 +139,42 @@ public class TickerTablePanel extends JPanel {
         
         int tableHeaderVerticalInsets = table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom;
 
-        // column widths
+        int tickerWidth = setupColumnWidths();
+        setupTableHeaders();
+
+        idealHeight =  (fontMetrics.getHeight() + table.getRowMargin()) * tickerTableModel.getRowCount() 
+            + fontMetrics.getHeight() + tableHeaderVerticalInsets + tickerTableModel.getRowCount() + 8;
+
+
+        setPreferredSize(new Dimension(tickerWidth, idealHeight));
+
+        scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.addMouseListener(viewPreferencesMouseListener);
+ 
+        setupScrollPane(tickerWidth);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+
+        add(scrollPane, constraints);
+    }
+    
+    private int setupColumnWidths() {
+        // Column widths.
         String[] columnVariables = tickerTableModel.getColumnVariables();
 
         int tickerWidth = HORIZONTAL_DELTA;
         if (tickerTableModel.getRowCount() > 1) {
-            // there may be a scroll bar so give it some space
+            // There may be a scroll bar so give it some space.
             tickerWidth += SCROLLBAR_WIDTH;
         }
         
@@ -152,10 +184,10 @@ public class TickerTablePanel extends JPanel {
             int columnWidth;
 
             if (TickerTableModel.TICKER_COLUMN_CURRENCY.equals(columnVariables[i])) {
-                columnWidth = 5 * PER_COLUMN_DELTA + Math.max(
+                columnWidth = PER_COLUMN_DELTA + Math.max(Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
-                        fontMetrics.stringWidth("XYZ")); // currency codes
-                                                         // always 3 character
+                        fontMetrics.stringWidth((String)tickerTableModel.getValueAt(0, i))), 
+                        fontMetrics.stringWidth((String)tickerTableModel.getValueAt(1, i))); 
             } else if (TickerTableModel.TICKER_COLUMN_EXCHANGE.equals(columnVariables[i])) {
                 columnWidth = PER_COLUMN_DELTA + Math.max(Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
@@ -168,37 +200,9 @@ public class TickerTablePanel extends JPanel {
             }
             tickerWidth += columnWidth;
             table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);
+            
         }
-        
-        setupTableHeaders();
-
-        int idealHeight =  (fontMetrics.getHeight() + table.getRowMargin()) * tickerTableModel.getRowCount() 
-            + fontMetrics.getHeight() + tableHeaderVerticalInsets + tickerTableModel.getRowCount() + 8;
-
-
-        setPreferredSize(new Dimension(tickerWidth, idealHeight));
-
-        scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-        setupScrollPane();
-        scrollPane.getViewport().setPreferredSize(
-                new Dimension(tickerWidth, idealHeight));
-        scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, MultiBitFrame.HEIGHT_OF_HEADER)));
-
-        scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.addMouseListener(viewPreferencesMouseListener);
- 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-
-        add(scrollPane, constraints);
+        return tickerWidth;
     }
     
     private void setupTableHeaders() {
@@ -221,7 +225,11 @@ public class TickerTablePanel extends JPanel {
         label.setHorizontalAlignment(JLabel.CENTER);
     }
     
-    private void setupScrollPane() {
+    private void setupScrollPane(int tickerWidth) {
+        scrollPane.getViewport().setPreferredSize(
+                new Dimension(tickerWidth, idealHeight));
+        scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, MultiBitFrame.HEIGHT_OF_HEADER)));
+
         scrollPane.setOpaque(false);
         scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.getViewport().setOpaque(false);
@@ -229,8 +237,10 @@ public class TickerTablePanel extends JPanel {
     }
 
     public void update() {
+        int tickerWidth = setupColumnWidths();
+
         setupTableHeaders();
-        setupScrollPane();
+        setupScrollPane(tickerWidth);
         table.invalidate();
         table.validate();
         table.repaint();

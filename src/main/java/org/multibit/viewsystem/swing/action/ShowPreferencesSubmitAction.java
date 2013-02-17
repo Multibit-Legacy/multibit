@@ -285,7 +285,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String newCurrency1 = dataProvider.getNewCurrency1();
             if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
-                CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrency1));
+                String newCurrencyCode = newCurrency1;
+                if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(newExchange1)) {
+                    // Use only the last three characters - the currency code.
+                     if (newCurrency1.length() >= 3) {
+                        newCurrencyCode = newCurrency1.substring(newCurrency1.length() - 3);
+                    }
+                }
+                CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrencyCode));
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }

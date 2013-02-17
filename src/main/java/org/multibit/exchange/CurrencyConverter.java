@@ -21,6 +21,7 @@ import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 import org.slf4j.Logger;
@@ -79,7 +80,15 @@ public enum CurrencyConverter {
     public void initialise(MultiBitController controller) {
         // Initialise conversion currency.
         String currencyCode = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
-        initialise(controller, currencyCode);
+        String exchange = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+        String newCurrencyCode = currencyCode;
+        if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(exchange)) {
+            // Use only the last three characters - the currency code.
+            if (currencyCode.length() >= 3) {
+                newCurrencyCode = currencyCode.substring(currencyCode.length() - 3);
+            }
+        }
+        initialise(controller, newCurrencyCode);
     }
     
     public void initialise(MultiBitController controller, String currencyCode) {

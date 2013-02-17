@@ -45,7 +45,7 @@ public class SimpleViewSystem implements ViewSystem {
 
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        System.out.println("SIMPLE. Confidence changed for wallet: " + wallet.hashCode() + ", transaction:\n" + transaction.toString());
+        //System.out.println("SIMPLE. Confidence changed for wallet: " + wallet.hashCode() + ", transaction:\n" + transaction.toString());
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SimpleViewSystem implements ViewSystem {
 
     @Override
     public void fireDataChangedUpdateLater(DisplayHint displayHint) {
-        System.out.println("SIMPLE. Data has changed - update later.");
+        //System.out.println("SIMPLE. Data has changed - update later.");
     }
 
     @Override
