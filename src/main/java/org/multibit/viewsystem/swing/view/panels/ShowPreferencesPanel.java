@@ -101,7 +101,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int COMBO_HEIGHT_DELTA = 5;
 
     private static final int EXCHANGE_COMBO_HEIGHT_DELTA = 15;
-    private static final int COMBO_WIDTH_DELTA = 0;
+    private static final int COMBO_WIDTH_DELTA = 100;
 
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
     private static final int FEE_TEXT_FIELD_WIDTH = 200;
@@ -1124,20 +1124,18 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeToUse1);
         if (currenciesToUse != null) {
             for (String currency : currenciesToUse) {
-                currencyComboBox1.addItem(currency);
+                String item = currency;
+                String description = CurrencyConverter.INSTANCE.getCurrencyCodeToDescriptionMap().get(currency);
+                if (description != null && description.trim().length() > 0) {
+                    item = item + " (" + description + ")";
+                }
+                currencyComboBox1.addItem(item);
+                if (currency.equals(originalCurrency1)) {
+                    currencyComboBox1.setSelectedItem(item);
+                }
             }
         }
-        if (originalCurrency1 == null | "".equals(originalCurrency1)) {
-            currencyComboBox1.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
-        } else {
-            currencyComboBox1.setSelectedItem(originalCurrency1);
-            // The currency may have disappeared if the exchange has removed it.
-            // Add it back in, otherwise currency choice is lost.
-            if (!originalCurrency1.equals(((String) currencyComboBox1.getSelectedItem()))) {
-                currencyComboBox1.addItem(originalCurrency1);
-                currencyComboBox1.setSelectedItem(originalCurrency1);
-            }
-        }
+
         currencyComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         currencyComboBox1.setOpaque(false);
         currencyComboBox1.setPreferredSize(preferredSize);
@@ -1158,7 +1156,12 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                             Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeShortName);
                             if (currenciesToUse != null) {
                                 for (String currency : currenciesToUse) {
-                                    currencyComboBox1.addItem(currency);
+                                    String loopItem = currency;
+                                    String description = CurrencyConverter.INSTANCE.getCurrencyCodeToDescriptionMap().get(currency);
+                                    if (description != null && description.trim().length() > 0) {
+                                        loopItem = loopItem + " (" + description + ")";
+                                    }
+                                    currencyComboBox1.addItem(loopItem);
                                 }
                             }
                         }
@@ -1269,7 +1272,12 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                             Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeShortName);
                             if (currenciesToUse != null) {
                                 for (String currency : currenciesToUse) {
-                                    currencyComboBox2.addItem(currency);
+                                    String loopItem = currency;
+                                    String description = CurrencyConverter.INSTANCE.getCurrencyCodeToDescriptionMap().get(currency);
+                                    if (description != null && description.trim().length() > 0) {
+                                        loopItem = loopItem + " (" + description + ")";
+                                    }
+                                    currencyComboBox2.addItem(loopItem);
                                 }
                             }
                         }
@@ -1339,18 +1347,15 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeToUse2);
         if (currenciesToUse != null) {
             for (String currency : currenciesToUse) {
-                currencyComboBox2.addItem(currency);
-            }
-        }
-        if (originalCurrency2 == null | "".equals(originalCurrency2)) {
-            currencyComboBox2.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
-        } else {
-            currencyComboBox2.setSelectedItem(originalCurrency2);
-            // The currency may have disappeared if the exchange has removed it.
-            // Add it back in, otherwise currency choice is lost.
-            if (!originalCurrency2.equals(((String) currencyComboBox2.getSelectedItem()))) {
-                currencyComboBox2.addItem(originalCurrency2);
-                currencyComboBox2.setSelectedItem(originalCurrency2);
+                String loopItem = currency;
+                String description = CurrencyConverter.INSTANCE.getCurrencyCodeToDescriptionMap().get(currency);
+                if (description != null && description.trim().length() > 0) {
+                    loopItem = loopItem + " (" + description + ")";
+                }
+                currencyComboBox2.addItem(loopItem);
+                if (currency.equals(originalCurrency2)) {
+                    currencyComboBox2.setSelectedItem(loopItem);
+                }
             }
         }
 
@@ -1491,7 +1496,12 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                         Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
                         if (currenciesToUse != null) {
                             for (String currency : currenciesToUse) {
-                                currencyComboBox1.addItem(currency);
+                                String loopItem = currency;
+                                String description = CurrencyConverter.INSTANCE.getCurrencyCodeToDescriptionMap().get(currency);
+                                if (description != null && description.trim().length() > 0) {
+                                    loopItem = loopItem + " (" + description + ")";
+                                }
+                                currencyComboBox1.addItem(loopItem);
                             }
                         }
                     }
@@ -1507,7 +1517,12 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                         Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
                         if (currenciesToUse != null) {
                             for (String currency : currenciesToUse) {
-                                currencyComboBox2.addItem(currency);
+                                String loopItem = currency;
+                                String description = CurrencyConverter.INSTANCE.getCurrencyCodeToDescriptionMap().get(currency);
+                                if (description != null && description.trim().length() > 0) {
+                                    loopItem = loopItem + " (" + description + ")";
+                                }
+                                currencyComboBox2.addItem(loopItem);
                             }
                         }
                     }
@@ -1956,7 +1971,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     @Override
     public String getNewCurrency1() {
-        return (String) currencyComboBox1.getSelectedItem();
+        String currency = (String) currencyComboBox1.getSelectedItem();
+        if (currency != null && currency.length() > 3) {
+            currency = currency.substring(0, 3);
+        }
+        return currency;
     }
 
     @Override
@@ -1986,7 +2005,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     @Override
     public String getNewCurrency2() {
-        return (String) currencyComboBox2.getSelectedItem();
+        String currency = (String) currencyComboBox2.getSelectedItem();
+        if (currency != null && currency.length() > 3) {
+            currency = currency.substring(0, 3);
+        }
+        return currency;    
     }
 
     @Override
