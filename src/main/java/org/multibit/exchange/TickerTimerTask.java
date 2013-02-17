@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
+import com.xeiam.xchange.ExchangeSpecification;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
@@ -457,14 +458,23 @@ public class TickerTimerTask extends TimerTask {
             // Demonstrate the public market data service.
             // Use the factory to get the exchange API using default
             // settings.
-            String exchangeClassname = ExchangeData.convertExchangeShortNameToClassname(exchangeShortname);
-            
+
+            String exchangeClassname = ExchangeData.convertExchangeShortNameToClassname(exchangeShortname); 
+             
             if (exchangeClassname == null) {
                 return null;
             }
             
-            Exchange exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeClassname);
-
+            Exchange exchangeToReturn;
+            if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortname)) {
+                ExchangeSpecification exchangeSpecification = new ExchangeSpecification(exchangeClassname);
+                exchangeSpecification.setUri("http://openexchangerates.org");
+                exchangeSpecification.setApiKey(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE));
+                exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeSpecification);
+            } else {
+                exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeClassname);
+            }
+            
             return exchangeToReturn;            
         } catch (NoClassDefFoundError e) {
             // Probably xchange is not on classpath - ticker will not run

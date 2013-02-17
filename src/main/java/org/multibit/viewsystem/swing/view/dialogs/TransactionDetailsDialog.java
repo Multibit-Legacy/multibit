@@ -445,7 +445,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             constraints.gridheight = 1;
             constraints.anchor = GridBagConstraints.LINE_END;
             detailPanel.add(openInBlockChainInfoButton, constraints);
-
         }
 
         OkBackToParentAction okAction = new OkBackToParentAction(controller, this);

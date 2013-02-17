@@ -135,6 +135,7 @@ public class ExchangeData {
             BITSTAMP_EXCHANGE_NAME,
             BTCE_EXCHANGE_NAME,
             CAMPBX_EXCHANGE_NAME,
+            OPEN_EXCHANGE_RATES_EXCHANGE_NAME,
             VIRTEX_EXCHANGE_NAME};
     }
 
@@ -146,10 +147,10 @@ public class ExchangeData {
         this.currenciesWeAreInterestedIn = currenciesWeAreInterestedIn;
     }
 
-    public static Collection<String>getAvailableCurrenciesForExchange(String shortExchangeName) {
+    public static Collection<String> getAvailableCurrenciesForExchange(String shortExchangeName) {
         Collection<String>availableCurrencies = exchangeNameToAvailableCurrenciesMap.get(shortExchangeName);
         if (availableCurrencies == null) {
-            return DEFAULT_CURRENCY_LIST;
+            return new ArrayList<String>();
         } else {
             return availableCurrencies;
         }

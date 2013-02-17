@@ -85,7 +85,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
         try {
             if (mainFrame != null) {
-                mainFrame.setCursor(Cursor.WAIT_CURSOR);
+                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
 
             String updateStatusText = "";
@@ -243,7 +243,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             } else if (dataProvider.getPreviousShowExchange() != showExchange) {
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
-            }
+            } 
 
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, new Boolean(showTicker).toString());
             controller.getModel().setUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
@@ -323,6 +323,15 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
+            }
+            
+            String previousOerApicode = dataProvider.getPreviousOpenExchangeRatesApiCode();
+            String newOerApiCode = dataProvider.getNewOpenExchangeRatesApiCode();
+            if (newOerApiCode != null && !newOerApiCode.equals(previousOerApicode)) {
+                wantToFireDataStructureChanged = true;
+                restartTickerTimer = true;
+
+                controller.getModel().setUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE, newOerApiCode);
             }
 
             // Set on the model the currencies we are interested in - only these
