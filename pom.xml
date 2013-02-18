@@ -515,7 +515,7 @@
             <artifactId>sc-light-jdk15on</artifactId>
             <version>${sc-light-jdk15on.version}</version>
         </dependency>
-        <!-- zxing used for swatches -->
+        <!-- zxing used for QR codes -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -539,47 +539,59 @@
             <version>${bitcoinj.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
+         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-core</artifactId>
             <version>1.4.0</version>
-            <scope>compile</scope>
         </dependency>
+        <!-- XChange MtGox exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-mtgox</artifactId>
             <version>1.4.0</version>
-            <scope>compile</scope>
         </dependency>
+        <!-- XChange VirtEx exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-cavirtex</artifactId>
             <version>1.4.0</version>
-            <scope>compile</scope>
         </dependency>
+        <!-- XChange Open Exchange Rates exchange support -->
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-openexchangerates</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <!-- XChange BTC-E exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-btce</artifactId>
             <version>1.4.0</version>
-            <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-campbx</artifactId>
-            <version>1.4.0</version>
-            <scope>compile</scope>
-        </dependency>
+        <!-- XChange Bitstamp exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-bitstamp</artifactId>
             <version>1.4.0</version>
-            <scope>compile</scope>
+        </dependency>
+        <!-- XChange CampBX exchange support -->
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-campbx</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <!-- XChange BitcoinCharts support -->
+        <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-bitcoincharts</artifactId>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchart</groupId>
             <artifactId>xchart</artifactId>
             <version>1.3.1</version>
         </dependency>
+  
         <dependency>
             <groupId>org.codehaus.izpack</groupId>
             <artifactId>izpack</artifactId>

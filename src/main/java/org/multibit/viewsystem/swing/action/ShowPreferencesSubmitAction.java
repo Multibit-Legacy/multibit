@@ -85,7 +85,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
         try {
             if (mainFrame != null) {
-                mainFrame.setCursor(Cursor.WAIT_CURSOR);
+                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
 
             String updateStatusText = "";
@@ -243,7 +243,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             } else if (dataProvider.getPreviousShowExchange() != showExchange) {
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
-            }
+            } 
 
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, new Boolean(showTicker).toString());
             controller.getModel().setUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
@@ -285,7 +285,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String newCurrency1 = dataProvider.getNewCurrency1();
             if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
-                CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrency1));
+                String newCurrencyCode = newCurrency1;
+                if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(newExchange1)) {
+                    // Use only the last three characters - the currency code.
+                     if (newCurrency1.length() >= 3) {
+                        newCurrencyCode = newCurrency1.substring(newCurrency1.length() - 3);
+                    }
+                }
+                CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrencyCode));
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -316,6 +323,15 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
+            }
+            
+            String previousOerApicode = dataProvider.getPreviousOpenExchangeRatesApiCode();
+            String newOerApiCode = dataProvider.getNewOpenExchangeRatesApiCode();
+            if (newOerApiCode != null && !newOerApiCode.equals(previousOerApicode)) {
+                wantToFireDataStructureChanged = true;
+                restartTickerTimer = true;
+
+                controller.getModel().setUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE, newOerApiCode);
             }
 
             // Set on the model the currencies we are interested in - only these
@@ -387,7 +403,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 ColorAndFontConstants.init();
                 FontSizer.INSTANCE.initialise(controller);
                 HelpContentsPanel.clearBrowser();
-                
+
                 // Switch off blinks.
                 controller.getModel().setBlinkEnabled(false);
 
@@ -397,7 +413,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 } finally {
                     // Switch blinks back on.
                     controller.getModel().setBlinkEnabled(true);
-                }
+                }            
             }
 
             if (feeValidationError) {

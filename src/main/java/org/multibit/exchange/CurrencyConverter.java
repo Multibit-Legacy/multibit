@@ -15,11 +15,13 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.joda.money.CurrencyUnit;
+import org.joda.money.IllegalCurrencyException;
 import org.joda.money.Money;
 import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 import org.slf4j.Logger;
@@ -41,12 +43,12 @@ public enum CurrencyConverter {
     public static final int ADDITIONAL_CALCULATION_DIGITS = 16;
    
     // This is the Bitcoin currency unit, denominated in satoshi with 0 decimal places.
-    public static CurrencyUnit BITCOIN_CURRENCY_UNIT  = CurrencyUnit.of("BTC");
+    public CurrencyUnit BITCOIN_CURRENCY_UNIT;
     
     /**
      * The currency unit for the currency being converted.
      */
-    private CurrencyUnit currencyUnit = CurrencyUnit.of(TickerTableModel.DEFAULT_CURRENCY);
+    private CurrencyUnit currencyUnit;  
 
     /**
      * MoneyFormatter without currency code
@@ -74,19 +76,44 @@ public enum CurrencyConverter {
      * Map of currency code to currency info.
      */
     private Map<String, CurrencyInfo> currencyCodeToInfoMap;
+    
+    /**
+     * Map of currency code to currency description (from OpenExchangeRates)
+     */
+    private Map<String, String> currencyCodeToDescriptionMap;
 
     public void initialise(MultiBitController controller) {
         // Initialise conversion currency.
         String currencyCode = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
-        initialise(controller, currencyCode);
+        String exchange = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+        String newCurrencyCode = currencyCode;
+        if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(exchange)) {
+            // Use only the last three characters - the currency code.
+            if (currencyCode.length() >= 3) {
+                newCurrencyCode = currencyCode.substring(currencyCode.length() - 3);
+            }
+        }
+        initialise(controller, newCurrencyCode);
     }
     
     public void initialise(MultiBitController controller, String currencyCode) {
        this.controller = controller;
-        
-       if (currencyCode != null && !"".equals(currencyCode)) {
-           currencyUnit = CurrencyUnit.of(currencyCode);
-       }         
+       
+       try {
+           BITCOIN_CURRENCY_UNIT  = CurrencyUnit.of("BTC");
+           
+           if (currencyCode != null && !"".equals(currencyCode)) {
+               currencyUnit = CurrencyUnit.of(currencyCode);
+           } else {
+               currencyUnit = CurrencyUnit.of("USD");
+           }
+       } catch (IllegalCurrencyException ice) {
+           ice.printStackTrace();
+           // Default to USD.
+           currencyUnit = CurrencyUnit.of("USD");
+       }
+       
+       
         // Exchange rate is unknown.
         rate = null;
         rateDividedByNumberOfSatoshiInOneBitcoin = null;
@@ -114,7 +141,170 @@ public enum CurrencyConverter {
         currencyCodeToInfoMap.put("THB", new CurrencyInfo("THB", "\u0E3F", true));
         currencyCodeToInfoMap.put("PLN", new CurrencyInfo("PLN", "\u007A\u0142", false));
         updateFormatters();
-   
+        
+        // Initialise currency description map.
+        currencyCodeToDescriptionMap = new HashMap<String, String>();
+        currencyCodeToDescriptionMap.put("AED", "United Arab Emirates Dirham");
+        currencyCodeToDescriptionMap.put("AFN", "Afghan Afghani");
+        currencyCodeToDescriptionMap.put("ALL", "Albanian Lek");
+        currencyCodeToDescriptionMap.put("AMD", "Armenian Dram");
+        currencyCodeToDescriptionMap.put("ANG", "Netherlands Antillean Guilder");
+        currencyCodeToDescriptionMap.put("AOA", "Angolan Kwanza");
+        currencyCodeToDescriptionMap.put("ARS", "Argentine Peso");
+        currencyCodeToDescriptionMap.put("AUD", "Australian Dollar");
+        currencyCodeToDescriptionMap.put("AWG", "Aruban Florin");
+        currencyCodeToDescriptionMap.put("AZN", "Azerbaijani Manat");
+        currencyCodeToDescriptionMap.put("BAM", "Bosnia-Herzegovina Convertible Mark");
+        currencyCodeToDescriptionMap.put("BBD", "Barbadian Dollar");
+        currencyCodeToDescriptionMap.put("BDT", "Bangladeshi Taka");
+        currencyCodeToDescriptionMap.put("BGN", "Bulgarian Lev");
+        currencyCodeToDescriptionMap.put("BHD", "Bahraini Dinar");
+        currencyCodeToDescriptionMap.put("BIF", "Burundian Franc");
+        currencyCodeToDescriptionMap.put("BMD", "Bermudan Dollar");
+        currencyCodeToDescriptionMap.put("BND", "Brunei Dollar");
+        currencyCodeToDescriptionMap.put("BOB", "Bolivian Boliviano");
+        currencyCodeToDescriptionMap.put("BRL", "Brazilian Real");
+        currencyCodeToDescriptionMap.put("BSD", "Bahamian Dollar");
+        currencyCodeToDescriptionMap.put("BTC", "Bitcoin");
+        currencyCodeToDescriptionMap.put("BTN", "Bhutanese Ngultrum");
+        currencyCodeToDescriptionMap.put("BWP", "Botswanan Pula");
+        currencyCodeToDescriptionMap.put("BYR", "Belarusian Ruble");
+        currencyCodeToDescriptionMap.put("BZD", "Belize Dollar");
+        currencyCodeToDescriptionMap.put("CAD", "Canadian Dollar");
+        currencyCodeToDescriptionMap.put("CDF", "Congolese Franc");
+        currencyCodeToDescriptionMap.put("CHF", "Swiss Franc");
+        currencyCodeToDescriptionMap.put("CLF", "Chilean Unit of Account (UF)");
+        currencyCodeToDescriptionMap.put("CLP", "Chilean Peso");
+        currencyCodeToDescriptionMap.put("CNY", "Chinese Yuan");
+        currencyCodeToDescriptionMap.put("COP", "Colombian Peso");
+        currencyCodeToDescriptionMap.put("CRC", "Costa Rican Col\u00F3n");
+        currencyCodeToDescriptionMap.put("CUP", "Cuban Peso");
+        currencyCodeToDescriptionMap.put("CVE", "Cape Verdean Escudo");
+        currencyCodeToDescriptionMap.put("CZK", "Czech Republic Koruna");
+        currencyCodeToDescriptionMap.put("DJF", "Djiboutian Franc");
+        currencyCodeToDescriptionMap.put("DKK", "Danish Krone");
+        currencyCodeToDescriptionMap.put("DOP", "Dominican Peso");
+        currencyCodeToDescriptionMap.put("DZD", "Algerian Dinar");
+        currencyCodeToDescriptionMap.put("EEK", "Estonian Kroon");
+        currencyCodeToDescriptionMap.put("EGP", "Egyptian Pound");
+        currencyCodeToDescriptionMap.put("ETB", "Ethiopian Birr");
+        currencyCodeToDescriptionMap.put("EUR", "Euro");
+        currencyCodeToDescriptionMap.put("FJD", "Fijian Dollar");
+        currencyCodeToDescriptionMap.put("FKP", "Falkland Islands Pound");
+        currencyCodeToDescriptionMap.put("GBP", "British Pound Sterling");
+        currencyCodeToDescriptionMap.put("GEL", "Georgian Lari");
+        currencyCodeToDescriptionMap.put("GHS", "Ghanaian Cedi");
+        currencyCodeToDescriptionMap.put("GIP", "Gibraltar Pound");
+        currencyCodeToDescriptionMap.put("GMD", "Gambian Dalasi");
+        currencyCodeToDescriptionMap.put("GNF", "Guinean Franc");
+        currencyCodeToDescriptionMap.put("GTQ", "Guatemalan Quetzal");
+        currencyCodeToDescriptionMap.put("GYD", "Guyanaese Dollar");
+        currencyCodeToDescriptionMap.put("HKD", "Hong Kong Dollar");
+        currencyCodeToDescriptionMap.put("HNL", "Honduran Lempira");
+        currencyCodeToDescriptionMap.put("HRK", "Croatian Kuna");
+        currencyCodeToDescriptionMap.put("HTG", "Haitian Gourde");
+        currencyCodeToDescriptionMap.put("HUF", "Hungarian Forint");
+        currencyCodeToDescriptionMap.put("IDR", "Indonesian Rupiah");
+        currencyCodeToDescriptionMap.put("ILS", "Israeli New Sheqel");
+        currencyCodeToDescriptionMap.put("INR", "Indian Rupee");
+        currencyCodeToDescriptionMap.put("IQD", "Iraqi Dinar");
+        currencyCodeToDescriptionMap.put("IRR", "Iranian Rial");
+        currencyCodeToDescriptionMap.put("ISK", "Icelandic Kr\u00F3na");
+        currencyCodeToDescriptionMap.put("JEP", "Jersey Pound");
+        currencyCodeToDescriptionMap.put("JMD", "Jamaican Dollar");
+        currencyCodeToDescriptionMap.put("JOD", "Jordanian Dinar");
+        currencyCodeToDescriptionMap.put("JPY", "Japanese Yen");
+        currencyCodeToDescriptionMap.put("KES", "Kenyan Shilling");
+        currencyCodeToDescriptionMap.put("KGS", "Kyrgystani Som");
+        currencyCodeToDescriptionMap.put("KHR", "Cambodian Riel");
+        currencyCodeToDescriptionMap.put("KMF", "Comorian Franc");
+        currencyCodeToDescriptionMap.put("KPW", "North Korean Won");
+        currencyCodeToDescriptionMap.put("KRW", "South Korean Won");
+        currencyCodeToDescriptionMap.put("KWD", "Kuwaiti Dinar");
+        currencyCodeToDescriptionMap.put("KYD", "Cayman Islands Dollar");
+        currencyCodeToDescriptionMap.put("KZT", "Kazakhstani Tenge");
+        currencyCodeToDescriptionMap.put("LAK", "Laotian Kip");
+        currencyCodeToDescriptionMap.put("LBP", "Lebanese Pound");
+        currencyCodeToDescriptionMap.put("LKR", "Sri Lankan Rupee");
+        currencyCodeToDescriptionMap.put("LRD", "Liberian Dollar");
+        currencyCodeToDescriptionMap.put("LSL", "Lesotho Loti");
+        currencyCodeToDescriptionMap.put("LTL", "Lithuanian Litas");
+        currencyCodeToDescriptionMap.put("LVL", "Latvian Lats");
+        currencyCodeToDescriptionMap.put("LYD", "Libyan Dinar");
+        currencyCodeToDescriptionMap.put("MAD", "Moroccan Dirham");
+        currencyCodeToDescriptionMap.put("MDL", "Moldovan Leu");
+        currencyCodeToDescriptionMap.put("MGA", "Malagasy Ariary");
+        currencyCodeToDescriptionMap.put("MKD", "Macedonian Denar");
+        currencyCodeToDescriptionMap.put("MMK", "Myanma Kyat");
+        currencyCodeToDescriptionMap.put("MNT", "Mongolian Tugrik");
+        currencyCodeToDescriptionMap.put("MOP", "Macanese Pataca");
+        currencyCodeToDescriptionMap.put("MRO", "Mauritanian Ouguiya");
+        currencyCodeToDescriptionMap.put("MUR", "Mauritian Rupee");
+        currencyCodeToDescriptionMap.put("MVR", "Maldivian Rufiyaa");
+        currencyCodeToDescriptionMap.put("MWK", "Malawian Kwacha");
+        currencyCodeToDescriptionMap.put("MXN", "Mexican Peso");
+        currencyCodeToDescriptionMap.put("MYR", "Malaysian Ringgit");
+        currencyCodeToDescriptionMap.put("MZN", "Mozambican Metical");
+        currencyCodeToDescriptionMap.put("NAD", "Namibian Dollar");
+        currencyCodeToDescriptionMap.put("NGN", "Nigerian Naira");
+        currencyCodeToDescriptionMap.put("NIO", "Nicaraguan C\u00F3rdoba");
+        currencyCodeToDescriptionMap.put("NOK", "Norwegian Krone");
+        currencyCodeToDescriptionMap.put("NPR", "Nepalese Rupee");
+        currencyCodeToDescriptionMap.put("NZD", "New Zealand Dollar");
+        currencyCodeToDescriptionMap.put("OMR", "Omani Rial");
+        currencyCodeToDescriptionMap.put("PAB", "Panamanian Balboa");
+        currencyCodeToDescriptionMap.put("PEN", "Peruvian Nuevo Sol");
+        currencyCodeToDescriptionMap.put("PGK", "Papua New Guinean Kina");
+        currencyCodeToDescriptionMap.put("PHP", "Philippine Peso");
+        currencyCodeToDescriptionMap.put("PKR", "Pakistani Rupee");
+        currencyCodeToDescriptionMap.put("PLN", "Polish Zloty");
+        currencyCodeToDescriptionMap.put("PYG", "Paraguayan Guarani");
+        currencyCodeToDescriptionMap.put("QAR", "Qatari Rial");
+        currencyCodeToDescriptionMap.put("RON", "Romanian Leu");
+        currencyCodeToDescriptionMap.put("RSD", "Serbian Dinar");
+        currencyCodeToDescriptionMap.put("RUB", "Russian Ruble");
+        currencyCodeToDescriptionMap.put("RWF", "Rwandan Franc");
+        currencyCodeToDescriptionMap.put("SAR", "Saudi Riyal");
+        currencyCodeToDescriptionMap.put("SBD", "Solomon Islands Dollar");
+        currencyCodeToDescriptionMap.put("SCR", "Seychellois Rupee");
+        currencyCodeToDescriptionMap.put("SDG", "Sudanese Pound");
+        currencyCodeToDescriptionMap.put("SEK", "Swedish Krona");
+        currencyCodeToDescriptionMap.put("SGD", "Singapore Dollar");
+        currencyCodeToDescriptionMap.put("SHP", "Saint Helena Pound");
+        currencyCodeToDescriptionMap.put("SLL", "Sierra Leonean Leone");
+        currencyCodeToDescriptionMap.put("SOS", "Somali Shilling");
+        currencyCodeToDescriptionMap.put("SRD", "Surinamese Dollar");
+        currencyCodeToDescriptionMap.put("STD", "S\u0101o Tom\u00E9 and Principe Dobra");
+        currencyCodeToDescriptionMap.put("SVC", "Salvadoran Col\u00F3n");
+        currencyCodeToDescriptionMap.put("SYP", "Syrian Pound");
+        currencyCodeToDescriptionMap.put("SZL", "Swazi Lilangeni");
+        currencyCodeToDescriptionMap.put("THB", "Thai Baht");
+        currencyCodeToDescriptionMap.put("TJS", "Tajikistani Somoni");
+        currencyCodeToDescriptionMap.put("TMT", "Turkmenistani Manat");
+        currencyCodeToDescriptionMap.put("TND", "Tunisian Dinar");
+        currencyCodeToDescriptionMap.put("TOP", "Tongan Pa'anga");
+        currencyCodeToDescriptionMap.put("TRY", "Turkish Lira");
+        currencyCodeToDescriptionMap.put("TTD", "Trinidad and Tobago Dollar");
+        currencyCodeToDescriptionMap.put("TWD", "New Taiwan Dollar");
+        currencyCodeToDescriptionMap.put("TZS", "Tanzanian Shilling");
+        currencyCodeToDescriptionMap.put("UAH", "Ukrainian Hryvnia");
+        currencyCodeToDescriptionMap.put("UGX", "Ugandan Shilling");
+        currencyCodeToDescriptionMap.put("USD", "United States Dollar");
+        currencyCodeToDescriptionMap.put("UYU", "Uruguayan Peso");
+        currencyCodeToDescriptionMap.put("UZS", "Uzbekistan Som");
+        currencyCodeToDescriptionMap.put("VEF", "Venezuelan Bol\u00EDvar");
+        currencyCodeToDescriptionMap.put("VND", "Vietnamese Dong");
+        currencyCodeToDescriptionMap.put("VUV", "Vanuatu Vatu");
+        currencyCodeToDescriptionMap.put("WST", "Samoan Tala");
+        currencyCodeToDescriptionMap.put("XAF", "CFA Franc BEAC");
+        currencyCodeToDescriptionMap.put("XCD", "East Caribbean Dollar");
+        currencyCodeToDescriptionMap.put("XDR", "Special Drawing Rights");
+        currencyCodeToDescriptionMap.put("XOF", "CFA Franc BCEAO");
+        currencyCodeToDescriptionMap.put("XPF", "CFP Franc");
+        currencyCodeToDescriptionMap.put("YER", "Yemeni Rial");
+        currencyCodeToDescriptionMap.put("ZAR", "South African Rand");
+        currencyCodeToDescriptionMap.put("ZMK", "Zambian Kwacha");
+        currencyCodeToDescriptionMap.put("ZWL", "Zimbabwean Dollar");
     }
     
     public void updateFormatters() {
@@ -505,5 +695,9 @@ public enum CurrencyConverter {
 
     public Map<String, CurrencyInfo> getCurrencyCodeToInfoMap() {
         return currencyCodeToInfoMap;
+    }
+    
+    public Map<String, String> getCurrencyCodeToDescriptionMap() {
+        return currencyCodeToDescriptionMap;
     }
 }

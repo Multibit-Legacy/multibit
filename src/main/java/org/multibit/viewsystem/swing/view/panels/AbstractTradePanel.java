@@ -1703,7 +1703,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             }
             if (bitcoinURI.getAmount() != null) {
                 amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(bitcoinURI.getAmount(), false, false);
-                parsedAmountBTC = Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinURI.getAmount()));
+                parsedAmountBTC = Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinURI.getAmount()));
                 amountStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
             }
             log.debug("AbstractTradePanel - ping 4");

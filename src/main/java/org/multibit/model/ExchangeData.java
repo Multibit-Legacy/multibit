@@ -15,12 +15,6 @@
  */
 package org.multibit.model;
 
-//import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
-import com.xeiam.xchange.bitstamp.BitstampExchange;
-import com.xeiam.xchange.btce.BTCEExchange;
-import com.xeiam.xchange.campbx.CampBXExchange;
-//import com.xeiam.xchange.oer.OERExchange;
-import com.xeiam.xchange.virtex.VirtExExchange;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,7 +22,12 @@ import java.util.Map;
 
 import org.joda.money.BigMoney;
 
-
+import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
+import com.xeiam.xchange.bitstamp.BitstampExchange;
+import com.xeiam.xchange.btce.BTCEExchange;
+import com.xeiam.xchange.campbx.CampBXExchange;
+import com.xeiam.xchange.oer.OERExchange;
+import com.xeiam.xchange.virtex.VirtExExchange;
 
 /**
  * 
@@ -116,14 +115,27 @@ public class ExchangeData {
         currencyToAskMap.put(currency, lastAsk);
     }
 
+    /**
+     * Exchanges normally use a CurrencyPair with BTC as the base currency and the other as the countercurrency. e.g. BTCUSD = 20 i.e 1 BTC is worth 20 USD.
+     * Some exchanges use reverse rates i.e they quote USDBTC = 20.
+     * 
+     * @return does this exchange use reverse rates
+     */
+    public static boolean doesExchangeUseReverseRates(String shortExchangeName) {
+        if (shortExchangeName == null) {
+            throw new IllegalArgumentException("Exchange name cannot be null");
+        }
+        return BITCOIN_CHARTS_EXCHANGE_NAME.equals(shortExchangeName);
+    }
+    
     public static String[] getAvailableExchanges() {
 //        return new String[] { MT_GOX_EXCHANGE_NAME, BITCOIN_CENTRAL_EXCHANGE_NAME, BITCOIN_CHARTS_EXCHANGE_NAME, BITSTAMP_EXCHANGE_NAME, BTCE_EXCHANGE_NAME,  
 //                CAMPBX_EXCHANGE_NAME, OPEN_EXCHANGE_RATES_EXCHANGE_NAME, VIRTEX_EXCHANGE_NAME};
         return new String[] { MT_GOX_EXCHANGE_NAME,
-            //BITCOIN_CENTRAL_EXCHANGE_NAME,
             BITSTAMP_EXCHANGE_NAME,
             BTCE_EXCHANGE_NAME,
             CAMPBX_EXCHANGE_NAME,
+            OPEN_EXCHANGE_RATES_EXCHANGE_NAME,
             VIRTEX_EXCHANGE_NAME};
     }
 
@@ -135,10 +147,10 @@ public class ExchangeData {
         this.currenciesWeAreInterestedIn = currenciesWeAreInterestedIn;
     }
 
-    public static Collection<String>getAvailableCurrenciesForExchange(String shortExchangeName) {
+    public static Collection<String> getAvailableCurrenciesForExchange(String shortExchangeName) {
         Collection<String>availableCurrencies = exchangeNameToAvailableCurrenciesMap.get(shortExchangeName);
         if (availableCurrencies == null) {
-            return DEFAULT_CURRENCY_LIST;
+            return new ArrayList<String>();
         } else {
             return availableCurrencies;
         }
@@ -155,14 +167,14 @@ public class ExchangeData {
     public static String convertExchangeShortNameToClassname(String shortExchangeName) {
         if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName)) {
             return "com.xeiam.xchange.mtgox.v1.MtGoxExchange";
-//        } else if (BITCOIN_CHARTS_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-//            return  BitcoinChartsExchange.class.getName();
+        } else if (BITCOIN_CHARTS_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+            return  BitcoinChartsExchange.class.getName();
         } else if (VIRTEX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  VirtExExchange.class.getName();
         } else if (BTCE_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  BTCEExchange.class.getName();
-//        } else if (OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-//            return  OERExchange.class.getName();
+        } else if (OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+            return  OERExchange.class.getName();
 //        } else if (BITCOIN_CENTRAL_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
 //            return  BitcoinCentralExchange.class.getName();
         } else if (CAMPBX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
