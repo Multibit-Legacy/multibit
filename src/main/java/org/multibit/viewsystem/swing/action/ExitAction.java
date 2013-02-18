@@ -20,12 +20,10 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.multibit.ApplicationInstanceManager;
-import org.multibit.Localiser;
 import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
@@ -35,7 +33,6 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,31 +42,24 @@ import org.slf4j.LoggerFactory;
  * @author jim
  * 
  */
-public class ExitAction extends AbstractAction {
+public class ExitAction extends AbstractExitAction {
 
     private static final long serialVersionUID = 8784284740245520863L;
-    private Controller controller = null;
-    private MultiBitController multiBitController = null;
-    private MultiBitFrame mainFrame;
-
+    private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
+
+    private MultiBitController multiBitController = null;
 
     /**
      * Creates a new {@link ExitAction}.
      */
     public ExitAction(Controller controller, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("exitAction.text"));
-        
-        this.controller = controller;
+        super(controller);
         this.mainFrame = mainFrame;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(this.controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(this.controller.getLocaliser().getString("exitAction.tooltip")));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("exitAction.mnemonicKey"));
     }
 
     public void setMultiBitController(MultiBitController multiBitController) {
-        if (null == multiBitController) {
+        if (null == this.multiBitController) {
             this.multiBitController = multiBitController;
         }
     }
@@ -94,7 +84,7 @@ public class ExitAction extends AbstractAction {
         if (null != this.multiBitController) {
 
         // Save all the wallets and put their filenames in the user preferences.
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            List<PerWalletModelData> perWalletModelDataList = super.controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 try {
@@ -123,12 +113,10 @@ public class ExitAction extends AbstractAction {
         log.debug("exit 5");
         }
 
-        if (null != this.controller) {
         // Write the user properties.
         log.debug("Saving user preferences ...");
-        FileHandler.writeUserPreferences(controller);
+        FileHandler.writeUserPreferences(super.controller);
         log.debug("exit 6");
-        }
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
