@@ -57,15 +57,14 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
     private Transaction parentTransaction;
 
     /**
-     * Used only in creation of the genesis block.
+     * Creates an input that connects to nothing - used only in creation of coinbase transactions.
      */
-    TransactionInput(NetworkParameters params, Transaction parentTransaction, byte[] scriptBytes) {
+    public TransactionInput(NetworkParameters params, Transaction parentTransaction, byte[] scriptBytes) {
         super(params);
         this.scriptBytes = scriptBytes;
         this.outpoint = new TransactionOutPoint(params, NO_SEQUENCE, (Transaction)null);
         this.sequence = NO_SEQUENCE;
         this.parentTransaction = parentTransaction;
-
         length = 40 + (scriptBytes == null ? 1 : VarInt.sizeOf(scriptBytes.length) + scriptBytes.length);
     }
 
@@ -182,17 +181,25 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
     }
 
     /**
-     * @return Transaction version as defined by the sender. Intended for "replacement" of transactions when information is updated before inclusion into a block. 
+     * Sequence numbers allow participants in a multi-party transaction signing protocol to create new versions of the
+     * transaction independently of each other. Newer versions of a transaction can replace an existing version that's
+     * in nodes memory pools if the existing version is time locked. See the Contracts page on the Bitcoin wiki for
+     * examples of how you can use this feature to build contract protocols. Note that as of 2012 the tx replacement
+     * feature is disabled so sequence numbers are unusable.
      */
-    public long getSequence() {
+    public long getSequenceNumber() {
         maybeParse();
         return sequence;
     }
 
     /**
-     * @param sequence Transaction version as defined by the sender. Intended for "replacement" of transactions when information is updated before inclusion into a block. 
+     * Sequence numbers allow participants in a multi-party transaction signing protocol to create new versions of the
+     * transaction independently of each other. Newer versions of a transaction can replace an existing version that's
+     * in nodes memory pools if the existing version is time locked. See the Contracts page on the Bitcoin wiki for
+     * examples of how you can use this feature to build contract protocols. Note that as of 2012 the tx replacement
+     * feature is disabled so sequence numbers are unusable.
      */
-    public void setSequence(long sequence) {
+    public void setSequenceNumber(long sequence) {
         unCache();
         this.sequence = sequence;
     }
@@ -265,6 +272,9 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
      * @return The TransactionOutput or null if the transactions map doesn't contain the referenced tx.
      */
     TransactionOutput getConnectedOutput(Map<Sha256Hash, Transaction> transactions) {
+        if (transactions == null || outpoint == null) {
+            return null;
+        }
         Transaction tx = transactions.get(outpoint.getHash());
         if (tx == null)
             return null;
@@ -287,6 +297,9 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
      * @return true if connection took place, false if the referenced transaction was not in the list.
      */
     ConnectionResult connect(Map<Sha256Hash, Transaction> transactions, ConnectMode mode) {
+        if (outpoint == null) {
+            return TransactionInput.ConnectionResult.NO_SUCH_TX;
+        }        
         Transaction tx = transactions.get(outpoint.getHash());
         if (tx == null) {
             return TransactionInput.ConnectionResult.NO_SUCH_TX;
@@ -334,6 +347,19 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
 
     public boolean hasSequence() {
         return (sequence != NO_SEQUENCE && sequence != NO_SEQUENCE_ALTERNATIVE);
+    }
+
+    /**
+     * For a connected transaction, runs the script against the connected pubkey and verifies they are correct.
+     * @throws ScriptException if the script did not verify.
+     */
+    public void verify() throws ScriptException {
+        Preconditions.checkNotNull(getOutpoint().fromTx, "Not connected");
+        long spendingIndex = getOutpoint().getIndex();
+        Script pubKey = getOutpoint().fromTx.getOutputs().get((int) spendingIndex).getScriptPubKey();
+        Script sig = getScriptSig();
+        int myIndex = parentTransaction.getInputs().indexOf(this);
+        sig.correctlySpends(parentTransaction, myIndex, pubKey, true);
     }
     
     /** determine whether the transaction input is in the wallet */

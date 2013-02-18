@@ -22,8 +22,8 @@ import com.google.common.base.Preconditions;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ListIterator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
@@ -52,7 +52,7 @@ import org.multibit.MultiBit;
  * <p>Alternatively, you may know that the transaction is "dead", that is, one or more of its inputs have
  * been double spent and will never confirm unless there is another re-org.</p>
  *
- * <p>TransactionConfidence is updated via the {@link com.google.bitcoin.core.TransactionConfidence#notifyWorkDone()}
+ * <p>TransactionConfidence is updated via the {@link com.google.bitcoin.core.TransactionConfidence#notifyWorkDone(Block)}
  * method to ensure the block depth and work done are up to date.</p>
  * To make a copy that won't be changed, use {@link com.google.bitcoin.core.TransactionConfidence#duplicate()}.
  */
@@ -64,8 +64,8 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      * IP address as an approximation. It's obviously vulnerable to being gamed if we allow arbitrary people to connect
      * to us, so only peers we explicitly connected to should go here.
      */
-    private Set<PeerAddress> broadcastBy;
-        
+    private CopyOnWriteArrayList<PeerAddress> broadcastBy;
+    
     private int broadcastByCount;
 
     /** The Transaction that this confidence object is associated with. */
@@ -73,41 +73,10 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     // Lazily created listeners array.
     private transient ArrayList<Listener> listeners;
 
-    /**
-     * The depth of the transaction on the best chain in blocks. An unconfirmed block has depth 0, after one confirmation
-     * its depth is 1.
-     */
+    // The depth of the transaction on the best chain in blocks. An unconfirmed block has depth 0.
     private int depth;
-
-    /**
-     * The cumulative work done for the blocks that bury this transaction. BigInteger.ZERO if the transaction is not
-     * on the best chain.
-     */
+    // The cumulative work done for the blocks that bury this transaction.
     private BigInteger workDone = BigInteger.ZERO;
-
-    // TODO: The advice below is a mess. There should be block chain listeners, see issue 94.
-    /**
-     * <p>Adds an event listener that will be run when this confidence object is updated. The listener will be locked and
-     * is likely to be invoked on a peer thread.</p>
-     * 
-     * <p>Note that this is NOT called when every block arrives. Instead it is called when the transaction
-     * transitions between confidence states, ie, from not being seen in the chain to being seen (not necessarily in 
-     * the best chain). If you want to know when the transaction gets buried under another block, listen for new block
-     * events using {@link PeerEventListener#onBlocksDownloaded(Peer, Block, int)} and then use the getters on the
-     * confidence object to determine the new depth.</p>
-     */
-    public synchronized void addEventListener(Listener listener) {
-        Preconditions.checkNotNull(listener);
-        if (listeners == null)
-            listeners = new ArrayList<Listener>(1);
-        listeners.add(listener);
-    }
-
-    public synchronized void removeEventListener(Listener listener) {
-        Preconditions.checkNotNull(listener);
-        Preconditions.checkNotNull(listeners);
-        listeners.remove(listener);
-    }
 
     /** Describes the state of the transaction in general terms. Properties can be read to learn specifics. */
     public enum ConfidenceType {
@@ -166,6 +135,33 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
 
     };
 
+    private ConfidenceType confidenceType = ConfidenceType.UNKNOWN;
+    private int appearedAtChainHeight = -1;
+    // The transaction that double spent this one, if any.
+    private Transaction overridingTransaction;
+
+    /**
+     * Information about where the transaction was first seen (network, sent direct from peer, created by ourselves).
+     * Useful for risk analyzing pending transactions. Probably not that useful after a tx is included in the chain,
+     * unless re-org double spends start happening frequently.
+     */
+    public enum Source {
+        /** We don't know where the transaction came from. */
+        UNKNOWN,
+        /** We got this transaction from a network peer. */
+        NETWORK,
+        /** This transaction was created by our own wallet, so we know it's not a double spend. */
+        SELF
+    }
+    private Source source = Source.UNKNOWN;
+
+    public TransactionConfidence(Transaction tx) {
+        // Assume a default number of peers for our set.
+        broadcastBy = new CopyOnWriteArrayList<PeerAddress>();
+        broadcastByCount = 0;
+        transaction = tx;
+    }
+
     /**
      * <p>A confidence listener is informed when the level of {@link TransactionConfidence} is updated by something, like
      * for example a {@link Wallet}. You can add listeners to update your user interface or manage your order tracking
@@ -179,15 +175,29 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
         public void onConfidenceChanged(Transaction tx);
     };
 
-    private ConfidenceType confidenceType = ConfidenceType.UNKNOWN;
-    private int appearedAtChainHeight = -1;
-    private Transaction overridingTransaction;
+    /**
+     * <p>Adds an event listener that will be run when this confidence object is updated. The listener will be locked and
+     * is likely to be invoked on a peer thread.</p>
+     *
+     * <p>Note that this is NOT called when every block arrives. Instead it is called when the transaction
+     * transitions between confidence states, ie, from not being seen in the chain to being seen (not necessarily in
+     * the best chain). If you want to know when the transaction gets buried under another block, implement a
+     * {@link BlockChainListener}, attach it to a {@link BlockChain} and then use the getters on the
+     * confidence object to determine the new depth.</p>
+     */
+    public synchronized void addEventListener(Listener listener) {
+        Preconditions.checkNotNull(listener);
+        if (listeners == null)
+            listeners = new ArrayList<Listener>(2);
+        // Dedupe registrations. This makes the wallet code simpler.
+        if (!listeners.contains(listener))
+            listeners.add(listener);
+    }
 
-    public TransactionConfidence(Transaction tx) {
-        // Assume a default number of peers for our set.
-        broadcastBy = new HashSet<PeerAddress>(10);
-        broadcastByCount = 0;
-        transaction = tx;
+    public synchronized void removeEventListener(Listener listener) {
+        Preconditions.checkNotNull(listener);
+        Preconditions.checkNotNull(listeners);
+        listeners.remove(listener);
     }
 
     /**
@@ -239,31 +249,30 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      *
      * @param address IP address of the peer, used as a proxy for identity.
      */
-    public synchronized void markBroadcastBy(PeerAddress address) {
-        if (!broadcastBy.contains(address)) {
-            broadcastByCount++;
+    public void markBroadcastBy(PeerAddress address) {
+        if (!broadcastBy.addIfAbsent(address))
+            return;  // Duplicate.
+        broadcastByCount++;
+        synchronized (this) {
+            if (getConfidenceType() == ConfidenceType.UNKNOWN) {
+                this.confidenceType = ConfidenceType.NOT_SEEN_IN_CHAIN;
+            }
         }
-        broadcastBy.add(address);
-        if (getConfidenceType() == ConfidenceType.UNKNOWN) {
-            setConfidenceType(ConfidenceType.NOT_SEEN_IN_CHAIN);
-            // Listeners are already run by setConfidenceType.
-        } else {
-            runListeners();
-        }
+        runListeners();
     }
 
     /**
      * Returns how many peers have been passed to {@link TransactionConfidence#markBroadcastBy}.
      */
-    public synchronized int numBroadcastPeers() {
+    public int numBroadcastPeers() {
         return broadcastBy.size();
     }
 
     /**
      * Returns a synchronized set of {@link PeerAddress}es that announced the transaction.
      */
-    public synchronized Set<PeerAddress> getBroadcastBy() {
-        return broadcastBy;
+    public ListIterator<PeerAddress> getBroadcastBy() {
+        return broadcastBy.listIterator();
     }
 
     /** Returns true if the given address has been seen via markBroadcastBy() */
@@ -316,6 +325,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
         if (getConfidenceType() == ConfidenceType.BUILDING) {
             this.depth++;
             this.workDone = this.workDone.add(block.getWork());
+            runListeners();
         }
     }
 
@@ -413,6 +423,26 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
                 listener.onConfidenceChanged(transaction);
             }
         });
+    }
+
+    /**
+     * The source of a transaction tries to identify where it came from originally. For instance, did we download it
+     * from the peer to peer network, or make it ourselves, or receive it via Bluetooth, or import it from another app,
+     * and so on. This information is useful for {@link Wallet.CoinSelector} implementations to risk analyze
+     * transactions and decide when to spend them.
+     */
+    public synchronized Source getSource() {
+        return source;
+    }
+
+    /**
+     * The source of a transaction tries to identify where it came from originally. For instance, did we download it
+     * from the peer to peer network, or make it ourselves, or receive it via Bluetooth, or import it from another app,
+     * and so on. This information is useful for {@link Wallet.CoinSelector} implementations to risk analyze
+     * transactions and decide when to spend them.
+     */
+    public synchronized void setSource(Source source) {
+        this.source = source;
     }
 
     public int getBroadcastByCount() {

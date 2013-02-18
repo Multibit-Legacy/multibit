@@ -63,6 +63,7 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.SendRequest;
+import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
 
@@ -258,7 +259,7 @@ public class MultiBitService {
             } else if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
-                peerGroup.addPeerDiscovery(new MultiBitDnsDiscovery(networkParameters));
+                peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
             }
         }
         // Add the controller as a PeerEventListener.
@@ -605,7 +606,7 @@ public class MultiBitService {
                     for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                         if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
                             Wallet loopWallet = loopPerWalletModelData.getWallet();
-                            if (loopWallet.isTransactionRelevant(sendTransaction, true)) {
+                            if (loopWallet.isTransactionRelevant(sendTransaction)) {
                                 // The loopPerWalletModelData is marked as dirty.
                                 if (loopPerWalletModelData.getWalletInfo() != null) {
                                     synchronized(loopPerWalletModelData.getWalletInfo()) {
@@ -617,7 +618,7 @@ public class MultiBitService {
                                 if (loopWallet.getTransaction(sendTransaction.getHash()) == null) {
                                     log.debug("MultiBit adding a new pending transaction for the wallet '"
                                             + loopPerWalletModelData.getWalletDescription() + "'\n" + sendTransaction.toString());
-                                    loopWallet.receivePending(sendTransaction);
+                                    loopWallet.receivePending(sendTransaction, null);
                                 }
                             }  
                         }

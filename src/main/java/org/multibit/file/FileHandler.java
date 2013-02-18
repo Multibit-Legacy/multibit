@@ -157,6 +157,7 @@ public class FileHandler {
             }
   
             // Add the new wallet into the model.
+            wallet.setNetworkParameters(controller.getModel().getNetworkParameters());
             PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilenameToUse);
 
             perWalletModelData.setWalletInfo(walletInfo);

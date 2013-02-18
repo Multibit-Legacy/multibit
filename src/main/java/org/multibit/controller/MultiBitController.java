@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.PeerEventListener;
-import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
@@ -289,20 +288,6 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
     }
 
-    private void checkForDirtyWallets(Transaction transaction) {
-        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-            try {
-                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
-                    loopPerWalletModelData.setDirty(true);
-                    //log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
-                }
-            } catch (ScriptException e) {
-                log.debug(e.getMessage());
-            }
-        }
-    }
-
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
@@ -315,15 +300,30 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         }
     }
     
-    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {       
-        // Set the depth in blocks as this does not seem to get updated anywhere.
-//        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
-//            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
-//        }
+    @Override
+    public void onWalletChanged(Wallet wallet) {
+        if (wallet == null) {
+            return;
+        }
+        // log.debug("onWalletChanged called");
+        final int walletIdentityHashCode = System.identityHashCode(wallet);
+        for (PerWalletModelData loopPerWalletModelData : getModel().getPerWalletModelDataList()) {
+            // Find the wallet object and mark as dirty.
+            if (System.identityHashCode(loopPerWalletModelData.getWallet()) == walletIdentityHashCode) {
+                loopPerWalletModelData.setDirty(true);
+                break;
+            }
+        }
+
+        fireDataChangedUpdateLater();
+    }
+
+    @Override
+    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
+        //log.debug("onTransactionConfidenceChanged called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
-        checkForDirtyWallets(transaction);
     }
 
     public void onKeyAdded(ECKey ecKey) {

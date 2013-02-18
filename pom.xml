@@ -116,10 +116,12 @@
                                     <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
                                     <includes>**/*.*</includes>
                                     <!-- excludes classes that are duplicated in multibit -->
-                                    <excludes> **/Sha256Hash.class,
+                                    <excludes>  **/AbstractBlockChain.class,
+                                        **/Sha256Hash.class,
                                         **/Transaction.class, **/Transaction$*.class,
                                         **/TransactionConfidence.class, **/TransactionConfidence$*.class,
                                         **/TransactionInput.class, **/TransactionInput$*.class,
+                                        **/TransactionOutput.class, **/TransactionOutput$*.class,
                                         **/Wallet.class, **/Wallet$*.class,
                                         **/WalletExtensionSerializer.class,
                                         **/WalletProtobufSerializer.class
@@ -665,7 +667,7 @@
         <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
-        <bitcoinj.version>0.6.1</bitcoinj.version>
+        <bitcoinj.version>0.7</bitcoinj.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>

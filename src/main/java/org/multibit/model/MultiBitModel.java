@@ -384,14 +384,14 @@ public class MultiBitModel {
 
     /**
      * Get the available balance (plus boomeranged change) of the active wallet.
-     * 
+     *
      * @return
      */
-    public BigInteger getActiveWalletAvailableBalanceWithBoomerangChange() {
+    public BigInteger getActiveWalletAvailableBalance() {
         if (activeWalletModelData.getWallet() == null) {
             return BigInteger.ZERO;
         } else {
-            return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE);
+            return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE);
         }
     }
 

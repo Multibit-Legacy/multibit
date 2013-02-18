@@ -32,10 +32,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Serialize and de-serialize a wallet to a byte stream containing a
@@ -43,7 +40,7 @@ import java.util.Map;
  * a data interchange format developed by Google with an efficient binary representation, a type safe specification
  * language and compilers that generate code to work with those data structures for many languages. Protocol buffers
  * can have their format evolved over time: conceptually they represent data using (tag, length, value) tuples. The
- * format is defined by the <tt>bitcoin.proto</tt> file in the BitCoinJ source distribution.<p>
+ * format is defined by the <tt>bitcoin.proto</tt> file in the bitcoinj source distribution.<p>
  *
  * This class is used through its static methods. The most common operations are writeWallet and readWallet, which do
  * the obvious operations on Output/InputStreams. You can use a {@link java.io.ByteArrayInputStream} and equivalent
@@ -165,7 +162,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                 .setTransactionOutPointHash(hashToByteString(input.getOutpoint().getHash()))
                 .setTransactionOutPointIndex((int) input.getOutpoint().getIndex());
             if (input.hasSequence()) {
-                inputBuilder.setSequence((int)input.getSequence());
+                inputBuilder.setSequence((int)input.getSequenceNumber());
             }
             txBuilder.addTransactionInput(inputBuilder);
         }
@@ -204,21 +201,31 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     private static void writeConfidence(Protos.Transaction.Builder txBuilder,
                                         TransactionConfidence confidence,
                                         Protos.TransactionConfidence.Builder confidenceBuilder) {
-        confidenceBuilder.setType(Protos.TransactionConfidence.Type.valueOf(confidence.getConfidenceType().getValue()));
-        if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {
-            confidenceBuilder.setAppearedAtHeight(confidence.getAppearedAtChainHeight());
-            confidenceBuilder.setDepth(confidence.getDepthInBlocks());
-            if (confidence.getWorkDone() != null) {
-                confidenceBuilder.setWorkDone(confidence.getWorkDone().longValue());
+        synchronized (confidence) {
+            confidenceBuilder.setType(Protos.TransactionConfidence.Type.valueOf(confidence.getConfidenceType().getValue()));
+            if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {
+                confidenceBuilder.setAppearedAtHeight(confidence.getAppearedAtChainHeight());
+                confidenceBuilder.setDepth(confidence.getDepthInBlocks());
+                if (confidence.getWorkDone() != null) {
+                    confidenceBuilder.setWorkDone(confidence.getWorkDone().longValue());
+                }
             }
-        }
-        if (confidence.getConfidenceType() == ConfidenceType.DEAD) {
-            if (confidence.getOverridingTransaction() != null) {
+            if (confidence.getConfidenceType() == ConfidenceType.DEAD) {
                 Sha256Hash overridingHash = confidence.getOverridingTransaction().getHash();
                 confidenceBuilder.setOverridingTransaction(hashToByteString(overridingHash));
             }
+            TransactionConfidence.Source source = confidence.getSource();
+            switch (source) {
+                case SELF: confidenceBuilder.setSource(Protos.TransactionConfidence.Source.SOURCE_SELF); break;
+                case NETWORK: confidenceBuilder.setSource(Protos.TransactionConfidence.Source.SOURCE_NETWORK); break;
+                case UNKNOWN:
+                    // Fall through.
+                default:
+                    confidenceBuilder.setSource(Protos.TransactionConfidence.Source.SOURCE_UNKNOWN); break;
+            }
         }
-        for (PeerAddress address : confidence.getBroadcastBy()) {
+        for (ListIterator<PeerAddress> it = confidence.getBroadcastBy(); it.hasNext();) {
+            PeerAddress address = it.next();
             Protos.PeerAddress proto = Protos.PeerAddress.newBuilder()
                     .setIpAddress(ByteString.copyFrom(address.getAddr().getAddress()))
                     .setPort(address.getPort())
@@ -238,17 +245,6 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
-     * TEMPORARY API: Used for migrating 0.5 wallets to 0.6 - during deserialization we need to know the chain height
-     * so the depth field of transaction confidence objects can be filled out correctly. Set this before loading a
-     * wallet. It's only used for older wallets that lack the data already.
-     *
-     * @param chainHeight
-     */
-    public void setChainHeight(int chainHeight) {
-        this.chainHeight = chainHeight;
-    }
-
-    /**
      * Parses a wallet from the given stream. The stream is expected to contain a binary serialization of a 
      * {@link Protos.Wallet} object.<p>
      *     
@@ -259,6 +255,8 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     public Wallet readWallet(InputStream input) throws IOException {
         // TODO: This method should throw more specific exception types than IllegalArgumentException.
         Protos.Wallet walletProto = parseToProto(input);
+
+        // System.out.println(TextFormat.printToString(walletProto));
 
         NetworkParameters params = NetworkParameters.fromID(walletProto.getNetworkIdentifier());
         Wallet wallet = helper.newWallet(params);
@@ -333,7 +331,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             );
             TransactionInput input = new TransactionInput(params, tx, scriptBytes, outpoint);
             if (transactionInput.hasSequence()) {
-                input.setSequence(transactionInput.getSequence());
+                input.setSequenceNumber(transactionInput.getSequence());
             }
             tx.addInput(input);
         }
@@ -415,11 +413,6 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                 return;
             }
             confidence.setDepthInBlocks(confidenceProto.getDepth());
-        } else {
-            // TEMPORARY CODE FOR MIGRATING 0.5 WALLETS TO 0.6
-            if (chainHeight != 0 && confidenceProto.hasAppearedAtHeight()) {
-                confidence.setDepthInBlocks(chainHeight - confidence.getAppearedAtChainHeight() + 1);
-            }
         }
         if (confidenceProto.hasWorkDone()) {
             if (confidence.getConfidenceType() != ConfidenceType.BUILDING) {
@@ -452,6 +445,13 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             PeerAddress address = new PeerAddress(ip, port);
             address.setServices(BigInteger.valueOf(proto.getServices()));
             confidence.markBroadcastBy(address);
+        }
+        switch (confidenceProto.getSource()) {
+            case SOURCE_SELF: confidence.setSource(TransactionConfidence.Source.SELF); break;
+            case SOURCE_NETWORK: confidence.setSource(TransactionConfidence.Source.NETWORK); break;
+            case SOURCE_UNKNOWN:
+                // Fall through.
+            default: confidence.setSource(TransactionConfidence.Source.UNKNOWN); break;
         }
     }
 }

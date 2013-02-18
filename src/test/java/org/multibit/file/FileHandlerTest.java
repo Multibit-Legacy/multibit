@@ -42,10 +42,10 @@ public class FileHandlerTest extends TestCase {
     private static final String WALLET_FUTURE = "future.wallet";
 
     private static final String WALLET_TEST1 = "test1.wallet";
-    private static final BigInteger WALLET_TEST1_BALANCE = new BigInteger("6700000");;
+    private static final BigInteger WALLET_TEST1_BALANCE = new BigInteger("0");;
 
     private static final String WALLET_TEST2 = "test2.wallet";
-    private static final BigInteger WALLET_TEST2_BALANCE = new BigInteger("2000000");;
+    private static final BigInteger WALLET_TEST2_BALANCE = new BigInteger("0");;
 
     private static final String TEST_CREATE_AND_DELETE1_WALLET_PREFIX = "testCreateAndDelete1";
     

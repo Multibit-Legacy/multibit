@@ -35,25 +35,24 @@ public class MultiBitBlockChain extends BlockChain {
         super(params, blockStore);
     }
 
-    public MultiBitBlockChain(NetworkParameters params, List<Wallet> wallets, BlockStore blockStore) throws BlockStoreException {
+    public MultiBitBlockChain(NetworkParameters params, List<BlockChainListener> wallets, BlockStore blockStore) throws BlockStoreException {
         super(params, wallets, blockStore);
     }
     
     /**
-     * Set the chainhead, clear any cached blocks and truncate the blockchain. 
-     * (used for blockchain replay)
+     * Set the chainhead, clear any cached blocks and truncate the blockchain .
+     * (Used for blockchain replay).
      * @param chainHead
      * @throws BlockStoreException
      */
     public void setChainHeadClearCachesAndTruncateBlockStore(StoredBlock chainHead) throws BlockStoreException {
-        synchronized (chainHeadLock) {
-            if (blockStore instanceof ReplayableBlockStore) {
-                ((ReplayableBlockStore) blockStore).setChainHeadAndTruncate(chainHead);
-            } else {
-                blockStore.setChainHead(chainHead);
-            }
-        
-            this.chainHead = chainHead;
+        if (blockStore instanceof ReplayableBlockStore) {
+            ((ReplayableBlockStore) blockStore).setChainHeadAndTruncate(chainHead);
+        } else {
+            blockStore.setChainHead(chainHead);
+
         }
+        
+        super.setChainHead(chainHead);
     }
 }

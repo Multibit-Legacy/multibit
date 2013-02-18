@@ -80,7 +80,7 @@ public class MultiBitTestUtils {
      * Roundtrip a transaction so that it appears as if it has just come from the wire
      */
     private static Transaction roundTripTransaction(NetworkParameters params, Transaction tx) throws IOException, ProtocolException {
-        BitcoinSerializer bs = new BitcoinSerializer(params, true);
+        BitcoinSerializer bs = new BitcoinSerializer(params, true, true);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bs.serialize(tx, bos);

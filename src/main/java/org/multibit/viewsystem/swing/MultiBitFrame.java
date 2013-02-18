@@ -268,6 +268,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         initUI();
 
+        // Initialise the file change timer.
+        fileChangeTimer = new Timer();
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+
         // Initialise the tickers.
         tickerTimer1 = new Timer();
         tickerTimerTask1 = new TickerTimerTask(controller, this, true);
@@ -278,10 +282,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Initialise status bar.
         statusBar.initialise();
-
-        // Initialise the file change timer.
-        fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
 
         estimatedBalanceLabelLabel.setFocusable(false);
         estimatedBalanceBTCLabel.setFocusable(false);
@@ -1033,7 +1033,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         //log.debug("Displaying view '" + viewToDisplay + "'");
         // Open wallet view obselete - show transactions
         if (View.OPEN_WALLET_VIEW == viewToDisplay) {
-            viewToDisplay = View.YOUR_WALLETS_VIEW;
+            viewToDisplay = View.TRANSACTIONS_VIEW;
         }
         
         // Create Bulk addreses obselete - show transactions
@@ -1144,7 +1144,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Update due to a block being downloaded
      */
     public void blockDownloaded() {
-        // Update transaction screen in case status bars have changed.
+        // Update transaction screen in case status icons have changed.
         if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
             ShowTransactionsPanel.updateTransactions();
         }
@@ -1239,15 +1239,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (currentViewView != null) {
             currentViewView.displayView(displayHint);
         }
-
-        // Tell the tab to refresh (gets round bug on replay for transactions panel)
-        Viewable tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
-        if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
-            log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
-            tabbedPaneCurrentView.displayView(displayHint);
-        }
     }
-
 
     /**
      * Update the Ticker Panel after the exchange data has changed.
@@ -1265,10 +1257,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public void updateHeader() {
         final BigInteger finalEstimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
-        final BigInteger finalAvailableToSpend = model.getActiveWalletAvailableBalanceWithBoomerangChange();
+        final BigInteger finalAvailableToSpend = model.getActiveWalletAvailableBalance();
         final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
 
-        //log.debug("updateHeader finalEstimatedBalance = " + finalEstimatedBalance + ", finalAvailableToSpend = " + finalAvailableToSpend);
         if (EventQueue.isDispatchThread()) {
             updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend);
         } else {
@@ -1331,10 +1322,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
             }
             setTitle(titleText);
-            
-            headerPanel.invalidate();
-            headerPanel.validate();
-            headerPanel.repaint();
         }
     }
  
@@ -1444,6 +1431,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public JSplitPane getSplitPane() {
         return splitPane;
+    }
+    
+    @Override
+    public void onWalletChanged(Wallet wallet) {
+        fireDataChangedUpdateNow(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
     }
 
     @Override

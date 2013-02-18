@@ -65,7 +65,7 @@ public class SimpleViewSystem implements ViewSystem {
 
     @Override
     public void fireDataChangedUpdateLater(DisplayHint displayHint) {
-        System.out.println("SIMPLE. Data has changed - update later.");
+        //System.out.println("SIMPLE. Data has changed - update later.");
     }
 
     @Override
@@ -91,6 +91,11 @@ public class SimpleViewSystem implements ViewSystem {
 
     @Override
     public void onKeyAdded(ECKey key) {        
+    }
+
+    @Override
+    public void onWalletChanged(Wallet wallet) {
+        System.out.println("SIMPLE. onWalletChanged");        
     }
 
     @Override

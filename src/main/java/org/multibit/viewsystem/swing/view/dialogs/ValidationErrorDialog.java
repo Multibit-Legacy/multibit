@@ -171,7 +171,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                     new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
-            if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+            if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
                         new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }
