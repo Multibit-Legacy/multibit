@@ -177,7 +177,7 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("CLP", "Chilean Peso");
         currencyCodeToDescriptionMap.put("CNY", "Chinese Yuan");
         currencyCodeToDescriptionMap.put("COP", "Colombian Peso");
-        currencyCodeToDescriptionMap.put("CRC", "Costa Rican Colón");
+        currencyCodeToDescriptionMap.put("CRC", "Costa Rican Col\u00F3n");
         currencyCodeToDescriptionMap.put("CUP", "Cuban Peso");
         currencyCodeToDescriptionMap.put("CVE", "Cape Verdean Escudo");
         currencyCodeToDescriptionMap.put("CZK", "Czech Republic Koruna");
@@ -209,7 +209,7 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("INR", "Indian Rupee");
         currencyCodeToDescriptionMap.put("IQD", "Iraqi Dinar");
         currencyCodeToDescriptionMap.put("IRR", "Iranian Rial");
-        currencyCodeToDescriptionMap.put("ISK", "Icelandic Króna");
+        currencyCodeToDescriptionMap.put("ISK", "Icelandic Kr\u00F3na");
         currencyCodeToDescriptionMap.put("JEP", "Jersey Pound");
         currencyCodeToDescriptionMap.put("JMD", "Jamaican Dollar");
         currencyCodeToDescriptionMap.put("JOD", "Jordanian Dinar");
@@ -247,7 +247,7 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("MZN", "Mozambican Metical");
         currencyCodeToDescriptionMap.put("NAD", "Namibian Dollar");
         currencyCodeToDescriptionMap.put("NGN", "Nigerian Naira");
-        currencyCodeToDescriptionMap.put("NIO", "Nicaraguan Córdoba");
+        currencyCodeToDescriptionMap.put("NIO", "Nicaraguan C\u00F3rdoba");
         currencyCodeToDescriptionMap.put("NOK", "Norwegian Krone");
         currencyCodeToDescriptionMap.put("NPR", "Nepalese Rupee");
         currencyCodeToDescriptionMap.put("NZD", "New Zealand Dollar");
@@ -274,8 +274,8 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("SLL", "Sierra Leonean Leone");
         currencyCodeToDescriptionMap.put("SOS", "Somali Shilling");
         currencyCodeToDescriptionMap.put("SRD", "Surinamese Dollar");
-        currencyCodeToDescriptionMap.put("STD", "São Tomé and Príncipe Dobra");
-        currencyCodeToDescriptionMap.put("SVC", "Salvadoran Colón");
+        currencyCodeToDescriptionMap.put("STD", "S\u0101o Tom\u00E9 and Principe Dobra");
+        currencyCodeToDescriptionMap.put("SVC", "Salvadoran Col\u00F3n");
         currencyCodeToDescriptionMap.put("SYP", "Syrian Pound");
         currencyCodeToDescriptionMap.put("SZL", "Swazi Lilangeni");
         currencyCodeToDescriptionMap.put("THB", "Thai Baht");
@@ -292,7 +292,7 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("USD", "United States Dollar");
         currencyCodeToDescriptionMap.put("UYU", "Uruguayan Peso");
         currencyCodeToDescriptionMap.put("UZS", "Uzbekistan Som");
-        currencyCodeToDescriptionMap.put("VEF", "Venezuelan Bolívar");
+        currencyCodeToDescriptionMap.put("VEF", "Venezuelan Bol\u00EDvar");
         currencyCodeToDescriptionMap.put("VND", "Vietnamese Dong");
         currencyCodeToDescriptionMap.put("VUV", "Vanuatu Vatu");
         currencyCodeToDescriptionMap.put("WST", "Samoan Tala");
