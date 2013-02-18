@@ -19,7 +19,7 @@ import org.joda.money.Money;
 import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public enum CurrencyConverter {
    
     private static final Logger log = LoggerFactory.getLogger(CurrencyConverter.class);
 
-    private MultiBitController controller;
+    private Controller controller;
     
     private Collection<CurrencyConverterListener> listeners;
     
@@ -75,13 +75,13 @@ public enum CurrencyConverter {
      */
     private Map<String, CurrencyInfo> currencyCodeToInfoMap;
 
-    public void initialise(MultiBitController controller) {
+    public void initialise(Controller controller) {
         // Initialise conversion currency.
         String currencyCode = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
         initialise(controller, currencyCode);
     }
     
-    public void initialise(MultiBitController controller, String currencyCode) {
+    public void initialise(Controller controller, String currencyCode) {
        this.controller = controller;
         
        if (currencyCode != null && !"".equals(currencyCode)) {

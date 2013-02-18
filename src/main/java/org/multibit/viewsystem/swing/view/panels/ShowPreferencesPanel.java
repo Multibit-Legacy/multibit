@@ -48,7 +48,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.TickerTimerTask;
@@ -97,7 +98,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
     private static final int FEE_TEXT_FIELD_WIDTH = 200;
 
-    private MultiBitController controller;
+    private Controller controller;
     private MultiBitFrame mainFrame;
 
     SortedSet<LanguageData> languageDataSet;
@@ -169,11 +170,10 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
-    public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ShowPreferencesPanel(BitcoinController controller, MultiBitFrame mainFrame) {
         log.debug("Construct a new ShowPreferencesPanel");
         this.controller = controller;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         localisedSystemLookAndFeelName = controller.getLocaliser().getString("showPreferencesPanel.systemLookAndFeel");
 

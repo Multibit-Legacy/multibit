@@ -33,7 +33,8 @@ package org.multibit.qrcode;
  */
 import java.awt.image.BufferedImage;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
@@ -48,6 +49,7 @@ import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 
+
 /**
  * Class to generate QR codes
  * 
@@ -60,10 +62,12 @@ public class QRCodeGenerator {
 
     private QRCode code;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
-    public QRCodeGenerator(MultiBitController controller) {
-        this.controller = controller;
+    public QRCodeGenerator(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
 
         code = new QRCode();
     }
@@ -87,7 +91,7 @@ public class QRCodeGenerator {
         String bitcoinURI = "";
         try {
             Address decodeAddress = null;
-            if (address != null && !"".equals(address) && controller.getMultiBitService() != null
+            if (address != null && !"".equals(address) && this.bitcoinController.getMultiBitService() != null
                     && controller.getModel().getNetworkParameters() != null) {
                 decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
             }

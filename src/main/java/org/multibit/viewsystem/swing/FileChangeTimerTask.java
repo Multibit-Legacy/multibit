@@ -18,7 +18,8 @@ package org.multibit.viewsystem.swing;
 import java.util.List;
 import java.util.TimerTask;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -40,13 +41,15 @@ public class FileChangeTimerTask extends TimerTask {
 
     private static Logger log = LoggerFactory.getLogger(FileChangeTimerTask.class);
 
-    private final MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     /**
      * Constructs the object, sets the string to be output in function run().
      */
-    public FileChangeTimerTask(MultiBitController controller) {
-        this.controller = controller;
+    public FileChangeTimerTask(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
     }
 
     /**
@@ -58,15 +61,15 @@ public class FileChangeTimerTask extends TimerTask {
 
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
-                if (controller.getFileHandler() != null) {
+                if (this.bitcoinController.getFileHandler() != null) {
                     // See if the files have been changed by another process (non MultiBit).
-                    boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(loopModelData);
+                    boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(loopModelData);
                     if (haveFilesChanged) {
                         boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
                         loopModelData.setFilesHaveBeenChangedByAnotherProcess(true);
                         if (!previousFilesHaveBeenChanged) {
                             // Only fire once, when change happens.
-                            controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
+                            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
                             log.debug("Marking wallet " + loopModelData.getWalletFilename() + " as having been changed by another process.");
                         }
                     }
@@ -75,7 +78,7 @@ public class FileChangeTimerTask extends TimerTask {
                     if (loopModelData.isDirty()) {
                         log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'...");
                         try {
-                            controller.getFileHandler().savePerWalletModelData(loopModelData, false);
+                                this.bitcoinController.getFileHandler().savePerWalletModelData(loopModelData, false);
                             log.debug("... done.");
                         } catch (WalletSaveException e) {
                             String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",

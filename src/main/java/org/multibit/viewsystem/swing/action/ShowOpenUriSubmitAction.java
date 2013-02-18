@@ -20,7 +20,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
@@ -35,17 +36,22 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592460523457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private ShowUriDialogDataProvider dataProvider;
     private ShowOpenUriDialog showOpenUriDialog;
 
     /**
      * Creates a new {@link ShowOpenUriSubmitAction}.
      */
-    public ShowOpenUriSubmitAction(MultiBitFrame mainFrame, MultiBitController controller, ShowUriDialogDataProvider dataProvider,
+    public ShowOpenUriSubmitAction(MultiBitFrame mainFrame, BitcoinController bitcoinController, ShowUriDialogDataProvider dataProvider,
             ShowOpenUriDialog showOpenUriDialog) {
-        super(controller.getLocaliser().getString("showOpenUriView.yesText"));
-        this.controller = controller;
+        super(bitcoinController.getLocaliser().getString("showOpenUriView.yesText"));
+        
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.dataProvider = dataProvider;
         this.showOpenUriDialog = showOpenUriDialog;
 
@@ -61,13 +67,13 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
     public void actionPerformed(ActionEvent event) {
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             // get the data out of the temporary data and put it in the wallet
             // preferences

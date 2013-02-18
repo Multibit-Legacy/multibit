@@ -24,7 +24,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
@@ -40,7 +40,7 @@ public class CopyQRCodeImageAction extends AbstractAction {
     /**
      * Creates a new {@link CopyQRCodeImageAction}.
      */
-    public CopyQRCodeImageAction(MultiBitController controller, CopyQRCodeImageDataProvider dataProvider, Icon icon) {
+    public CopyQRCodeImageAction(Controller controller, CopyQRCodeImageDataProvider dataProvider, Icon icon) {
         super("", icon);
         this.dataProvider = dataProvider;
 

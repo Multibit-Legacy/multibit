@@ -21,7 +21,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
@@ -37,9 +38,8 @@ public class DeleteWalletAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link DeleteWalletAction}.
      */
-    public DeleteWalletAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(controller, "deleteWalletAction.text", "deleteWalletAction.tooltip", "deleteWalletAction.mnemonicKey", icon);
-        this.controller = controller;
+    public DeleteWalletAction(BitcoinController bitcoinController, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(bitcoinController, "deleteWalletAction.text", "deleteWalletAction.tooltip", "deleteWalletAction.mnemonicKey", icon);
         this.mainFrame = mainFrame;
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("deleteWalletAction.tooltip")));
     }
@@ -55,7 +55,7 @@ public class DeleteWalletAction extends MultiBitSubmitAction {
         setEnabled(false);
   
         try {
-            DeleteWalletConfirmDialog deleteWalletConfirmDialog = new DeleteWalletConfirmDialog(controller, mainFrame);
+            DeleteWalletConfirmDialog deleteWalletConfirmDialog = new DeleteWalletConfirmDialog(super.bitcoinController, mainFrame);
             deleteWalletConfirmDialog.setVisible(true);
         } finally {
             setEnabled(true);

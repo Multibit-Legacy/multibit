@@ -25,7 +25,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
@@ -42,12 +42,12 @@ public class HelpAboutPanel extends JPanel implements Viewable {
 
     private static final String MULTIBIT_URL = "https://multibit.org";
     
-    private MultiBitController controller;
+    private Controller controller;
 
   /**
      * Creates a new {@link HelpAboutPanel}.
      */
-    public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
+    public HelpAboutPanel(Controller controller, MultiBitFrame mainFrame) {        
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         this.controller = controller;
 

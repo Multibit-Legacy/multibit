@@ -20,7 +20,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.WalletTableData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.TransactionDetailsDialog;
@@ -32,16 +33,20 @@ public class ShowTransactionDetailsAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592498732457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private MultiBitFrame mainFrame;
     private WalletTableData rowTableData;
 
     /**
      * Creates a new {@link ShowTransactionDetailsAction}.
      */
-    public ShowTransactionDetailsAction(MultiBitController controller, MultiBitFrame mainFrame, WalletTableData rowTableData) {
-        super(controller.getLocaliser().getString("showTransactionsDetailAction.text"));
-        this.controller = controller;
+    public ShowTransactionDetailsAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, WalletTableData rowTableData) {
+        super(bitcoinController.getLocaliser().getString("showTransactionsDetailAction.text"));
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.mainFrame = mainFrame;
         this.rowTableData = rowTableData;
 
@@ -54,7 +59,7 @@ public class ShowTransactionDetailsAction extends AbstractAction {
      * show the show transaction details dialog
      */
     public void actionPerformed(ActionEvent e) {
-        final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(controller, mainFrame, rowTableData);
+        final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(this.bitcoinController, mainFrame, rowTableData);
         if (transactionDetailsDialog != null && transactionDetailsDialog.isInitialisedOk() ) {
             transactionDetailsDialog.setVisible(true);
         }

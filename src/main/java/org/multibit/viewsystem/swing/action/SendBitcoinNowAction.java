@@ -23,7 +23,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
@@ -41,6 +42,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 
+
 /**
  * This {@link Action} forwards to the send bitcoin now action
  */
@@ -50,7 +52,9 @@ public class SendBitcoinNowAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592460523457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private SendBitcoinConfirmDialog sendBitcoinConfirmView;
     
     private Transaction transaction;
@@ -60,10 +64,11 @@ public class SendBitcoinNowAction extends AbstractAction {
     /**
      * Creates a new {@link SendBitcoinNowAction}.
      */
-    public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController controller,
+    public SendBitcoinNowAction(MultiBitFrame mainFrame, BitcoinController bitcoinController,
             SendBitcoinConfirmDialog sendBitcoinConfirmView, ImageIcon icon) {
-        super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
-        this.controller = controller;
+        super(bitcoinController.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.sendBitcoinConfirmView = sendBitcoinConfirmView;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -81,13 +86,13 @@ public class SendBitcoinNowAction extends AbstractAction {
 
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             // Put sending message and remove the send button.
             sendBitcoinConfirmView.setSendConfirmText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
@@ -123,7 +128,7 @@ public class SendBitcoinNowAction extends AbstractAction {
         try {
             log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
                     + fee + " to address = " + sendAddress);
-            transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
+            transaction = this.bitcoinController.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
             if (transaction == null) {
                 // a null transaction returned indicates there was not
                 // enough money (in spite of our validation)
@@ -135,7 +140,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             }
 
             // save the wallet
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+            this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
         } catch (WalletSaveException e) {
             log.error(e.getMessage(), e);
             message = e.getMessage();

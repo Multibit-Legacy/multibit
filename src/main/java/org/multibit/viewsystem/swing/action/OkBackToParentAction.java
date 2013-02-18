@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 
 /**
@@ -35,7 +35,7 @@ public class OkBackToParentAction extends AbstractAction {
     /**
      * Creates a new {@link OkBackToParentAction}.
      */
-    public OkBackToParentAction(MultiBitController controller, MultiBitDialog dialog) {
+    public OkBackToParentAction(Controller controller, MultiBitDialog dialog) {
         super(controller.getLocaliser().getString("okBackToParentAction.text"));
         this.dialog = dialog;
 

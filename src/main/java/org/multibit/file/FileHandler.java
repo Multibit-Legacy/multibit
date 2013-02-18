@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,8 +36,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
-import org.multibit.viewsystem.View;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -47,11 +46,14 @@ import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.network.MultiBitService;
 import org.multibit.utils.DateUtils;
+import org.multibit.viewsystem.View;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.WalletProtobufSerializer;
+
 
 /**
  * Class consolidating the File IO in MultiBit for wallets and wallet infos.
@@ -68,7 +70,8 @@ public class FileHandler {
     private static final String SEPARATOR = "-";
     public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private Date dateForBackupName = null;
     
@@ -95,8 +98,9 @@ public class FileHandler {
         }
     }
 
-    public FileHandler(MultiBitController controller) {
-        this.controller = controller;
+    public FileHandler(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         walletProtobufSerializer = new WalletProtobufSerializer();
@@ -550,7 +554,7 @@ public class FileHandler {
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
     }
 
-    public static void writeUserPreferences(MultiBitController controller) {
+    public static void writeUserPreferences(Controller controller) {
         // Save all the wallets' filenames in the user preferences.
         if (controller.getModel().getPerWalletModelDataList() != null) {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();

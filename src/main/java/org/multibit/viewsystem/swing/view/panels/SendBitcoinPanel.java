@@ -21,7 +21,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -34,7 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.AddressBookData;
@@ -42,6 +41,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
@@ -73,7 +73,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     private MultiBitButton sendButton;
     private SendBitcoinConfirmAction sendBitcoinConfirmAction;
 
-    public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
+    public SendBitcoinPanel(MultiBitFrame mainFrame, BitcoinController controller) {
         super(mainFrame, controller);
         checkDeleteSendingEnabled();
     }
@@ -85,12 +85,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
     @Override
     public Action getCreateNewAddressAction() {
-        return new CreateNewSendingAddressAction(controller, this);
+        return new CreateNewSendingAddressAction(super.bitcoinController, this);
     }
 
     @Override
     protected Action getDeleteAddressAction() {
-        return new DeleteSendingAddressAction(controller, mainFrame, this);
+        return new DeleteSendingAddressAction(super.bitcoinController, mainFrame, this);
     }
     
     public void checkDeleteSendingEnabled() {
@@ -186,7 +186,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         formPanel.add(copyAddressButton, constraints);
 
         ImageIcon pasteIcon = ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE);
-        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this, pasteIcon);
+        PasteAddressAction pasteAddressAction = new PasteAddressAction(super.bitcoinController, this, pasteIcon);
         pasteAddressButton = new MultiBitButton(pasteAddressAction, controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 8;
@@ -316,7 +316,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
         formPanel.add(helpButton, constraints);
 
-        sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
+        sendBitcoinConfirmAction = new SendBitcoinConfirmAction(super.bitcoinController, mainFrame, this);
         sendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 6;

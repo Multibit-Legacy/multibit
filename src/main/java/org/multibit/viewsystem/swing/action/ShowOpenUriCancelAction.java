@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
@@ -33,7 +33,7 @@ public class ShowOpenUriCancelAction extends AbstractAction {
 
     private static final long serialVersionUID = 191354561231234705L;
 
-    private MultiBitController controller;
+    private Controller controller;
     
     private ShowUriDialogDataProvider dataProvider;
     
@@ -42,7 +42,7 @@ public class ShowOpenUriCancelAction extends AbstractAction {
     /**
      * Creates a new {@link ShowOpenUriCancelAction}.
      */
-    public ShowOpenUriCancelAction(MultiBitController controller, ShowUriDialogDataProvider dataProvider, ShowOpenUriDialog showOpenUriDialog) {
+    public ShowOpenUriCancelAction(Controller controller, ShowUriDialogDataProvider dataProvider, ShowOpenUriDialog showOpenUriDialog) {
         super(controller.getLocaliser().getString("showOpenUriView.noText"));
         this.controller = controller;
         this.dataProvider = dataProvider;

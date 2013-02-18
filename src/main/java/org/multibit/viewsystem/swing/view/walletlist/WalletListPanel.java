@@ -39,7 +39,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
@@ -62,7 +63,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 public class WalletListPanel extends JPanel implements Viewable, ComponentListener, CurrencyConverterListener  {
     private static final long serialVersionUID = 191352298245057705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
     private MultiBitFrame mainFrame;
 
     private MultiBitTabbedPane tabbedPane;
@@ -84,10 +86,10 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
     /**
      * Creates a new {@link WalletListPanel}.
      */
-    public WalletListPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public WalletListPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         walletPanels = new ArrayList<SingleWalletPanel>();
 
@@ -238,7 +240,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
                         constraints2.gridheight = 1;
                         constraints2.anchor = GridBagConstraints.CENTER;
 
-                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame, this);
+                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, this.bitcoinController, mainFrame, this);
                         loopPanel.setComponentOrientation(ComponentOrientation
                                 .getOrientation(controller.getLocaliser().getLocale()));
 
@@ -286,7 +288,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
-        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, mainFrame);
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.bitcoinController, null, mainFrame);
         MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
         createNewWalletButton.setText(controller.getLocaliser().getString("crudButton.new"));
         createNewWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -301,7 +303,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         constraints.anchor = GridBagConstraints.CENTER;
         buttonPanel.add(createNewWalletButton, constraints);
         
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
+        OpenWalletAction openWalletAction = new OpenWalletAction(this.bitcoinController, null, mainFrame);
         MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
         openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
         openWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -316,7 +318,7 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         constraints.anchor = GridBagConstraints.CENTER;
         buttonPanel.add(openWalletButton, constraints);
         
-        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller, null, mainFrame);
+        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(this.bitcoinController, null, mainFrame);
         MultiBitButton deleteWalletButton = new MultiBitButton(deleteWalletAction, controller);
         deleteWalletButton.setText(controller.getLocaliser().getString("crudButton.delete"));
         deleteWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

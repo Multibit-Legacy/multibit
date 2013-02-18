@@ -27,7 +27,8 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
-import org.multibit.controller.MultiBitController;
+import org.multibit.CreateControllers;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.MultiBitModel;
 
 import com.google.bitcoin.core.ECKey;
@@ -59,13 +60,9 @@ public class PrivateKeysHandlerTest extends TestCase {
     
     @Test
     public void testExport() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-        
-        controller.setLocaliser(localiser);
-        controller.setModel(model);   
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final BitcoinController controller = controllers.bitcoinController;   
 
         PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(NetworkParameters.prodNet());
         assertNotNull(privateKeysHandler);

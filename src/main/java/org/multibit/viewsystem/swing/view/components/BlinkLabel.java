@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 
 public class BlinkLabel extends MultiBitLabel {
@@ -35,7 +35,7 @@ public class BlinkLabel extends MultiBitLabel {
 
     private String previousBlinkText;
 
-    public BlinkLabel(MultiBitController controller, boolean isLarge) {
+    public BlinkLabel(Controller controller, boolean isLarge) {
         super("");
         
         if (isLarge) {

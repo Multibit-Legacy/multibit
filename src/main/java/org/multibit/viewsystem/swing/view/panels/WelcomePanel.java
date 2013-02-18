@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -54,12 +54,12 @@ public class WelcomePanel extends JPanel implements Viewable {
 
     private static final long serialVersionUID = 199992298245057705L;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     /**
      * Creates a new {@link WelcomePanel}.
      */
-    public WelcomePanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public WelcomePanel(Controller controller, MultiBitFrame mainFrame) {
         this.controller = controller;
 
         setLayout(new BorderLayout());

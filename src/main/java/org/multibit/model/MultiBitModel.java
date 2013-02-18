@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
@@ -194,7 +195,8 @@ public class MultiBitModel {
     public static final String SHOW_BTC_IN_WALLET_PANEL = "showBTCinWalletPanel";               // boolean
 
     // Main controller class.
-    private final MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     // User preferences.
     private Properties userPreferences;
@@ -233,13 +235,15 @@ public class MultiBitModel {
      */
     private boolean blinkEnabled = true;
     
-    public MultiBitModel(MultiBitController controller) {
-        this(controller, new Properties());
+     public MultiBitModel(BitcoinController bitcoinController) {
+        this(bitcoinController, new Properties());
     }
 
     @SuppressWarnings("deprecation")
-    public MultiBitModel(MultiBitController controller, Properties userPreferences) {
-        this.controller = controller;
+    public MultiBitModel(BitcoinController bitcoinController, Properties userPreferences) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.userPreferences = userPreferences;
 
         perWalletModelDataList = new LinkedList<PerWalletModelData>();
@@ -297,8 +301,6 @@ public class MultiBitModel {
         exchangeData2 = new ExchangeData();
         exchangeData1.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
         exchangeData2.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
- 
-        controller.setModel(this);
     }
 
     /**
@@ -516,7 +518,7 @@ public class MultiBitModel {
 
         // Wire up the controller as a wallet event listener.
         if (wallet != null) {
-            wallet.addEventListener(controller);
+            wallet.addEventListener(bitcoinController);
         }
 
         createWalletData(walletFilename);
@@ -639,7 +641,7 @@ public class MultiBitModel {
         if (!(perWalletModelData == null)) {
             ArrayList<ECKey> keyChain = perWalletModelData.getWallet().keychain;
             if (keyChain != null) {
-                MultiBitService multiBitService = controller.getMultiBitService();
+                MultiBitService multiBitService = this.bitcoinController.getMultiBitService();
                 if (multiBitService != null) {
                     NetworkParameters networkParameters = getNetworkParameters();
                     if (networkParameters != null) {
@@ -701,7 +703,7 @@ public class MultiBitModel {
             try {
                 String addressString = "";
 
-                if (controller.getMultiBitService() != null && myOutput != null) {
+                if (this.bitcoinController.getMultiBitService() != null && myOutput != null) {
                     Address toAddress = new Address(getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();
@@ -771,9 +773,9 @@ public class MultiBitModel {
                     Sha256Hash appearsInHash = iterator.next();
                     StoredBlock appearsInStoredBlock;
                     try {
-                        if (controller != null && controller.getMultiBitService() != null
-                                && controller.getMultiBitService().getBlockStore() != null) {
-                            appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
+                        if (bitcoinController != null && bitcoinController.getMultiBitService() != null
+                                && bitcoinController.getMultiBitService().getBlockStore() != null) {
+                            appearsInStoredBlock = bitcoinController.getMultiBitService().getBlockStore().get(appearsInHash);
                             Block appearsInBlock = appearsInStoredBlock.getHeader();
                             // Set the time of the block to be the time of the
                             // transaction - TODO get transaction time.
