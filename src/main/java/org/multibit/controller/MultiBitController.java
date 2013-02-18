@@ -482,7 +482,7 @@ public class MultiBitController extends BaseController<MultiBitController> imple
     @Override
     public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
         if (isOKToQuit()) {
-            ExitAction exitAction = new ExitAction(this,null);
+            ExitAction exitAction = new ExitAction(this, null);
 
             for (AbstractEventHandler theEventHandler : this.eventHandlers) {
                 theEventHandler.handleQuitEvent(exitAction);

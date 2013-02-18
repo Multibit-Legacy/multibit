@@ -61,6 +61,7 @@ import javax.swing.text.DefaultEditorKit;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.Localiser;
+import org.multibit.controller.Controller;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
@@ -110,6 +111,10 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+import javax.swing.AbstractAction;
+import org.multibit.platform.listener.GenericQuitEventListener;
+import org.multibit.platform.listener.GenericQuitResponse;
+import org.multibit.viewsystem.swing.action.AbstractExitAction;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -140,7 +145,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static final long serialVersionUID = 7621813615342923041L;
 
-    private MultiBitController controller;
+    private final MultiBitController controller;
     private MultiBitModel model;
     private Localiser localiser;
 
@@ -187,6 +192,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     private final GenericApplication application;
 
+    private final GenericQuitResponse multiBitFrameQuitResponse = new GenericQuitResponse() {
+        @Override
+        public void cancelQuit() {
+            log.debug("Quit Cancled");
+        }
+
+        @Override
+        public void performQuit() {
+            log.debug("Preformed Quit");
+        }
+    };
+    
+    final private GenericQuitEventListener quitEventListener;
+
     /**
      * the tabbed pane containing the views
      * 
@@ -232,6 +251,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application, View initialView) {
         this.controller = controller;
+        this.quitEventListener = this.controller;
+        
         this.model = controller.getModel();
         this.localiser = controller.getLocaliser();
         this.thisFrame = this;
@@ -262,15 +283,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
-        final MultiBitController finalController = controller;
-
         // TODO Examine how this fits in with the controller onQuit() event
+        // Cam: I've moved this to the quit event.
+        
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent arg0) {
-                org.multibit.viewsystem.swing.action.ExitAction exitAction = new org.multibit.viewsystem.swing.action.ExitAction(
-                        finalController, thisFrame);
-                exitAction.actionPerformed(null);
+                quitEventListener.onQuitEvent(null, multiBitFrameQuitResponse);
             }
         });
 
@@ -819,8 +838,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // Non Macs have an Exit Menu item.
             fileMenu.addSeparator();
             {
-                ExitAction exitAction = new ExitAction(this.controller, this);
-                exitAction.setMultiBitController(controller);
+                AbstractAction exitAction = new AbstractExitAction(this.controller) {
+                    
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        quitEventListener.onQuitEvent(null, multiBitFrameQuitResponse);
+                    }
+                };
+                
                 menuItem = new JMenuItem(exitAction);
             }
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -1582,8 +1607,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     @Deprecated
     public void handleQuit(ApplicationEvent event) {
-        ExitAction exitAction = new ExitAction(controller, this);
-        exitAction.actionPerformed(null);
+        throw new UnsupportedOperationException("Deprecated.");
     }
 
     @Override
