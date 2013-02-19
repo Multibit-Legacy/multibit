@@ -25,7 +25,7 @@
     <version>0.5.9beta</version>
     <name>MultiBit</name>
     <description>A Java Swing client for Bitcoin</description>
-    <url>http://www.multibit.org</url>
+    <url>https://multibit.org</url>
     <!-- Use "mvn clean package" to build the code packaged into a basic multibit.jar 
   		Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
   		to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
