@@ -7,18 +7,9 @@ Bitcoinj v0.7 features:
 + You can now specify particular peers to connect to with the 'peers' property in multibit.properties. (Use a comma separated list).
 + Fix for zero confirmation transaction vulnerability identified by Retep.
 
-XChange 1.4.0 features:
-+ More exchanges supported for currency lookup: MtGox, Bitstamp, BTC-E, CampBX, VirtEx.
-
 UI enhancements:
 + You can use Shift-ArrowUp and Shift-ArrowDown to move between wallets when the Wallets panel is selected.
-+ Wallet panels have more contrast between selected and unselected.
-+ Display less flicky when changing languages, fonts and look-and-feel.
-+ User chosen font now set properly in dialogs and Help screens.
 + Currencies in the Preferences tab now have a full description in addition to the currency code.
-
-Bug fixes:
-+ Fix for 'Transaction cannot be cast to Comparable' bug on wallet reorgs.
 
 
 12 Feb 2013 Version 0.5.8beta
