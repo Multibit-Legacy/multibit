@@ -24,6 +24,7 @@ corentingc          - French
 corn3               - Portuguese
 CD1                 - Dutch
 D4CH                - Danish
+dagrauna            - Portuguese
 damnek              - Dutch
 darpho              - Spanish
 dr-nix              - Dutch
@@ -35,6 +36,7 @@ Ermo                - Italian
 ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
+ftechx              - Arabic
 gaasje              - Dutch
 gilgilgil           - Hebrew
 grouver             - Dutch
@@ -43,6 +45,7 @@ guillo.92199        - French
 gulaschkanone       - German
 guy46               - Portuguese
 haritosh            - Hindi
+hey                 - Dutch
 Hiera               - Polish
 HostFat             - Italian
 ildubbioso          - Italian
@@ -59,6 +62,7 @@ Kishor Kumar        - Hindi
 knight22            - French
 Kupsi               - Norwegian
 kyuupichan          - Japanese
+litecoin            - Portuguese
 lophie              - Arabic 
 majdom              - Polish
 mazi                - Slovenian
@@ -82,18 +86,22 @@ robsned             - Hindi
 ronimo              - French
 samer               - Arabic
 sasha               - Russian
+SeNiels             - Dutch
 shelart             - Russian
 spiccioli           - Italian
 stlucifer           - Hindi
+SunMan              - Hindi
 techmix             - Persian
 Technomage          - Finnish
 teknomunk           - Japanese
 tengo               - Russian
 tesla               - Russian
 thaven              - Dutch
+tosR                - Slovak
 tpantlik            - Czech
 viboracecata        - Chinese Simplified
 welyoe              - Bahasa Indonesia
+will8lee            - Korean
 Wissam Idrissi      - Arabic
 Wim1441             - Dutch
 XeF6                - Turkish

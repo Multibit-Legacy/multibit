@@ -325,7 +325,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
         String[] keys = new String[] { "showPreferencesPanel.feeLabel.text", "fontChooser.fontName", "fontChooser.fontStyle",
                 "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency",
-                "showPreferencesPanel.lookAndFeel", "showPreferencesPanel.oerLabel.text" };
+                "showPreferencesPanel.lookAndFeel"  /*, "showPreferencesPanel.oerLabel.text" */ };
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
 
         GridBagConstraints constraints = new GridBagConstraints();

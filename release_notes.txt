@@ -1,5 +1,51 @@
 MultiBit release notes.
 
+19 Feb 2013 Version 0.4.21
+
+Bitcoinj v0.7 features:
++ Bloom filters now active to speed up blockchain sync (when talking to bitcoind v0.8 nodes or later).
++ You can now specify particular peers to connect to with the 'peers' property in multibit.properties. (Use a comma separated list).
++ Fix for zero confirmation transaction vulnerability identified by Retep.
+
+XChange 1.4.0 features:
++ More exchanges supported for currency lookup: MtGox, Bitstamp, BTC-E, CampBX, VirtEx.
+
+UI enhancements:
++ You can use Shift-ArrowUp and Shift-ArrowDown to move between wallets when the Wallets panel is selected.
++ Wallet panels have more contrast between selected and unselected.
++ Display less flicky when changing languages, fonts and look-and-feel.
++ User chosen font now set properly in dialogs and Help screens.
++ Currencies in the Preferences tab now have a full description in addition to the currency code.
+
+Bug fixes:
++ Fix for 'Transaction cannot be cast to Comparable' bug on wallet reorgs.
+
+
+12 Feb 2013 Version 0.5.8beta
+
+Bitcoinj v0.7 features:
++ Bloom filters now active to speed up blockchain sync (when talking to bitcoind v0.8rc1 nodes or later).
++ You can now specify particular peers to connect to with the 'peers' property in multibit.properties. (Use a comma separated list).
++ Fix for zero confirmation transaction vulnerability identified by Retep.
+
+XChange 1.4.0 features:
++ More exchanges supported for currency lookup: MtGox, Bitstamp, BTC-E, CampBX, VirtEx.
+
+UI enhancements:
++ You can use Shift-ArrowUp and Shift-ArrowDown to move between wallets when the Wallets panel is selected.
++ Wallet icon now highlighted when wallet is selected, more contrast between selected and unselected.
++ Display less flicky when changing languages, fonts and look-and-feel.
++ User chosen font now set properly in dialogs and Help screens.
+
+General:
++ No longer opens in 'local mode' - it picks up your other MultiBit wallets.
++ Removed cacheManager code - no longer supported
++ Backward compatible wallet changes (description added, minor version dropped).
++ Serialised wallets now no longer always load - you may have to use an older version of MultiBit and migrate them to protobuf format.
++ Refactoring of encryption code in response to review comments.
++ Fix for 'Transaction cannot be cast to Comparable' bug on wallet reorgs.
+
+
 11 Feb 2013 Version 0.4.20
 
 Features:
