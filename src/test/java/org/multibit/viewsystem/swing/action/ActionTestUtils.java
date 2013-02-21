@@ -7,8 +7,8 @@ import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.bitcoin.PerWalletModelData;
-import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 
 import com.google.bitcoin.core.ECKey;
@@ -50,7 +50,7 @@ public class ActionTestUtils {
              wallet.addKey(ecKey);             
          }
          
-         PerWalletModelData perWalletModelData = new PerWalletModelData();
+         WalletData perWalletModelData = new WalletData();
          perWalletModelData.setWallet(wallet);
   
          // Save the wallet to a temporary directory.
@@ -59,7 +59,7 @@ public class ActionTestUtils {
          String walletFile = multiBitDirectoryPath + File.separator + descriptor + ".wallet";
          
          // Put the wallet in the model as the active wallet.
-         perWalletModelData.setWalletInfo(new WalletInfo(walletFile, MultiBitWalletVersion.PROTOBUF_ENCRYPTED));
+         perWalletModelData.setWalletInfo(new WalletInfoData(walletFile, MultiBitWalletVersion.PROTOBUF_ENCRYPTED));
          perWalletModelData.setWalletFilename(walletFile);
          perWalletModelData.setWalletDescription(descriptor);
          
@@ -67,7 +67,7 @@ public class ActionTestUtils {
          // This also sets the timestamp fields used in file change detection.
          FileHandler fileHandler = new FileHandler(controller);
          fileHandler.savePerWalletModelData(perWalletModelData, true);
-         PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
+         WalletData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
          
          controller.getModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());         
      }

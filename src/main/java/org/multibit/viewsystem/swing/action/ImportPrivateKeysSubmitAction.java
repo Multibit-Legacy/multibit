@@ -40,7 +40,7 @@ import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
@@ -224,7 +224,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             final CharSequence walletPassword) {
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
-        PerWalletModelData perWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
@@ -246,7 +246,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      */
     private void importPrivateKeysInBackground(final Collection<PrivateKeyAndDate> privateKeyAndDateArray,
             final CharSequence walletPassword) {
-        final PerWalletModelData finalPerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
+        final WalletData finalPerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
         final ImportPrivateKeysPanel finalImportPanel = importPrivateKeysPanel;
         final BitcoinController finalBitcoinController = super.bitcoinController;
 
@@ -362,7 +362,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
                     if (performReplay) {
-                        List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+                        List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
                         perWalletModelDataList.add(finalPerWalletModelData);
                         
                         // Initialise the message shown in the SingleWalletPanel

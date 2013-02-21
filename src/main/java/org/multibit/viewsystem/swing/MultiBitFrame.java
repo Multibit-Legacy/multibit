@@ -70,7 +70,7 @@ import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.model.exchange.ExchangeModel;
@@ -1087,7 +1087,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         if (initUI) {
             // Remember and replay task and remove any listeners.
-            List<PerWalletModelData> replayPerWalletModelDataList = null;
+            List<WalletData> replayPerWalletModelDataList = null;
             if (ReplayManager.INSTANCE.getCurrentReplayTask() != null) {
                 replayPerWalletModelDataList = ReplayManager.INSTANCE.getCurrentReplayTask().getPerWalletModelDataToReplay();
             }
@@ -1382,7 +1382,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
-    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
+    public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData) {
         if (this.bitcoinController.getModel().getActiveWalletFilename() != null
                 && this.bitcoinController.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
             Message message = new Message(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "

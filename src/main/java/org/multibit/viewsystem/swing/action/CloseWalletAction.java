@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
@@ -55,7 +55,7 @@ public class CloseWalletAction extends MultiBitSubmitAction {
         
         try {
             // Close the wallet.
-            PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
+            WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
             
             // Unhook it from the PeerGroup.
             super.bitcoinController.getMultiBitService().getPeerGroup().removeWallet(perWalletModelData.getWallet());
@@ -67,7 +67,7 @@ public class CloseWalletAction extends MultiBitSubmitAction {
             // Work out which wallet to select after the wallet is removed.
             String activeWalletFilename = perWalletModelData.getWalletFilename();
             
-            List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
             int numberOfOpenWalletsBefore = perWalletModelDataList.size();
             int positionInList = -1;
             for (int i = 0; i < numberOfOpenWalletsBefore; i++) {
@@ -97,7 +97,7 @@ public class CloseWalletAction extends MultiBitSubmitAction {
             
             // Set the new Wallet to be the active wallet.
             if (!this.bitcoinController.getModel().getPerWalletModelDataList().isEmpty()) {
-                PerWalletModelData firstPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataList().get(newWalletToSelect);
+                WalletData firstPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataList().get(newWalletToSelect);
                 this.bitcoinController.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
             } else {
                 // No wallets are selected.

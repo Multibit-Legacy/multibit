@@ -64,7 +64,7 @@ import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.exchange.ExchangeModel;
@@ -234,11 +234,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                 controller.getModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
         showBitcoinConvertedToFiat.setSelected(originalShowBitcoinConvertedToFiat);
 
-        String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
             sendFeeString = controller.getLocaliser()
-                    .bitcoinValueToStringNotLocalised(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+                    .bitcoinValueToStringNotLocalised(BitcoinModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
 
@@ -253,8 +253,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         }
         feeTextField.setText(sendFeeStringLocalised);
 
-        String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        String useUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+        String showDialogString = controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG);
+        String useUriString = controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_USE_URI);
 
         if (!(Boolean.FALSE.toString().equalsIgnoreCase(showDialogString))) {
             // missing showDialog or it is set to true
@@ -612,10 +612,10 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         feeLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip")));
         MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
 
-        String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            sendFeeString = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
 

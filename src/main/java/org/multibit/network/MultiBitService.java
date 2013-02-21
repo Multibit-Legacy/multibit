@@ -42,10 +42,10 @@ import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.StatusEnum;
-import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.ReplayableBlockStore;
 import org.multibit.store.WalletVersionException;
@@ -153,7 +153,7 @@ public class MultiBitService {
      *            MutliBitController
      */
     public MultiBitService(BitcoinController bitcoinController) {
-        this(bitcoinController.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), bitcoinController);
+        this(bitcoinController.getModel().getUserPreference(BitcoinModel.WALLET_FILENAME), bitcoinController);
     }
 
     /**
@@ -316,8 +316,8 @@ public class MultiBitService {
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
         boolean peersSpecified = false;
-        String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
-        String peers = controller.getModel().getUserPreference(MultiBitModel.PEERS);
+        String singleNodeConnection = controller.getModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
+        String peers = controller.getModel().getUserPreference(BitcoinModel.PEERS);
         if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
             try {
                 peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection.trim())));
@@ -360,9 +360,9 @@ public class MultiBitService {
 
         // Add all existing wallets to the PeerGroup.
         if (controller != null && controller.getModel() != null) {
-            List<PerWalletModelData> perWalletDataModels = this.bitcoinController.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletDataModels = this.bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletDataModels != null) {
-                for (PerWalletModelData perWalletDataModel : perWalletDataModels) {
+                for (WalletData perWalletDataModel : perWalletDataModels) {
                     if (perWalletDataModel != null && perWalletDataModel.getWallet() != null) {
                         peerGroup.addWallet(perWalletDataModel.getWallet());
                     }
@@ -389,8 +389,8 @@ public class MultiBitService {
      * @param walletFilename
      * @return perWalletModelData
      */
-    public PerWalletModelData addWalletFromFilename(String walletFilename) throws IOException {
-        PerWalletModelData perWalletModelDataToReturn = null;
+    public WalletData addWalletFromFilename(String walletFilename) throws IOException {
+        WalletData perWalletModelDataToReturn = null;
 
         File walletFile = null;
         boolean walletFileIsADirectory = false;
@@ -438,7 +438,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet, walletFile.getAbsolutePath());
 
                 // Create a wallet info.
-                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), MultiBitWalletVersion.PROTOBUF);
+                WalletInfoData walletInfo = new WalletInfoData(walletFile.getAbsolutePath(), MultiBitWalletVersion.PROTOBUF);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // Set a default description.
@@ -468,7 +468,7 @@ public class MultiBitService {
                     perWalletModelDataToReturn = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                 }
                 if (perWalletModelDataToReturn != null) {
-                    WalletInfo walletInfo = perWalletModelDataToReturn.getWalletInfo();
+                    WalletInfoData walletInfo = perWalletModelDataToReturn.getWalletInfo();
                     if (walletInfo != null) {
                         for (ECKey key : keys) {
                             if (key != null) {
@@ -529,8 +529,8 @@ public class MultiBitService {
 
         // Hook up the wallets to the new blockchain.
         if (blockChain != null) {
-            List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 blockChain.addWallet(loopPerWalletModelData.getWallet());
             }
         }  
@@ -568,7 +568,7 @@ public class MultiBitService {
      * @throws EncrypterDecrypterException
      */
 
-    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee,
+    public Transaction sendCoins(WalletData perWalletModelData, String sendAddressString, String amount, BigInteger fee,
             CharSequence password) throws java.io.IOException, AddressFormatException, KeyCrypterException {
         // Send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
@@ -604,10 +604,10 @@ public class MultiBitService {
 
             try {
                 // Notify other wallets of the send (it might be a send to or from them).
-                List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+                List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
 
                 if (perWalletModelDataList != null) {
-                    for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                    for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                         if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
                             Wallet loopWallet = loopPerWalletModelData.getWallet();
                             if (loopWallet.isPendingTransactionRelevant(sendTransaction)) {
