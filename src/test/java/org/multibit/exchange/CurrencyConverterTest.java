@@ -29,7 +29,7 @@ import org.multibit.CreateControllers;
 import org.multibit.Localiser;
 import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.exchange.ExchangeModel;
 
 public class CurrencyConverterTest extends TestCase {

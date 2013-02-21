@@ -49,7 +49,7 @@ import javax.swing.SwingConstants;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
@@ -863,7 +863,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
             }
             String defaultFileName = fileChooser.getCurrentDirectory().getAbsoluteFile() + File.separator
                     + controller.getLocaliser().getString("saveWalletAsView.untitled") + "."
-                    + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
+                    + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION;
             fileChooser.setSelectedFile(new File(defaultFileName));
         }
 
@@ -875,8 +875,8 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                 outputFilename = file.getAbsolutePath();
 
                 // add a key suffix if not present
-                if (!outputFilename.endsWith("." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION)) {
-                    outputFilename = outputFilename + "." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
+                if (!outputFilename.endsWith("." + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION)) {
+                    outputFilename = outputFilename + "." + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION;
                 }
                 
                 walletFilenameForChosenOutputFilename = this.bitcoinController.getModel().getActiveWalletFilename(); 
@@ -926,7 +926,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         
         int suffixSeparator = walletFilename.lastIndexOf(".");
         String stem = walletFilename.substring(0, suffixSeparator + 1);
-        String defaultKeyFilename = stem + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
+        String defaultKeyFilename = stem + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION;
         return defaultKeyFilename;
     }
 

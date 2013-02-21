@@ -33,7 +33,7 @@ import javax.swing.JPanel;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
@@ -236,7 +236,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
             setFileChooserFont(new Container[] {this});
         }
 
-        String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+        String showDialogString = controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG);
        
         if (!(Boolean.FALSE.toString().equalsIgnoreCase(showDialogString))) {
             // missing showDialog or it is set to true
@@ -283,17 +283,17 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
     // BitcoinFormDataProvider methods
     @Override
     public String getAddress() {
-        return controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
+        return controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_ADDRESS);
     }
 
     @Override
     public String getLabel() {
-        return controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
+        return controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_LABEL);
     }
 
     @Override
     public String getAmount() {
-        return controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
+        return controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_AMOUNT);
     }
 
     // ShowUriDialogDataProvider method

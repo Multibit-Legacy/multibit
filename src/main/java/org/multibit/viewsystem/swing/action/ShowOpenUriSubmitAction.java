@@ -22,8 +22,8 @@ import javax.swing.Action;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -67,7 +67,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent event) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -85,24 +85,24 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             boolean showDialog = dataProvider.isShowUriDialog();
 
             if (sendAddress != null) {
-                this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
+                this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, sendAddress);
             }
             if (sendLabel != null) {
-                this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, sendLabel);
+                this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_LABEL, sendLabel);
             }
             if (sendAmount != null) {
-                this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, sendAmount);
+                this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_AMOUNT, sendAmount);
             }
             
             // we want the send view to paste in the send data
-            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
+            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "true");
 
             // we want to set the user preference to use the uri as the user
             // clicked yes
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "true");
+            controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_USE_URI, "true");
 
             // save as user preference whether to show dialog or not
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, (new Boolean(showDialog)).toString());
+            controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, (new Boolean(showDialog)).toString());
 
             showOpenUriDialog.setVisible(false);
             controller.displayView(View.SEND_BITCOIN_VIEW);

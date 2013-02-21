@@ -30,7 +30,7 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;
@@ -88,7 +88,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
         Date resetDate = resetTransactionsDataProvider.getResetDate();
 
-        PerWalletModelData activePerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
+        WalletData activePerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
         log.debug("RT Ping 3");
 
         Date actualResetDate = null;
@@ -150,7 +150,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
-        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
@@ -178,7 +178,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                 Boolean successMeasure = Boolean.FALSE;
 
                 log.debug("Starting replay from date = " + resetDate);
-                List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+                List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
                 perWalletModelDataList.add(bitcoinController.getModel().getActivePerWalletModelData());
 
                 // Initialise the message in the SingleWalletPanel.

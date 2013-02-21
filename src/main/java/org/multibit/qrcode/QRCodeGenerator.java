@@ -37,7 +37,7 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
@@ -106,7 +106,7 @@ public class QRCodeGenerator {
                     bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
                 }
             }
-            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "false");
         } catch (IllegalArgumentException e) {
             //log.warn("The address '" + address + "' could not be converted to a bitcoin address. (IAE)");
             return null;
