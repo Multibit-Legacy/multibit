@@ -27,7 +27,7 @@ import java.util.Collection;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
 import org.multibit.model.Model;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;

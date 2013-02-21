@@ -29,7 +29,7 @@ import org.multibit.controller.core.CoreController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.core.CoreModel;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.exchange.ExchangeModel;
 
 /**
@@ -67,7 +67,7 @@ public class CreateControllers {
         final ExchangeController exchangeController = new ExchangeController(coreController);
         
         final CoreModel coreModel = new CoreModel();
-        final MultiBitModel multiBitModel = new MultiBitModel(coreModel);
+        final BitcoinModel multiBitModel = new BitcoinModel(coreModel);
         final ExchangeModel exchangeModel = new ExchangeModel(coreModel);
         
         coreController.setLocaliser((null != localiser) ? localiser : new Localiser(Locale.ENGLISH));

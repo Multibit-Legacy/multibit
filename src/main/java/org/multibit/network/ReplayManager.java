@@ -31,7 +31,7 @@ import java.util.UUID;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,9 +89,9 @@ public enum ReplayManager {
         }
 
         // Mark the wallets as busy and set the replay task uuid into the model
-        List<PerWalletModelData> perWalletModelDataList = replayTask.getPerWalletModelDataToReplay();
+        List<WalletData> perWalletModelDataList = replayTask.getPerWalletModelDataToReplay();
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+            for (WalletData perWalletModelData : perWalletModelDataList) {
                 perWalletModelData.setBusy(true);
                 perWalletModelData.setBusyTaskKey("multiBitDownloadListener.downloadingText");
                 perWalletModelData.setBusyTaskVerbKey("multiBitDownloadListener.downloadingTextShort");
@@ -159,11 +159,11 @@ public enum ReplayManager {
         log.debug("Blockchain download started.");
     }
     
-    public void addDownloadListeners(List<PerWalletModelData> perWalletModelDataList) {
+    public void addDownloadListeners(List<WalletData> perWalletModelDataList) {
         PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
         if (peerGroup instanceof MultiBitPeerGroup) {
             if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                for (WalletData perWalletModelData : perWalletModelDataList) {
                     if (perWalletModelData.getSingleWalletDownloadListener() != null) {
                         ((MultiBitPeerGroup) peerGroup).getMultiBitDownloadListener().addSingleWalletPanelDownloadListener(
                                 perWalletModelData.getSingleWalletDownloadListener());
@@ -173,11 +173,11 @@ public enum ReplayManager {
         }
     }
 
-    public void removeDownloadListeners(List<PerWalletModelData> perWalletModelDataList) {
+    public void removeDownloadListeners(List<WalletData> perWalletModelDataList) {
         PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
         if (peerGroup instanceof MultiBitPeerGroup) {
             if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                for (WalletData perWalletModelData : perWalletModelDataList) {
                     if (perWalletModelData.getSingleWalletDownloadListener() != null) {
                         ((MultiBitPeerGroup) peerGroup).getMultiBitDownloadListener().removeDownloadListener(
                                 perWalletModelData.getSingleWalletDownloadListener());
@@ -235,7 +235,7 @@ public enum ReplayManager {
             String waitingText = "singleWalletPanel.waiting.text";
             String waitingVerb = "singleWalletPanel.waiting.verb";
             
-            for (PerWalletModelData perWalletModelData : replayTask.getPerWalletModelDataToReplay()) {
+            for (WalletData perWalletModelData : replayTask.getPerWalletModelDataToReplay()) {
                 if (perWalletModelData != null) {
                     perWalletModelData.setBusy(true);
                     perWalletModelData.setBusyTaskVerbKey(waitingVerb);
@@ -276,9 +276,9 @@ public enum ReplayManager {
         try {
             if (currentTask != null) {
                 // This task is complete. Inform the UI.
-                List<PerWalletModelData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
+                List<WalletData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
                 if (perWalletModelDataList != null) {
-                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    for (WalletData perWalletModelData : perWalletModelDataList) {
                         perWalletModelData.setBusyTaskVerbKey(null);
                         perWalletModelData.setBusyTaskKey(null);
                         perWalletModelData.setBusy(false);
@@ -313,15 +313,15 @@ public enum ReplayManager {
      * @return the waiting ReplayTask or null if there is not one.
      */
     @SuppressWarnings("unchecked")
-    public ReplayTask getWaitingReplayTask(PerWalletModelData perWalletModelData) {
+    public ReplayTask getWaitingReplayTask(WalletData perWalletModelData) {
         synchronized (replayTaskQueue) {
             if (replayTaskQueue.isEmpty()) {
                 return null;
             } else {
                 for (ReplayTask replayTask : (List<ReplayTask>)replayTaskQueue) {
-                    List<PerWalletModelData> list = replayTask.getPerWalletModelDataToReplay();
+                    List<WalletData> list = replayTask.getPerWalletModelDataToReplay();
                     if (list != null) {
-                        for (PerWalletModelData item : list) {
+                        for (WalletData item : list) {
                             if (perWalletModelData.getWalletFilename().equals(item.getWalletFilename())) {
                                 return replayTask;
                             }

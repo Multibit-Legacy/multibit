@@ -40,9 +40,9 @@ import javax.swing.event.ChangeListener;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.AddressBookData;
-import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletAddressBookData;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -98,16 +98,16 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
  
     @Override
     public String getAddressConstant() {
-        return MultiBitModel.RECEIVE_ADDRESS;
+        return BitcoinModel.RECEIVE_ADDRESS;
     }
     
     @Override
     public String getLabelConstant() {
-        return MultiBitModel.RECEIVE_LABEL;
+        return BitcoinModel.RECEIVE_LABEL;
     }
     @Override
     public String getAmountConstant() {
-        return MultiBitModel.RECEIVE_AMOUNT;
+        return BitcoinModel.RECEIVE_AMOUNT;
     }
     
     /**
@@ -379,10 +379,10 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
     @Override
     public void loadForm() {
         // get the current address, label and amount from the model
-        String address = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
-        String label = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_LABEL);
+        String address = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.RECEIVE_ADDRESS);
+        String label = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.RECEIVE_LABEL);
 
-        String amountNotLocalised = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_AMOUNT);
+        String amountNotLocalised = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.RECEIVE_AMOUNT);
 
         if (amountBTCTextField != null) {
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
@@ -410,7 +410,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         if (address == null || address == "") {
             pickFirstReceivingAddress = true;
         } else {
-            WalletInfo addressBook = this.bitcoinController.getModel().getActiveWalletWalletInfo();
+            WalletInfoData addressBook = this.bitcoinController.getModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
                 if (!addressBook.containsReceivingAddress(address)) {
                     pickFirstReceivingAddress = true;
@@ -419,17 +419,17 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         }
 
         if (pickFirstReceivingAddress) {
-            WalletInfo addressBook = this.bitcoinController.getModel().getActiveWalletWalletInfo();
+            WalletInfoData addressBook = this.bitcoinController.getModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
-                ArrayList<AddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
+                ArrayList<WalletAddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
                 if (receivingAddresses != null) {
                     if (receivingAddresses.iterator().hasNext()) {
-                        AddressBookData addressBookData = receivingAddresses.iterator().next();
+                        WalletAddressBookData addressBookData = receivingAddresses.iterator().next();
                         if (addressBookData != null) {
                             address = addressBookData.getAddress();
                             label = addressBookData.getLabel();
-                            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
-                            this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
+                            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.RECEIVE_ADDRESS, address);
+                            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.RECEIVE_LABEL, label);
                         }
                     }
                 }

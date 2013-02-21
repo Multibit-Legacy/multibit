@@ -34,8 +34,8 @@ import org.multibit.Localiser;
 import org.multibit.CreateControllers;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.bitcoin.PerWalletModelData;
-import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,8 +111,8 @@ public class ReplayManagerTest extends TestCase {
             log.debug("replayPrivateKey getCreationTimeSeconds = " + replayKey.getCreationTimeSeconds());
             
             replayWallet.addKey(replayKey);
-            PerWalletModelData perWalletModelData = new PerWalletModelData();
-            perWalletModelData.setWalletInfo(new WalletInfo(replayWalletPath, MultiBitWalletVersion.PROTOBUF));
+            WalletData perWalletModelData = new WalletData();
+            perWalletModelData.setWalletInfo(new WalletInfoData(replayWalletPath, MultiBitWalletVersion.PROTOBUF));
             perWalletModelData.setWallet(replayWallet);
             perWalletModelData.setWalletFilename(replayWalletPath);
             perWalletModelData.setWalletDescription("testReplayManagerSyncSingleWallet test");
@@ -123,7 +123,7 @@ public class ReplayManagerTest extends TestCase {
 
             log.debug("Replaying blockchain");    
             // Create a ReplayTask to replay the replay wallet from the START_OF_REPLAY_PERIOD.
-            List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+            List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
             perWalletModelDataList.add(perWalletModelData);
             
             ReplayTask replayTask = new ReplayTask(perWalletModelDataList, formatter.parse(START_OF_REPLAY_PERIOD), ReplayTask.UNKNOWN_START_HEIGHT);

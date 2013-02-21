@@ -39,7 +39,7 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.exchange.ExchangeModel;
@@ -108,12 +108,12 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
                 String previousSendFee = dataProvider.getPreviousSendFee();
                 String newSendFee = dataProvider.getNewSendFee();
-                controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_SEND_FEE, previousSendFee);
+                controller.getModel().setUserPreference(BitcoinModel.PREVIOUS_SEND_FEE, previousSendFee);
 
                 // Check fee is set.
                 if (newSendFee == null || "".equals(newSendFee)) {
                     // Fee must be set validation error.
-                    controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                    controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                     feeValidationError = true;
                     updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.aFeeMustBeSet");
                 }
@@ -122,7 +122,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                     if (newSendFee.startsWith(ShowPreferencesPanel.UNPARSEABLE_FEE)) {
                         String newSendFeeTrimmed = newSendFee.substring(ShowPreferencesPanel.UNPARSEABLE_FEE.length() + 1);
                         // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                         feeValidationError = true;
                         updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
                                 new Object[] { newSendFeeTrimmed });
@@ -135,29 +135,29 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                         BigInteger feeAsBigInteger = Utils.toNanoCoins(newSendFee);
 
                         // Check fee is at least the minimum fee.
-                        if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MINIMUM_FEE) < 0) {
+                        if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
                             feeValidationError = true;
                             updateStatusText = controller.getLocaliser().getString(
                                     "showPreferencesPanel.feeCannotBeSmallerThanMinimumFee");
                         } else {
-                            if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MAXIMUM_FEE) >= 0) {
+                            if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
                                 feeValidationError = true;
                                 updateStatusText = controller.getLocaliser().getString(
                                         "showPreferencesPanel.feeCannotBeGreaterThanMaximumFee");
                             } else {
                                 // Fee is ok.
-                                controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, newSendFee);
+                                controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, newSendFee);
                             }
                         }
                     } catch (NumberFormatException nfe) {
                         // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                         feeValidationError = true;
                         updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
                                 new Object[] { newSendFee });
                     } catch (ArithmeticException ae) {
                         // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                         feeValidationError = true;
                         updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
                                 new Object[] { newSendFee });
@@ -178,13 +178,13 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             // Open URI - use dialog.
             String openUriDialog = dataProvider.getOpenUriDialog();
             if (openUriDialog != null) {
-                controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, openUriDialog);
+                controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, openUriDialog);
             }
 
             // Open URI - use URI.
             String openUriUseUri = dataProvider.getOpenUriUseUri();
             if (openUriUseUri != null) {
-                controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, openUriUseUri);
+                controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_USE_URI, openUriUseUri);
             }
 
             // Font data.

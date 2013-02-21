@@ -48,7 +48,7 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.network.MultiBitDownloadListener;
 import org.multibit.network.ReplayManager;
@@ -78,7 +78,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 5);
     private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(5, 5);
 
-    private PerWalletModelData perWalletModelData;
+    private WalletData perWalletModelData;
 
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
     private static final int COLOR_DELTA = 24;
@@ -131,7 +131,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     
     private double lastSyncPercent;
           
-    public SingleWalletPanel(PerWalletModelData perWalletModelData, final BitcoinController bitcoinController, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
+    public SingleWalletPanel(WalletData perWalletModelData, final BitcoinController bitcoinController, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
@@ -558,7 +558,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         requestFocusInWindow();
     }
 
-    public PerWalletModelData getPerWalletModelData() {
+    public WalletData getPerWalletModelData() {
         return perWalletModelData;
     }
 
