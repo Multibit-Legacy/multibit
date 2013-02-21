@@ -31,7 +31,7 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -171,7 +171,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
-        PerWalletModelData perWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
@@ -197,7 +197,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      */
     private void exportPrivateKeysInBackground(final File exportPrivateKeysFile, final boolean performEncryptionOfExportFile,
             final CharSequence exportPasswordToUse, final CharSequence walletPassword) {
-        final PerWalletModelData finalPerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
+        final WalletData finalPerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
         final ExportPrivateKeysPanel finalExportPanel = exportPrivateKeysPanel;
         
         final BitcoinController finalBitcoinController = super.bitcoinController;

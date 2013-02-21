@@ -15,10 +15,10 @@
  */
 package org.multibit.file;
 
-import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.WalletInfoData;
 
 /**
- * <p>Exception to provide the following to {@link WalletInfo}:</p>
+ * <p>Exception to provide the following to {@link WalletInfoData}:</p>
  * <ul>
  * <li>Provision of wallet saving messages</li>
  * </ul>

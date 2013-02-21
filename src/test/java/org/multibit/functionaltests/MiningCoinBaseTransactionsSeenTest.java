@@ -32,8 +32,8 @@ import org.multibit.Constants;
 import org.multibit.CreateControllers;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.bitcoin.PerWalletModelData;
-import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.network.MultiBitService;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
@@ -111,8 +111,8 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             DumpedPrivateKey miningPrivateKey = new DumpedPrivateKey(NetworkParameters.prodNet(), MINING_PRIVATE_KEY);
 
             miningWallet.keychain.add(miningPrivateKey.getKey());
-            PerWalletModelData perWalletModelData = new PerWalletModelData();
-            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath, MultiBitWalletVersion.PROTOBUF));
+            WalletData perWalletModelData = new WalletData();
+            perWalletModelData.setWalletInfo(new WalletInfoData(miningWalletPath, MultiBitWalletVersion.PROTOBUF));
             perWalletModelData.setWallet(miningWallet);
             perWalletModelData.setWalletFilename(miningWalletPath);
             perWalletModelData.setWalletDescription("testReplayMiningTransaction test");
@@ -168,7 +168,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // Force save the wallet, reload it and check the transaction is still coinbase.
             controllers.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
             
-            PerWalletModelData rebornPerWalletModelData = controllers.bitcoinController.getFileHandler().loadFromFile(new File(miningWalletPath));
+            WalletData rebornPerWalletModelData = controllers.bitcoinController.getFileHandler().loadFromFile(new File(miningWalletPath));
             assertNotNull("No reborn perWalletModelData", rebornPerWalletModelData);;
             assertNotNull("No reborn wallet", rebornPerWalletModelData.getWallet());
 

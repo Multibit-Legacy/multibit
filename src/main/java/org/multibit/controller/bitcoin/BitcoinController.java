@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.List;
 import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
@@ -80,7 +80,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
     /**
      * The data model backing the views.
      */
-    private MultiBitModel model;
+    private BitcoinModel model;
 
     /**
      * Used for testing only.
@@ -97,11 +97,11 @@ public class BitcoinController extends AbstractController<CoreController> implem
     }
     
     @Override
-    public MultiBitModel getModel() {
+    public BitcoinModel getModel() {
         return model;
     }
 
-    public void setModel(MultiBitModel model) {
+    public void setModel(BitcoinModel model) {
         this.model = model;
     }
     
@@ -120,15 +120,15 @@ public class BitcoinController extends AbstractController<CoreController> implem
      *
      * @return The model data
      */
-    public PerWalletModelData addWalletFromFilename(String walletFilename) throws IOException {
-        PerWalletModelData perWalletModelDataToReturn = null;
+    public WalletData addWalletFromFilename(String walletFilename) throws IOException {
+        WalletData perWalletModelDataToReturn = null;
         if (multiBitService != null) {
             perWalletModelDataToReturn = multiBitService.addWalletFromFilename(walletFilename);
         }
         return perWalletModelDataToReturn;
     }
 
-    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
+    public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData) {
         //log.debug("fireFilesHaveBeenChangedByAnotherProcess called");
         for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
@@ -180,7 +180,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
         }
         // log.debug("onWalletChanged called");
         final int walletIdentityHashCode = System.identityHashCode(wallet);
-        for (PerWalletModelData loopPerWalletModelData : getModel().getPerWalletModelDataList()) {
+        for (WalletData loopPerWalletModelData : getModel().getPerWalletModelDataList()) {
             // Find the wallet object and mark as dirty.
             if (System.identityHashCode(loopPerWalletModelData.getWallet()) == walletIdentityHashCode) {
                 loopPerWalletModelData.setDirty(true);
@@ -207,8 +207,8 @@ public class BitcoinController extends AbstractController<CoreController> implem
     @Override
     public void onReorganize(Wallet wallet) {
         log.debug("onReorganize called");
-        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+        List<WalletData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        for (WalletData loopPerWalletModelData : perWalletModelDataList) {
             if (loopPerWalletModelData.getWallet().equals(wallet)) {
                 loopPerWalletModelData.setDirty(true);
                 log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
@@ -235,8 +235,8 @@ public class BitcoinController extends AbstractController<CoreController> implem
         log.debug("handleOpenURI called and rawBitcoinURI ='" + this.eventHandeler.rawBitcoinURI + "'");
 
         // get the open URI configuration information
-        String showOpenUriDialogText = getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        String useUriText = getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+        String showOpenUriDialogText = getModel().getUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG);
+        String useUriText = getModel().getUserPreference(BitcoinModel.OPEN_URI_USE_URI);
 
         if (Boolean.FALSE.toString().equalsIgnoreCase(useUriText)
                 && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
@@ -286,21 +286,21 @@ public class BitcoinController extends AbstractController<CoreController> implem
         if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
             // Do not show confirm dialog - go straight to send view.
             // Populate the model with the URI data.
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
+            getModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, address);
+            getModel().setActiveWalletPreference(BitcoinModel.SEND_LABEL, label);
+            getModel().setActiveWalletPreference(BitcoinModel.SEND_AMOUNT, amount);
+            getModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "true");
             log.debug("Routing straight to send view for address = " + address);
 
-            getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
+            getModel().setUserPreference(BitcoinModel.BRING_TO_FRONT, "true");
             displayView(View.SEND_BITCOIN_VIEW);
             return;
         } else {
             // Show the confirm dialog to see if the user wants to use URI.
             // Populate the model with the URI data.
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
+            getModel().setUserPreference(BitcoinModel.OPEN_URI_ADDRESS, address);
+            getModel().setUserPreference(BitcoinModel.OPEN_URI_LABEL, label);
+            getModel().setUserPreference(BitcoinModel.OPEN_URI_AMOUNT, amount);
             log.debug("Routing to show open uri view for address = " + address);
 
             displayView(View.SHOW_OPEN_URI_DIALOG_VIEW);

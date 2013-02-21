@@ -23,7 +23,7 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,10 +63,10 @@ public class FileChangeTimerTask extends TimerTask {
     public void run() {
         log.debug("Start of FileChangeTimerTask - run - enable = " + enable);
         if (enable) {
-            List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
 
             if (perWalletModelDataList != null) {
-                for (PerWalletModelData loopModelData : perWalletModelDataList) {
+                for (WalletData loopModelData : perWalletModelDataList) {
                     if (this.bitcoinController.getFileHandler() != null) {
                         // See if the files have been changed by another process
                         // (non MultiBit).

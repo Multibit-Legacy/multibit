@@ -37,8 +37,8 @@ import javax.swing.event.ChangeListener;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.AddressBookData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletAddressBookData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -104,17 +104,17 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
     @Override
     public String getAddressConstant() {
-        return MultiBitModel.SEND_ADDRESS;
+        return BitcoinModel.SEND_ADDRESS;
     }
 
     @Override
     public String getLabelConstant() {
-        return MultiBitModel.SEND_LABEL;
+        return BitcoinModel.SEND_LABEL;
     }
 
     @Override
     public String getAmountConstant() {
-        return MultiBitModel.SEND_AMOUNT;
+        return BitcoinModel.SEND_AMOUNT;
     }
 
     /**
@@ -364,9 +364,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     @Override
     public void loadForm() {
         // get the current address, label and amount from the model
-        String address = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        String label = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        String amountNotLocalised = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
+        String address = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
+        String label = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
+        String amountNotLocalised = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_AMOUNT);
 
         if (amountBTCTextField != null) {
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
@@ -400,12 +400,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
         // if there is a pending 'handleopenURI' that needs pasting into the
         // send form, do it
-        String performPasteNow = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW);
+        String performPasteNow = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW);
         if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
             try {
                 Address decodeAddress = new Address(this.bitcoinController.getModel().getNetworkParameters(), address);
                 processDecodedString(com.google.bitcoin.uri.BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amountNotLocalised), label, null), null);
-                this.bitcoinController.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+                this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "false");
                 sendButton.requestFocusInWindow();
 
                 mainFrame.bringToFront();
@@ -415,7 +415,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
         }
     }
 
-    public void setAddressBookDataByRow(AddressBookData addressBookData) {
+    public void setAddressBookDataByRow(WalletAddressBookData addressBookData) {
         addressTextField.setText(addressBookData.getAddress());
         addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRowModel, false);
     }
@@ -432,9 +432,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
         labelTextArea.setBorder(aTextField.getBorder());
 
-        String bringToFront = controller.getModel().getUserPreference(MultiBitModel.BRING_TO_FRONT);
+        String bringToFront = controller.getModel().getUserPreference(BitcoinModel.BRING_TO_FRONT);
         if (Boolean.TRUE.toString().equals(bringToFront)) {
-            controller.getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "false");
+            controller.getModel().setUserPreference(BitcoinModel.BRING_TO_FRONT, "false");
             mainFrame.bringToFront();
         }
 

@@ -37,8 +37,8 @@ import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
@@ -193,11 +193,11 @@ public class OpenWalletAction extends AbstractAction {
                     } else {
                         log.error(message);
                         MessageManager.INSTANCE.addMessage(new Message(message));
-                        PerWalletModelData loopData = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(selectedWalletFilenameFinal);
+                        WalletData loopData = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(selectedWalletFilenameFinal);
                         if (loopData != null) {
                             // Clear the backup wallet filename - this prevents it being automatically overwritten.
                             if (loopData.getWalletInfo() != null) {
-                                loopData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                                loopData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, "");
                             }
                         }
                     }

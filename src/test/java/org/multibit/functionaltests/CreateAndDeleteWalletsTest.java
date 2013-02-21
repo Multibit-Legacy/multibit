@@ -91,7 +91,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             String test1WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest1.wallet";
             String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest2.wallet";
 
-            // initially there is a blank PerWalletModelData
+            // initially there is a blank WalletData
             assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
             // create test1 wallet

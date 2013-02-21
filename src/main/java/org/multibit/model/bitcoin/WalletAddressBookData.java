@@ -19,11 +19,11 @@ package org.multibit.model.bitcoin;
  * class used to store the data in the table in a quick to access form
  */
 @SuppressWarnings("rawtypes")
-public class AddressBookData implements Comparable {
+public class WalletAddressBookData implements Comparable {
     String label;
     String address;
 
-    public AddressBookData(String label, String address) {
+    public WalletAddressBookData(String label, String address) {
         this.label = label;
         this.address = address;
     }
@@ -48,7 +48,7 @@ public class AddressBookData implements Comparable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        AddressBookData other = (AddressBookData) obj;
+        WalletAddressBookData other = (WalletAddressBookData) obj;
         if (address == null) {
             if (other.address != null) {
                 return false;
@@ -73,8 +73,8 @@ public class AddressBookData implements Comparable {
 
     @Override
     public int compareTo(Object other) {
-        if (other instanceof AddressBookData) {
-            return (label + "").compareTo(((AddressBookData)other).label);
+        if (other instanceof WalletAddressBookData) {
+            return (label + "").compareTo(((WalletAddressBookData)other).label);
         } else {
             return 0;
         }

@@ -44,7 +44,7 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -144,7 +144,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         
         // Get the wallets from the model.
         String activeWalletFilename = this.bitcoinController.getModel().getActiveWalletFilename();
-        PerWalletModelData activePerModelData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
+        WalletData activePerModelData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
 
         if (activePerModelData != null && DisplayHint.COMPLETE_REDRAW == displayHint) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
@@ -216,7 +216,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // Get the wallets from the model.
-        List<PerWalletModelData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+        List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -230,7 +230,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
         if (perWalletModelDataList != null) {
             synchronized (walletPanels) {
-                for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     if (loopPerWalletModelData.getWallet() != null) {
                         JPanel outerPanel = new JPanel();
                         outerPanel.setOpaque(false);

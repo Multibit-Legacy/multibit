@@ -31,11 +31,11 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.AddressBookData;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletAddressBookData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
-import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -107,7 +107,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         sendBitcoinConfirmPanel.setMessageText(" ", " ");
 
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
@@ -119,20 +119,20 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 
             // Get the data out of the wallet preferences.
-            String sendAddress = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-            String sendLabel = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-            String sendAmount = this.bitcoinController.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
-            String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+            String sendAddress = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
+            String sendLabel = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
+            String sendAmount = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_AMOUNT);
+            String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
             BigInteger fee;
             if (sendFeeString == null || sendFeeString.equals("")) {
-                fee = MultiBitModel.SEND_FEE_DEFAULT;
+                fee = BitcoinModel.SEND_FEE_DEFAULT;
             } else {
                 fee = Utils.toNanoCoins(sendFeeString);
             }
 
             if (sendLabel != null && !sendLabel.equals("")) {
-                WalletInfo addressBook = perWalletModelData.getWalletInfo();
-                addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
+                WalletInfoData addressBook = perWalletModelData.getWalletInfo();
+                addressBook.addSendingAddress(new WalletAddressBookData(sendLabel, sendAddress));
             }
             
             char[] walletPassword = walletPasswordField.getPassword();
@@ -181,7 +181,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     /**
      * Send the transaction directly.
      */
-    private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, CharSequence walletPassword) {
+    private void performSend(WalletData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, CharSequence walletPassword) {
         String message = null;
         
         boolean sendWasSuccessful = Boolean.FALSE;

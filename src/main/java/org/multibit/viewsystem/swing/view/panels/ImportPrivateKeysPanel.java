@@ -53,7 +53,7 @@ import org.multibit.crypto.KeyCrypterOpenSSL;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
@@ -861,7 +861,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
             }
             String defaultFileName = fileChooser.getCurrentDirectory().getAbsoluteFile() + File.separator
                     + controller.getLocaliser().getString("saveWalletAsView.untitled") + "."
-                    + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
+                    + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION;
             fileChooser.setSelectedFile(new File(defaultFileName));
         }
 
