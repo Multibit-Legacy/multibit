@@ -21,8 +21,8 @@ import javax.swing.table.DefaultTableModel;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.bitcoin.AddressBookData;
-import org.multibit.model.bitcoin.WalletInfo;
+import org.multibit.model.bitcoin.WalletAddressBookData;
+import org.multibit.model.bitcoin.WalletInfoData;
 
 public class AddressBookTableModel extends DefaultTableModel {
 
@@ -59,7 +59,7 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (controller == null) {
             return 0;
         }
-        WalletInfo walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
+        WalletInfoData walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
         if (isReceiving) {
             if (walletInfo != null && walletInfo.getReceivingAddresses() != null) {
                 return walletInfo.getReceivingAddresses().size();
@@ -82,21 +82,21 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        WalletInfo walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
+        WalletInfoData walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
 
         if (walletInfo == null) {
             return null;
         }
 
-        ArrayList<AddressBookData> addresses;
+        ArrayList<WalletAddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
             addresses = walletInfo.getSendingAddresses();
         }
 
-        AddressBookData[] addressesArray = addresses.toArray(new AddressBookData[addresses.size()]);
-        AddressBookData addressBookData = null;
+        WalletAddressBookData[] addressesArray = addresses.toArray(new WalletAddressBookData[addresses.size()]);
+        WalletAddressBookData addressBookData = null;
         if (row >= 0 && row < addresses.size()) {
             addressBookData = addressesArray[row];
         }
@@ -136,12 +136,12 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (address == null) {
             return -1;
         }
-        WalletInfo walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
+        WalletInfoData walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return -1;
         }
 
-        ArrayList<AddressBookData> addresses;
+        ArrayList<WalletAddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
@@ -150,7 +150,7 @@ public class AddressBookTableModel extends DefaultTableModel {
 
         int row = 0;
         if (addresses != null) {
-            for (AddressBookData loopAddress : addresses) {
+            for (WalletAddressBookData loopAddress : addresses) {
                 if (loopAddress != null) {
                     if (address.equals(loopAddress.getAddress())) {
                         // select this row in the table
@@ -164,15 +164,15 @@ public class AddressBookTableModel extends DefaultTableModel {
     }
 
     /**
-     * given a row, return the AddressBookData on this row
+     * given a row, return the WalletAddressBookData on this row
      */
-    public AddressBookData getAddressBookDataByRow(int row, boolean isReceiving) {
-        WalletInfo walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
+    public WalletAddressBookData getAddressBookDataByRow(int row, boolean isReceiving) {
+        WalletInfoData walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return null;
         }
 
-        ArrayList<AddressBookData> addresses;
+        ArrayList<WalletAddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
@@ -186,15 +186,15 @@ public class AddressBookTableModel extends DefaultTableModel {
     }
 
     /**
-     * set a AddressBookData into a row
+     * set a WalletAddressBookData into a row
      */
-    public void setAddressBookDataByRow(AddressBookData addressBookData, int row, boolean isReceiving) {
-        WalletInfo walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
+    public void setAddressBookDataByRow(WalletAddressBookData addressBookData, int row, boolean isReceiving) {
+        WalletInfoData walletInfo = this.bitcoinController.getModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return;
         }
 
-        ArrayList<AddressBookData> addresses;
+        ArrayList<WalletAddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {

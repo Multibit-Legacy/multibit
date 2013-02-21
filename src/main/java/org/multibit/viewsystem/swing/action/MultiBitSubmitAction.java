@@ -7,7 +7,7 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
@@ -47,7 +47,7 @@ public abstract class MultiBitSubmitAction extends AbstractAction {
         }
 
         // check to see if another process has changed the active wallet
-        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
         
         if (haveFilesChanged) {

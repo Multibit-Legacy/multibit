@@ -42,8 +42,8 @@ import org.multibit.file.FileHandler;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.core.CoreModel;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.VersionComparator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -152,9 +152,9 @@ public enum AlertManager {
                             if (parseResult.isNewVersionIsAvailable()) {
                                 // See if we have already seen the new version.
                                 String alertManagerNewVersionValue = controller.getModel().getUserPreference(
-                                        MultiBitModel.ALERT_MANAGER_NEW_VERSION_VALUE);
+                                        BitcoinModel.ALERT_MANAGER_NEW_VERSION_VALUE);
                                 String alertManagerNewVersionSeenCount = controller.getModel().getUserPreference(
-                                        MultiBitModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT);
+                                        BitcoinModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT);
                                 int seenCount = 0;
 
                                 if (alertManagerNewVersionSeenCount != null && alertManagerNewVersionSeenCount.trim().length() > 0) {
@@ -162,7 +162,7 @@ public enum AlertManager {
                                         seenCount = Integer.parseInt(alertManagerNewVersionSeenCount);
                                     } catch (NumberFormatException nfe) {
                                         // Reset count to zero.
-                                        controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT,
+                                        controller.getModel().setUserPreference(BitcoinModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT,
                                                 "0");
                                     }
                                 }
@@ -183,11 +183,11 @@ public enum AlertManager {
                                 boolean showAlertDialog = seenCount < NUMBER_OF_TIMES_TO_REPEAT_ALERT;
 
                                 if (parseResult.getVersionOnServer() != null) {
-                                    controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_VALUE,
+                                    controller.getModel().setUserPreference(BitcoinModel.ALERT_MANAGER_NEW_VERSION_VALUE,
                                             parseResult.getVersionOnServer());
                                 }
                                 seenCount++;
-                                controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT,
+                                controller.getModel().setUserPreference(BitcoinModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT,
                                         "" + seenCount);
 
                                 ImageIcon icon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
@@ -420,7 +420,7 @@ public enum AlertManager {
         
         final Localiser localiser = new Localiser();
         final CoreModel coreModel = new CoreModel();
-        final MultiBitModel model = new MultiBitModel(coreModel);
+        final BitcoinModel model = new BitcoinModel(coreModel);
         
         controller.setLocaliser(localiser);
         controller.setModel(coreModel);
@@ -439,7 +439,7 @@ public enum AlertManager {
             // Load up the wallet containing the signing key.
             File walletFile = new File(walletLocation);
             FileHandler fileHandler = new FileHandler(bitcoinController);
-            PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+            WalletData perWalletModelData = fileHandler.loadFromFile(walletFile);
             
             // Find the private key whose Bitcoin address matches the passed in addressPrefix.
             ECKey signingKey = null;

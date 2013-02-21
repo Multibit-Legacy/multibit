@@ -42,8 +42,8 @@ import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.MultiBitCheckpointManager;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
@@ -139,12 +139,12 @@ public class OpenWalletAction extends AbstractAction {
                         // See if the wallet is already open.
                         boolean walletIsAlreadyOpen = false;
                         if (controller != null && controller.getModel() != null) {
-                            List<PerWalletModelData> perWalletDataModels = bitcoinController.getModel().getPerWalletModelDataList();
+                            List<WalletData> perWalletDataModels = bitcoinController.getModel().getPerWalletModelDataList();
                             if (perWalletDataModels != null) {
-                                Iterator<PerWalletModelData> iterator = perWalletDataModels.iterator();
+                                Iterator<WalletData> iterator = perWalletDataModels.iterator();
                                 if (iterator != null) {
                                     while(iterator.hasNext()) {
-                                        PerWalletModelData perWalletModelData = iterator.next();
+                                        WalletData perWalletModelData = iterator.next();
                                         if (perWalletModelData != null && perWalletModelData.getWalletFilename() != null) {
                                             if (perWalletModelData.getWalletFilename().equals(selectedWalletFilename)) {
                                                 walletIsAlreadyOpen = true;
@@ -236,7 +236,7 @@ public class OpenWalletAction extends AbstractAction {
                         MessageManager.INSTANCE.addMessage(messageMessage);  
                         
                         // Work out the late date/ block the wallet saw to see if it needs syncing.
-                        PerWalletModelData perWalletModelData = bitcoinController.getModel().getActivePerWalletModelData();
+                        WalletData perWalletModelData = bitcoinController.getModel().getActivePerWalletModelData();
                         Wallet wallet = perWalletModelData.getWallet();
                         int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
                         log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was " + lastBlockSeenHeight);
@@ -320,7 +320,7 @@ public class OpenWalletAction extends AbstractAction {
                                     }
                                 }
                             }
-                            List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+                            List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
                             perWalletModelDataList.add(perWalletModelData);
                             ReplayTask replayTask;
                             if (syncFromStoredBlock == null) {
@@ -339,11 +339,11 @@ public class OpenWalletAction extends AbstractAction {
                     } else {
                         log.error(message);
                         MessageManager.INSTANCE.addMessage(new Message(message));
-                        PerWalletModelData loopData = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(selectedWalletFilenameFinal);
+                        WalletData loopData = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(selectedWalletFilenameFinal);
                         if (loopData != null) {
                             // Clear the backup wallet filename - this prevents it being automatically overwritten.
                             if (loopData.getWalletInfo() != null) {
-                                loopData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                                loopData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, "");
                             }
                         }
                     }

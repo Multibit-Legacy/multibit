@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.multibit.message.Message;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 
 /**
  * A class encapsulating a request on one or more wallets to perform a
@@ -15,7 +15,7 @@ public class ReplayTask {
     
     public static final int UNKNOWN_START_HEIGHT = -1;
 
-    private final List<PerWalletModelData> perWalletModelDataToReplay;
+    private final List<WalletData> perWalletModelDataToReplay;
     
     /**
      * The start date of the replay task.
@@ -37,7 +37,7 @@ public class ReplayTask {
      */
     private long percentComplete;
        
-    public ReplayTask( List<PerWalletModelData> perWalletModelDataToReplay, Date startDate, int startHeight) {
+    public ReplayTask( List<WalletData> perWalletModelDataToReplay, Date startDate, int startHeight) {
         this.perWalletModelDataToReplay = perWalletModelDataToReplay;
         this.startDate = startDate;
         this.startHeight = startHeight;
@@ -45,7 +45,7 @@ public class ReplayTask {
         this.uuid = UUID.randomUUID();
     }
 
-    public List<PerWalletModelData> getPerWalletModelDataToReplay() {
+    public List<WalletData> getPerWalletModelDataToReplay() {
         return perWalletModelDataToReplay;
     }
 

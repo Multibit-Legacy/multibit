@@ -20,7 +20,7 @@ import javax.swing.table.AbstractTableModel;
 import org.multibit.controller.Controller;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.model.exchange.ExchangeData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.exchange.ExchangeModel;
 
 /**

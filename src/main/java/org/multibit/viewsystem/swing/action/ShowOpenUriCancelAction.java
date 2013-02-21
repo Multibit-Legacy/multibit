@@ -21,7 +21,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.Controller;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
@@ -58,15 +58,15 @@ public class ShowOpenUriCancelAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-//        Item showDialogItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+//        Item showDialogItem = dataProvider.getData().getItem(BitcoinModel.OPEN_URI_SHOW_DIALOG);
              
         if (dataProvider != null) {
             String openUriDialogAsString = (new Boolean(dataProvider.isShowUriDialog())).toString();
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, openUriDialogAsString);                
+            controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, openUriDialogAsString);                
         }
         
         // we do not want to use the uri as the user clicked cancel
-        controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "false");   
+        controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_USE_URI, "false");   
         
         showOpenUriDialog.setVisible(false);
         controller.displayView(View.TRANSACTIONS_VIEW);      

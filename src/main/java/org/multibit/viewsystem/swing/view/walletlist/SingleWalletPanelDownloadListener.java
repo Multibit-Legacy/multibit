@@ -22,7 +22,7 @@ import java.util.UUID;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.slf4j.Logger;
@@ -123,7 +123,7 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
         singleWalletPanel.setSyncMessage(downloadStatusText, 100);
 
         // Tell the replay manager this task is finished.
-        PerWalletModelData perWalletModelData = singleWalletPanel.getPerWalletModelData();
+        WalletData perWalletModelData = singleWalletPanel.getPerWalletModelData();
         if (perWalletModelData != null) {
             UUID replayTaskUUID = perWalletModelData.getReplayTaskUUID();
             if (replayTaskUUID != null) {

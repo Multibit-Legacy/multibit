@@ -43,7 +43,7 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletTableData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
@@ -493,7 +493,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private String createTransactionDescription(Transaction transaction) {
         String toReturn = "";
 
-        PerWalletModelData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
 
         if (perWalletModelData == null) {
             return toReturn;

@@ -34,8 +34,8 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.bitcoin.PerWalletModelData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.MultiBitService;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
@@ -105,7 +105,7 @@ public class GenesisBlockReplayTest extends TestCase {
 
             log.debug("Replaying blockchain from genesis block");
             //multiBitService.replayBlockChain(null);
-            List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+            List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
             perWalletModelDataList.add(controllers.bitcoinController.getModel().getActivePerWalletModelData());
             ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, 0);
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
