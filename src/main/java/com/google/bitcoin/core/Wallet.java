@@ -838,10 +838,10 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             if (diff > 0) {
                 invokeOnCoinsReceived(tx, prevBalance, newBalance);
             } else if (diff == 0) {
-                // Hack. Invoke onCoinsSent in order to let the client save the wallet. This needs to go away.
                 invokeOnCoinsSent(tx, prevBalance, newBalance);
             } else {
-                invokeOnCoinsSent(tx, prevBalance, newBalance);
+                // We have a transaction that didn't change our balance. Probably we sent coins between our own keys.
+                invokeOnWalletChanged();
             }
         }
 
@@ -1345,7 +1345,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
          * don't really control as it depends on who sent you money), and the value being sent somewhere else. The
          * change address should be selected from this wallet, normally. <b>If null this will be chosen for you.</b>
          */
-        public Address changeAddress;
+        public Address changeAddress = null;
 
         /**
          * A transaction can have a fee attached, which is defined as the difference between the input values
@@ -2464,7 +2464,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * See the docs for {@link BloomFilter#BloomFilter(int, double)} for a brief explanation of anonymity when using bloom filters.
      */
     public BloomFilter getBloomFilter(double falsePositiveRate) {
-        return getBloomFilter(getBloomFilterElementCount(), falsePositiveRate, new Random().nextLong());
+        return getBloomFilter(getBloomFilterElementCount(), falsePositiveRate, (long)(Math.random()*Long.MAX_VALUE));
     }
     
     /**

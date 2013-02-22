@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multibit</artifactId>
-    <version>0.5.9beta</version>
+    <version>0.5.9-SNAPSHOT</version>
     <name>MultiBit</name>
     <description>A Java Swing client for Bitcoin</description>
     <url>https://multibit.org</url>
@@ -711,7 +711,7 @@
         </staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
-        <bitcoinj.version>0.7.jim-SNAPSHOT</bitcoinj.version>
+        <bitcoinj.version>0.8-SNAPSHOT</bitcoinj.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
