@@ -135,7 +135,6 @@ public class ExchangeData {
             BITSTAMP_EXCHANGE_NAME,
             BTCE_EXCHANGE_NAME,
             CAMPBX_EXCHANGE_NAME,
-            OPEN_EXCHANGE_RATES_EXCHANGE_NAME,
             VIRTEX_EXCHANGE_NAME};
     }
 
