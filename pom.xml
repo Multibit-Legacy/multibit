@@ -56,6 +56,11 @@
             <snapshots/>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
+        <repository>
+            <id>sonatype-oss-snapshot2</id>
+            <snapshots/>
+            <url>https://oss.sonatype.org/content/groups/public</url>
+        </repository>
         <!-- bitcoin-j repo -->
         <repository>
             <id>bitcoinj-release</id>

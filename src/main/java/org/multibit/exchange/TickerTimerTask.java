@@ -197,23 +197,24 @@ public class TickerTimerTask extends TimerTask {
                                         log.debug("Getting loopTicker for " + loopSymbolPair.baseCurrency + " USD");
                                         loopTicker = marketDataService1.getTicker(loopSymbolPair.baseCurrency, "USD");
                                         System.out.println("loopTicker = " + loopTicker);
-                                        // Ticker btcUsdTicker = null;
-                                        // log.debug("Getting btcUsdTicker for BTC/USD");
-                                        // btcUsdTicker =
-                                        // marketDataService1.getTicker(Currencies.BTC,
-                                        // Currencies.USD);
-                                        // System.out.println("btcUsdTicker = "
-                                        // + loopTicker);
+                                        Ticker btcUsdTicker = null;
+                                        log.debug("Getting btcUsdTicker for BTC/USD");
+                                        btcUsdTicker = marketDataService1.getTicker(Currencies.BTC, Currencies.USD);
+                                        System.out.println("btcUsdTicker = " + btcUsdTicker);
                                         
-                                        BigDecimal usdBtcRate = BigDecimal.valueOf(30);
-                                        if (loopTicker.getLast() != null) {
-                                            last = loopTicker.getLast().multipliedBy(usdBtcRate);
-                                        }                                        
-                                        if (loopTicker.getBid() != null) {
-                                            bid = loopTicker.getBid().multipliedBy(usdBtcRate);
-                                        }                                        
-                                        if (loopTicker.getAsk() != null) {
-                                            ask = loopTicker.getAsk().multipliedBy(usdBtcRate);
+                                        BigMoney usdBtcRateMoney = btcUsdTicker.getLast();
+                                        BigDecimal usdBtcRate = null;
+                                        if (usdBtcRateMoney != null) {
+                                            usdBtcRate = usdBtcRateMoney.getAmount();
+                                            if (loopTicker.getLast() != null) {
+                                                last = loopTicker.getLast().dividedBy(usdBtcRate, RoundingMode.HALF_EVEN);
+                                            }
+                                            if (loopTicker.getBid() != null) {
+                                                bid = loopTicker.getBid().dividedBy(usdBtcRate, RoundingMode.HALF_EVEN);
+                                            }
+                                            if (loopTicker.getAsk() != null) {
+                                                ask = loopTicker.getAsk().dividedBy(usdBtcRate, RoundingMode.HALF_EVEN);
+                                            }
                                         }
                                     } else {
                                         log.debug("Getting ticker1 for " + loopSymbolPair.baseCurrency + " "
@@ -291,12 +292,6 @@ public class TickerTimerTask extends TimerTask {
                             }
                         }
                     }
-
-                    // Ticker ticker =
-                    // marketDataService1.getTicker(Currencies.BTC,
-                    // Currencies.USD);
-                    // System.out.println("cached Last: " +
-                    // ticker.getLast().toString());
 
                     // First currency fires exchange rate data changed - used by
                     // rest of MultiBit.
