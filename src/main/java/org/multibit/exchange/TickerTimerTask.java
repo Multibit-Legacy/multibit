@@ -16,6 +16,7 @@
 package org.multibit.exchange;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.ExchangeSpecification;
+import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
@@ -48,7 +50,7 @@ public class TickerTimerTask extends TimerTask {
 
     public static final int INITIAL_DELAY = 0; // milliseconds
     public static final int TASK_SEPARATION = 1000; // milliseconds
-    
+
     public static final int NUMBER_OF_SIGNIFICANT_DIGITS = 20;
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
@@ -61,12 +63,12 @@ public class TickerTimerTask extends TimerTask {
     private Exchange exchange1;
     private PollingMarketDataService marketDataService1;
     private List<CurrencyPair> exchangeSymbols1;
-    
+
     // Exchange dealing with the second row of the ticker
     private Exchange exchange2;
-    private PollingMarketDataService marketDataService2;    
+    private PollingMarketDataService marketDataService2;
     private List<CurrencyPair> exchangeSymbols2;
-    
+
     /**
      * Constructs the TickerTimerTask and initialises currencies of interest.
      */
@@ -83,13 +85,12 @@ public class TickerTimerTask extends TimerTask {
         Collection<String> currency1Collection = new ArrayList<String>();
         currency1Collection.add(currency1);
         controller.getModel().getExchangeData1().setCurrenciesWeAreInterestedIn(currency1Collection);
-        
+
         String currency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
         Collection<String> currency2Collection = new ArrayList<String>();
         currency2Collection.add(currency2);
         controller.getModel().getExchangeData2().setCurrenciesWeAreInterestedIn(currency2Collection);
     }
-
 
     /**
      * When the timer executes, get the exchange data and pass to the
@@ -141,74 +142,129 @@ public class TickerTimerTask extends TimerTask {
                                 String currencyConverterCurrency = currencyIterator.next();
 
                                 currencyIterator = currenciesWeAreInterestedIn.iterator();
-                                // Is the amount quoted the reciprocal of number of currency units per BTC
+                                // Is the amount quoted the reciprocal of number
+                                // of currency units per BTC
                                 boolean invertedRates = false;
-                                
-                                // Is the currency pair the other way round ie base currency = other, counter currency = BTC
-                                boolean reverseRates = ExchangeData.doesExchangeUseReverseRates(controller.getModel().getExchangeData1().getShortExchangeName());
-                                
+
+                                // Is the currency pair the other way round ie
+                                // base currency = other, counter currency = BTC
+                                boolean reverseRates = ExchangeData.doesExchangeUseReverseRates(controller.getModel()
+                                        .getExchangeData1().getShortExchangeName());
+
                                 while (currencyIterator.hasNext()) {
                                     String loopCurrency = currencyIterator.next();
-                                    if ("BTC".equals(loopSymbolPair.baseCurrency)
-                                            && loopSymbolPair.counterCurrency.equals(loopCurrency)) {
-                                        getItFromTheServer = true;
+                                    // Most exchanges quote against BTC for
+                                    // OpenExchangeRates everything is quoted
+                                    // against USD
+                                    // so we triangulate against that.
+                                    if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(controller.getModel()
+                                            .getExchangeData1().getShortExchangeName())) {
+                                        if (loopSymbolPair.baseCurrency.equals(loopCurrency)) {
+                                            getItFromTheServer = true;
+                                            invertedRates = true;
 
-                                        break;
-                                    }
-                                    if ("BTC".equals(loopSymbolPair.counterCurrency)
-                                            && loopSymbolPair.baseCurrency.equals(loopCurrency)) {
-                                        getItFromTheServer = true;
-                                        invertedRates = true;
+                                            break;
+                                        }
+                                    } else {
+                                        if ("BTC".equals(loopSymbolPair.baseCurrency)
+                                                && loopSymbolPair.counterCurrency.equals(loopCurrency)) {
+                                            getItFromTheServer = true;
 
-                                        break;
+                                            break;
+                                        }
+                                        if ("BTC".equals(loopSymbolPair.counterCurrency)
+                                                && loopSymbolPair.baseCurrency.equals(loopCurrency)) {
+                                            getItFromTheServer = true;
+                                            invertedRates = true;
+
+                                            break;
+                                        }
                                     }
                                 }
                                 if (getItFromTheServer) {
-                                    log.debug("Getting ticker1 for " + loopSymbolPair.baseCurrency + " " + loopSymbolPair.counterCurrency);
-                                    Ticker loopTicker = marketDataService1.getTicker(loopSymbolPair.baseCurrency,
-                                            loopSymbolPair.counterCurrency);
-                                    log.debug("Got ticker1 for "  + loopSymbolPair.baseCurrency + " " + loopSymbolPair.counterCurrency);
-                                    BigMoney last = loopTicker.getLast();
-                                    BigMoney bid = loopTicker.getBid();
-                                    BigMoney ask = loopTicker.getAsk();
-
                                     String currency;
-                                    if (invertedRates && !reverseRates) {
-                                        if (last != null && last.getAmount() != BigDecimal.ZERO) {
-                                            last = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(last.getAmount(),
-                                                NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                        } else {
-                                            last = null;
-                                        }
-                                        if (bid != null && bid.getAmount() != BigDecimal.ZERO) {
-                                            bid = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(bid.getAmount(), NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                        } else {
-                                            bid = null;
-                                        }
-                                             
-                                        if (ask != null && ask.getAmount() != BigDecimal.ZERO) {
-                                            ask = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(ask.getAmount(),
-                                                    NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                        } else { 
-                                            ask = null;
-                                        }
-                                    } 
+                                    BigMoney last = null;
+                                    BigMoney bid = null;
+                                    BigMoney ask = null;
                                     
-                                    if (invertedRates) {
-                                        if (reverseRates) {
-                                            // USD/ BTC, reciprocal rate
-                                            currency = loopSymbolPair.baseCurrency;
-                                        } else {
-                                            // BTC/ USD, reciprocal rate
-                                            currency = loopSymbolPair.counterCurrency;
+                                    Ticker loopTicker;
+
+                                    if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(controller.getModel()
+                                            .getExchangeData1().getShortExchangeName())) {
+                                        
+                                        currency = loopSymbolPair.baseCurrency;
+                                        
+                                        log.debug("Getting loopTicker for " + loopSymbolPair.baseCurrency + " USD");
+                                        loopTicker = marketDataService1.getTicker(loopSymbolPair.baseCurrency, "USD");
+                                        System.out.println("loopTicker = " + loopTicker);
+                                        // Ticker btcUsdTicker = null;
+                                        // log.debug("Getting btcUsdTicker for BTC/USD");
+                                        // btcUsdTicker =
+                                        // marketDataService1.getTicker(Currencies.BTC,
+                                        // Currencies.USD);
+                                        // System.out.println("btcUsdTicker = "
+                                        // + loopTicker);
+                                        
+                                        BigDecimal usdBtcRate = BigDecimal.valueOf(30);
+                                        if (loopTicker.getLast() != null) {
+                                            last = loopTicker.getLast().multipliedBy(usdBtcRate);
+                                        }                                        
+                                        if (loopTicker.getBid() != null) {
+                                            bid = loopTicker.getBid().multipliedBy(usdBtcRate);
+                                        }                                        
+                                        if (loopTicker.getAsk() != null) {
+                                            ask = loopTicker.getAsk().multipliedBy(usdBtcRate);
                                         }
                                     } else {
-                                        if (reverseRates) {
-                                            // USD/ BTC, normal rate
-                                            currency = loopSymbolPair.baseCurrency;
+                                        log.debug("Getting ticker1 for " + loopSymbolPair.baseCurrency + " "
+                                                + loopSymbolPair.counterCurrency);
+                                        loopTicker = marketDataService1.getTicker(loopSymbolPair.baseCurrency,
+                                                loopSymbolPair.counterCurrency);
+
+                                        log.debug("Got ticker1 for " + loopSymbolPair.baseCurrency + " "
+                                                + loopSymbolPair.counterCurrency);
+                                        last = loopTicker.getLast();
+                                        bid = loopTicker.getBid();
+                                        ask = loopTicker.getAsk();
+
+                                        if (invertedRates && !reverseRates) {
+                                            if (last != null && last.getAmount() != BigDecimal.ZERO) {
+                                                last = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(last.getAmount(),
+                                                        NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                            } else {
+                                                last = null;
+                                            }
+                                            if (bid != null && bid.getAmount() != BigDecimal.ZERO) {
+                                                bid = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(bid.getAmount(),
+                                                        NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                            } else {
+                                                bid = null;
+                                            }
+
+                                            if (ask != null && ask.getAmount() != BigDecimal.ZERO) {
+                                                ask = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(ask.getAmount(),
+                                                        NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                            } else {
+                                                ask = null;
+                                            }
+                                        }
+
+                                        if (invertedRates) {
+                                            if (reverseRates) {
+                                                // USD/ BTC, reciprocal rate
+                                                currency = loopSymbolPair.baseCurrency;
+                                            } else {
+                                                // BTC/ USD, reciprocal rate
+                                                currency = loopSymbolPair.counterCurrency;
+                                            }
                                         } else {
-                                            // BTC/ USD, normal rate
-                                            currency = loopSymbolPair.counterCurrency;
+                                            if (reverseRates) {
+                                                // USD/ BTC, normal rate
+                                                currency = loopSymbolPair.baseCurrency;
+                                            } else {
+                                                // BTC/ USD, normal rate
+                                                currency = loopSymbolPair.counterCurrency;
+                                            }
                                         }
                                     }
 
@@ -217,11 +273,14 @@ public class TickerTimerTask extends TimerTask {
                                     controller.getModel().getExchangeData1().setLastAsk(currency, ask);
                                     log.debug("Exchange = " + controller.getModel().getExchangeData1().getShortExchangeName());
                                     if (currencyConverterCurrency.equals(currency)) {
-                                        // Put the exchange rate into the currency converter.
+                                        // Put the exchange rate into the
+                                        // currency converter.
                                         String newCurrencyCode = currency;
-                                        if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(controller.getModel().getExchangeData1().getShortExchangeName())) {
-                                            // Use only the last three characters - the currency code.
-                                             if (currency.length() >= 3) {
+                                        if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(controller.getModel()
+                                                .getExchangeData1().getShortExchangeName())) {
+                                            // Use only the last three
+                                            // characters - the currency code.
+                                            if (currency.length() >= 3) {
                                                 newCurrencyCode = currency.substring(currency.length() - 3);
                                             }
                                         }
@@ -232,6 +291,12 @@ public class TickerTimerTask extends TimerTask {
                             }
                         }
                     }
+
+                    // Ticker ticker =
+                    // marketDataService1.getTicker(Currencies.BTC,
+                    // Currencies.USD);
+                    // System.out.println("cached Last: " +
+                    // ticker.getLast().toString());
 
                     // First currency fires exchange rate data changed - used by
                     // rest of MultiBit.
@@ -283,12 +348,16 @@ public class TickerTimerTask extends TimerTask {
                                             .getCurrenciesWeAreInterestedIn();
 
                                     Iterator<String> currencyIterator = currenciesWeAreInterestedIn.iterator();
-                                    // Is the amount quoted the reciprocal of number of currency units per BTC
+                                    // Is the amount quoted the reciprocal of
+                                    // number of currency units per BTC
                                     boolean invertedRates = false;
-                                    
-                                    // Is the currency pair the other way round ie base currency = other, counter currency = BTC
-                                    boolean reverseRates = ExchangeData.doesExchangeUseReverseRates(controller.getModel().getExchangeData2().getShortExchangeName());
-                                    
+
+                                    // Is the currency pair the other way round
+                                    // ie base currency = other, counter
+                                    // currency = BTC
+                                    boolean reverseRates = ExchangeData.doesExchangeUseReverseRates(controller.getModel()
+                                            .getExchangeData2().getShortExchangeName());
+
                                     while (currencyIterator.hasNext()) {
                                         String loopCurrency = currencyIterator.next();
                                         if ("BTC".equals(loopSymbolPair.baseCurrency)
@@ -306,12 +375,14 @@ public class TickerTimerTask extends TimerTask {
                                         }
                                     }
                                     if (getItFromTheServer) {
-                                        log.debug("Getting ticker2 for " + loopSymbolPair.baseCurrency + " " + loopSymbolPair.counterCurrency);
-                                        
+                                        log.debug("Getting ticker2 for " + loopSymbolPair.baseCurrency + " "
+                                                + loopSymbolPair.counterCurrency);
+
                                         Ticker loopTicker = marketDataService2.getTicker(loopSymbolPair.baseCurrency,
                                                 loopSymbolPair.counterCurrency);
-                                        log.debug("Got ticker2 for "  + loopSymbolPair.baseCurrency + " " + loopSymbolPair.counterCurrency);
-                                        
+                                        log.debug("Got ticker2 for " + loopSymbolPair.baseCurrency + " "
+                                                + loopSymbolPair.counterCurrency);
+
                                         BigMoney last = loopTicker.getLast();
                                         BigMoney bid = loopTicker.getBid();
                                         BigMoney ask = loopTicker.getAsk();
@@ -320,24 +391,25 @@ public class TickerTimerTask extends TimerTask {
                                         if (invertedRates && !reverseRates) {
                                             if (last != null && last.getAmount() != BigDecimal.ZERO) {
                                                 last = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(last.getAmount(),
-                                                    NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                                        NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
                                             } else {
                                                 last = null;
                                             }
                                             if (bid != null && bid.getAmount() != BigDecimal.ZERO) {
-                                                bid = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(bid.getAmount(), NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
+                                                bid = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(bid.getAmount(),
+                                                        NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
                                             } else {
                                                 bid = null;
                                             }
-                                                 
+
                                             if (ask != null && ask.getAmount() != BigDecimal.ZERO) {
                                                 ask = BigMoney.of(last.getCurrencyUnit(), BigDecimal.ONE.divide(ask.getAmount(),
                                                         NUMBER_OF_SIGNIFICANT_DIGITS, BigDecimal.ROUND_HALF_EVEN));
-                                            } else { 
+                                            } else {
                                                 ask = null;
                                             }
                                         }
-                                        
+
                                         if (invertedRates) {
                                             if (reverseRates) {
                                                 // USD/ BTC, reciprocal rate
@@ -378,7 +450,7 @@ public class TickerTimerTask extends TimerTask {
 
     public void createExchange1(String exchangeShortName) {
         exchange1 = createExchange(exchangeShortName);
-        
+
         if (exchange1 != null) {
             // Interested in the public market data feed (no authentication).
             marketDataService1 = exchange1.getPollingMarketDataService();
@@ -389,19 +461,28 @@ public class TickerTimerTask extends TimerTask {
             log.debug("exchangeSymbols1 = " + exchangeSymbols1);
 
             if (exchangeSymbols1 != null) {
-                Collection<String> availableCurrencies = new ArrayList<String>();
+                Collection<String> availableCurrencies = new java.util.TreeSet<String>();
+
                 for (int i = 0; i < exchangeSymbols1.size(); i++) {
                     String baseCurrency = exchangeSymbols1.get(i).baseCurrency;
                     String counterCurrency = exchangeSymbols1.get(i).counterCurrency;
 
-//                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols1.get(i).baseCurrency
-//                            + ", counterCurrency = " + exchangeSymbols1.get(i).counterCurrency);
+                    if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(controller.getModel().getExchangeData1()
+                            .getShortExchangeName())) {
 
-                    if ("BTC".equalsIgnoreCase(baseCurrency)) {
-                        availableCurrencies.add(counterCurrency);
-                    }
-                    if ("BTC".equalsIgnoreCase(counterCurrency)) {
-                        availableCurrencies.add(baseCurrency);
+                        if ("USD".equalsIgnoreCase(baseCurrency)) {
+                            availableCurrencies.add(counterCurrency);
+                        }
+                        if ("USD".equalsIgnoreCase(counterCurrency)) {
+                            availableCurrencies.add(baseCurrency);
+                        }
+                    } else {
+                        if ("BTC".equalsIgnoreCase(baseCurrency)) {
+                            availableCurrencies.add(counterCurrency);
+                        }
+                        if ("BTC".equalsIgnoreCase(counterCurrency)) {
+                            availableCurrencies.add(baseCurrency);
+                        }
                     }
                 }
                 ExchangeData.setAvailableCurrenciesForExchange(exchangeShortName, availableCurrencies);
@@ -411,7 +492,7 @@ public class TickerTimerTask extends TimerTask {
 
     public void createExchange2(String exchangeShortName) {
         exchange2 = createExchange(exchangeShortName);
-        
+
         if (exchange2 != null) {
             // Interested in the public market data feed (no authentication).
             marketDataService2 = exchange2.getPollingMarketDataService();
@@ -422,19 +503,27 @@ public class TickerTimerTask extends TimerTask {
             log.debug("exchangeSymbols2 = " + exchangeSymbols2);
 
             if (exchangeSymbols2 != null) {
-                Collection<String> availableCurrencies = new ArrayList<String>();
+                Collection<String> availableCurrencies = new java.util.TreeSet<String>();
                 for (int i = 0; i < exchangeSymbols2.size(); i++) {
                     String baseCurrency = exchangeSymbols2.get(i).baseCurrency;
                     String counterCurrency = exchangeSymbols2.get(i).counterCurrency;
 
-//                    log.debug("Available currency " + i + " baseCurrency = " + exchangeSymbols2.get(i).baseCurrency
-//                            + ", counterCurrency = " + exchangeSymbols2.get(i).counterCurrency);
+                    if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(controller.getModel().getExchangeData2()
+                            .getShortExchangeName())) {
 
-                    if ("BTC".equalsIgnoreCase(baseCurrency)) {
-                        availableCurrencies.add(counterCurrency);
-                    }
-                    if ("BTC".equalsIgnoreCase(counterCurrency)) {
-                        availableCurrencies.add(baseCurrency);
+                        if ("USD".equalsIgnoreCase(baseCurrency)) {
+                            availableCurrencies.add(counterCurrency);
+                        }
+                        if ("USD".equalsIgnoreCase(counterCurrency)) {
+                            availableCurrencies.add(baseCurrency);
+                        }
+                    } else {
+                        if ("BTC".equalsIgnoreCase(baseCurrency)) {
+                            availableCurrencies.add(counterCurrency);
+                        }
+                        if ("BTC".equalsIgnoreCase(counterCurrency)) {
+                            availableCurrencies.add(baseCurrency);
+                        }
                     }
                 }
                 ExchangeData.setAvailableCurrenciesForExchange(exchangeShortName, availableCurrencies);
@@ -443,8 +532,8 @@ public class TickerTimerTask extends TimerTask {
     }
 
     /**
-     * Create the exchange specified by the exchange class name specified
-     * e.g. BitcoinChartsExchange.class.getName();
+     * Create the exchange specified by the exchange class name specified e.g.
+     * BitcoinChartsExchange.class.getName();
      * 
      * @param exchangeClassName
      */
@@ -453,29 +542,30 @@ public class TickerTimerTask extends TimerTask {
         if (exchangeShortname == null) {
             return null;
         }
-        
+
         try {
             // Demonstrate the public market data service.
             // Use the factory to get the exchange API using default
             // settings.
 
-            String exchangeClassname = ExchangeData.convertExchangeShortNameToClassname(exchangeShortname); 
-             
+            String exchangeClassname = ExchangeData.convertExchangeShortNameToClassname(exchangeShortname);
+
             if (exchangeClassname == null) {
                 return null;
             }
-            
+
             Exchange exchangeToReturn;
             if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortname)) {
                 ExchangeSpecification exchangeSpecification = new ExchangeSpecification(exchangeClassname);
                 exchangeSpecification.setUri("http://openexchangerates.org");
-                exchangeSpecification.setApiKey(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE));
+                exchangeSpecification
+                        .setApiKey(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE));
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeSpecification);
             } else {
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeClassname);
             }
-            
-            return exchangeToReturn;            
+
+            return exchangeToReturn;
         } catch (NoClassDefFoundError e) {
             // Probably xchange is not on classpath - ticker will not run
             // but error should not spread out from here to rest of MultiBit.
@@ -492,7 +582,7 @@ public class TickerTimerTask extends TimerTask {
     public Exchange getExchange1() {
         return exchange1;
     }
-    
+
     /**
      * Get the exchange dealing with the first row of the table.
      */

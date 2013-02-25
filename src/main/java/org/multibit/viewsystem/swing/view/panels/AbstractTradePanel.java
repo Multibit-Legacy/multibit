@@ -229,27 +229,31 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         this.controller = controller;
         this.thisAbstractTradePanel = this;
 
-        setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
+        try {
+            setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
 
-        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
+            Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
 
-        fontMetrics = this.getFontMetrics(font);
+            fontMetrics = this.getFontMetrics(font);
 
-        separatorSize = (int) (fontMetrics.getHeight() * 0.5);
-        smallSeparatorSize = (int) (fontMetrics.getHeight() * 0.2);
+            separatorSize = (int) (fontMetrics.getHeight() * 0.5);
+            smallSeparatorSize = (int) (fontMetrics.getHeight() * 0.2);
 
-        localisationKeyConstantToKeyMap = new HashMap<String, String>();
-        populateLocalisationMap();
+            localisationKeyConstantToKeyMap = new HashMap<String, String>();
+            populateLocalisationMap();
 
-        initUI();
+            initUI();
 
-        labelTextArea.requestFocusInWindow();
+            labelTextArea.requestFocusInWindow();
 
-        displaySidePanel();
+            displaySidePanel();
 
-        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+            applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
+            CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
+        } catch (Exception e) {
+            log.error("Error in construction of AbstractTradePanel");
+        }
     }
 
     /**
