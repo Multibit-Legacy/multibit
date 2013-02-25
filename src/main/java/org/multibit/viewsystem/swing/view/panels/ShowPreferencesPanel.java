@@ -101,7 +101,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int COMBO_HEIGHT_DELTA = 5;
 
     private static final int EXCHANGE_COMBO_HEIGHT_DELTA = 15;
-    private static final int COMBO_WIDTH_DELTA = 100;
+    private static final int COMBO_WIDTH_DELTA = 150;
 
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
     private static final int FEE_TEXT_FIELD_WIDTH = 200;
