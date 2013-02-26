@@ -1114,8 +1114,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
             TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
             synchronized (tickerTimerTask) {
-                if (tickerTimerTask.getExchange1() == null) {
-                    tickerTimerTask.createExchange1(exchangeToUse1);
+                if (tickerTimerTask.getExchange() == null) {
+                    tickerTimerTask.createExchangeData(exchangeToUse1);
                 }
             }
         }
@@ -1151,7 +1151,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                     if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
                         TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
                         synchronized (tickerTimerTask) {
-                            tickerTimerTask.createExchange1(exchangeShortName);
+                            tickerTimerTask.createExchangeData(exchangeShortName);
                             currencyComboBox1.removeAllItems();
                             Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeShortName);
                             if (currenciesToUse != null) {
@@ -1267,7 +1267,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                     if (mainFrame != null && mainFrame.getTickerTimerTask2() != null) {
                         TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask2();
                         synchronized (tickerTimerTask) {
-                            tickerTimerTask.createExchange2(exchangeShortName);
+                            tickerTimerTask.createExchangeData(exchangeShortName);
                             currencyComboBox2.removeAllItems();
                             Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(exchangeShortName);
                             if (currenciesToUse != null) {
@@ -1338,8 +1338,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         if (mainFrame != null && mainFrame.getTickerTimerTask2() != null) {
             TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask2();
             synchronized (tickerTimerTask) {
-                if (tickerTimerTask.getExchange2() == null) {
-                    tickerTimerTask.createExchange2(exchangeToUse2);
+                if (tickerTimerTask.getExchange() == null) {
+                    tickerTimerTask.createExchangeData(exchangeToUse2);
                 }
             }
         }
@@ -1491,7 +1491,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                 if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
                     TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
                     synchronized (tickerTimerTask) {
-                        tickerTimerTask.createExchange1(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
+                        tickerTimerTask.createExchangeData(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
                         currencyComboBox1.removeAllItems();
                         Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
                         if (currenciesToUse != null) {
@@ -1512,7 +1512,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                 if (mainFrame != null && mainFrame.getTickerTimerTask2() != null) {
                     TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask2();
                     synchronized (tickerTimerTask) {
-                        tickerTimerTask.createExchange2(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
+                        tickerTimerTask.createExchangeData(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
                         currencyComboBox2.removeAllItems();
                         Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
                         if (currenciesToUse != null) {

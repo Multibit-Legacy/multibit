@@ -19,9 +19,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -222,12 +224,7 @@ public class MultiBitModel {
      */
     private View currentView = null;
     
-    /**
-     * Holds exchange Data.
-     * Two simultaneous exchanges are supported.
-     */
-    private ExchangeData exchangeData1;
-    private ExchangeData exchangeData2;;
+    private Map<String, ExchangeData> shortExchangeNameToExchangeMap;
 
     public static final int UNKNOWN_NUMBER_OF_CONNECTD_PEERS = -1;
     
@@ -300,10 +297,14 @@ public class MultiBitModel {
             log.debug("Initial view from properties file is '" + getCurrentView().toString() + "'");
         }
 
-        exchangeData1 = new ExchangeData();
-        exchangeData2 = new ExchangeData();
+        ExchangeData exchangeData1 = new ExchangeData();
+        ExchangeData exchangeData2 = new ExchangeData();
         exchangeData1.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
         exchangeData2.setShortExchangeName(getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
+        
+        shortExchangeNameToExchangeMap = new HashMap<String, ExchangeData>();
+        shortExchangeNameToExchangeMap.put(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, exchangeData1);
+        shortExchangeNameToExchangeMap.put(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, exchangeData2);
         
         controller.setModel(this);
     }
@@ -841,21 +842,9 @@ public class MultiBitModel {
         this.currentView = view;
         setUserPreference(MultiBitModel.SELECTED_VIEW_ENUM, view.name());
     }
-
-    public ExchangeData getExchangeData1() {
-        return exchangeData1;
-    }
-
-    public void setExchangeData1(ExchangeData exchangeData) {
-        this.exchangeData1 = exchangeData;
-    }
     
-    public ExchangeData getExchangeData2() {
-        return exchangeData2;
-    }
-
-    public void setExchangeData2(ExchangeData exchangeData) {
-        this.exchangeData2 = exchangeData;
+    public ExchangeData getExchangeData(String shortExchangeName) {
+        return shortExchangeNameToExchangeMap.get(shortExchangeName);
     }
 
     public NetworkParameters getNetworkParameters() {
@@ -893,5 +882,9 @@ public class MultiBitModel {
 
     public void setBlinkEnabled(boolean blinkEnabled) {
         this.blinkEnabled = blinkEnabled;
+    }
+
+    public Map<String, ExchangeData> getShortExchangeNameToExchangeMap() {
+        return shortExchangeNameToExchangeMap;
     }
 }

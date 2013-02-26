@@ -63,9 +63,7 @@ public class ExchangeData {
     private Map<String, BigMoney> currencyToLastPriceMap;
     private Map<String, BigMoney> currencyToAskMap;
     private Map<String, BigMoney> currencyToBidMap;
-    
-    private Collection<String> currenciesWeAreInterestedIn;
-    
+       
     private static Map<String,  Collection<String>> exchangeNameToAvailableCurrenciesMap  = new HashMap<String, Collection<String>>();
     
     public ExchangeData() {
@@ -73,7 +71,6 @@ public class ExchangeData {
         currencyToLastPriceMap = new HashMap<String, BigMoney>();
         currencyToBidMap = new HashMap<String, BigMoney>();
         currencyToAskMap = new HashMap<String, BigMoney>();
-        currenciesWeAreInterestedIn = DEFAULT_CURRENCY_LIST;
     }
     
     public BigMoney getLastPrice(String currency) {
@@ -137,14 +134,6 @@ public class ExchangeData {
             CAMPBX_EXCHANGE_NAME,
             OPEN_EXCHANGE_RATES_EXCHANGE_NAME,
             VIRTEX_EXCHANGE_NAME};
-    }
-
-    public Collection<String> getCurrenciesWeAreInterestedIn() {
-        return currenciesWeAreInterestedIn;
-    }
-
-    public void setCurrenciesWeAreInterestedIn(Collection<String> currenciesWeAreInterestedIn) {
-        this.currenciesWeAreInterestedIn = currenciesWeAreInterestedIn;
     }
 
     public static Collection<String> getAvailableCurrenciesForExchange(String shortExchangeName) {
