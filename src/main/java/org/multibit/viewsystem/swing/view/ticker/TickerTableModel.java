@@ -43,12 +43,6 @@ public class TickerTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = -775886012854496208L;
 
-    /**
-     * The exchange data for each row
-     */
-   // private ExchangeData exchangeData1;
-   // private ExchangeData exchangeData2;
-
     private boolean showSecondRow;
 
     private String exchange1;
@@ -138,9 +132,6 @@ public class TickerTableModel extends AbstractTableModel {
         if (currency2 == null || "".equals(currency2) || "null".equals(currency2)) {
             currency2 = ExchangeData.DEFAULT_CURRENCY;
         }
-        
-//        exchangeData1 = multiBitModel.getExchangeData(exchange1);
-  //      exchangeData2 = multiBitModel.getExchangeData(exchange2);
     }
 
     @Override
@@ -217,7 +208,7 @@ public class TickerTableModel extends AbstractTableModel {
     }
 
     /**
-     * table model is read only
+     * Table model is read only.
      */
     @Override
     public void setValueAt(Object value, int row, int column) {

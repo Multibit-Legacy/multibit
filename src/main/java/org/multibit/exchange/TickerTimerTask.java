@@ -99,7 +99,7 @@ public class TickerTimerTask extends TimerTask {
                     ExchangeData exchangeData = controller.getModel().getExchangeData(shortExchangeName);
 
                     if (exchangeData == null) {
-                        createExchangeData(shortExchangeName);
+                        createExchangeObjects(shortExchangeName);
                     }
 
                     if (exchange == null) {
@@ -136,21 +136,18 @@ public class TickerTimerTask extends TimerTask {
                                     getItFromTheServer = true;
                                     invertedRates = true;
                                     currencyPairToUse = loopSymbolPair;
-
                                     break;
                                 }
                             } else {
                                 if ("BTC".equals(loopSymbolPair.baseCurrency) && loopSymbolPair.counterCurrency.equals(currency)) {
                                     getItFromTheServer = true;
                                     currencyPairToUse = loopSymbolPair;
-
                                     break;
                                 }
                                 if ("BTC".equals(loopSymbolPair.counterCurrency) && loopSymbolPair.baseCurrency.equals(currency)) {
                                     getItFromTheServer = true;
                                     invertedRates = true;
                                     currencyPairToUse = loopSymbolPair;
-
                                     break;
                                 }
                             }
@@ -244,8 +241,7 @@ public class TickerTimerTask extends TimerTask {
                             controller.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask);
                             log.debug("Exchange = " + shortExchangeName);
 
-                            // Put the exchange rate into the currency
-                            // converter.
+                            // Put the exchange rate into the currency converter.
                             if (isFirstExchange) {
                                 String newCurrencyCode = currency;
                                 if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(shortExchangeName)) {
@@ -262,11 +258,8 @@ public class TickerTimerTask extends TimerTask {
                     }
                 }
 
-                // First currency fires exchange rate data changed - used by
-                // rest of MultiBit.
-                if (isFirstExchange) {
-                    mainFrame.fireExchangeDataChanged();
-                }
+                // Fire exchange rate data changed - used by rest of MultiBit.
+                mainFrame.fireExchangeDataChanged();
             }
         } catch (Exception e) {
             // Stop any xchange errors percolating out.
@@ -277,8 +270,8 @@ public class TickerTimerTask extends TimerTask {
         }
     }
 
-    public void createExchangeData(String exchangeShortName) {
-        exchange = createExchange(exchangeShortName);
+    public void createExchangeObjects(String newExchangeName) {
+        exchange = createExchange(newExchangeName);
 
         if (exchange != null) {
             // Interested in the public market data feed (no authentication).
@@ -296,7 +289,7 @@ public class TickerTimerTask extends TimerTask {
                     String baseCurrency = exchangeSymbols.get(i).baseCurrency;
                     String counterCurrency = exchangeSymbols.get(i).counterCurrency;
 
-                    if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(shortExchangeName)) {
+                    if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(newExchangeName)) {
                         if ("USD".equalsIgnoreCase(baseCurrency)) {
                             availableCurrencies.add(counterCurrency);
                         }
@@ -312,7 +305,7 @@ public class TickerTimerTask extends TimerTask {
                         }
                     }
                 }
-                ExchangeData.setAvailableCurrenciesForExchange(exchangeShortName, availableCurrencies);
+                ExchangeData.setAvailableCurrenciesForExchange(newExchangeName, availableCurrencies);
             }
         }
     }
@@ -331,9 +324,7 @@ public class TickerTimerTask extends TimerTask {
 
         try {
             // Demonstrate the public market data service.
-            // Use the factory to get the exchange API using default
-            // settings.
-
+            // Use the factory to get the exchange API using default settings.
             String exchangeClassname = ExchangeData.convertExchangeShortNameToClassname(exchangeShortname);
 
             if (exchangeClassname == null) {

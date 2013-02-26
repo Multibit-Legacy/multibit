@@ -1573,4 +1573,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public TickerTimerTask getTickerTimerTask2() {
         return tickerTimerTask2;
     }
+
+    public void setTickerTimerTask1(TickerTimerTask tickerTimerTask1) {
+        this.tickerTimerTask1 = tickerTimerTask1;
+    }
+
+    public void setTickerTimerTask2(TickerTimerTask tickerTimerTask2) {
+        this.tickerTimerTask2 = tickerTimerTask2;
+    }
 }
