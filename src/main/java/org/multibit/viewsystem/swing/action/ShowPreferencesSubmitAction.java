@@ -357,14 +357,20 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
                 tickerTimer1.schedule(tickerTimerTask1, 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
                 
-                Timer tickerTimer2 = new Timer();
-                mainFrame.setTickerTimer2(tickerTimer2);
+                boolean showSecondRow = Boolean.TRUE.toString().equals(
+                        controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                
+                if (showSecondRow) {
+                    Timer tickerTimer2 = new Timer();
+                    mainFrame.setTickerTimer2(tickerTimer2);
 
-                TickerTimerTask tickerTimerTask2 = new TickerTimerTask(controller, mainFrame, false);
-                tickerTimerTask2.createExchangeObjects(controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
-                mainFrame.setTickerTimerTask2(tickerTimerTask2);
+                    TickerTimerTask tickerTimerTask2 = new TickerTimerTask(controller, mainFrame, false);
+                    tickerTimerTask2.createExchangeObjects(controller.getModel().getUserPreference(
+                            MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
+                    mainFrame.setTickerTimerTask2(tickerTimerTask2);
 
-                tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                    tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                }
             }
 
             if (fontHasChanged) {

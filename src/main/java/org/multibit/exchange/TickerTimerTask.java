@@ -290,10 +290,10 @@ public class TickerTimerTask extends TimerTask {
                     String counterCurrency = exchangeSymbols.get(i).counterCurrency;
 
                     if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(newExchangeName)) {
-                        if ("USD".equalsIgnoreCase(baseCurrency)) {
+                        if ("USD".equalsIgnoreCase(baseCurrency) && !"BTC".equalsIgnoreCase(counterCurrency)) {
                             availableCurrencies.add(counterCurrency);
                         }
-                        if ("USD".equalsIgnoreCase(counterCurrency)) {
+                        if ("USD".equalsIgnoreCase(counterCurrency) && !"BTC".equalsIgnoreCase(baseCurrency)) {
                             availableCurrencies.add(baseCurrency);
                         }
                     } else {

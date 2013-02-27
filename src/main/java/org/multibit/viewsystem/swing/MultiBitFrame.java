@@ -289,9 +289,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         tickerTimer1 = new Timer();
         tickerTimerTask1 = new TickerTimerTask(controller, this, true);
         tickerTimer1.schedule(tickerTimerTask1, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
-        tickerTimer2 = new Timer();
-        tickerTimerTask2 = new TickerTimerTask(controller, this, false);
-        tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        
+        boolean showSecondRow = Boolean.TRUE.toString().equals(
+                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+        
+        if (showSecondRow) {
+            tickerTimer2 = new Timer();
+            tickerTimerTask2 = new TickerTimerTask(controller, this, false);
+            tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        }
 
         // Initialise status bar.
         statusBar.initialise();
@@ -948,8 +954,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         // Start ticker timer.
                         tickerTimer1 = new Timer();
                         tickerTimer1.schedule(new TickerTimerTask(controller, thisFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
-                        tickerTimer2 = new Timer();
-                        tickerTimer2.schedule(new TickerTimerTask(controller, thisFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                        
+                        boolean showSecondRow = Boolean.TRUE.toString().equals(
+                                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                        
+                        if (showSecondRow) {
+                            tickerTimer2 = new Timer();
+                            tickerTimer2.schedule(new TickerTimerTask(controller, thisFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                        }
                     }
                 }
             }
