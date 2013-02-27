@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
@@ -126,7 +125,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
 
                     KeyCrypter keyCrypterToUse;
                     if (wallet.getKeyCrypter() == null) {
-                        byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
+                        byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
                         controller.getMultiBitService().getSecureRandom().nextBytes(salt);
                         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
                         ScryptParameters scryptParameters = scryptParametersBuilder.build();

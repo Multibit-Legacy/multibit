@@ -18,7 +18,6 @@ import org.multibit.store.MultiBitWalletVersion;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
@@ -53,7 +52,7 @@ public class ActionTestUtils {
              secureRandom = new SecureRandom();
          }
          
-         byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
+         byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
          secureRandom.nextBytes(salt);
          Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
          ScryptParameters scryptParameters = scryptParametersBuilder.build();

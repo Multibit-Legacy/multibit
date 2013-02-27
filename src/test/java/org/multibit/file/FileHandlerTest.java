@@ -37,7 +37,6 @@ import org.multibit.store.WalletVersionException;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.ScryptParametersConstants;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
@@ -88,7 +87,7 @@ public class FileHandlerTest extends TestCase {
     public void setUp() throws Exception {
         secureRandom = new SecureRandom();
         
-        byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
+        byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
         secureRandom.nextBytes(salt);
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
@@ -390,9 +389,9 @@ public class FileHandlerTest extends TestCase {
         assertTrue("EncrypterDecrypter was not an EncrypterDecrypterScrypt", rebornEncrypterDecrypter instanceof KeyCrypterScrypt);
         
         KeyCrypterScrypt rebornEncrypterDecrypterScrypt = (KeyCrypterScrypt)rebornEncrypterDecrypter;
-        assertEquals("Wrong N parameter", ScryptParametersConstants.DEFAULT_N, rebornEncrypterDecrypterScrypt.getScryptParameters().getN());
-        assertEquals("Wrong R parameter", ScryptParametersConstants.DEFAULT_R, rebornEncrypterDecrypterScrypt.getScryptParameters().getR());
-        assertEquals("Wrong P parameter", ScryptParametersConstants.DEFAULT_P, rebornEncrypterDecrypterScrypt.getScryptParameters().getP());
+        assertEquals("Wrong N parameter", 16384, rebornEncrypterDecrypterScrypt.getScryptParameters().getN());
+        assertEquals("Wrong R parameter", 8, rebornEncrypterDecrypterScrypt.getScryptParameters().getR());
+        assertEquals("Wrong P parameter", 1, rebornEncrypterDecrypterScrypt.getScryptParameters().getP());
         
         deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
     }
@@ -404,7 +403,7 @@ public class FileHandlerTest extends TestCase {
         int r = 8;
         int p = 3;
         
-        byte[] salt = new byte[ScryptParametersConstants.SALT_LENGTH];
+        byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
         secureRandom.nextBytes(salt);
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder()
         .setSalt(ByteString.copyFrom(salt)).setN(n).setR(r).setP(p);
