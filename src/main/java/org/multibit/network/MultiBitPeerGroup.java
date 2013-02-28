@@ -25,12 +25,12 @@ public class MultiBitPeerGroup extends PeerGroup {
     MultiBitController controller;
     MultiBitDownloadListener multiBitDownloadListener = null;
     
-    private static int CONNECTION_DELAY_TIME = 2500; // milliseconds
+    //private static int CONNECTION_DELAY_TIME = 2500; // milliseconds
     
     public MultiBitPeerGroup(MultiBitController controller, NetworkParameters params, BlockChain chain) {
         super(params, chain);
         this.controller = controller;
-        bootstrap.setOption(PeerGroup.CONNECT_TIMEOUT_MILLIS_OPTION, CONNECTION_DELAY_TIME);
+        //bootstrap.setOption(PeerGroup.CONNECT_TIMEOUT_MILLIS_OPTION, CONNECTION_DELAY_TIME);
     }
     
     /**

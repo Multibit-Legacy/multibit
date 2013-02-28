@@ -96,11 +96,8 @@ public class TickerTimerTask extends TimerTask {
                         log.debug("shortExchangeName is null, defaulting to " + ExchangeData.DEFAULT_EXCHANGE);
                         shortExchangeName = ExchangeData.DEFAULT_EXCHANGE;
                     }
-                    ExchangeData exchangeData = controller.getModel().getExchangeData(shortExchangeName);
 
-                    if (exchangeData == null) {
-                        createExchangeObjects(shortExchangeName);
-                    }
+                    createExchangeObjects(shortExchangeName);
 
                     if (exchange == null) {
                         log.debug("Cannot create exchange (isFirstExchange = " + isFirstExchange + ")");

@@ -45,7 +45,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
@@ -61,8 +60,6 @@ import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.crypto.EncryptedPrivateKey;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
-import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
 import com.google.common.base.Preconditions;
@@ -2282,15 +2279,11 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @throws KeyCrypterException Thrown if the wallet encryption fails. If so, the wallet state is unchanged.
      */
     synchronized public void encrypt(KeyCrypter keyCrypter, KeyParameter aesKey) throws KeyCrypterException {
-        if (keyCrypter == null) {
-            throw new KeyCrypterException("A keyCrypter must be specified to encrypt a wallet.");
-        }
+        Preconditions.checkNotNull(keyCrypter);
 
-        /**
-         * If the wallet is already encrypted then you cannot encrypt it again.
-         */
+        // If the wallet is already encrypted then you cannot encrypt it again.
         if (getEncryptionType() != EncryptionType.UNENCRYPTED) {
-            throw new WalletIsAlreadyEncryptedException("Wallet is already encrypted");
+            throw new IllegalStateException("Wallet is already encrypted");
         }
 
         // Create a new arraylist that will contain the encrypted keys
@@ -2298,7 +2291,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
         for (ECKey key : keychain) {
             if (key.isEncrypted()) {
-                throw new WalletIsAlreadyEncryptedException("Key '" + key.toString() + "' is already encrypted.");
+                throw new IllegalStateException("Key '" + key.toString() + "' is already encrypted.");
             }
 
             // Encrypt the key.
@@ -2326,10 +2319,10 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
      * @throws KeyCrypterException Thrown if the wallet decryption fails. If so, the wallet state is unchanged.
      */
-    synchronized public void decrypt(KeyParameter aesKey) throws KeyCrypterException {
+    public synchronized void decrypt(KeyParameter aesKey) throws KeyCrypterException {
         // Check the wallet is already encrypted - you cannot decrypt an unencrypted wallet.
         if (getEncryptionType() == EncryptionType.UNENCRYPTED) {
-            throw new WalletIsAlreadyDecryptedException("Wallet is already decrypted");
+            throw new IllegalStateException("Wallet is already decrypted");
         }
 
         // Check that the wallet keyCrypter is non-null.
@@ -2343,7 +2336,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
         for (ECKey key : keychain) {
             if (!key.isEncrypted()) {
-                throw new WalletIsAlreadyDecryptedException("Key '" + key.toString() + "' is already decrypted.");
+                throw new IllegalStateException("Key '" + key.toString() + "' is already decrypted.");
             }
 
             // Decrypt the key.
@@ -2365,7 +2358,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *  @throws KeyCrypterException An exception is thrown if the AES key could not be derived from the password.
      *  @returns boolean true if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) throws KeyCrypterException {
+    public synchronized boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) throws KeyCrypterException {
         if (keyCrypter == null) {
             // The password cannot decrypt anything as the keyCrypter is null.
             return false;
@@ -2378,7 +2371,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *
      *  @returns boolean true if AES key supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public boolean checkAESKeyCanDecryptFirstPrivateKey(KeyParameter aesKey) {
+    public synchronized boolean checkAESKeyCanDecryptFirstPrivateKey(KeyParameter aesKey) {
         if (getKeychain() == null || getKeychain().size() == 0) {
             return false;
         }
@@ -2405,7 +2398,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * Get the wallet's KeyCrypter.
      * (Used in encrypting/ decrypting an ECKey).
      */
-    public KeyCrypter getKeyCrypter() {
+    public synchronized KeyCrypter getKeyCrypter() {
         return keyCrypter;
     }
 
@@ -2414,7 +2407,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *
      * (This is a convenience method - the encryption type is actually stored in the keyCrypter).
      */
-    public EncryptionType getEncryptionType() {
+    public synchronized EncryptionType getEncryptionType() {
         if (keyCrypter == null) {
             // Unencrypted wallet.
             return EncryptionType.UNENCRYPTED;

@@ -690,6 +690,16 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         addOutput(new TransactionOutput(params, this, value, pubkey));
     }
 
+    /**
+     * Once a transaction has some inputs and outputs added, the signatures in the inputs can be calculated. The
+     * signature is over the transaction itself, to prove the redeemer actually created that transaction,
+     * so we have to do this step last.<p>
+     * <p/>
+     * This method is similar to SignatureHash in script.cpp
+     *
+     * @param hashType This should always be set to SigHash.ALL currently. Other types are unused.
+     * @param wallet   A wallet is required to fetch the keys needed for signing.
+     */
     public synchronized void signInputs(SigHash hashType, Wallet wallet) throws ScriptException, KeyCrypterException {
         signInputs(hashType, wallet, null);
     }

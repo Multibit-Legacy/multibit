@@ -292,7 +292,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                         newCurrencyCode = newCurrency1.substring(newCurrency1.length() - 3);
                     }
                 }
-                CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrencyCode));
+                try {
+                    CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrencyCode));
+                } catch ( org.joda.money.IllegalCurrencyException e) {
+                    e.printStackTrace();
+                }
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }

@@ -48,6 +48,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -64,6 +65,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -177,11 +179,13 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     private JPanel oerStent;
     private MultiBitTextField oerApiCodeTextField;
+    private String haveShownErrorMessageForApiCode;
     private MultiBitButton getOerAppIdButton;
     private MultiBitLabel oerApiCodeLabel;
     private MultiBitLabel oerMessageLabel1, oerMessageLabel2;
     private String originalOERApiCode;
-    public static final String OPEN_EXCHANGE_RATES_SIGN_UP_URI = "https://openexchangerates.org/signup/free";
+    public static final String OPEN_EXCHANGE_RATES_SIGN_UP_URI = "https://openexchangerates.org/signup/free?r=multibit";
+    public static final int LENGTH_OF_OPEN_EXCHANGE_RATE_APP_ID = 32;
 
     private Font selectedFont;
 
@@ -1428,11 +1432,44 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
             @Override
             public void focusLost(FocusEvent arg0) {
+                String apiCode = oerApiCodeTextField.getText();
+                if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0)
+                        && !apiCode.equals(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE))) {
+                    // New API code.
+                    // Check its length
+                    if (!(apiCode.trim().length() == LENGTH_OF_OPEN_EXCHANGE_RATE_APP_ID)
+                            && !apiCode.equals(haveShownErrorMessageForApiCode)) {
+                        haveShownErrorMessageForApiCode = apiCode;
+                        // Give user a message that App ID is not in the correct format.
+                        JOptionPane.showMessageDialog(null, new String[] {controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text1"), " ",
+                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text2"), 
+                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text3")},
+                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.title"), 
+                                JOptionPane.ERROR_MESSAGE, ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE));
+                        return;
+                    }
+                }
                 updateApiCode();
             }});
         oerApiCodeTextField.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                String apiCode = oerApiCodeTextField.getText();
+                if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE))) {
+                    // New API code.
+                    // Check its length
+                    if (!(apiCode.trim().length() == LENGTH_OF_OPEN_EXCHANGE_RATE_APP_ID)
+                            && !apiCode.equals(haveShownErrorMessageForApiCode)) {
+                        haveShownErrorMessageForApiCode = apiCode;
+                        // Give user a message that App ID is not in the correct format.
+                        JOptionPane.showMessageDialog(null, new String[] {controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text1"),
+                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text2"), 
+                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text3")},
+                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.title"), 
+                                JOptionPane.ERROR_MESSAGE, ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE));
+                        return;
+                    }
+                }
                 updateApiCode();
             }});
         
@@ -1484,8 +1521,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     
     private void updateApiCode() {
         String apiCode = oerApiCodeTextField.getText();
-        if (apiCode != null && !(apiCode.trim().length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE))) {
+        if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE))) {
             // New API code.
+            apiCode = WhitespaceTrimmer.trim(apiCode);
+            oerApiCodeTextField.setText(apiCode);
+            
             controller.getModel().setUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE, apiCode);
             if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals((String)exchangeComboBox1.getSelectedItem())) {
                 if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {

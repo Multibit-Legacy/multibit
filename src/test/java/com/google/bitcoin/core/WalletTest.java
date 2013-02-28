@@ -44,8 +44,6 @@ import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
-import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.MemoryBlockStore;
 import com.google.bitcoin.utils.BriefLogFormatter;
@@ -936,7 +934,7 @@ public class WalletTest {
             assertTrue("The keyCrypter is missing but should not be.2", keyCrypter != null);
             encryptedWallet.decrypt(aesKey);
             fail("Should not be able to decrypt a decrypted wallet");
-        } catch (WalletIsAlreadyDecryptedException e) {
+        } catch (IllegalStateException e) {
             assertTrue("Expected behaviour", true);
         }
         assertTrue("Wallet is not an unencrypted wallet.2", encryptedWallet.getKeyCrypter() == null);
@@ -950,7 +948,7 @@ public class WalletTest {
         try {
             encryptedWallet.encrypt(keyCrypter, aesKey);
             fail("Should not be able to encrypt an encrypted wallet");
-        } catch (WalletIsAlreadyEncryptedException e) {
+        } catch (IllegalStateException e) {
             assertTrue("Expected behaviour", true);
         }
         assertTrue("Wallet is not an encrypted wallet.3", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
