@@ -108,7 +108,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             encryptNewKeys = true;
 
             try {
-                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                if (!controller.getModel().getActiveWallet().checkPassword(walletPassword.getPassword())) {
                     // The password supplied is incorrect.
                     createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
                             "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));

@@ -125,7 +125,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 try {
                     // See if the password is the correct wallet password.
                     if (!controller.getModel().getActiveWallet()
-                            .checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
+                            .checkPassword(walletPasswordField.getPassword())) {
                         // The password supplied is incorrect.
                         importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                                 "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));

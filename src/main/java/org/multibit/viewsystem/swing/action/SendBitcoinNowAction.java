@@ -141,7 +141,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                 }
 
                 try {
-                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
+                    if (!controller.getModel().getActiveWallet().checkPassword(walletPassword)) {
                         // The password supplied is incorrect.
                         sendBitcoinConfirmPanel.setMessageText(
                                 controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"),

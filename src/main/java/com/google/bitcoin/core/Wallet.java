@@ -1385,10 +1385,6 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             req.tx = tx;
             return req;
         }
-
-        public boolean isCompleted() {
-            return completed;
-        }
     }
 
     /**
@@ -2358,12 +2354,12 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *  @throws KeyCrypterException An exception is thrown if the AES key could not be derived from the password.
      *  @returns boolean true if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public synchronized boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) throws KeyCrypterException {
+    public synchronized boolean checkPassword(char[] password) throws KeyCrypterException {
         if (keyCrypter == null) {
             // The password cannot decrypt anything as the keyCrypter is null.
             return false;
         }
-        return checkAESKeyCanDecryptFirstPrivateKey(keyCrypter.deriveKey(password));
+        return checkAESKey(keyCrypter.deriveKey(password));
     }
 
     /**
@@ -2371,20 +2367,21 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *
      *  @returns boolean true if AES key supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public synchronized boolean checkAESKeyCanDecryptFirstPrivateKey(KeyParameter aesKey) {
+    public synchronized boolean checkAESKey(KeyParameter aesKey) {
         if (getKeychain() == null || getKeychain().size() == 0) {
             return false;
         }
 
         ECKey firstECKey = getKeychain().iterator().next();
+        String originalAddress = firstECKey.toAddress(getNetworkParameters()).toString();
 
-        if (firstECKey != null && firstECKey.getEncryptedPrivateKey() != null) {
+        if (firstECKey != null && firstECKey.isEncrypted() && firstECKey.getEncryptedPrivateKey() != null) {
             try {
-                EncryptedPrivateKey clonedPrivateKey  = new EncryptedPrivateKey(firstECKey.getEncryptedPrivateKey());
-                keyCrypter.decrypt(clonedPrivateKey, aesKey);
-
-                // Success.
-                return true;
+                ECKey rebornKey = firstECKey.decrypt(keyCrypter, aesKey);
+                
+                // Check that the decrypted private key's address is correct ie it decrypted accurately.
+                String rebornAddress = rebornKey.toAddress(getNetworkParameters()).toString();
+                return originalAddress.equals(rebornAddress);
             } catch (KeyCrypterException ede) {
                 // The AES key supplied is incorrect.
                 return false;
