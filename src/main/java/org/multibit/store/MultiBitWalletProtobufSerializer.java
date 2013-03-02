@@ -16,6 +16,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutPoint;
 import com.google.bitcoin.core.TransactionOutput;
@@ -298,5 +299,30 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
 
         Protos.Wallet walletProtoWithMandatory = walletBuilder.build();
         walletProtoWithMandatory.writeTo(output);
+    }
+    
+    protected WalletTransaction connectTransactionOutputs(org.bitcoinj.wallet.Protos.Transaction txProto) {
+        Transaction tx = txMap.get(txProto.getHash());
+        WalletTransaction.Pool pool = WalletTransaction.Pool.valueOf(txProto.getPool().getNumber());
+        for (int i = 0 ; i < tx.getOutputs().size() ; i++) {
+            TransactionOutput output = tx.getOutputs().get(i);
+            final Protos.TransactionOutput transactionOutput = txProto.getTransactionOutput(i);
+            if (transactionOutput.hasSpentByTransactionHash()) {
+                Transaction spendingTx = txMap.get(transactionOutput.getSpentByTransactionHash());
+                final int spendingIndex = transactionOutput.getSpentByTransactionIndex();
+                if (spendingTx != null ) {
+                    TransactionInput input = spendingTx.getInputs().get(spendingIndex);
+                    input.connect(output);
+                }
+            }
+        }
+        
+        if (txProto.hasConfidence()) {
+            Protos.TransactionConfidence confidenceProto = txProto.getConfidence();
+            TransactionConfidence confidence = tx.getConfidence();
+            readConfidence(tx, confidenceProto, confidence);
+        }
+
+        return new WalletTransaction(pool, tx);
     }
 }
