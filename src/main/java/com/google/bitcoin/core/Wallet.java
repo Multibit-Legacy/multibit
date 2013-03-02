@@ -2348,6 +2348,19 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
 
     /**
+     * Create a new encrypted ECKey and add it to the wallet.
+     * 
+     * @param keyCrypter The keyCrypter to use in encrypting the new key
+     * @param aesKey The AES key to use to encrypt the new key
+     * @return ECKey the new, encrypted ECKey
+     */
+    public synchronized ECKey addNewEncryptedKey(KeyCrypter keyCrypter, KeyParameter aesKey) {
+        ECKey newKey = (new ECKey()).encrypt(keyCrypter, aesKey);
+        addKey(newKey);
+        return newKey;
+    }
+
+    /**
      *  Check whether the password can decrypt the first key in the wallet.
      *  This can be used to check the validity of an entered password.
      *
