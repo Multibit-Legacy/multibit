@@ -1627,7 +1627,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * in the list that was not already present.
      * @throws KeyCrypterException
      */
-    public synchronized int addKeys(final List<ECKey> keys) throws KeyCrypterException {
+    public synchronized int addKeys(final List<ECKey> keys) {
         // TODO: Consider making keys a sorted list or hashset so membership testing is faster.
         int added = 0;
         for (final ECKey key : keys) {
@@ -1635,9 +1635,10 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
             // If the key has a keyCrypter that does not match the Wallet's then a KeyCrypterException is thrown.
             // This is done because only one keyCrypter is persisted per Wallet and hence all the keys must be homogenous.
-            if (keyCrypter != null && keyCrypter.getEncryptionType() != EncryptionType.UNENCRYPTED &&
-                    !keyCrypter.equals(key.getKeyCrypter())) {
-                throw new KeyCrypterException("Cannot add key " + key.toString() + " because the keyCrypter does not match the wallets. Keys must be homogenous.");
+            if (keyCrypter != null && keyCrypter.getEncryptionType() != EncryptionType.UNENCRYPTED) {
+                if ( key.isEncrypted() && !keyCrypter.equals(key.getKeyCrypter())) {
+                    throw new KeyCrypterException("Cannot add key " + key.toString() + " because the keyCrypter does not match the wallets. Keys must be homogenous.");
+                }
             }
 
             keychain.add(key);
@@ -1651,6 +1652,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         }
         return added;
     }
+
 
     /**
      * Locates a keypair from the keychain given the hash of the public key. This is needed when finding out which
@@ -2274,7 +2276,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
      * @throws KeyCrypterException Thrown if the wallet encryption fails. If so, the wallet state is unchanged.
      */
-    synchronized public void encrypt(KeyCrypter keyCrypter, KeyParameter aesKey) throws KeyCrypterException {
+    public synchronized void encrypt(KeyCrypter keyCrypter, KeyParameter aesKey) {
         Preconditions.checkNotNull(keyCrypter);
 
         // If the wallet is already encrypted then you cannot encrypt it again.
@@ -2287,19 +2289,23 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
         for (ECKey key : keychain) {
             if (key.isEncrypted()) {
-                throw new IllegalStateException("Key '" + key.toString() + "' is already encrypted.");
+                // Key is already encrypted - add as is.
+                encryptedKeyChain.add(key);
+            } else {
+                // Encrypt the key.
+                ECKey encryptedKey = key.encrypt(keyCrypter, aesKey);
+
+                // Check that the encrypted key can be successfully decrypted.
+                // This is done as it is a critical failure if the private key cannot be decrypted successfully 
+                // (all bitcoin controlled by that private key is lost forever).
+                // For a correctly constructed keyCrypter the encryption should always be reversible so it is just being as cautious as possible.
+                if (!ECKey.encryptionIsReversible(key, encryptedKey, keyCrypter, aesKey)) {
+                    // Abort encryption
+                    throw new KeyCrypterException("The key " + key.toString() + " cannot be successfully decrypted after encryption so aborting wallet encryption.");
+                }
+
+                encryptedKeyChain.add(encryptedKey);
             }
-
-            // Encrypt the key.
-            ECKey encryptedKey = key.encrypt(keyCrypter, aesKey);
-
-            // Check that the encrypted key can be successfully decrypted.
-            if (!ECKey.encryptionIsReversible(key, encryptedKey, keyCrypter, aesKey)) {
-                // Abort encryption
-                throw new KeyCrypterException("The key " + key.toString() + " cannot be successfully decrypted after encryption so aborting wallet encryption.");
-            }
-
-            encryptedKeyChain.add(encryptedKey);
         }
 
         // Replace the old keychain with the encrypted one.
@@ -2315,7 +2321,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
      * @throws KeyCrypterException Thrown if the wallet decryption fails. If so, the wallet state is unchanged.
      */
-    public synchronized void decrypt(KeyParameter aesKey) throws KeyCrypterException {
+    public synchronized void decrypt(KeyParameter aesKey) {
         // Check the wallet is already encrypted - you cannot decrypt an unencrypted wallet.
         if (getEncryptionType() == EncryptionType.UNENCRYPTED) {
             throw new IllegalStateException("Wallet is already decrypted");
@@ -2323,21 +2329,20 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
         // Check that the wallet keyCrypter is non-null.
         // This is set either at construction (if an encrypted wallet is created) or by wallet encryption.
-        if (keyCrypter == null) {
-            throw new KeyCrypterException("The wallet keyCrypter is null so cannot decrypt.");
-        }
+        Preconditions.checkNotNull(keyCrypter);
 
         // Create a new arraylist that will contain the decrypted keys
         ArrayList<ECKey> decryptedKeyChain = new ArrayList<ECKey>();
 
         for (ECKey key : keychain) {
-            if (!key.isEncrypted()) {
-                throw new IllegalStateException("Key '" + key.toString() + "' is already decrypted.");
-            }
-
             // Decrypt the key.
-            ECKey decryptedECKey = key.decrypt(keyCrypter, aesKey);
-            decryptedKeyChain.add(decryptedECKey);
+            if (!key.isEncrypted()) {
+                // Not encrypted - add to chain as is.
+                decryptedKeyChain.add(key);
+            } else {
+                ECKey decryptedECKey = key.decrypt(keyCrypter, aesKey);
+                decryptedKeyChain.add(decryptedECKey);
+            }
         }
 
         // Replace the old keychain with the unencrypted one.
@@ -2376,21 +2381,35 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
 
     /**
-     *  Check whether the AES key can decrypt the first key in the wallet.
+     *  Check whether the AES key can decrypt the first encrypted key in the wallet.
      *
-     *  @returns boolean true if AES key supplied can decrypt the first private key in the wallet, false otherwise.
+     *  @returns boolean true if AES key supplied can decrypt the first encrypted private key in the wallet, false otherwise.
      */
     public synchronized boolean checkAESKey(KeyParameter aesKey) {
         if (getKeychain() == null || getKeychain().size() == 0) {
             return false;
         }
 
-        ECKey firstECKey = getKeychain().iterator().next();
-        String originalAddress = firstECKey.toAddress(getNetworkParameters()).toString();
+        // Find the first encrypted key in the wallet.
+        ECKey firstEncryptedECKey = null;
+        Iterator<ECKey> iterator = getKeychain().iterator();
+        while (iterator.hasNext() && firstEncryptedECKey == null) {
+            ECKey loopECKey = iterator.next();
+            if (loopECKey.isEncrypted()) {
+                firstEncryptedECKey = loopECKey;
+            }
+        }
+        
+        // There are no encrypted keys in the wallet.
+        if (firstEncryptedECKey == null) {
+             return false;
+        }
+    
+        String originalAddress = firstEncryptedECKey.toAddress(getNetworkParameters()).toString();
 
-        if (firstECKey != null && firstECKey.isEncrypted() && firstECKey.getEncryptedPrivateKey() != null) {
+        if (firstEncryptedECKey != null && firstEncryptedECKey.isEncrypted() && firstEncryptedECKey.getEncryptedPrivateKey() != null) {
             try {
-                ECKey rebornKey = firstECKey.decrypt(keyCrypter, aesKey);
+                ECKey rebornKey = firstEncryptedECKey.decrypt(keyCrypter, aesKey);
                 
                 // Check that the decrypted private key's address is correct ie it decrypted accurately.
                 String rebornAddress = rebornKey.toAddress(getNetworkParameters()).toString();

@@ -56,13 +56,20 @@ public class WalletTest {
     private Address myAddress;
     private Wallet wallet;
     private Wallet encryptedWallet;
+    // A wallet with an initial unencrypted private key and an encrypted private key.
+    private Wallet encryptedHetergeneousWallet;
 
     private BlockChain chain;
     private BlockStore blockStore;
     private ECKey myKey;
     private ECKey myEncryptedKey;
-    private Address myEncryptedAddress;
+    
+    private ECKey myKey2;
+    private ECKey myEncryptedKey2;
 
+    private Address myEncryptedAddress;
+    private Address myEncryptedAddress2;
+    
     private static char[] PASSWORD1 = "my helicopter contains eels".toCharArray();
     private static char[] WRONG_PASSWORD = "nothing noone nobody nowhere".toCharArray();
 
@@ -105,20 +112,21 @@ public class WalletTest {
     @Before
     public void setUp() throws Exception {
         myKey = new ECKey();
+        myKey2 = new ECKey();
         myAddress = myKey.toAddress(params);
         wallet = new Wallet(params);
         wallet.addKey(myKey);
 
         byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
         secureRandom.nextBytes(salt);
-        Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(
-                ByteString.copyFrom(salt));
+        Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
 
         keyCrypter = new KeyCrypterScrypt(scryptParameters);
 
         wallet = new Wallet(params);
         encryptedWallet = new Wallet(params, keyCrypter);
+        encryptedHetergeneousWallet = new Wallet(params, keyCrypter);
 
         aesKey = keyCrypter.deriveKey(PASSWORD1);
         wrongAesKey = keyCrypter.deriveKey(WRONG_PASSWORD);
@@ -127,12 +135,15 @@ public class WalletTest {
 
         myEncryptedKey = encryptedWallet.addNewEncryptedKey(keyCrypter, aesKey);
         myEncryptedAddress = myEncryptedKey.toAddress(params);
-
+        
+        encryptedHetergeneousWallet.addKey(myKey2);
+        myEncryptedKey2 = encryptedHetergeneousWallet.addNewEncryptedKey(keyCrypter, aesKey);
+        myEncryptedAddress2 = myEncryptedKey2.toAddress(params);
+        
         blockStore = new MemoryBlockStore(params);
         chain = new BlockChain(params, wallet, blockStore);
         BriefLogFormatter.init();
     }
-
     @Test
     public void basicSpending() throws Exception {
         basicSpendingCommon(wallet, myAddress, false);
@@ -141,6 +152,11 @@ public class WalletTest {
     @Test
     public void basicSpendingWithEncryptedWallet() throws Exception {
         basicSpendingCommon(encryptedWallet, myEncryptedAddress, true);
+    }
+
+    @Test
+    public void basicSpendingWithEncryptedHetergeneousWallet() throws Exception {
+        basicSpendingCommon(encryptedHetergeneousWallet, myEncryptedAddress2, true);
     }
 
     private void basicSpendingCommon(Wallet wallet, Address toAddress, boolean testEncryption) throws Exception {
@@ -906,39 +922,38 @@ public class WalletTest {
 
     @Test
     public void encryptionDecryptionBasic() throws Exception {
+        encryptionDecryptionBasicCommon(encryptedWallet);
+        encryptionDecryptionBasicCommon(encryptedHetergeneousWallet);
+    }
+    
+    private void encryptionDecryptionBasicCommon(Wallet wallet) {
         // Check the wallet is initially of WalletType ENCRYPTED.
-        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertTrue("Wallet is not an encrypted wallet", wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
 
-        // Correct password should decrypt first private key.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with correct password.2",
-                encryptedWallet.checkPassword(PASSWORD1));
+        // Correct password should decrypt first encrypted private key.
+        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with correct password.2", wallet.checkPassword(PASSWORD1));
 
-        // Incorrect password should not decrypt first private key.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.3",
-                !encryptedWallet.checkPassword(WRONG_PASSWORD));
+        // Incorrect password should not decrypt first encrypted private key.
+        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.3", !wallet.checkPassword(WRONG_PASSWORD));
 
         // Decrypt wallet.
         assertTrue("The keyCrypter is missing but should not be", keyCrypter != null);
-        encryptedWallet.decrypt(aesKey);
+        wallet.decrypt(aesKey);
 
         // Wallet should now be unencrypted.
-        assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getKeyCrypter() == null);
+        assertTrue("Wallet is not an unencrypted wallet", wallet.getKeyCrypter() == null);
 
-        // Correct password should not decrypt first private key as wallet is
-        // unencrypted.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with correct password",
-                !encryptedWallet.checkPassword(PASSWORD1));
+        // Correct password should not decrypt first encrypted private key as wallet is unencrypted.
+         assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with correct password", !wallet.checkPassword(PASSWORD1));
 
-        // Incorrect password should not decrypt first private key as wallet is
-        // unencrypted.
-        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password",
-                !encryptedWallet.checkPassword(WRONG_PASSWORD));
+        // Incorrect password should not decrypt first encrypted private key as wallet is unencrypted.
+        assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password", !wallet.checkPassword(WRONG_PASSWORD));
 
         // Encrypt wallet.
-        encryptedWallet.encrypt(keyCrypter, aesKey);
+        wallet.encrypt(keyCrypter, aesKey);
 
         // Wallet should now be of type WalletType.ENCRYPTED_SCRYPT_AES.
-        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertTrue("Wallet is not an encrypted wallet", wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
     }
 
     @Test
@@ -1009,7 +1024,7 @@ public class WalletTest {
         KeyCrypter keyCrypterDifferent = new KeyCrypterScrypt(scryptParameters);
 
         ECKey ecKeyDifferent = new ECKey();
-        ecKeyDifferent.encrypt(keyCrypterDifferent, aesKey);
+        ecKeyDifferent = ecKeyDifferent.encrypt(keyCrypterDifferent, aesKey);
 
         int numberOfKeys = encryptedWallet.getKeychain().size();
         assertTrue("Wrong number of keys in wallet before key addition", numberOfKeys == 1);
