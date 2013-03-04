@@ -1635,7 +1635,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
             // If the key has a keyCrypter that does not match the Wallet's then a KeyCrypterException is thrown.
             // This is done because only one keyCrypter is persisted per Wallet and hence all the keys must be homogenous.
-            if (keyCrypter != null && keyCrypter.getEncryptionType() != EncryptionType.UNENCRYPTED) {
+            if (keyCrypter != null && keyCrypter.getUnderstoodEncryptionType() != EncryptionType.UNENCRYPTED) {
                 if ( key.isEncrypted() && !keyCrypter.equals(key.getKeyCrypter())) {
                     throw new KeyCrypterException("Cannot add key " + key.toString() + " because the keyCrypter does not match the wallets. Keys must be homogenous.");
                 }
@@ -2449,7 +2449,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             // Unencrypted wallet.
             return EncryptionType.UNENCRYPTED;
         } else {
-            return keyCrypter.getEncryptionType();
+            return keyCrypter.getUnderstoodEncryptionType();
         }
     }
 

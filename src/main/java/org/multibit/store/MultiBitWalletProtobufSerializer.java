@@ -98,14 +98,14 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
             walletBuilder.setEncryptionType(EncryptionType.UNENCRYPTED);
         } else {
             // The wallet is encrypted.
-            walletBuilder.setEncryptionType(keyCrypter.getEncryptionType());
+            walletBuilder.setEncryptionType(keyCrypter.getUnderstoodEncryptionType());
             if (keyCrypter instanceof KeyCrypterScrypt) {
                 walletBuilder.setEncryptionType(EncryptionType.ENCRYPTED_SCRYPT_AES);
                 KeyCrypterScrypt keyCrypterScrypt = (KeyCrypterScrypt) keyCrypter;
                 walletBuilder.setEncryptionParameters(keyCrypterScrypt.getScryptParameters());
             } else {
                 // Some other form of encryption has been specified that we do not know how to persist.
-                throw new RuntimeException("The wallet has encryption of type '" + keyCrypter.getEncryptionType() + "' but this WalletProtobufSerializer does not know how to persist this.");
+                throw new RuntimeException("The wallet has encryption of type '" + keyCrypter.getUnderstoodEncryptionType() + "' but this WalletProtobufSerializer does not know how to persist this.");
             }
         }
 
@@ -180,7 +180,7 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
             byte[] pubKey = keyProto.hasPublicKey() ? keyProto.getPublicKey().toByteArray() : null;
 
             ECKey ecKey = null;
-            if (keyCrypter != null && keyCrypter.getEncryptionType() != EncryptionType.UNENCRYPTED) {
+            if (keyCrypter != null && keyCrypter.getUnderstoodEncryptionType() != EncryptionType.UNENCRYPTED) {
                 // If the key is encrypted construct an ECKey using the encrypted private key bytes.
                 ecKey = new ECKey(encryptedPrivateKey, pubKey, keyCrypter);
             } else {
