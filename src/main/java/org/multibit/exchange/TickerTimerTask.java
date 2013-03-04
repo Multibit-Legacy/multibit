@@ -87,6 +87,12 @@ public class TickerTimerTask extends TimerTask {
      */
     @Override
     public void run() {
+        // If this is the second row and is not showing, do not do anything.
+        if (!isFirstExchange && !Boolean.TRUE.toString().equals(
+                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW))) {
+            return;
+        }
+        
         try {
             // Create exchange.
             synchronized (this) {
