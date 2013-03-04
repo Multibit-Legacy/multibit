@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -204,4 +205,23 @@ public class CurrencyConverterTest extends TestCase {
         assertNotNull(converterResult);
         assertEquals(testBTCAmount, converterResult.getBtcMoney().getAmount());
     }
+    
+    @Test 
+    public void testAllCurrencies() throws Exception {
+        MultiBitController controller = new MultiBitController();
+        @SuppressWarnings("unused")
+        MultiBitModel model = new MultiBitModel(controller);
+        
+        CurrencyConverter converter = CurrencyConverter.INSTANCE;
+        BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
+
+        // Cycle through all the currencies, making sure they all initialise
+        Map<String, String> currencyCodeToDescriptionMap = converter.getCurrencyCodeToDescriptionMap();
+        for (String currencyCode : currencyCodeToDescriptionMap.keySet()) {
+            converter.initialise(controller, currencyCode);     
+            String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+            CurrencyConverterResult currencyConverterResult = converter.convertFromFiatToBTC("1.0");
+        }
+    }
+
 }

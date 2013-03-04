@@ -288,10 +288,16 @@ public class TickerTimerTask extends TimerTask {
 
                     if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(newExchangeName)) {
                         if ("USD".equalsIgnoreCase(baseCurrency) && !"BTC".equalsIgnoreCase(counterCurrency)) {
-                            availableCurrencies.add(counterCurrency);
+                            if (!"EEK".equalsIgnoreCase(counterCurrency) && !"CLF".equalsIgnoreCase(counterCurrency) 
+                             && !"JEP".equalsIgnoreCase(counterCurrency) && ! "SVC".equalsIgnoreCase(counterCurrency)) {
+                                availableCurrencies.add(counterCurrency);
+                            }
                         }
                         if ("USD".equalsIgnoreCase(counterCurrency) && !"BTC".equalsIgnoreCase(baseCurrency)) {
-                            availableCurrencies.add(baseCurrency);
+                            if (!"EEK".equalsIgnoreCase(baseCurrency) && !"CLF".equalsIgnoreCase(baseCurrency) 
+                                    && !"JEP".equalsIgnoreCase(baseCurrency) && ! "SVC".equalsIgnoreCase(baseCurrency)) {
+                                availableCurrencies.add(baseCurrency);
+                            }
                         }
                     } else {
                         if ("BTC".equalsIgnoreCase(baseCurrency)) {

@@ -173,7 +173,6 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("CAD", "Canadian Dollar");
         currencyCodeToDescriptionMap.put("CDF", "Congolese Franc");
         currencyCodeToDescriptionMap.put("CHF", "Swiss Franc");
-        currencyCodeToDescriptionMap.put("CLF", "Chilean Unit of Account (UF)");
         currencyCodeToDescriptionMap.put("CLP", "Chilean Peso");
         currencyCodeToDescriptionMap.put("CNY", "Chinese Yuan");
         currencyCodeToDescriptionMap.put("COP", "Colombian Peso");
@@ -185,7 +184,6 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("DKK", "Danish Krone");
         currencyCodeToDescriptionMap.put("DOP", "Dominican Peso");
         currencyCodeToDescriptionMap.put("DZD", "Algerian Dinar");
-        currencyCodeToDescriptionMap.put("EEK", "Estonian Kroon");
         currencyCodeToDescriptionMap.put("EGP", "Egyptian Pound");
         currencyCodeToDescriptionMap.put("ETB", "Ethiopian Birr");
         currencyCodeToDescriptionMap.put("EUR", "Euro");
@@ -210,7 +208,6 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("IQD", "Iraqi Dinar");
         currencyCodeToDescriptionMap.put("IRR", "Iranian Rial");
         currencyCodeToDescriptionMap.put("ISK", "Icelandic Kr\u00F3na");
-        currencyCodeToDescriptionMap.put("JEP", "Jersey Pound");
         currencyCodeToDescriptionMap.put("JMD", "Jamaican Dollar");
         currencyCodeToDescriptionMap.put("JOD", "Jordanian Dinar");
         currencyCodeToDescriptionMap.put("JPY", "Japanese Yen");
@@ -275,7 +272,6 @@ public enum CurrencyConverter {
         currencyCodeToDescriptionMap.put("SOS", "Somali Shilling");
         currencyCodeToDescriptionMap.put("SRD", "Surinamese Dollar");
         currencyCodeToDescriptionMap.put("STD", "S\u0101o Tom\u00E9 and Principe Dobra");
-        currencyCodeToDescriptionMap.put("SVC", "Salvadoran Col\u00F3n");
         currencyCodeToDescriptionMap.put("SYP", "Syrian Pound");
         currencyCodeToDescriptionMap.put("SZL", "Swazi Lilangeni");
         currencyCodeToDescriptionMap.put("THB", "Thai Baht");
