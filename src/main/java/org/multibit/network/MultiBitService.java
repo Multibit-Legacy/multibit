@@ -573,7 +573,7 @@ public class MultiBitService {
      * @throws EncrypterDecrypterException 
      */
 
-    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee, char[] password)
+    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee, CharSequence password)
             throws java.io.IOException, AddressFormatException, KeyCrypterException {
         // Send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);

@@ -73,7 +73,7 @@ public class FileHandlerTest extends TestCase {
 
     private static final String TEST_SCRYPT_PARAMETERS = "testScryptParameters";
     
-    private final char[] WALLET_PASSWORD = "horatio nelson 123".toCharArray();
+    private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
 
     private SecureRandom secureRandom;
     

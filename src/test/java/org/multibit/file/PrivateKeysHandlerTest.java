@@ -43,7 +43,7 @@ public class PrivateKeysHandlerTest extends TestCase {
     public static final String TEST1_PRIVATE_KEYS_FILE = "test1.key";
     public static final String EXPECTED_TEST1_PRIVATE_KEYS_FILE = "expectedTest1.key";
 
-    public static final char[] ENCRYPTED_TEST1_PASSWORD = "password".toCharArray();
+    public static final CharSequence ENCRYPTED_TEST1_PASSWORD = "password";
     public static final String ENCRYPTED_TEST1_PRIVATE_KEYS_FILE = "encryptedTest1.key";
 
     public static final String[] EXPECTED_ADDRESSES_FOR_TEST1_WALLET = new String[]{"15ZLe7GCAfdTTMMkbm38KTtahq9y549rB2", 

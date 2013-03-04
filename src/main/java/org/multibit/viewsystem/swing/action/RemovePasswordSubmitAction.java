@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.nio.CharBuffer;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -93,7 +94,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
 
                             controller.fireWalletBusyChange(true);
 
-                            wallet.decrypt(wallet.getKeyCrypter().deriveKey(passwordToUse));
+                            wallet.decrypt(wallet.getKeyCrypter().deriveKey(CharBuffer.wrap(passwordToUse)));
                             controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
                             controller.getModel().getActivePerWalletModelData().setDirty(true);
                             FileHandler fileHandler = new FileHandler(controller);

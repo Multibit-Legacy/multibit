@@ -47,9 +47,9 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     private static final String EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED = "The private keys were exported.";
     private static final String EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY = "The export file could be read in correctly and the private keys match the wallet contents";
      
-    public static final char[] EXPORT_FILE_PASSWORD = "the quick brown fox jumps over the lazy dog 0123456789".toCharArray();
-    public static final char[] WALLET_PASSWORD = "the unbelievable lightness of being".toCharArray();
-    public static final char[] WRONG_PASSWORD = "this is the wrong password".toCharArray();
+    public static final CharSequence EXPORT_FILE_PASSWORD = "the quick brown fox jumps over the lazy dog 0123456789";
+    public static final CharSequence WALLET_PASSWORD = "the unbelievable lightness of being";
+    public static final CharSequence WRONG_PASSWORD = "this is the wrong password";
     
     @Test
     public void testExportPrivateKeysWithNonEncryptedWallet() throws Exception { 

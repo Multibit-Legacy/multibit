@@ -714,8 +714,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
         return confirmText2.getText();
     }
 
-    public void setWalletPassword(char[] password) {
-        walletPasswordField.setText(new String(password));
+    public void setWalletPassword(CharSequence password) {
+        walletPasswordField.setText(password.toString());
     }
     
     public boolean isWalletPasswordFieldEnabled() {

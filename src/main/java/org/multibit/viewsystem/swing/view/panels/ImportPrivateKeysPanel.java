@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -977,7 +978,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
                 Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename),
-                        passwordField1.getPassword());
+                        CharBuffer.wrap(passwordField1.getPassword()));
                 numberOfKeysLabel.setText("" + privateKeyAndDates.size());
 
                 Date replayDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel()
@@ -1131,12 +1132,12 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         this.outputFilename = outputFilename;
     }
     
-    public void setImportFilePassword(char[] password) {
-        passwordField1.setText(new String(password));
+    public void setImportFilePassword(CharSequence password) {
+        passwordField1.setText(password.toString());
     }
     
-    public void setWalletPassword(char[] password) {
-        walletPasswordField.setText(new String(password));
+    public void setWalletPassword(CharSequence password) {
+        walletPasswordField.setText(password.toString());
     }
     
     public boolean isWalletPasswordFieldEnabled() {

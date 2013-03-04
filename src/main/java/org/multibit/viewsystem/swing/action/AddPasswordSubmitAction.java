@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.CharBuffer;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -134,13 +135,13 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                         keyCrypterToUse = wallet.getKeyCrypter();
                     }
 
-                    wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(passwordToUse));
+                    wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(CharBuffer.wrap(passwordToUse)));
                     controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
                     controller.getModel().getActivePerWalletModelData().setDirty(true);
                     FileHandler fileHandler = new FileHandler(controller);
                     fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
 
-                    privateKeysBackupFile = fileHandler.backupPrivateKeys(passwordToUse);
+                    privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(passwordToUse));
 
                 }
             } catch (KeyCrypterException ede) {

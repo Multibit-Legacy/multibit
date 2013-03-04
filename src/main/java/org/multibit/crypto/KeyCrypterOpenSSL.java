@@ -16,6 +16,7 @@
 package org.multibit.crypto;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.CharBuffer;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
@@ -33,6 +34,7 @@ import org.spongycastle.crypto.params.ParametersWithIV;
 
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.common.base.Preconditions;
 
 /**
  * This class encrypts and decrypts a string in a manner that is compatible with
@@ -123,16 +125,16 @@ public class KeyCrypterOpenSSL {
      * @return The CipherParameters containing the created key
      * @throws Exception
      */
-    private CipherParameters getAESPasswordKey(char[] password, byte[] salt) throws KeyCrypterException {
+    private CipherParameters getAESPasswordKey(CharSequence password, byte[] salt) throws KeyCrypterException {
         try {
             PBEParametersGenerator generator = new OpenSSLPBEParametersGenerator();
-            generator.init(PBEParametersGenerator.PKCS5PasswordToBytes(password), salt, NUMBER_OF_ITERATIONS);
+            generator.init(PBEParametersGenerator.PKCS5PasswordToBytes(convertToCharArray(password)), salt, NUMBER_OF_ITERATIONS);
 
             ParametersWithIV key = (ParametersWithIV) generator.generateDerivedParameters(KEY_LENGTH, IV_LENGTH);
 
             return key;
         } catch (Exception e) {
-            throw new KeyCrypterException("Could not generate key from password of length " + password.length
+            throw new KeyCrypterException("Could not generate key from password of length " + password.length()
                     + " and salt '" + Utils.bytesToHexString(salt), e);
         }
     }
@@ -147,7 +149,7 @@ public class KeyCrypterOpenSSL {
      * @return The encrypted string
      * @throws EncrypterDecrypterException
      */
-    public String encrypt(String plainText, char[] password) throws KeyCrypterException {
+    public String encrypt(String plainText, CharSequence password) throws KeyCrypterException {
         try {
             byte[] plainTextAsBytes;
             if (plainText == null) {
@@ -177,7 +179,7 @@ public class KeyCrypterOpenSSL {
      * @return SALT_LENGTH bytes of salt followed by the encrypted bytes.
      * @throws EncrypterDecrypterException
      */
-    public byte[] encrypt(byte[] plainTextAsBytes, char[] password) throws KeyCrypterException {
+    public byte[] encrypt(byte[] plainTextAsBytes, CharSequence password) throws KeyCrypterException {
         try {
             // Generate salt - each encryption call has a different salt.
             byte[] salt = new byte[SALT_LENGTH];
@@ -210,7 +212,7 @@ public class KeyCrypterOpenSSL {
      * @return The decrypted text
      * @throws EncrypterDecrypterException
      */
-    public String decrypt(String textToDecode, char[] password) throws KeyCrypterException {
+    public String decrypt(String textToDecode, CharSequence password) throws KeyCrypterException {
         try {
             final byte[] decodeTextAsBytes = Base64.decodeBase64(textToDecode.getBytes(STRING_ENCODING));
             
@@ -239,7 +241,7 @@ public class KeyCrypterOpenSSL {
      * @return The decrypted bytes
      * @throws EncrypterDecrypterException
      */
-    public byte[] decrypt(byte[] bytesToDecode, char[] password) throws KeyCrypterException {
+    public byte[] decrypt(byte[] bytesToDecode, CharSequence password) throws KeyCrypterException {
         try {
             // separate the salt and bytes to decrypt
             byte[] salt = new byte[SALT_LENGTH];
@@ -275,6 +277,23 @@ public class KeyCrypterOpenSSL {
         System.arraycopy(arrayB, 0, result, arrayA.length, arrayB.length);
 
         return result;
+    }
+    
+    /**
+     * Convert a CharSequence (which are UTF16) into a char array.
+     *
+     * Note: a String.getBytes() is not used to avoid creating a String of the password in the JVM.
+     */
+    private char[] convertToCharArray(CharSequence charSequence) {
+        if (charSequence == null) {
+            return null;
+        }
+
+        char[] charArray = new char[charSequence.length()];
+        for(int i = 0; i < charSequence.length(); i++) {
+            charArray[i] = charSequence.charAt(i);
+        }
+        return charArray;
     }
 
     /**

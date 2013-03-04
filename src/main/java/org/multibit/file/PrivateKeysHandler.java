@@ -92,7 +92,7 @@ public class PrivateKeysHandler {
         keyCrypter = new KeyCrypterOpenSSL();
     }
 
-    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile, char[] exportPassword, char[] walletPassword)
+    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile, CharSequence exportPassword, CharSequence walletPassword)
             throws IOException, KeyCrypterException {
 
         // Construct a StringBuffer with the private key export text.
@@ -153,7 +153,7 @@ public class PrivateKeysHandler {
      * @throws EncrypterDecrypterException 
      */
     public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile,
-            char[] exportPassword, char[] walletPassword) throws KeyCrypterException {
+            CharSequence exportPassword, CharSequence walletPassword) throws KeyCrypterException {
         boolean thereWereFailures = false;
 
         String messageKey = "privateKeysHandler.failedForUnknownReason";
@@ -206,7 +206,7 @@ public class PrivateKeysHandler {
         return new Verification(!thereWereFailures, messageKey, messageData);
     }
 
-    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException, KeyCrypterException {
+    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, CharSequence password) throws PrivateKeysHandlerException, KeyCrypterException {
         if (importFile == null) {
             throw new PrivateKeysHandlerException("Import file cannot be null");
         }
@@ -261,7 +261,7 @@ public class PrivateKeysHandler {
         out.append("#").append("\n");
     }
 
-    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, char[] walletPassword) throws KeyCrypterException {
+    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, CharSequence walletPassword) throws KeyCrypterException {
        // Determine if keys need to be decrypted.
         boolean decryptionRequired = false;
 

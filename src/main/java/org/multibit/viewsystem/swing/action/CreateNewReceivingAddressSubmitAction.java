@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -108,7 +109,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             encryptNewKeys = true;
 
             try {
-                if (!controller.getModel().getActiveWallet().checkPassword(walletPassword.getPassword())) {
+                if (!controller.getModel().getActiveWallet().checkPassword(CharBuffer.wrap(walletPassword.getPassword()))) {
                     // The password supplied is incorrect.
                     createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
                             "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
@@ -151,7 +152,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             controller.fireWalletBusyChange(true);                                
 
             createNewReceivingAddressesInBackground(createNewReceivingAddressPanel.getNumberOfAddressesToCreate(), encryptNewKeys, 
-                walletPassword.getPassword(), this);
+                CharBuffer.wrap(walletPassword.getPassword()), this);
         }
     }
     
@@ -159,7 +160,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
      * Create the new receiving addresses in a background Swing worker thread.
      */
     private void createNewReceivingAddressesInBackground(final int numberOfAddressesToCreate, final boolean encryptNewKeys, 
-            final char[] walletPassword, final CreateNewReceivingAddressSubmitAction thisAction) {
+            final CharSequence walletPassword, final CreateNewReceivingAddressSubmitAction thisAction) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
@@ -206,7 +207,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                                 false, false);
                         }
                         
-                        privateKeysBackupFile = fileHandler.backupPrivateKeys(walletPassword);
+                        privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(walletPassword));
                         thisAction.setLastPrivateKeysBackupFile(privateKeysBackupFile);
 
                         successMeasure = Boolean.TRUE;

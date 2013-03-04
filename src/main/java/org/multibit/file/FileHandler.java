@@ -443,11 +443,11 @@ public class FileHandler {
      * @return File to which keys were backed up, or null if they were not.
      * @throws EncrypterDecrypterException 
      */
-    public File backupPrivateKeys(char[] passwordToUse) throws IOException, KeyCrypterException {
+    public File backupPrivateKeys(CharSequence passwordToUse) throws IOException, KeyCrypterException {
         File privateKeysBackupFile = null;
 
         // Only encrypted files are backed up, and they must have a non blank password.
-        if (passwordToUse != null && passwordToUse.length > 0) {
+        if (passwordToUse != null && passwordToUse.length() > 0) {
             if (controller.getModel() != null
                     && controller.getModel().getActiveWalletWalletInfo() != null
                     && controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF_ENCRYPTED) {

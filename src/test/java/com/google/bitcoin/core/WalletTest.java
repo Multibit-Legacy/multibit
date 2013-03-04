@@ -70,8 +70,8 @@ public class WalletTest {
     private Address myEncryptedAddress;
     private Address myEncryptedAddress2;
     
-    private static char[] PASSWORD1 = "my helicopter contains eels".toCharArray();
-    private static char[] WRONG_PASSWORD = "nothing noone nobody nowhere".toCharArray();
+    private static CharSequence PASSWORD1 = "my helicopter contains eels";
+    private static CharSequence WRONG_PASSWORD = "nothing noone nobody nowhere";
 
     private KeyCrypter keyCrypter;
     private KeyParameter aesKey;

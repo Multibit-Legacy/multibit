@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.CharBuffer;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -122,7 +123,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                 boolean decryptSuccess = false;
                 KeyCrypter keyCrypterToUse = wallet.getKeyCrypter();
                 try {
-                    wallet.decrypt(keyCrypterToUse.deriveKey(currentPasswordToUse));
+                    wallet.decrypt(keyCrypterToUse.deriveKey(CharBuffer.wrap(currentPasswordToUse)));
                     decryptSuccess = true;
                 } catch (KeyCrypterException kce) {
                     // Notify the user that the decrypt failed.
@@ -139,11 +140,11 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
 
                 if (decryptSuccess) {
                     try {
-                        wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(newPasswordToUse));
+                        wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(CharBuffer.wrap(newPasswordToUse)));
                         FileHandler fileHandler = new FileHandler(controller);
                         fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
                         
-                        privateKeysBackupFile = fileHandler.backupPrivateKeys(newPasswordToUse);
+                        privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(newPasswordToUse));
                     } catch (KeyCrypterException kce) {
                         // Notify the user that the encrypt failed.
                         changePasswordPanel.setMessage1(controller.getLocaliser().getString(

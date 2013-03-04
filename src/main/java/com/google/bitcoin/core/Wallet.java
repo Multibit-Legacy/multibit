@@ -2380,7 +2380,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *  @throws KeyCrypterException An exception is thrown if the AES key could not be derived from the password.
      *  @returns boolean true if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public synchronized boolean checkPassword(char[] password) throws KeyCrypterException {
+    public synchronized boolean checkPassword(CharSequence password) throws KeyCrypterException {
         if (keyCrypter == null) {
             // The password cannot decrypt anything as the keyCrypter is null.
             return false;

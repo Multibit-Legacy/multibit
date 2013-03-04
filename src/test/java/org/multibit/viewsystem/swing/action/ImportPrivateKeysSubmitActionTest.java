@@ -41,8 +41,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
      
     private static final int DELAY_TO_COMPLETE_IMPORT = 5000; // milliseconds
     
-    public static final char[] WALLET_PASSWORD = "the unbelievable lightness of being".toCharArray();
-    public static final char[] WRONG_PASSWORD = "this is the wrong password".toCharArray();
+    public static final CharSequence WALLET_PASSWORD = "the unbelievable lightness of being";
+    public static final CharSequence WRONG_PASSWORD = "this is the wrong password";
     
     @Test
     public void testImportUnencryptedPrivateKeysWithUnencryptedWallet() throws Exception { 

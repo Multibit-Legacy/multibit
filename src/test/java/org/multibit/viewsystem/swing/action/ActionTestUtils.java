@@ -47,7 +47,7 @@ public class ActionTestUtils {
          return controller;
      }
      
-     public static void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, char[] walletPassword) throws Exception {
+     public static void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, CharSequence walletPassword) throws Exception {
          if (secureRandom == null) {
              secureRandom = new SecureRandom();
          }

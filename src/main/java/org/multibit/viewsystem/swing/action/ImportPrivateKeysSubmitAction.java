@@ -19,6 +19,7 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -125,7 +126,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 try {
                     // See if the password is the correct wallet password.
                     if (!controller.getModel().getActiveWallet()
-                            .checkPassword(walletPasswordField.getPassword())) {
+                            .checkPassword(CharBuffer.wrap(walletPasswordField.getPassword()))) {
                         // The password supplied is incorrect.
                         importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                                 "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
@@ -147,7 +148,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
         File importFile = new File(importFilename);
 
-        char[] passwordChar = passwordField.getPassword();
+        CharSequence passwordCharSequence = CharBuffer.wrap(passwordField.getPassword());
 
         try {
             if (importPrivateKeysPanel.multiBitFileChooser.accept(importFile)) {
@@ -155,9 +156,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
                 importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.readInPrivateKeys(importFile,
-                        passwordChar);
+                        passwordCharSequence);
 
-                changeWalletBusyAndImportInBackground(privateKeyAndDateArray, walletPasswordField.getPassword());
+                changeWalletBusyAndImportInBackground(privateKeyAndDateArray,  CharBuffer.wrap(walletPasswordField.getPassword()));
                 importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             } else if (importPrivateKeysPanel.myWalletEncryptedFileChooser.accept(importFile)) {
                 String importFileContents = PrivateKeysHandler.readFile(importFile);
@@ -183,7 +184,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     for (ECKey key : bitcoinj.keychain) {
                         privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
                     }
-                    changeWalletBusyAndImportInBackground(privateKeyAndDateArray, walletPasswordField.getPassword());
+                    changeWalletBusyAndImportInBackground(privateKeyAndDateArray, CharBuffer.wrap(walletPasswordField.getPassword()));
                 }
 
             } else if (importPrivateKeysPanel.myWalletPlainFileChooser.accept(importFile)) {
@@ -196,7 +197,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 for (ECKey key : bitcoinj.keychain) {
                     privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
                 }
-                changeWalletBusyAndImportInBackground(privateKeyAndDateArray, walletPasswordField.getPassword());
+                changeWalletBusyAndImportInBackground(privateKeyAndDateArray, CharBuffer.wrap(walletPasswordField.getPassword()));
 
             }
         } catch (Exception e) {
@@ -213,7 +214,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
     }
 
     private void changeWalletBusyAndImportInBackground(final Collection<PrivateKeyAndDate> privateKeyAndDateArray,
-            final char[] walletPassword) {
+            final CharSequence walletPassword) {
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
@@ -236,7 +237,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      * Import the private keys in a background Swing worker thread.
      */
     private void importPrivateKeysInBackground(final Collection<PrivateKeyAndDate> privateKeyAndDateArray,
-            final char[] walletPassword) {
+            final CharSequence walletPassword) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ImportPrivateKeysPanel finalImportPanel = importPrivateKeysPanel;
         final MultiBitController finalController = controller;
@@ -269,7 +270,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                                     if (walletKeyCrypter == null) {
                                         log.error("Missing KeyCrypter. Could not decrypt private keys.");
                                     }
-                                    aesKey = walletKeyCrypter.deriveKey(walletPassword);
+                                    aesKey = walletKeyCrypter.deriveKey(CharBuffer.wrap(walletPassword));
                                 }
                                 for (ECKey ecKey : walletToAddKeysTo.keychain) {
                                     if (keyEncryptionRequired) {
@@ -349,7 +350,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Import was successful.
                     uiMessage = finalController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
 
-                    privateKeysBackupFile = controller.getFileHandler().backupPrivateKeys(walletPassword);
+                    privateKeysBackupFile = controller.getFileHandler().backupPrivateKeys(CharBuffer.wrap(walletPassword));
 
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
@@ -427,7 +428,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      * Determine whether the key is already in the wallet.
      * @throws EncrypterDecrypterException 
      */
-    private boolean keyChainContainsPrivateKey(Collection<byte[]> unencryptedPrivateKeys, ECKey keyToAdd, char[] walletPassword) throws KeyCrypterException {
+    private boolean keyChainContainsPrivateKey(Collection<byte[]> unencryptedPrivateKeys, ECKey keyToAdd, CharSequence walletPassword) throws KeyCrypterException {
         if (unencryptedPrivateKeys == null || keyToAdd == null) {
             return false;
         } else {

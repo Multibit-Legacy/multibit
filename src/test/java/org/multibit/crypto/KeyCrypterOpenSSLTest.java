@@ -44,13 +44,13 @@ public class KeyCrypterOpenSSLTest extends TestCase {
     // Nonsense bytes for encryption test.
     private static final byte[] TEST_BYTES1= new byte[]{0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};
 
-    private static final char[] PASSWORD1 = "aTestPassword".toCharArray();
-    private static final char[] PASSWORD2 = "0123456789".toCharArray();
+    private static final CharSequence PASSWORD1 = "aTestPassword";
+    private static final CharSequence PASSWORD2 = "0123456789";
 
-    private static final char[] WRONG_PASSWORD = "thisIsTheWrongPassword".toCharArray();
+    private static final CharSequence WRONG_PASSWORD = "thisIsTheWrongPassword";
 
     // Moscow in Russian in Cyrillic.
-    private static final char[] PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430".toCharArray();
+    private static final CharSequence PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430";
 
     @Test
     public void testEncryptDecryptGood1() throws Exception {
@@ -102,11 +102,11 @@ public class KeyCrypterOpenSSLTest extends TestCase {
             String plainText = UUID.randomUUID().toString();
             String password = UUID.randomUUID().toString();
 
-            String cipherText = encrypterDecrypter.encrypt(plainText, password.toCharArray());
+            String cipherText = encrypterDecrypter.encrypt(plainText, password);
 
             assertNotNull(cipherText);
 
-            String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText, password.toCharArray());
+            String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText, password);
             assertEquals(plainText, reconstructedPlainText);
             System.out.print('.');
         }
@@ -163,7 +163,7 @@ public class KeyCrypterOpenSSLTest extends TestCase {
         // run the openssl equivalent command to decrypt the ciphertext
         try {
             String commandToRun = "openssl enc -d -p -aes-256-cbc -a -in " + temporaryCipherTextFile.getAbsolutePath() 
-            + " -out " + temporaryPlainTextFile.getAbsolutePath() + " -pass pass:" + new String(PASSWORD2);
+            + " -out " + temporaryPlainTextFile.getAbsolutePath() + " -pass pass:" + PASSWORD2.toString();
 
             System.out.println("EncrypterDecrypterTest: Decrypting command = '" + commandToRun + "'");
             
@@ -209,7 +209,7 @@ public class KeyCrypterOpenSSLTest extends TestCase {
         // run the openssl equivalent command to encrypt the plaintext
         try {
             String commandToRun = "openssl enc -p -aes-256-cbc -a -in " + temporaryPlainTextFile.getAbsolutePath() 
-            + " -out " + temporaryCipherTextFile.getAbsolutePath() + " -pass pass:" + new String(PASSWORD2);
+            + " -out " + temporaryCipherTextFile.getAbsolutePath() + " -pass pass:" + PASSWORD2.toString();
 
             System.out.println("EncrypterDecrypterTest: Encrypting command = '" + commandToRun + "'");
             

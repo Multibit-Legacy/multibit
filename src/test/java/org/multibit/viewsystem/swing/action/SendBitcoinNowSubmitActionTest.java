@@ -33,8 +33,8 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
     private static final String EXPECTED_SENDING_BITCOIN = "Sending bitcoin...";
 
-    public static final char[] TEST_PASSWORD1 = "my hovercraft has eels".toCharArray();
-    public static final char[] WALLET_PASSWORD = "testing testing 123".toCharArray();
+    public static final CharSequence TEST_PASSWORD1 = "my hovercraft has eels";
+    public static final CharSequence WALLET_PASSWORD = "testing testing 123";
 
     private static final int DELAY_TO_COMPLETE_OPERATION = 12000; // milliseconds
     private static final int DELAY_TO_UPDATE_MESSAGES = 4000; // milliseconds

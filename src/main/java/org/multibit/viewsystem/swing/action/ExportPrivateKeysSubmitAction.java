@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.CharBuffer;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -99,7 +100,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
             try {
                 // See if the password is the correct wallet password.
-                if (!controller.getModel().getActiveWallet().checkPassword(walletPassword.getPassword())) {
+                if (!controller.getModel().getActiveWallet().checkPassword(CharBuffer.wrap(walletPassword.getPassword()))) {
                     // The password supplied is incorrect.
                     exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                             "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
@@ -129,7 +130,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
         boolean performEncryptionOfExportFile = false;
 
-        char[] exportPasswordToUse = null;
+        CharSequence exportPasswordToUse = null;
 
         if (exportPrivateKeysPanel.requiresEncryption()) {
             // Get the passwords on the export file password fields.
@@ -147,7 +148,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 } else {
                     // Perform encryption.
                     performEncryptionOfExportFile = true;
-                    exportPasswordToUse = exportFilePassword.getPassword();
+                    exportPasswordToUse = CharBuffer.wrap(exportFilePassword.getPassword());
                 }
             }
         }
@@ -181,8 +182,12 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             
             controller.fireWalletBusyChange(true);
 
+            CharSequence walletPasswordToUse = null;
+            if (walletPassword.getPassword() != null) {
+                walletPasswordToUse = CharBuffer.wrap(walletPassword.getPassword());
+            }
             exportPrivateKeysInBackground(exportPrivateKeysFile, performEncryptionOfExportFile, exportPasswordToUse,
-                    walletPassword.getPassword());
+                    walletPasswordToUse);
         }
     }
 
@@ -190,7 +195,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      * Export the private keys in a background Swing worker thread.
      */
     private void exportPrivateKeysInBackground(final File exportPrivateKeysFile, final boolean performEncryptionOfExportFile,
-            final char[] exportPasswordToUse, final char[] walletPassword) {
+            final CharSequence exportPasswordToUse, final CharSequence walletPassword) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ExportPrivateKeysPanel finalExportPanel = exportPrivateKeysPanel;
 

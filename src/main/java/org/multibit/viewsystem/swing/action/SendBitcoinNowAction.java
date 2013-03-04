@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.CharBuffer;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -141,7 +142,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                 }
 
                 try {
-                    if (!controller.getModel().getActiveWallet().checkPassword(walletPassword)) {
+                    if (!controller.getModel().getActiveWallet().checkPassword(CharBuffer.wrap(walletPassword))) {
                         // The password supplied is incorrect.
                         sendBitcoinConfirmPanel.setMessageText(
                                 controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"),
@@ -166,7 +167,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                 
                 controller.fireWalletBusyChange(true);
 
-                performSend(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
+                performSend(perWalletModelData, sendAddress, sendAmount, fee, CharBuffer.wrap(walletPassword));
             }
         }
     }
@@ -174,7 +175,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     /**
      * Send the transaction directly.
      */
-    private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, char[] walletPassword) {
+    private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, CharSequence walletPassword) {
         String message = null;
         
         boolean sendWasSuccessful = Boolean.FALSE;

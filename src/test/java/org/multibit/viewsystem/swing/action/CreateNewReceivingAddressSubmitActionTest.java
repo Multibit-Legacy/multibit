@@ -25,7 +25,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class CreateNewReceivingAddressSubmitActionTest extends TestCase {      
-    public static final char[] TEST_PASSWORD1 = "my hovercraft has eels".toCharArray();
+    public static final CharSequence TEST_PASSWORD1 = "my hovercraft has eels";
     
     private int TIME_TO_WAIT_FOR_ONE_KEY = 500; // milliseconds
     
@@ -132,7 +132,7 @@ System.out.println("ping 1");
         assertEquals("No message to that wallet password is incorrect", "The wallet password is incorrect", createNewPanel.getMessageText());
 
         // Set the correct wallet password.
-        createNewPanel.setWalletPassword(new String(TEST_PASSWORD1));
+        createNewPanel.setWalletPassword(TEST_PASSWORD1.toString());
         System.out.println("ping 5");
 
         // The new private key should now add correctly.
@@ -145,7 +145,7 @@ System.out.println("ping 1");
 
         // Add twenty addresses by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
-        createNewPanel.setWalletPassword(new String(TEST_PASSWORD1));
+        createNewPanel.setWalletPassword(TEST_PASSWORD1.toString());
         System.out.println("ping 7");
 
         createNewAction.actionPerformed(null);

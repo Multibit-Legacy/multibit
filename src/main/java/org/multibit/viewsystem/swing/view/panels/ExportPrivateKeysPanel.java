@@ -1035,20 +1035,20 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         return messageLabel2.getText();
     }
     
-    public void setWalletPassword(char[] walletPassword) {
-        walletPasswordField.setText(new String(walletPassword));
+    public void setWalletPassword(CharSequence walletPassword) {
+        walletPasswordField.setText(walletPassword.toString());
     }
 
     public boolean isWalletPasswordFieldEnabled() {
         return walletPasswordField.isEnabled();
     }
     
-    public void setExportPassword(char[] exportPassword) {
-        exportFilePasswordField.setText(new String(exportPassword));
+    public void setExportPassword(CharSequence exportPassword) {
+        exportFilePasswordField.setText(exportPassword.toString());
     }
     
-    public void setRepeatExportPassword(char[] exportPassword) {
-        repeatExportFilePasswordField.setText(new String(exportPassword));
+    public void setRepeatExportPassword(CharSequence exportPassword) {
+        repeatExportFilePasswordField.setText(exportPassword.toString());
     }
 
     public JRadioButton getDoNotPasswordProtect() {
