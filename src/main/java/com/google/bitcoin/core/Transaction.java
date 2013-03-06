@@ -50,8 +50,12 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     private static final Logger log = LoggerFactory.getLogger(Transaction.class);
     private static final long serialVersionUID = -8567546957352643140L;
     
-    // Threshold for lockTime: below this value it is interpreted as block number, otherwise as timestamp.
-    static final int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
+    /** Threshold for lockTime: below this value it is interpreted as block number, otherwise as timestamp. **/
+    public static final int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
+
+    /** How many bytes a transaction can be before it won't be relayed anymore. */
+    public static final int MAX_STANDARD_TX_SIZE = 100 * 1024;
+
 
     // These are serialized in both bitcoin and java serialization.
     private long version;
@@ -605,7 +609,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
                 if (scriptSig.chunks.size() == 2)
                     s.append(scriptSig.getFromAddress().toString());
                 else if (scriptSig.chunks.size() == 1)
-                    s.append("[sig:" + bytesToHexString(scriptSig.getPubKey()) + "]");
+                    s.append("[sig:" + bytesToHexString(scriptSig.chunks.get(0).data) + "]");
                 else
                     s.append("???");
                 s.append(" / ");
@@ -976,7 +980,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         maybeParse();
         return outputs.get(index);
     }
-    
+
     public synchronized TransactionConfidence getConfidence() {
         if (confidence == null) {
             confidence = new TransactionConfidence(this);

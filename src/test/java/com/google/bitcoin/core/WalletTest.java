@@ -38,7 +38,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.bitcoin.core.CoreTestUtils;
 import com.google.bitcoin.core.CoreTestUtils.BlockPair;
 import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.crypto.KeyCrypter;
@@ -89,7 +88,7 @@ public class WalletTest {
             BlockPair bp = com.google.bitcoin.core.CoreTestUtils.createFakeBlock(params, blockStore, tx);
             wallet.receiveFromBlock(tx, bp.storedBlock, type);
             if (type == AbstractBlockChain.NewBlockType.BEST_CHAIN)
-                wallet.notifyNewBestBlock(bp.block);
+                wallet.notifyNewBestBlock(bp.storedBlock);
         }
         return tx;
     }
@@ -290,7 +289,7 @@ public class WalletTest {
         CoreTestUtils.BlockPair bp = CoreTestUtils.createFakeBlock(params, blockStore, t2, t3);
         wallet.receiveFromBlock(t2, bp.storedBlock, AbstractBlockChain.NewBlockType.BEST_CHAIN);
         wallet.receiveFromBlock(t3, bp.storedBlock, AbstractBlockChain.NewBlockType.BEST_CHAIN);
-        wallet.notifyNewBestBlock(bp.block);
+        wallet.notifyNewBestBlock(bp.storedBlock);
         assertTrue(wallet.isConsistent());
     }
 
@@ -617,7 +616,7 @@ public class WalletTest {
         final Transaction t1Copy = new Transaction(params, t1.bitcoinSerialize());
         com.google.bitcoin.core.CoreTestUtils.BlockPair fakeBlock = CoreTestUtils.createFakeBlock(params, blockStore, t1Copy);
         wallet.receiveFromBlock(t1Copy, fakeBlock.storedBlock, BlockChain.NewBlockType.BEST_CHAIN);
-        wallet.notifyNewBestBlock(fakeBlock.block);
+        wallet.notifyNewBestBlock(fakeBlock.storedBlock);
         assertFalse(flags[0]);
         assertTrue(flags[1]);
         assertEquals(TransactionConfidence.ConfidenceType.BUILDING, notifiedTx[0].getConfidence().getConfidenceType());

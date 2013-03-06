@@ -29,6 +29,7 @@ import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.TextFormat;
 
 
 public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
@@ -135,7 +136,7 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
         // TODO: This method should throw more specific exception types than IllegalArgumentException.
         Protos.Wallet walletProto = parseToProto(input);
 
-        // System.out.println(TextFormat.printToString(walletProto));
+        //System.out.println(TextFormat.printToString(walletProto));
 
         // Read the encryption type to see if the wallet is encrypted or not.
         // If not specified it is unencrypted.

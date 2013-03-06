@@ -62,6 +62,7 @@ import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -201,10 +202,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
 
     private NetworkParameters params;
 
-    /**
-     * The hash of the last block seen on the best chain
-     */
     private Sha256Hash lastBlockSeenHash;
+    private int lastBlockSeenHeight = -1;
 
     private transient ArrayList<WalletEventListener> eventListeners;
 
@@ -336,7 +335,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         createTransientState();
     }
 
-    private void createTransientState() {
+    private synchronized void createTransientState() {
         eventListeners = new ArrayList<WalletEventListener>();
         ignoreNextNewBlock = new HashSet<Sha256Hash>();
         txConfidenceListener = new TransactionConfidence.Listener() {
@@ -373,7 +372,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     public synchronized Iterable<ECKey> getKeys() {
         return new ArrayList<ECKey>(keychain);
     }
-
+    
     /**
      * Returns the number of keys in the keychain.
      */
@@ -520,7 +519,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                                        BlockChain.NewBlockType blockType) throws VerificationException {
         receive(tx, block, blockType, false);
     }
-
+    
     /**
      * Called by the {@link BlockChain} when we receive a new filtered block that contains a transactions previously
      * received by a call to @{link receivePending}.<p>
@@ -834,7 +833,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             // coins from the wallet.
             if (diff > 0) {
                 invokeOnCoinsReceived(tx, prevBalance, newBalance);
-            } else if (diff == 0) {
+            } else if (diff < 0) {
                 invokeOnCoinsSent(tx, prevBalance, newBalance);
             } else {
                 // We have a transaction that didn't change our balance. Probably we sent coins between our own keys.
@@ -853,17 +852,20 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * transactions are extracted and sent to us UNLESS the new block caused a re-org, in which case this will
      * not be called (the {@link Wallet#reorganize(StoredBlock, java.util.List, java.util.List)} method will
      * call this one in that case).</p>
-     *
+     * <p/>
      * <p>Used to update confidence data in each transaction and last seen block hash. Triggers auto saving.
      * Invokes the onWalletChanged event listener if there were any affected transactions.</p>
+     *
+     * @param block
      */
-    public synchronized void notifyNewBestBlock(Block block) throws VerificationException {
+    public synchronized void notifyNewBestBlock(StoredBlock block) throws VerificationException {
         // Check to see if this block has been seen before.
-        Sha256Hash newBlockHash = block.getHash();
+        Sha256Hash newBlockHash = block.getHeader().getHash();
         if (newBlockHash.equals(getLastBlockSeenHash()))
             return;
         // Store the new block hash.
         setLastBlockSeenHash(newBlockHash);
+        setLastBlockSeenHeight(block.getHeight());
         // TODO: Clarify the code below.
         // Notify all the BUILDING transactions of the new block.
         // This is so that they can update their work done and depth.
@@ -875,7 +877,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                 // notify the tx confidence of work done twice, it'd result in miscounting.
                 ignoreNextNewBlock.remove(tx.getHash());
             } else {
-                tx.getConfidence().notifyWorkDone(block);
+                tx.getConfidence().notifyWorkDone(block.getHeader());
             }
         }
         onWalletChangedSuppressions--;
@@ -1355,8 +1357,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         public BigInteger fee = BigInteger.ZERO;
 
         /**
-         * The AES key to use to decrypt the private key before signing.
-         * If null then no decryption will be performed.
+         * The AES key to use to decrypt the private keys before signing.
+         * If null then no decryption will be performed and if decryption is required an exception will be thrown.
          */
         public KeyParameter aesKey = null;
 
@@ -1410,7 +1412,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @return either the created Transaction or null if there are insufficient coins.
      * coins as spent until commitTx is called on the result.
      */
-    public synchronized Transaction createSend(Address address, BigInteger nanocoins) throws KeyCrypterException {
+    public synchronized Transaction createSend(Address address, BigInteger nanocoins) {
         SendRequest req = SendRequest.to(address, nanocoins);
         if (completeTx(req)) {
             return req.tx;
@@ -1427,7 +1429,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *
      * @return the Transaction that was created, or null if there are insufficient coins in the wallet.
      */
-    public synchronized Transaction sendCoinsOffline(SendRequest request) throws KeyCrypterException {
+    public synchronized Transaction sendCoinsOffline(SendRequest request) {
         try {
             if (!completeTx(request))
                 return null;  // Not enough money! :-(
@@ -1455,7 +1457,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @param value     How much value to send. You can use Utils.toNanoCoins() to calculate this.
      * @return An object containing the transaction that was created, and a future for the broadcast of it.
      */
-    public SendResult sendCoins(PeerGroup peerGroup, Address to, BigInteger value) throws KeyCrypterException {
+    public SendResult sendCoins(PeerGroup peerGroup, Address to, BigInteger value) {
         SendRequest request = SendRequest.to(to, value);
         return sendCoins(peerGroup, request);
     }
@@ -1475,7 +1477,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @param request the SendRequest that describes what to do, get one using static methods on SendRequest itself.
      * @return An object containing the transaction that was created, and a future for the broadcast of it.
      */
-    public SendResult sendCoins(PeerGroup peerGroup, SendRequest request) throws KeyCrypterException {
+    public SendResult sendCoins(PeerGroup peerGroup, SendRequest request) {
         // Does not need to be synchronized as sendCoinsOffline is and the rest is all thread-local.
 
         // Commit the TX to the wallet immediately so the spent coins won't be reused.
@@ -1502,7 +1504,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      * @throws IOException if there was a problem broadcasting the transaction
      */
-    public synchronized Transaction sendCoins(Peer peer, SendRequest request) throws IOException, KeyCrypterException {
+    public synchronized Transaction sendCoins(Peer peer, SendRequest request) throws IOException {
         Transaction tx = sendCoinsOffline(request);
         if (tx == null)
             return null;  // Not enough money.
@@ -1516,11 +1518,9 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *
      * @param req a SendRequest that contains the incomplete transaction and details for how to make it valid.
      * @throws IllegalArgumentException if you try and complete the same SendRequest twice.
-     * @throws KeyCrypterException if you try to sign an encrypted key without an AES key.
      * @return False if we cannot afford this send, true otherwise.
      */
-
-    public synchronized boolean completeTx(SendRequest req) throws KeyCrypterException {
+    public synchronized boolean completeTx(SendRequest req) {
         Preconditions.checkArgument(!req.completed, "Given SendRequest has already been completed.");
         // Calculate the amount of value we need to import.
         BigInteger value = BigInteger.ZERO;
@@ -1574,6 +1574,14 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             throw new RuntimeException(e);
         }
 
+        // Check size.
+        int size = req.tx.bitcoinSerialize().length;
+        if (size > Transaction.MAX_STANDARD_TX_SIZE) {
+            // TODO: Throw an exception here.
+            log.error("Transaction could not be created without exceeding max size: {} vs {}", size, Transaction.MAX_STANDARD_TX_SIZE);
+            return false;
+        }
+
         // Label the transaction as being self created. We can use this later to spend its change output even before
         // the transaction is confirmed.
         req.tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
@@ -1615,7 +1623,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * If the key already exists in the wallet, does nothing and returns false.
      * @throws KeyCrypterException
      */
-    public synchronized boolean addKey(final ECKey key) throws KeyCrypterException {
+    public synchronized boolean addKey(final ECKey key) {
         return addKeys(Lists.newArrayList(key)) == 1;
     }
 
@@ -1652,7 +1660,6 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         }
         return added;
     }
-
 
     /**
      * Locates a keypair from the keychain given the hash of the public key. This is needed when finding out which
@@ -1753,7 +1760,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     public synchronized BigInteger getBalance(CoinSelector selector) {
         checkNotNull(selector);
         LinkedList<TransactionOutput> candidates = calculateSpendCandidates(true);
-        CoinSelection selection = selector.select(params.MAX_MONEY, candidates);
+        CoinSelection selection = selector.select(NetworkParameters.MAX_MONEY, candidates);
         return selection.valueGathered;
     }
 
@@ -1777,7 +1784,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         builder.append(String.format("  %d pending transactions%n", pending.size()));
         builder.append(String.format("  %d inactive transactions%n", inactive.size()));
         builder.append(String.format("  %d dead transactions%n", dead.size()));
-        builder.append(String.format("Last seen best block: %s%n", getLastBlockSeenHash()));
+        builder.append(String.format("Last seen best block: (%d) %s%n",
+                getLastBlockSeenHeight(), getLastBlockSeenHash()));
         // Do the keys.
         builder.append("\nKeys:\n");
         for (ECKey key : keychain) {
@@ -2039,7 +2047,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                     }
                 }
             }
-            notifyNewBestBlock(b.getHeader());
+            notifyNewBestBlock(b);
         }
 
         // Find the transactions that didn't make it into the new chain yet. For each input, try to connect it to the
@@ -2214,6 +2222,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         return earliestTime;
     }
 
+    /** Returns the hash of the last seen best-chain block. */
     public Sha256Hash getLastBlockSeenHash() {
         return lastBlockSeenHash;
     }
@@ -2222,7 +2231,16 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         this.lastBlockSeenHash = lastBlockSeenHash;
     }
 
-    public Collection<ECKey> getKeychain() {
+    public void setLastBlockSeenHeight(int lastBlockSeenHeight) {
+        this.lastBlockSeenHeight = lastBlockSeenHeight;
+    }
+
+    /** Returns the height of the last seen best-chain block. Can be -1 if a wallet is old and doesn't have that data. */
+    public int getLastBlockSeenHeight() {
+        return lastBlockSeenHeight;
+    }
+
+    public synchronized Collection<ECKey> getKeychain() {
         return keychain;
     }
 
@@ -2372,15 +2390,14 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         addKey(newKey);
         return newKey;
     }
-
+    
     /**
      *  Check whether the password can decrypt the first key in the wallet.
      *  This can be used to check the validity of an entered password.
      *
-     *  @throws KeyCrypterException An exception is thrown if the AES key could not be derived from the password.
      *  @returns boolean true if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public synchronized boolean checkPassword(CharSequence password) throws KeyCrypterException {
+    public synchronized boolean checkPassword(CharSequence password) {
         if (keyCrypter == null) {
             // The password cannot decrypt anything as the keyCrypter is null.
             return false;
@@ -2461,10 +2478,18 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         this.version = version;
     }
 
+    /**
+     * Set the description of the wallet.
+     * This is a Unicode encoding string typically entered by the user as descriptive text for the wallet.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Get the description of the wallet. See {@link Wallet#setDescription(String))}
+     * @return
+     */
     public String getDescription() {
         return description;
     }
@@ -2488,10 +2513,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
     
     /**
-     * Gets a bloom filter that contains all of the public keys from this wallet,
-     * and which will provide the given false-positive rate.
-     * 
-     * See the docs for {@link BloomFilter#BloomFilter(int, double)} for a brief explanation of anonymity when using bloom filters.
+     * Gets a bloom filter that contains all of the public keys from this wallet, and which will provide the given
+     * false-positive rate. See the docs for {@link BloomFilter} for a brief explanation of anonymity when using filters.
      */
     public BloomFilter getBloomFilter(double falsePositiveRate) {
         return getBloomFilter(getBloomFilterElementCount(), falsePositiveRate, (long)(Math.random()*Long.MAX_VALUE));
