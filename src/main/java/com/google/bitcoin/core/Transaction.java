@@ -63,10 +63,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     // block in which it was included. Note that this can be changed by re-orgs so the wallet may update this field.
     // Old serialized transactions don't have this field, thus null is valid. It is used for returning an ordered
     // list of transactions from a wallet, which is helpful for presenting to users.
-    Date updatedAt;
+    private Date updatedAt;
 
     // This is an in memory helper only.
-    transient Sha256Hash hash;
+    private transient Sha256Hash hash;
     
     // Data about how confirmed this tx is. Serialized, may be null. 
     private TransactionConfidence confidence;
@@ -77,8 +77,8 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     // but this invariant is expensive to check, so it's not directly enforced anywhere.
     //
     // If this transaction is not stored in the wallet, appearsInHashes is null.
-    Set<Sha256Hash> appearsInHashes;
-
+    private Set<Sha256Hash> appearsInHashes;
+    
     // Transactions can be encoded in a way that will use more bytes than is optimal
     // (due to VarInts having multiple encodings)
     // MAX_BLOCK_SIZE must be compared to the optimal encoding, not the actual encoding, so when parsing, we keep track
@@ -977,7 +977,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         maybeParse();
         return outputs.get(index);
     }
-    
+
     public synchronized TransactionConfidence getConfidence() {
         if (confidence == null) {
             confidence = new TransactionConfidence(this);

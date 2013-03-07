@@ -275,7 +275,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         createTransientState();
     }
 
-    private void createTransientState() {
+    private synchronized void createTransientState() {
         eventListeners = new ArrayList<WalletEventListener>();
         ignoreNextNewBlock = new HashSet<Sha256Hash>();
         txConfidenceListener = new TransactionConfidence.Listener() {
@@ -2148,7 +2148,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * See the docs for {@link BloomFilter#BloomFilter(int, double)} for a brief explanation of anonymity when using bloom filters.
      */
     public BloomFilter getBloomFilter(double falsePositiveRate) {
-        return getBloomFilter(getBloomFilterElementCount(), falsePositiveRate, new Random().nextLong());
+        return getBloomFilter(getBloomFilterElementCount(), falsePositiveRate, (long)(Math.random()*Long.MAX_VALUE));
     }
     
     /**
@@ -2197,7 +2197,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         this.coinSelector = coinSelector;
     }
 
-    public ArrayList<ECKey> getKeychain() {
+    public synchronized ArrayList<ECKey> getKeychain() {
         return keychain;
     }
 

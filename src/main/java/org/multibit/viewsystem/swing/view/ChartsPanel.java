@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Transaction;
+import com.xeiam.xchart.BitmapEncoder;
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.SeriesColor;
 import com.xeiam.xchart.SeriesLineStyle;
@@ -148,7 +149,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
             int chartHeight = Math.max(getHeight() - HEIGHT_DELTA, MINIMUM_HEIGHT);
             Chart chart = new Chart(chartWidth, chartHeight);
             Locale locale = controller.getLocaliser().getLocale();
-            chart.setLocale(locale);
+            chart.getStyleManager().setLocale(locale);
 
             // generates linear data
             Collection<Date> xData = new ArrayList<Date>();
@@ -196,22 +197,18 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
                     new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK, unitOfTime })
                     + currencyUnitSuffix;
 
-            chart.setGridlinesVisible(false);
-            chart.setXAxisTicksVisible(true);
-            chart.setLegendVisible(false);
+            chart.getStyleManager().setPlotGridLinesVisible(false);
+            chart.getStyleManager().setXAxisTicksVisible(true);
+            chart.getStyleManager().setLegendVisible(false);
             
-            chart.setBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
-            chart.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
-            chart.setAxisTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-            chart.setTickLabelFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
-            chart.setDateFormatter(DATE_FORMAT);
+            chart.getStyleManager().setChartBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
+            chart.getStyleManager().setChartTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
+            chart.getStyleManager().setAxisTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            chart.getStyleManager().setAxisTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
+            chart.getStyleManager().setDatePattern(DATE_FORMAT);
 
-            chart.setTitle(chartTitle);
+            chart.setChartTitle(chartTitle);
             chart.setXAxisTitle(xAxisLabel);
-
-            // Commented out as causes graph not to render.
-            //chart.setYAxisTitleVisible(true);
-            //chart.setYAxisTitle(balanceLabel);
 
             com.xeiam.xchart.Series series = chart.addDateSeries(balanceLabel, xData, yData);
             series.setLineColor(SeriesColor.BLUE);

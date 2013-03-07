@@ -1,5 +1,9 @@
 MultiBit release notes.
 
+Mar 2013 Version 0.4.22
++ Update to Bitcoinj 0.7.1, XChart 2.0.0
+
+
 19 Feb 2013 Version 0.4.21
 
 Bitcoinj v0.7 features:
@@ -10,7 +14,6 @@ Bitcoinj v0.7 features:
 UI enhancements:
 + You can use Shift-ArrowUp and Shift-ArrowDown to move between wallets when the Wallets panel is selected.
 + Currencies in the Preferences tab now have a full description in addition to the currency code.
-
 
 12 Feb 2013 Version 0.5.8beta
 
