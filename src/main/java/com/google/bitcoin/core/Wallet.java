@@ -365,6 +365,11 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     public void setNetworkParameters(NetworkParameters params) {
         this.params = params;
     }
+    
+    /** Returns the parameters this wallet was created with. */
+    public NetworkParameters getParams() {
+        return params;
+    }
 
     /**
      * Returns a snapshot of the keychain. This view is not live.
@@ -433,11 +438,6 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      */
     public synchronized void saveToFileStream(OutputStream f) throws IOException {
         new MultiBitWalletProtobufSerializer().writeWallet(this, f);
-    }
-
-    /** Returns the parameters this wallet was created with. */
-    public NetworkParameters getParams() {
-        return params;
     }
 
     /**
