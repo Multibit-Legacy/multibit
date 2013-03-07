@@ -52,8 +52,6 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.MultiBitTabbedPane;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletAction;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 
 /**
@@ -286,9 +284,9 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
-        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, mainFrame);
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);
         MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
-        createNewWalletButton.setText(controller.getLocaliser().getString("crudButton.new"));
+        createNewWalletButton.setText(controller.getLocaliser().getString("createNewWalletAction.text"));
         createNewWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.NONE;
@@ -300,36 +298,6 @@ public class WalletListPanel extends JPanel implements Viewable, ComponentListen
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         buttonPanel.add(createNewWalletButton, constraints);
-        
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
-        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
-        openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
-        openWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-               
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.33;
-        constraints.weighty = 1.0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        buttonPanel.add(openWalletButton, constraints);
-        
-        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller, null, mainFrame);
-        MultiBitButton deleteWalletButton = new MultiBitButton(deleteWalletAction, controller);
-        deleteWalletButton.setText(controller.getLocaliser().getString("crudButton.delete"));
-        deleteWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.weightx = 0.33;
-        constraints.weighty = 1.0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        buttonPanel.add(deleteWalletButton, constraints);
 
         return buttonPanel;
     }
