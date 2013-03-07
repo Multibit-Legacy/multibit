@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.4.22</version>
+  <version>0.4.22-SNAPSHOT</version>
   <name>MultiBit</name>
   <description>A Java Swing client for Bitcoin</description>
   <url>https://multibit.org</url>
@@ -544,49 +544,49 @@
          <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-core</artifactId>
-            <version>1.4.0</version>
+            <version>${xchange.version}</version>
         </dependency>
         <!-- XChange MtGox exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-mtgox</artifactId>
-            <version>1.4.0</version>
+            <version>${xchange.version}</version>
         </dependency>
         <!-- XChange VirtEx exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-cavirtex</artifactId>
-            <version>1.4.0</version>
+            <version>${xchange.version}</version>
         </dependency>
         <!-- XChange Open Exchange Rates exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-openexchangerates</artifactId>
-            <version>1.4.0</version>
+            <version>${xchange.version}</version>
         </dependency>
         <!-- XChange BTC-E exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-btce</artifactId>
-            <version>1.4.0</version>
+            <version>${xchange.version}</version>
         </dependency>
         <!-- XChange Bitstamp exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-bitstamp</artifactId>
-            <version>1.4.0</version>
+            <version>${xchange.version}</version>
         </dependency>
         <!-- XChange CampBX exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-campbx</artifactId>
-            <version>1.4.0</version>
+            <version>${xchange.version}</version>
         </dependency>
         <!-- XChange BitcoinCharts support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-bitcoincharts</artifactId>
-            <version>1.4.0</version>
+            <version>${xchange.version}</version>
         </dependency>
         <dependency>
             <groupId>com.xeiam.xchart</groupId>
@@ -667,7 +667,11 @@
         <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
+
         <bitcoinj.version>0.7.1</bitcoinj.version>
+      
+        <!-- Version of XChange to use (multiple uses) -->
+        <xchange.version>develop-SNAPSHOT</xchange.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
