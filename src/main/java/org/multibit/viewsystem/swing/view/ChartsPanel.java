@@ -220,6 +220,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
       series.setLineStyle(SeriesLineStyle.SOLID);
 
       XChartPanel chartPanelToReturn = new XChartPanel(chart);
+      chartPanelToReturn.setSaveAsString("Blah Blah...");
       chartPanelToReturn.setLocale(locale);
       chartPanelToReturn.setMinimumSize(new Dimension(chartWidth, chartHeight));
       return chartPanelToReturn;
