@@ -900,9 +900,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         // Start ticker timer.
                         tickerTimer1 = new Timer();
                         tickerTimer1.schedule(new TickerTimerTask(controller, thisFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
-                        tickerTimer2 = new Timer();
-                        tickerTimer2.schedule(new TickerTimerTask(controller, thisFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
-                    }
+                        
+                        boolean showSecondRow = Boolean.TRUE.toString().equals(
+                                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                        
+                        if (showSecondRow) {
+                            tickerTimer2 = new Timer();
+                            tickerTimer2.schedule(new TickerTimerTask(controller, thisFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                        }                    }
                 }
             }
         });
@@ -1474,5 +1479,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
     public TickerTimerTask getTickerTimerTask2() {
         return tickerTimerTask2;
+    }
+
+    public void setTickerTimerTask1(TickerTimerTask tickerTimerTask1) {
+        this.tickerTimerTask1 = tickerTimerTask1;
+    }
+
+    public void setTickerTimerTask2(TickerTimerTask tickerTimerTask2) {
+        this.tickerTimerTask2 = tickerTimerTask2;
     }
 }

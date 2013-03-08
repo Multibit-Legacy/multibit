@@ -43,12 +43,6 @@ public class TickerTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = -775886012854496208L;
 
-    /**
-     * The exchange data for each row
-     */
-    private ExchangeData exchangeData1;
-    private ExchangeData exchangeData2;
-
     private boolean showSecondRow;
 
     private String exchange1;
@@ -138,9 +132,6 @@ public class TickerTableModel extends AbstractTableModel {
         if (currency2 == null || "".equals(currency2) || "null".equals(currency2)) {
             currency2 = ExchangeData.DEFAULT_CURRENCY;
         }
-        
-        exchangeData1 = multiBitModel.getExchangeData1();
-        exchangeData2 = multiBitModel.getExchangeData2();
     }
 
     @Override
@@ -174,11 +165,11 @@ public class TickerTableModel extends AbstractTableModel {
         if (row == 0) {
             exchange = exchange1;
             currency = currency1;
-            exchangeData = exchangeData1;
+            exchangeData = multiBitModel.getExchangeData(exchange1);
         } else {
             exchange = exchange2;
             currency = currency2;
-            exchangeData = exchangeData2;
+            exchangeData = multiBitModel.getExchangeData(exchange2);;
         }
 
         String variable = columnVariables[column];
@@ -188,21 +179,21 @@ public class TickerTableModel extends AbstractTableModel {
             return currency;
         } else if (TICKER_COLUMN_LAST_PRICE.equals(variable)) {
             // rate
-            if (exchangeData.getLastPrice(currency) == null) {
+            if (exchangeData == null || exchangeData.getLastPrice(currency) == null) {
                 return " ";
             } else {
                 return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastPrice(currency));
             }
         } else if (TICKER_COLUMN_BID.equals(variable)) {
             // bid
-            if (exchangeData.getLastBid(currency) == null) {
+            if (exchangeData == null || exchangeData.getLastBid(currency) == null) {
                 return " ";
             } else {
                 return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastBid(currency));
             }
         } else if (TICKER_COLUMN_ASK.equals(variable)) {
             // ask
-            if (exchangeData.getLastAsk(currency) == null) {
+            if (exchangeData == null || exchangeData.getLastAsk(currency) == null) {
                 return " ";
             } else {
                  return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastAsk(currency));
@@ -217,7 +208,7 @@ public class TickerTableModel extends AbstractTableModel {
     }
 
     /**
-     * table model is read only
+     * Table model is read only.
      */
     @Override
     public void setValueAt(Object value, int row, int column) {

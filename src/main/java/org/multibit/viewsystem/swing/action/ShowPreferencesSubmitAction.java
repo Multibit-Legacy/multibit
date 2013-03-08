@@ -276,7 +276,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
                 ExchangeData newExchangeData = new ExchangeData();
                 newExchangeData.setShortExchangeName(newExchange1);
-                controller.getModel().setExchangeData1(newExchangeData);
+                controller.getModel().getShortExchangeNameToExchangeMap().put(newExchange1, newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -292,7 +292,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                         newCurrencyCode = newCurrency1.substring(newCurrency1.length() - 3);
                     }
                 }
-                CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrencyCode));
+                try {
+                    CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrencyCode));
+                } catch ( org.joda.money.IllegalCurrencyException e) {
+                    e.printStackTrace();
+                }
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -312,7 +316,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
                 ExchangeData newExchangeData = new ExchangeData();
                 newExchangeData.setShortExchangeName(newExchange2);
-                controller.getModel().setExchangeData2(newExchangeData);
+                controller.getModel().getShortExchangeNameToExchangeMap().put(newExchange2, newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -334,17 +338,6 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.getModel().setUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE, newOerApiCode);
             }
 
-            // Set on the model the currencies we are interested in - only these
-            // get downloaded to save bandwidth/ server time.
-            Collection<String> currencies1 = new ArrayList<String>();
-            currencies1.add(newCurrency1);
-            controller.getModel().getExchangeData1().setCurrenciesWeAreInterestedIn(currencies1);
-            if (dataProvider.getNewShowSecondRow()) {
-                Collection<String> currencies2 = new ArrayList<String>();
-                currencies2.add(newCurrency2);
-                controller.getModel().getExchangeData2().setCurrenciesWeAreInterestedIn(currencies2);
-            }
-
             // Can undo.
             controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
 
@@ -361,10 +354,27 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 }                // Start ticker timer.
                 Timer tickerTimer1 = new Timer();
                 mainFrame.setTickerTimer1(tickerTimer1);
-                tickerTimer1.schedule(new TickerTimerTask(controller, mainFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
-                Timer tickerTimer2 = new Timer();
-                mainFrame.setTickerTimer2(tickerTimer2);
-                tickerTimer2.schedule(new TickerTimerTask(controller, mainFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                
+                TickerTimerTask tickerTimerTask1 = new TickerTimerTask(controller, mainFrame, true);
+                tickerTimerTask1.createExchangeObjects(controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
+                mainFrame.setTickerTimerTask1(tickerTimerTask1);
+
+                tickerTimer1.schedule(tickerTimerTask1, 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                
+                boolean showSecondRow = Boolean.TRUE.toString().equals(
+                        controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                
+                if (showSecondRow) {
+                    Timer tickerTimer2 = new Timer();
+                    mainFrame.setTickerTimer2(tickerTimer2);
+
+                    TickerTimerTask tickerTimerTask2 = new TickerTimerTask(controller, mainFrame, false);
+                    tickerTimerTask2.createExchangeObjects(controller.getModel().getUserPreference(
+                            MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
+                    mainFrame.setTickerTimerTask2(tickerTimerTask2);
+
+                    tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                }
             }
 
             if (fontHasChanged) {
