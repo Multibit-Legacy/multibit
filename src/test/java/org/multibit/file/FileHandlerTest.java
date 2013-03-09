@@ -101,90 +101,90 @@ public class FileHandlerTest extends TestCase {
         fileHandler = new FileHandler(controller);
     }
     
-    @Test
-    public void testLoadSerialised1() throws IOException {
-        File directory = new File(".");
-        String currentPath = directory.getAbsolutePath();
+//    @Test
+//    public void testLoadSerialised1() throws IOException {
+//        File directory = new File(".");
+//        String currentPath = directory.getAbsolutePath();
+//
+//        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+//                + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_SERIALISED1;
+//
+//        File walletFile = new File(walletName);
+//        walletFile.createNewFile();
+//
+//        assertTrue(walletFile.exists());
+//        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+//
+//        assertNotNull(perWalletModelData);
+//       
+//        // Check wallet type.
+//        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
+//    }
 
-        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
-                + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_SERIALISED1;
-
-        File walletFile = new File(walletName);
-        walletFile.createNewFile();
-
-        assertTrue(walletFile.exists());
-        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
-
-        assertNotNull(perWalletModelData);
-       
-        // Check wallet type.
-        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
-    }
-
-    @Test
-    public void testLoadSerialised2() throws IOException {
-        File directory = new File(".");
-        String currentPath = directory.getAbsolutePath();
-
-        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
-                + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_SERIALISED2;
-
-        File walletFile = new File(walletName);
-
-        walletFile.createNewFile();
-
-        assertTrue(walletFile.exists());
-        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
-
-        assertNotNull(perWalletModelData);
-   
-        // Check wallet type.
-        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
-    }
+//    @Test
+//    public void testLoadSerialised2() throws IOException {
+//        File directory = new File(".");
+//        String currentPath = directory.getAbsolutePath();
+//
+//        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+//                + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_SERIALISED2;
+//
+//        File walletFile = new File(walletName);
+//
+//        walletFile.createNewFile();
+//
+//        assertTrue(walletFile.exists());
+//        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+//
+//        assertNotNull(perWalletModelData);
+//   
+//        // Check wallet type.
+//        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
+//    }
     
-    @Test
-    public void testCreateSerialisedWallet() throws IOException {
-        File temporaryWallet = File.createTempFile(TEST_CREATE_SERIALISED_PREFIX, ".wallet");
-        temporaryWallet.deleteOnExit();
-
-        String newWalletFilename = temporaryWallet.getAbsolutePath();
-
-        // Create a new serialised wallet.
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
-        ECKey newKey = new ECKey();
-        newWallet.keychain.add(newKey);
-        newKey = new ECKey();
-        newWallet.keychain.add(newKey);
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.SERIALIZED);
-        
-        perWalletModelData.setWalletInfo(walletInfo);
-       
-        perWalletModelData.setWallet(newWallet);
-        perWalletModelData.setWalletFilename(newWalletFilename);
-        perWalletModelData.setWalletDescription(TEST_CREATE_SERIALISED_PREFIX);
-        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
-
-        // Check the wallet and wallet info file exists.
-        File newWalletFile = new File(newWalletFilename);
-        assertTrue(newWalletFile.exists());
-
-        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
-
-        File walletInfoFile = new File(walletInfoFileAsString);
-        assertTrue(walletInfoFile.exists());
-
-        // Check wallet can be loaded and is still serialised.
-        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
-        assertNotNull(perWalletModelDataReborn);
-        assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
-        assertEquals(TEST_CREATE_SERIALISED_PREFIX, perWalletModelDataReborn.getWalletDescription());
-        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
-
-        assertEquals(MultiBitWalletVersion.SERIALIZED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
-        
-        deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
-    }
+//    @Test
+//    public void testCreateSerialisedWallet() throws IOException {
+//        File temporaryWallet = File.createTempFile(TEST_CREATE_SERIALISED_PREFIX, ".wallet");
+//        temporaryWallet.deleteOnExit();
+//
+//        String newWalletFilename = temporaryWallet.getAbsolutePath();
+//
+//        // Create a new serialised wallet.
+//        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+//        ECKey newKey = new ECKey();
+//        newWallet.keychain.add(newKey);
+//        newKey = new ECKey();
+//        newWallet.keychain.add(newKey);
+//        PerWalletModelData perWalletModelData = new PerWalletModelData();
+//        WalletInfo walletInfo = new WalletInfo(newWalletFilename, MultiBitWalletVersion.SERIALIZED);
+//        
+//        perWalletModelData.setWalletInfo(walletInfo);
+//       
+//        perWalletModelData.setWallet(newWallet);
+//        perWalletModelData.setWalletFilename(newWalletFilename);
+//        perWalletModelData.setWalletDescription(TEST_CREATE_SERIALISED_PREFIX);
+//        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+//
+//        // Check the wallet and wallet info file exists.
+//        File newWalletFile = new File(newWalletFilename);
+//        assertTrue(newWalletFile.exists());
+//
+//        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+//
+//        File walletInfoFile = new File(walletInfoFileAsString);
+//        assertTrue(walletInfoFile.exists());
+//
+//        // Check wallet can be loaded and is still serialised.
+//        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+//        assertNotNull(perWalletModelDataReborn);
+//        assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
+//        assertEquals(TEST_CREATE_SERIALISED_PREFIX, perWalletModelDataReborn.getWalletDescription());
+//        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
+//
+//        assertEquals(MultiBitWalletVersion.SERIALIZED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
+//        
+//        deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
+//    }
     
     @Test
     public void testCreateProtobufUnencryptedWallet() throws IOException {

@@ -536,7 +536,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
     /**
      * A coinbase transaction is one that creates a new coin. They are the first transaction in each block and their
-     * value is determined by a formula that all implementations of BitCoin share. In 2011 the value of a coinbase
+     * value is determined by a formula that all implementations of Bitcoin share. In 2011 the value of a coinbase
      * transaction is 50 coins, but in future it will be less. A coinbase transaction is defined not only by its
      * position in a block but by the data in the inputs.
      */
@@ -704,7 +704,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @param hashType This should always be set to SigHash.ALL currently. Other types are unused.
      * @param wallet   A wallet is required to fetch the keys needed for signing.
      */
-    public synchronized void signInputs(SigHash hashType, Wallet wallet) throws ScriptException, KeyCrypterException {
+    public synchronized void signInputs(SigHash hashType, Wallet wallet) throws ScriptException {
         signInputs(hashType, wallet, null);
     }
 
@@ -719,7 +719,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @param wallet   A wallet is required to fetch the keys needed for signing.
      * @param aesKey The AES key to use to decrypt the key before signing. Null if no decryption is required.
      */
-    public synchronized void signInputs(SigHash hashType, Wallet wallet, KeyParameter aesKey) throws ScriptException, IllegalStateException, KeyCrypterException {
+    public synchronized void signInputs(SigHash hashType, Wallet wallet, KeyParameter aesKey) throws ScriptException, IllegalStateException {
         Preconditions.checkState(inputs.size() > 0);
         Preconditions.checkState(outputs.size() > 0);
 
