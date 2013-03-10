@@ -196,7 +196,7 @@ public class TickerTablePanel extends JPanel {
             } else {
                 columnWidth = PER_COLUMN_DELTA + Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
-                        fontMetrics.stringWidth("0000.00000"));
+                        fontMetrics.stringWidth("000000.00000"));
             }
             tickerWidth += columnWidth;
             table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);

@@ -87,7 +87,7 @@ import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.DisplayHint;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -105,8 +105,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-import org.multibit.viewsystem.Viewable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -579,9 +577,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             constraints.weightx = 0.1;
             constraints.weighty = 1;
             constraints.anchor = GridBagConstraints.LINE_START;
-            addressesHeaderPanel.add(deleteButton, constraints);
-
-            
+            addressesHeaderPanel.add(deleteButton, constraints);           
         }
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -1945,14 +1941,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     public MultiBitTextField getAddressTextField() {
         return addressTextField;
-    }
-    
-    public Action getCreateNewSendingAddressAction() {
-        return createNewAddressAction;
-    }
-
-    public Action getDeleteSendingAddressAction() {
-        return deleteAddressAction;
     }
     
     @Override
