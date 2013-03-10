@@ -82,7 +82,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
 
     private static final int NUMBER_OF_HOURS_IN_A_DAY = 24;
 
-    private static final int DEFAULT_NUMBER_OF_DAYS = 14;
+    private static final int DEFAULT_NUMBER_OF_DAYS = 2;
 
     private final SimpleDateFormat dateFormatter;
     

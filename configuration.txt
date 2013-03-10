@@ -24,25 +24,25 @@ multibit.properties. Multibit looks in a few places for this file:
 Wherever this file is found, that directory is used as the application data directory for Multibit.
 
 
-Connect to single node
-----------------------
-
-If you want to connect to a single node, set the following 
+Connect to specific peers
+-------------------------
+If you want to connect to specific peers set the following 
 property:
 
-```
-singleNodeConnection=<node to connect to>
-```
+peers=<comma separated list of peers to connect to>
 
-The node can be specified as either a domain name (`www.myNode.com`) 
-or an IP address. E.g, if your node is `12.34.56.78` you would put:
+The list of peers can be specified using domain names (www.myNode.com) 
+or IP addresses. Example:
 
-```
-singleNodeConnection=12.34.56.78
-```
+peers=173.242.119.177, 176.9.42.247, 217.79.19.226, 98.216.173.54
+
+(The older property singleNodeConnection is still honoured but is
+now deprecated. Use 'peers' instead).
+
+Note: ONLY these peers will be used for connections.
 
 
 Testnet
--------------------
+-------
 To use the testnet set the property "testOrProductionNetwork" 
 to be "test".

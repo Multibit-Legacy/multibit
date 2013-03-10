@@ -55,6 +55,7 @@ Jan-steenbergen     - Dutch
 JeppeJ              - Swedish
 JeromeS             - Arabic
 jesusangel          - Spanish
+jmsanto123          - Tamil
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
 Kayleigh            - Portuguese
@@ -78,6 +79,7 @@ muyuu               - Japanese
 nsnia               - Croatian
 nuntius.marii       - Dutch
 okahira             - Chinese Simplified
+pallikarva          - Finnish
 pginvest            - Portuguese
 Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
@@ -90,6 +92,7 @@ SeNiels             - Dutch
 shelart             - Russian
 spiccioli           - Italian
 stlucifer           - Hindi
+stuk88              - Hebrew
 SunMan              - Hindi
 techmix             - Persian
 Technomage          - Finnish
@@ -97,6 +100,7 @@ teknomunk           - Japanese
 tengo               - Russian
 tesla               - Russian
 thaven              - Dutch
+themagic            - Arabic
 tosR                - Slovak
 tpantlik            - Czech
 viboracecata        - Chinese Simplified
