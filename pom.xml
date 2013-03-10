@@ -669,7 +669,7 @@
         <bitcoinj.version>0.7</bitcoinj.version>
         
         <!-- Version of XChange to use (multiple uses) -->
-        <xchange.version>develop-SNAPSHOT</xchange.version>
+        <xchange.version>1.5.0</xchange.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
