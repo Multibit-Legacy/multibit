@@ -680,7 +680,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             //   - Send us coins
             //   - Spend our coins
             if (!isTransactionRelevant(tx)) {
-                log.debug("Received tx that isn't relevant to this wallet, discarding.");
+                //log.debug("Received tx that isn't relevant to this wallet, discarding.");
                 return false;
             }
 
@@ -689,6 +689,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                         tx.getHashAsString(), tx.getLockTime());
                 return false;
             }
+            log.debug("Saw relevant pending transaction " + tx.toString());
+
             return true;
         } finally {
             lock.unlock();

@@ -82,7 +82,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
 
     private static final int NUMBER_OF_HOURS_IN_A_DAY = 24;
 
-    private static final int DEFAULT_NUMBER_OF_DAYS = 14;
+    private static final int DEFAULT_NUMBER_OF_DAYS = 2;
 
     private final SimpleDateFormat dateFormatter;
     
@@ -102,7 +102,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         setLayout(new BorderLayout());
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        // Default reset date is the beginning of the day 2 weeks ago.
+        // Default reset date is the beginning of the day 2 days ago.
         Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         now.add(Calendar.HOUR, -1 * NUMBER_OF_HOURS_IN_A_DAY * DEFAULT_NUMBER_OF_DAYS);
 

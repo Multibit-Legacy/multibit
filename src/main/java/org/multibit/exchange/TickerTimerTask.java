@@ -74,6 +74,10 @@ public class TickerTimerTask extends TimerTask {
 
         if (isFirstExchange) {
             currency = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+            if (currency == null || currency.length() == 0) {
+                currency = ExchangeData.DEFAULT_CURRENCY;
+                controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, currency);
+            }
             shortExchangeName = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
         } else {
             currency = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);

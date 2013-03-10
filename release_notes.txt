@@ -1,6 +1,9 @@
 MultiBit release notes.
 
-Version 0.5.8beta
+Version 0.5.9beta
++ changed 'Reset blockchain and transactions' suggested replay date to 2 days ago.
+
+12 Feb Version 0.5.8beta
 
 Bitcoinj v0.7 features:
 + Bloom filters now active to speed up blockchain sync (when talking to bitcoind v0.8rc1 nodes or later).
