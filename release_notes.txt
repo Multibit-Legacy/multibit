@@ -1,12 +1,16 @@
 MultiBit release notes.
 
-10 Mar 2013 Version 0.4.22
+11 Mar 2013 Version 0.4.22
+Features:
 + Addition of OpenExchangeRates.org as an exchange. Provides over 150 currencies for currency conversion. (Needs free sign up).
 + Charts can be saved (right click on the chart: "Save as").
 + Updated to Bitcoinj 0.7.1, XChart 2.0.0, XChange 1.5.0.
 + Reset blockchain and transactions default "replay from" date now goes back 2 days.
 + Simplified buttons in wallet list.
-+ Bug fix. Fixed appearance of blank request screen.
+
+Bug fixes:
++ Fixed appearance of blank request screen.
++ Menu tooltips on Macs shown properly.
 
 
 19 Feb 2013 Version 0.4.21

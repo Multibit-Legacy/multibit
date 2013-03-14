@@ -40,8 +40,12 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.browser.Browser;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HelpContentsPanel extends JPanel implements Viewable {
+
+    private static final Logger log = LoggerFactory.getLogger(HelpContentsPanel.class);
 
     public static final String HELP_BASE_URL = "http://www.multibit.org/";
 
@@ -100,9 +104,12 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         // Get property apple.laf.useScreenMenuBar - this is set in src/app-resources/MultiBit.app/info.plist
         String useScreenMenuBar = System.getProperty("apple.laf.useScreenMenuBar");
         String lookAndFeel = "" + MultiBit.getController().getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL);
+        
+        log.debug("apple.laf.useScreenMenuBar = " + useScreenMenuBar + ", lookAndFeel = " + lookAndFeel);
 
-        if (Boolean.TRUE.toString().equalsIgnoreCase(useScreenMenuBar) && ("system".equalsIgnoreCase(lookAndFeel))
-                || lookAndFeel.toLowerCase().startsWith("mac")) {
+        if (Boolean.TRUE.toString().equalsIgnoreCase(useScreenMenuBar) && ("system".equalsIgnoreCase(lookAndFeel)
+                || "null".equalsIgnoreCase(lookAndFeel)
+                || lookAndFeel.toLowerCase().startsWith("mac"))) {
             // No HTML wrapping of tooltip.
             return tooltip;
         } else {

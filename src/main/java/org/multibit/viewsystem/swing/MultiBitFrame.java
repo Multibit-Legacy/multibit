@@ -259,7 +259,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
 
-        getContentPane().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         sizeAndCenter();
@@ -329,8 +328,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private void initUI() {
+
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridBagLayout());
+        contentPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         GridBagConstraints constraints = new GridBagConstraints();
         GridBagConstraints constraints2 = new GridBagConstraints();
 
