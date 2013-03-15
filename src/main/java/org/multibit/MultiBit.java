@@ -40,6 +40,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.network.AlertManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
@@ -443,6 +444,10 @@ public class MultiBit {
             MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, (MultiBitFrame) swingViewSystem);
             migrateWalletsAction.actionPerformed(null);
 
+            // Check to see if there is a new version.
+            AlertManager.INSTANCE.initialise(controller, (MultiBitFrame) swingViewSystem);
+            AlertManager.INSTANCE.checkVersion();
+            
             log.debug("Downloading blockchain");
             if (useFastCatchup) {
                 long earliestTimeSecs = controller.getModel().getActiveWallet().getEarliestKeyCreationTime();
