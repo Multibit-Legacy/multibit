@@ -72,13 +72,15 @@ public enum AlertManager {
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
 
             private String message = null;
+            private final MultiBitController finalController = controller;
 
             private StringBuffer stringBuffer = new StringBuffer();
 
             @Override
             protected Boolean doInBackground() throws Exception {
                 try {
-                    final URL url = new URL(VERSION_URL);
+                    // Get the version file.
+                    final URL url = new URL(VERSION_URL + "?version=" + finalController.getLocaliser().getVersionNumber());
 
                     InputStream in = url.openStream();
 
