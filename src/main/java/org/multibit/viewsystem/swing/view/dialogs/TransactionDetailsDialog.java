@@ -589,7 +589,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             desktop.browse(uri);
         } catch (IOException ioe) {
             log.debug(ioe.getMessage());
-            Message message = new Message("Cannot display URL '" + uri.toString() + "'. Error was '" + ioe.getMessage() + "'");
+            Message message = new Message(controller.getLocaliser().getString("browser.unableToLoad", new String[]{ uri.toString(), ioe.getMessage()}));
             MessageManager.INSTANCE.addMessage(message);
         }
     }
