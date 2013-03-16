@@ -195,7 +195,11 @@ public class MultiBitModel {
     public static final String USE_ASK_AS_EXCHANGE_RATE = "useAskAsExchangeRate";               // boolean
     public static final String SHOW_BTC_IN_WALLET_PANEL = "showBTCinWalletPanel";               // boolean
     public static final String OPEN_EXCHANGE_RATES_API_CODE = "openExchangeRatesApiCode";
-
+    
+    // AlertManager and versions
+    public static final String ALERT_MANAGER_NEW_VERSION_VALUE = "alertManagerNewVersionValue";
+    public static final String ALERT_MANAGER_NEW_VERSION_SEEN_COUNT = "alertManagerNewVersionSeenCount";
+    
     // Main controller class.
     private final MultiBitController controller;
 

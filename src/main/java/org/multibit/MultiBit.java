@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -41,6 +40,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.network.AlertManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
@@ -191,7 +191,7 @@ public class MultiBit {
             FontSizer.INSTANCE.initialise(controller);
             CurrencyConverter.INSTANCE.initialise(finalController);
 
-            log.debug("Creating views");
+            log.debug("Creating user interface");
             swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());
 
             log.debug("Registering with controller");
@@ -353,6 +353,10 @@ public class MultiBit {
             // Check if any wallets need migrating from serialised to protobuf.
             MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, (MultiBitFrame) swingViewSystem);
             migrateWalletsAction.actionPerformed(null);
+
+            // Check to see if there is a new version.
+            AlertManager.INSTANCE.initialise(controller, (MultiBitFrame) swingViewSystem);
+            AlertManager.INSTANCE.checkVersion();
         
             log.debug("Downloading blockchain");
             if (useFastCatchup) {

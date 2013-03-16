@@ -111,11 +111,11 @@ public class ImageSelection extends TransferHandler implements Transferable {
 
     public boolean importData(JComponent comp, Transferable transferable) {
         if (comp instanceof JLabel) {
-            log.debug("importData - 1");
+            //log.debug("importData - 1");
 
             JLabel label = (JLabel) comp;
             image = getDropData(transferable, label);
-            log.debug("importData - 2 - image = {}", image);
+            //log.debug("importData - 2 - image = {}", image);
 
             return abstractTradePanel.processDroppedImage(image);
 
@@ -338,7 +338,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
     }
 
     private BufferedImage toBufferedImage(Image image, int width, int height) {
-        log.debug("toBufferedImage - 1");
+        //log.debug("toBufferedImage - 1");
         if (image == null) {
             return null;
         }
@@ -350,18 +350,18 @@ public class ImageSelection extends TransferHandler implements Transferable {
         }
         // Draw original image to thumbnail image object and
         // scale it to the new size on-the-fly.
-        log.debug("toBufferedImage - 2.2, image = {}, width = {}, height = {}", new Object[] {image,width,height});
+        //log.debug("toBufferedImage - 2.2, image = {}, width = {}, height = {}", new Object[] {image,width,height});
 
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        log.debug("toBufferedImage - 2.3, bufferedImage = {}", bufferedImage);
+        //log.debug("toBufferedImage - 2.3, bufferedImage = {}", bufferedImage);
 
         Graphics2D g2 = bufferedImage.createGraphics();
 
-        log.debug("toBufferedImage - 3");
+        //log.debug("toBufferedImage - 3");
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g2.drawImage(image, 0, 0, width, height, null);
-        log.debug("toBufferedImage - 4");
+        //log.debug("toBufferedImage - 4");
         g2.dispose();
         return bufferedImage;
     }

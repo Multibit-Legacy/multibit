@@ -1,5 +1,12 @@
 MultiBit release notes.
 
+Mar 2013 Version 0.4.23
+
++ addition checking of incoming transactions
++ tidied up UI when switching "look and feels".
++ change now sent to the second key in a wallet if present (this helps people who have imported a blockchain.info backup).
+
+
 11 Mar 2013 Version 0.4.22
 Features:
 + Addition of OpenExchangeRates.org as an exchange. Provides over 150 currencies for currency conversion. (Needs free sign up).
@@ -11,7 +18,6 @@ Features:
 Bug fixes:
 + Fixed appearance of blank request screen.
 + Menu tooltips on Macs shown properly.
-
 
 19 Feb 2013 Version 0.4.21
 

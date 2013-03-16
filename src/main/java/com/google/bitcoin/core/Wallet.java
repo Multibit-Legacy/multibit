@@ -1519,11 +1519,18 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
 
     synchronized Address getChangeAddress() {
-        // For now let's just pick the first key in our keychain. In future we might want to do something else to
+        // For now let's just pick the second key in our keychain. In future we might want to do something else to
         // give the user better privacy here, eg in incognito mode.
+        // The second key is chosen rather than the first because, by default, a wallet is created with a 
+        // single key. If the user imports say a blockchain.info backup they typically want change to go
+        // to one of the imported keys
         checkState(keychain.size() > 0, "Can't send value without an address to use for receiving change");
-        ECKey first = keychain.get(0);
-        return first.toAddress(params);
+        ECKey change = keychain.get(0);
+        
+        if (keychain.size() > 1) {
+            change = keychain.get(1);
+        }
+        return change.toAddress(params);
     }
 
     /**
