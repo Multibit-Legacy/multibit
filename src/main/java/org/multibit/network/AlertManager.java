@@ -153,16 +153,17 @@ public enum AlertManager {
                                     String title = controller.getLocaliser().getString("alertManagerTitle");
                                     String line1 = controller.getLocaliser().getString("alertManagerLine1", new String[]{parseResult.versionOnServer});
                                     String line2 = controller.getLocaliser().getString("alertManagerLine2", new String[]{parseResult.localVersion});
+                                    String viewRelease = controller.getLocaliser().getString("alertManagerViewRelease");
                                     String[] choices;
                                     if (isBrowserSupported()) {
-                                        choices = new String[] { okText, "View release" };
+                                        choices = new String[] { okText, viewRelease };
                                     } else {
                                         choices = new String[] { okText };
                                     }
                                     
                                     int response = JOptionPane.showOptionDialog(mainFrame, new String[] { line1, line2 },
                                             title, JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, icon,
-                                            choices, okText);
+                                            choices, viewRelease);
                                     if (response == 1) {
                                         try {
                                             openURI(new URI(RELEASES_URL));
