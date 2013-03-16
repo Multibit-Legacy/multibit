@@ -213,7 +213,7 @@ public enum AlertManager {
             scanner = new Scanner(new StringReader(versionTextFromServer));
 
             // First line is the version
-            while (scanner.hasNextLine()) {
+            if (scanner.hasNextLine()) {
                 versionOnServer = scanner.nextLine();
             }
         } finally {
