@@ -667,7 +667,7 @@
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
 
-        <bitcoinj.version>0.7.1</bitcoinj.version>
+        <bitcoinj.version>0.7.2</bitcoinj.version>
       
         <!-- Version of XChange to use (multiple uses) -->
         <xchange.version>1.5.0</xchange.version>

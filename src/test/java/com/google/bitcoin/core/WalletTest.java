@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -133,6 +134,7 @@ public class WalletTest {
         assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
         assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.ALL));
         assertEquals(TransactionConfidence.Source.SELF, t2.getConfidence().getSource());
+        assertEquals(wallet.getChangeAddress(), t2.getOutput(1).getScriptPubKey().getToAddress());
 
         // Do some basic sanity checks.
         assertEquals(1, t2.getInputs().size());
@@ -471,6 +473,7 @@ public class WalletTest {
         assertEquals(coin1, wallet.getBalance());
     }
 
+    @Test
     public void ageMattersDuringSelection() throws Exception {
         // Test that we prefer older coins to newer coins when building spends. This reduces required fees and improves
         // time to confirmation as the transaction will appear less spammy.
@@ -485,6 +488,22 @@ public class WalletTest {
             assertEquals("Failed on iteration " + i, spend.getInput(0).getOutpoint().getHash(), txns[i].getHash());
             wallet.commitTx(spend);
         }
+    }
+
+    @Test
+    public void respectMaxStandardSize() throws Exception {
+        // Check that we won't create txns > 100kb. Average tx size is ~220 bytes so this would have to be enormous.
+        sendMoneyToWallet(Utils.toNanoCoins(100, 0), AbstractBlockChain.NewBlockType.BEST_CHAIN);
+        Transaction tx = new Transaction(params);
+        byte[] bits = new byte[20];
+        new Random().nextBytes(bits);
+        BigInteger v = Utils.toNanoCoins(0, 1);
+        // 3100 outputs to a random address.
+        for (int i = 0; i < 3100; i++) {
+            tx.addOutput(v, new Address(params, bits));
+        }
+        Wallet.SendRequest req = Wallet.SendRequest.forTx(tx);
+        assertFalse(wallet.completeTx(req));
     }
 
     // There is a test for spending a coinbase transaction as it matures in BlockChainTest#coinbaseTransactionAvailability

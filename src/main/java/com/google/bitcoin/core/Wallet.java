@@ -125,7 +125,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * may have unspent "change" outputs.<p>
      * <p/>
      * Note: for now we will not allow spends of transactions that did not make it into the block chain. The code
-     * that handles this in BitCoin C++ is complicated. Satoshis code will not allow you to spend unconfirmed coins,
+     * that handles this in Bitcoin C++ is complicated. Satoshis code will not allow you to spend unconfirmed coins,
      * however, it does seem to support dependency resolution entirely within the context of the memory pool so
      * theoretically you could spend zero-conf coins and all of them would be included together. To simplify we'll
      * make people wait but it would be a good improvement to resolve this in future.
@@ -1264,7 +1264,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
          * don't really control as it depends on who sent you money), and the value being sent somewhere else. The
          * change address should be selected from this wallet, normally. <b>If null this will be chosen for you.</b>
          */
-        public Address changeAddress;
+        public Address changeAddress = null;
 
         /**
          * A transaction can have a fee attached, which is defined as the difference between the input values
@@ -1325,7 +1325,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * prevent this, but that should only occur once the transaction has been accepted by the network. This implies
      * you cannot have more than one outstanding sending tx at once.</p>
      *
-     * @param address       The BitCoin address to send the money to.
+     * @param address       The Bitcoin address to send the money to.
      * @param nanocoins     How much currency to send, in nanocoins.
      * @return either the created Transaction or null if there are insufficient coins.
      * coins as spent until commitTx is called on the result.
@@ -1490,6 +1490,14 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             // If this happens it means an output script in a wallet tx could not be understood. That should never
             // happen, if it does it means the wallet has got into an inconsistent state.
             throw new RuntimeException(e);
+        }
+
+        // Check size.
+        int size = req.tx.bitcoinSerialize().length;
+        if (size > Transaction.MAX_STANDARD_TX_SIZE) {
+            // TODO: Throw an exception here.
+            log.error("Transaction could not be created without exceeding max size: {} vs {}", size, Transaction.MAX_STANDARD_TX_SIZE);
+            return false;
         }
 
         // Label the transaction as being self created. We can use this later to spend its change output even before

@@ -48,8 +48,12 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     private static final Logger log = LoggerFactory.getLogger(Transaction.class);
     private static final long serialVersionUID = -8567546957352643140L;
     
-    // Threshold for lockTime: below this value it is interpreted as block number, otherwise as timestamp.
-    static final int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
+    /** Threshold for lockTime: below this value it is interpreted as block number, otherwise as timestamp. **/
+    public static final int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
+
+    /** How many bytes a transaction can be before it won't be relayed anymore. */
+    public static final int MAX_STANDARD_TX_SIZE = 100 * 1024;
+
 
     // These are serialized in both bitcoin and java serialization.
     private long version;
@@ -546,7 +550,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
     /**
      * A coinbase transaction is one that creates a new coin. They are the first transaction in each block and their
-     * value is determined by a formula that all implementations of BitCoin share. In 2011 the value of a coinbase
+     * value is determined by a formula that all implementations of Bitcoin share. In 2011 the value of a coinbase
      * transaction is 50 coins, but in future it will be less. A coinbase transaction is defined not only by its
      * position in a block but by the data in the inputs.
      */

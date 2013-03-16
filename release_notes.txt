@@ -2,9 +2,10 @@ MultiBit release notes.
 
 Mar 2013 Version 0.4.23
 
-+ addition checking of incoming transactions
-+ tidied up UI when switching "look and feels".
-+ change now sent to the second key in a wallet if present (this helps people who have imported a blockchain.info backup).
++ Additional checking of incoming transactions.
++ Tidied up UI when switching "look and feels".
++ Change is now sent to the second key in a wallet if present (this helps people who have imported a blockchain.info backup).
++ Updated to bitcoinj 0.7.2.
 
 
 11 Mar 2013 Version 0.4.22
