@@ -231,7 +231,7 @@ public enum AlertManager {
 
         VersionComparator versionComparator = new VersionComparator();
 
-        log.debug("Current version of local MultiBit = '" + localVersion + "', version on server = '" + versionOnServer);
+        log.debug("Current version of local MultiBit = '" + localVersion + "', version on server = '" + versionOnServer + "'");
         boolean newVersionIsAvailable = versionComparator.compare(localVersion, versionOnServer) < 0;
         ParseResult parseResult = new ParseResult();
         parseResult.newVersionIsAvailable = newVersionIsAvailable;
