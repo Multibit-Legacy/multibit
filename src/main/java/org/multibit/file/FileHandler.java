@@ -395,8 +395,11 @@ public class FileHandler {
                  throw new IOException("Failed to copy the existing wallet from '" + walletFile.getAbsolutePath() + "' to '"
                          + newWalletBackupFilename + "'");
              }
+             log.debug("Copied wallet file to rolling backup file '" + newWalletBackupFile.getAbsolutePath() +"'");
 
-             secureDelete(walletFile);
+             if (!walletFile.getAbsolutePath().equals(newWalletBackupFile.getAbsolutePath())) {
+                 secureDelete(walletFile);
+             }
          }
          
          return newWalletBackupFilename;

@@ -537,7 +537,13 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         // timestamp on the transaction and registers/runs event listeners.
         //
         // Note that after we return from this function, the wallet may have been modified.
-        commitTx(tx);
+        try {
+            commitTx(tx);
+        } catch ( IllegalArgumentException iae) {
+            // Commit may be called twice due to MultiBitPeerEventListener#onTransaction code. 
+            // This is ok but we log it anyhow.
+            log.debug("commitTx probably called twice due to MultiBitPeerEventListener#onTransaction code. This is ok. Error was: " + iae.getClass().getCanonicalName() + " " + iae.getMessage());
+        }
     }
 
     private AnalysisResult analyzeTransactionAndDependencies(Transaction tx, List<Transaction> dependencies) {
@@ -582,6 +588,9 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                     tx.getHashAsString(), tx.getLockTime());
             return false;
         }
+
+        log.debug("Received a pending tx that passed all checks. txId = " + tx.getHashAsString());
+
         return true;
     }
 
