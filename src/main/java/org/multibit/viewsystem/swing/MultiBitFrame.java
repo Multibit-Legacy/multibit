@@ -1294,7 +1294,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             estimatedBalanceBTCLabel.setText(controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false));
             if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
                 Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
-                estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                if (fiat != null) {
+                    estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                }
             }
 
             if (availableToSpend != null
@@ -1311,7 +1313,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 availableBalanceBTCButton.setText(controller.getLocaliser().bitcoinValueToString(availableToSpend, true, false));
                 if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
                     Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(availableToSpend);
-                    availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                    if (fiat != null) {
+                        availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                    }
                 } else {
                     availableBalanceFiatButton.setText(" ");
                 }

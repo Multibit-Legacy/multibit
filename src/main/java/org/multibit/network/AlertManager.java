@@ -21,6 +21,8 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
@@ -52,6 +54,10 @@ public enum AlertManager {
 
     public static final int NUMBER_OF_TIMES_TO_REPEAT_ALERT = 2;
     
+    public static final String MESSAGE_WINDOW_SEPARATOR = "----------------------------------------------------------------";
+
+    public static final String MESSAGE_PREFIX_TEXT = "message "; // one space
+
     public void initialise(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
@@ -125,45 +131,74 @@ public enum AlertManager {
                                         seenCount = Integer.parseInt(alertManagerNewVersionSeenCount);
                                     } catch (NumberFormatException nfe) {
                                         // Reset count to zero.
-                                        controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT, "0");
+                                        controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT,
+                                                "0");
                                     }
                                 }
-                                
+
                                 if (parseResult.versionOnServer != null) {
                                     if (parseResult.versionOnServer.equals(alertManagerNewVersionValue)) {
-                                        // We have seen this version before - use the number of times the user has been alerted
-                                        // that was previously stored in the user properties.
+                                        // We have seen this version before -
+                                        // use the number of times the user has
+                                        // been alerted
+                                        // that was previously stored in the
+                                        // user properties.
                                     } else {
-                                        // Reset the number of times the alert has been shown.
+                                        // Reset the number of times the alert
+                                        // has been shown.
                                         seenCount = 0;
                                     }
                                 }
-                                if (seenCount >= NUMBER_OF_TIMES_TO_REPEAT_ALERT) {
-                                    // The user has been alerted to the new version enough times.
-                                    // Do not show alert.
+                                boolean showAlertDialog = seenCount < NUMBER_OF_TIMES_TO_REPEAT_ALERT;
+
+                                if (parseResult.versionOnServer != null) {
+                                    controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_VALUE,
+                                            parseResult.versionOnServer);
+                                }
+                                seenCount++;
+                                controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT,
+                                        "" + seenCount);
+
+                                ImageIcon icon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
+                                String okText = controller.getLocaliser().getString("createOrEditAddressSubmitAction.text");
+                                String title = controller.getLocaliser().getString("alertManagerTitle");
+                                String line1 = controller.getLocaliser().getString("alertManagerLine1",
+                                        new String[] { parseResult.versionOnServer });
+                                String line2 = controller.getLocaliser().getString("alertManagerLine2",
+                                        new String[] { parseResult.localVersion });
+                                String viewRelease = controller.getLocaliser().getString("alertManagerViewRelease");
+                                String[] choices;
+                                if (isBrowserSupported()) {
+                                    choices = new String[] { okText, viewRelease };
                                 } else {
-                                    if (parseResult.versionOnServer != null) {
-                                        controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_VALUE, parseResult.versionOnServer);
-                                    }
-                                    seenCount++;
-                                    controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT, "" + seenCount);
-                                    
-                                    ImageIcon icon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
-                                    String okText = controller.getLocaliser().getString("createOrEditAddressSubmitAction.text");
-                                    String title = controller.getLocaliser().getString("alertManagerTitle");
-                                    String line1 = controller.getLocaliser().getString("alertManagerLine1", new String[]{parseResult.versionOnServer});
-                                    String line2 = controller.getLocaliser().getString("alertManagerLine2", new String[]{parseResult.localVersion});
-                                    String viewRelease = controller.getLocaliser().getString("alertManagerViewRelease");
-                                    String[] choices;
-                                    if (isBrowserSupported()) {
-                                        choices = new String[] { okText, viewRelease };
-                                    } else {
-                                        choices = new String[] { okText };
-                                    }
-                                    
-                                    int response = JOptionPane.showOptionDialog(mainFrame, new String[] { line1, line2 },
-                                            title, JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, icon,
-                                            choices, viewRelease);
+                                    choices = new String[] { okText };
+                                }
+
+                                ArrayList<String> messages = new ArrayList<String>();
+                                messages.add(line1);
+                                messages.add(line2);
+
+                                if (parseResult.messages != null) {
+                                    // Add spacer.
+                                    messages.add(" ");
+                                    messages.addAll(parseResult.messages);
+                                }
+                                
+                                // Always put the alert message to the Messages window.
+                                Message separatorMessage = new Message(MESSAGE_WINDOW_SEPARATOR);
+                                separatorMessage.setShowInStatusBar(false);
+                                MessageManager.INSTANCE.addMessage(separatorMessage);
+                                for (String messageLine : messages) {
+                                    Message message = new Message(messageLine);
+                                    message.setShowInStatusBar(false);
+                                    MessageManager.INSTANCE.addMessage(message);
+                                }
+                                MessageManager.INSTANCE.addMessage(separatorMessage);
+
+                                if (showAlertDialog) {
+                                    int response = JOptionPane.showOptionDialog(mainFrame,
+                                            messages.toArray(new String[messages.size()]), title, JOptionPane.YES_NO_OPTION,
+                                            JOptionPane.PLAIN_MESSAGE, icon, choices, viewRelease);
                                     if (response == 1) {
                                         try {
                                             openURI(new URI(RELEASES_URL));
@@ -198,14 +233,16 @@ public enum AlertManager {
      * @return true if version is later than the current version of MultiBit.
      * 
      *         The version file format is: <first line> Version of current
-     *         MultiBit.
-     * 
+     *         MultiBit. <second line> message The first line of any message
+     *         <third line> message The second line of any message <fourth line>
+     *         message The third line of any message
      * 
      *         The version of the current version is anything that the
      *         VersionComparator can understand.
      */
     ParseResult parseAndCheckVersionText(String versionTextFromServer) {
         String versionOnServer = null;
+        List<String> messageList = new ArrayList<String>();
 
         Scanner scanner = null;
 
@@ -215,6 +252,15 @@ public enum AlertManager {
             // First line is the version
             if (scanner.hasNextLine()) {
                 versionOnServer = scanner.nextLine();
+            }
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (line != null & line.startsWith(MESSAGE_PREFIX_TEXT)) {
+                    // Extract message text
+                    line = line.replaceFirst(MESSAGE_PREFIX_TEXT, "");
+                    messageList.add(line);
+                }
             }
         } finally {
             // Ensure the underlying stream is always closed
@@ -237,6 +283,11 @@ public enum AlertManager {
         parseResult.newVersionIsAvailable = newVersionIsAvailable;
         parseResult.localVersion = localVersion;
         parseResult.versionOnServer = versionOnServer;
+        if (messageList.isEmpty()) {
+            parseResult.messages = null;
+        } else {
+            parseResult.messages = messageList;
+        }
         return parseResult;
     }
 
@@ -268,7 +319,8 @@ public enum AlertManager {
             desktop.browse(uri);
         } catch (IOException ioe) {
             log.debug(ioe.getMessage());
-            Message message = new Message(controller.getLocaliser().getString("browser.unableToLoad", new String[]{ uri.toString(), ioe.getMessage()}));
+            Message message = new Message(controller.getLocaliser().getString("browser.unableToLoad",
+                    new String[] { uri.toString(), ioe.getMessage() }));
             MessageManager.INSTANCE.addMessage(message);
         }
     }
@@ -277,6 +329,7 @@ public enum AlertManager {
         public boolean newVersionIsAvailable;
         public String versionOnServer;
         public String localVersion;
+        public List<String> messages;
 
     }
 }

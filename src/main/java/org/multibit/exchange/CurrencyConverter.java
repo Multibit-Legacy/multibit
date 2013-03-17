@@ -65,7 +65,7 @@ public enum CurrencyConverter {
     private BigDecimal rate;
     
     /**
-     * THe rate rate in terms of satoshi i.e. value of 1 satoshi in the currency
+     * The rate rate in terms of satoshi i.e. value of 1 satoshi in the currency
      */
     private BigDecimal rateDividedByNumberOfSatoshiInOneBitcoin;
       
@@ -321,7 +321,10 @@ public enum CurrencyConverter {
         } else {
             Money bitcoin = Money.of(BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinAmountInSatoshi));
             
-            Money fiatAmount = bitcoin.convertedTo(currencyUnit, rateDividedByNumberOfSatoshiInOneBitcoin, RoundingMode.HALF_EVEN);
+            Money fiatAmount = null;
+            if (rateDividedByNumberOfSatoshiInOneBitcoin != null) {
+                fiatAmount = bitcoin.convertedTo(currencyUnit, rateDividedByNumberOfSatoshiInOneBitcoin, RoundingMode.HALF_EVEN);
+            }
             
             return fiatAmount;
         }
@@ -639,7 +642,7 @@ public enum CurrencyConverter {
     public void setRate(BigDecimal rate) {
         boolean fireFoundInsteadOfUpdated = (rate== null);
         this.rate = rate;
-        this.rateDividedByNumberOfSatoshiInOneBitcoin = rate.divide(new BigDecimal(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN));
+        rateDividedByNumberOfSatoshiInOneBitcoin = rate.divide(new BigDecimal(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN));
         
         if (fireFoundInsteadOfUpdated) {
             notifyFoundExchangeRate();
