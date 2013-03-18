@@ -69,7 +69,8 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.joda.money.Money;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -141,7 +142,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     protected MultiBitFrame mainFrame;
 
-    protected MultiBitController controller;
+    protected final Controller controller;
+    protected final BitcoinController bitcoinController;
 
     protected MultiBitTextArea labelTextArea;
 
@@ -224,9 +226,12 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     protected String CREATE_NEW_TOOLTIP = "createNewTooltip";
     protected String DELETE_TOOLTIP = "deleteTooltip";
 
-    public AbstractTradePanel(MultiBitFrame mainFrame, MultiBitController controller) {
+    public AbstractTradePanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.mainFrame = mainFrame;
-        this.controller = controller;
+        
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.thisAbstractTradePanel = this;
 
         try {
@@ -1062,7 +1067,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 ImageLoader.createImageIcon(ImageLoader.COPY_ICON_FILE));
         copyQRCodeImageButton = new MultiBitButton(copyQRCodeImageAction, controller);
 
-        PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this,
+        PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(this.bitcoinController, this,
                 ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE));
         pasteSwatchButton = new MultiBitButton(pasteSwatchAction, controller);
 
@@ -1070,7 +1075,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         qrCodeButtonPanelStent2 = MultiBitTitledPanel.createStent(smallSeparatorSize);
         qrCodeButtonPanelStent3 = MultiBitTitledPanel.createStent(smallSeparatorSize);
 
-        ZoomAction zoomAction = new ZoomAction(controller, ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE), mainFrame, this);
+        ZoomAction zoomAction = new ZoomAction(this.bitcoinController, ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE), mainFrame, this);
         zoomButton = new MultiBitButton(zoomAction, controller);
         zoomButton.setText("");
 
@@ -1620,7 +1625,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
      */
     public void displayQRCode(String address, String amount, String label) {
         if (qrCodeGenerator == null) {
-            qrCodeGenerator = new QRCodeGenerator(controller);
+            qrCodeGenerator = new QRCodeGenerator(this.bitcoinController);
         }
         try {
             BufferedImage image = qrCodeGenerator.generateQRcode(address, amount, label);
@@ -1678,13 +1683,13 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     public boolean processDecodedString(String decodedString, ImageIcon icon) {
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
             return false;
         } else {
             // decode the string to an AddressBookData
@@ -1694,7 +1699,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             // Early MultiBit versions did not URL encode the label hence may
             // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
             // i.e be lenient
-            String uriString = decodedString.toString().replace(" ", MultiBitController.ENCODED_SPACE_CHARACTER);
+            String uriString = decodedString.toString().replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
             BitcoinURI bitcoinURI = new BitcoinURI(controller.getModel().getNetworkParameters(), uriString);
 
             log.debug("AbstractTradePanel - ping 1");

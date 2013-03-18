@@ -15,6 +15,7 @@
  */
 package org.multibit.file;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -23,17 +24,21 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
+
 import org.multibit.Constants;
-import org.multibit.Localiser;
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+
+import org.multibit.CreateControllers;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
+
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
@@ -43,9 +48,6 @@ import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
 
-import org.bitcoinj.wallet.Protos;
-import org.bitcoinj.wallet.Protos.ScryptParameters;
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class FileHandlerTest extends TestCase {
     private final String WALLET_TESTDATA_DIRECTORY = "wallets";
@@ -77,7 +79,7 @@ public class FileHandlerTest extends TestCase {
 
     private SecureRandom secureRandom;
     
-    private MultiBitController controller;
+    private BitcoinController controller;
     private FileHandler fileHandler;
     
     private KeyCrypter keyCrypter;
@@ -93,11 +95,9 @@ public class FileHandlerTest extends TestCase {
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
         keyCrypter = new KeyCrypterScrypt(scryptParameters);
         
-        controller = new MultiBitController();
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        controller = controllers.bitcoinController;
         fileHandler = new FileHandler(controller);
     }
     
@@ -463,12 +463,9 @@ public class FileHandlerTest extends TestCase {
     }
     
     public void testIsSerialisdWallet() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        controller = controllers.bitcoinController;
 
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
@@ -491,10 +488,9 @@ public class FileHandlerTest extends TestCase {
     
     @Test
     public void testCannotLoadOrSaveFutureWalletVersions() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        FileHandler fileHandler = new FileHandler(controller);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        controller = controllers.bitcoinController;
 
         File temporaryWallet = File.createTempFile(TEST_WALLET_VERSION_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
@@ -542,11 +538,10 @@ public class FileHandlerTest extends TestCase {
     
     @Test
     public void testWalletVersion2() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        FileHandler fileHandler = new FileHandler(controller);
-
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        controller = controllers.bitcoinController;
+        
         File temporaryWallet = File.createTempFile(TEST_WALLET_VERSION_2_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
 

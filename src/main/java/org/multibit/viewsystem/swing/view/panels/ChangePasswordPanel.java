@@ -36,7 +36,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -61,7 +62,8 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
 
     private static final long serialVersionUID = 444992298432957705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -91,19 +93,19 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
     /**
      * Creates a new {@link ChangePasswordPanel}.
      */
-    public ChangePasswordPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ChangePasswordPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        this.controller = controller;
-
         initUI();
         
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
-        controller.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
     }
 
     @Override
@@ -692,7 +694,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        changePasswordSubmitAction = new ChangePasswordSubmitAction(controller, this,
+        changePasswordSubmitAction = new ChangePasswordSubmitAction(this.bitcoinController, this,
                 ImageLoader.createImageIcon(ImageLoader.CHANGE_PASSWORD_ICON_FILE), currentPasswordField, newPasswordField, repeatNewPasswordField);
         MultiBitButton submitButton = new MultiBitButton(changePasswordSubmitAction, controller);
         submitButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("changePasswordSubmitAction.tooltip")));
@@ -808,7 +810,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
     }
 
     @Override
-    public void walletBusyChange(boolean newWalletIsBusy) { 
+    public final void walletBusyChange(boolean newWalletIsBusy) { 
         boolean unencryptedWalletType = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.UNENCRYPTED;
 
         if (unencryptedWalletType) {

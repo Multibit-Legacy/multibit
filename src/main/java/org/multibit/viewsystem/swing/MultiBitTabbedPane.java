@@ -23,7 +23,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.TabbedPaneUI;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.Viewable;
@@ -41,7 +41,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     private int tabCounter = 0;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     private final MultiBitTabbedPane thisTabbedPane;
     
@@ -49,7 +49,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitTabbedPane.class);
 
-    public MultiBitTabbedPane(final MultiBitController controller) {
+    public MultiBitTabbedPane(final Controller controller) {
         thisTabbedPane = this;
         this.controller = controller;
         

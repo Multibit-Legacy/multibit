@@ -24,7 +24,8 @@ import java.awt.FontMetrics;
 
 import javax.swing.JComboBox;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
@@ -41,16 +42,18 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
  
     private ReceiveBitcoinPanel receiveBitcoinPanel;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
     
     private CreateNewReceivingAddressPanel createNewReceivingAddressPanel; 
 
     /**
      * Creates a new {@link CreateNewReceivingAddressDialog}.
      */
-    public CreateNewReceivingAddressDialog(MultiBitController controller, MultiBitFrame mainFrame, ReceiveBitcoinPanel receiveBitcoinPanel) {
-        super(mainFrame, controller.getLocaliser().getString("createNewReceivingAddressDialog.title"));
-        this.controller = controller;
+    public CreateNewReceivingAddressDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame, ReceiveBitcoinPanel receiveBitcoinPanel) {
+        super(mainFrame, bitcoinController.getLocaliser().getString("createNewReceivingAddressDialog.title"));
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.receiveBitcoinPanel = receiveBitcoinPanel;
       
         initUI();
@@ -74,7 +77,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
             // FontSizer fail - probably headless in test - carry on.
         }
 
-        createNewReceivingAddressPanel = new CreateNewReceivingAddressPanel(controller, receiveBitcoinPanel, this);
+        createNewReceivingAddressPanel = new CreateNewReceivingAddressPanel(this.bitcoinController, receiveBitcoinPanel, this);
         
         setLayout(new BorderLayout());
         add(createNewReceivingAddressPanel, BorderLayout.CENTER);

@@ -2,16 +2,11 @@ package org.multibit.viewsystem.swing.action;
 
 import java.io.File;
 import java.security.SecureRandom;
-import java.util.Locale;
 
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
-import org.multibit.Localiser;
-import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
-import org.multibit.exchange.CurrencyConverter;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.store.MultiBitWalletVersion;
@@ -31,23 +26,8 @@ import com.google.protobuf.ByteString;
 public class ActionTestUtils {
     
     private static SecureRandom secureRandom;
-
-    public static MultiBitController createController() {
-         MultiBitController controller = new MultiBitController();
-         
-         Localiser localiser = new Localiser(Locale.ENGLISH);
-         MultiBitModel model = new MultiBitModel(controller);
-         
-         controller.setLocaliser(localiser);
-         controller.setModel(model);
-         
-         CurrencyConverter.INSTANCE.initialise(controller);
-         
-         MultiBit.setController(controller);
-         return controller;
-     }
      
-     public static void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, CharSequence walletPassword) throws Exception {
+     public static void createNewActiveWallet(BitcoinController controller, String descriptor, boolean encrypt, CharSequence walletPassword) throws Exception {
          if (secureRandom == null) {
              secureRandom = new SecureRandom();
          }

@@ -20,7 +20,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.JTable;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
@@ -47,8 +48,8 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link DeleteSendingAddressSubmitAction}.
      */
-    public DeleteSendingAddressSubmitAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel, DeleteSendingAddressConfirmDialog deleteSendingAddressConfirmDialog) {
-        super(controller, "deleteSendingAddressSubmitAction.text", "deleteSendingAddressSubmitAction.tooltip",
+    public DeleteSendingAddressSubmitAction(BitcoinController bitcoinController, SendBitcoinPanel sendBitcoinPanel, DeleteSendingAddressConfirmDialog deleteSendingAddressConfirmDialog) {
+        super(bitcoinController, "deleteSendingAddressSubmitAction.text", "deleteSendingAddressSubmitAction.tooltip",
                 "deleteSendingAddressSubmitAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.DELETE_ADDRESS_ICON_FILE));
         this.sendBitcoinPanel = sendBitcoinPanel;
         this.deleteSendingAddressConfirmDialog = deleteSendingAddressConfirmDialog;

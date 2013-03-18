@@ -15,6 +15,7 @@
  */
 package org.multibit.functionaltests;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -24,19 +25,19 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
-
 import org.junit.Test;
+
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
-import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.CreateControllers;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.network.MultiBitService;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,7 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
+
 
 /**
  * Functional test to check that Mining Coinbase Transactions can be seen.
@@ -84,22 +86,17 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // Set the application data directory to be the one we just created.
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-            // Create the controller.
-            final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
-            MultiBit.setController(controller);
-
-            // Create the model - gets hooked up to controller automatically.
-            @SuppressWarnings("unused")
-            MultiBitModel model = new MultiBitModel(controller);
+            // Create MultiBit controller.
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
-            MultiBitService multiBitService = new MultiBitService(controller);
-            controller.setMultiBitService(multiBitService);
+            MultiBitService multiBitService = new MultiBitService(controllers.bitcoinController);
+            controllers.bitcoinController.setMultiBitService(multiBitService);
 
             // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
-            controller.registerViewSystem(simpleViewSystem);
+            controllers.coreController.registerViewSystem(simpleViewSystem);
 
             //
             // MultiBit runtime is now setup and running.
@@ -121,11 +118,11 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             perWalletModelData.setWalletDescription("testReplayMiningTransaction test");
 
             // Save the new wallet.
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+            controllers.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
             // Get the multibitService to load it up and hook it up to the blockchain.
-            controller.getMultiBitService().addWalletFromFilename(miningWalletPath);
-            controller.getModel().setActiveWalletByFilename(miningWalletPath);
+            controllers.bitcoinController.getMultiBitService().addWalletFromFilename(miningWalletPath);
+            controllers.bitcoinController.getModel().setActiveWalletByFilename(miningWalletPath);
 
             log.debug("Mining wallet = \n" + miningWallet.toString());
 
@@ -151,14 +148,14 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // Check new balance on wallet - estimated balance should be at least the
             // expected (may have later tx too)..
 
-            log.debug("Mining wallet estimated balance is:\n" + controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED).toString());
-            log.debug("Mining wallet spendable balance is:\n" + controller.getModel().getActiveWallet().getBalance().toString());
-            log.debug("Mining wallet is:\n" + controller.getModel().getActiveWallet().toString());
-            assertTrue("Estimated balance of mining wallet is incorrect", BALANCE_AFTER_REPLAY.compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) <= 0);
-            assertTrue("Available balance of mining wallet is incorrect", BigInteger.ZERO.compareTo(controller.getModel().getActiveWallet().getBalance()) == 0);
+            log.debug("Mining wallet estimated balance is:\n" + controllers.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED).toString());
+            log.debug("Mining wallet spendable balance is:\n" + controllers.bitcoinController.getModel().getActiveWallet().getBalance().toString());
+            log.debug("Mining wallet is:\n" + controllers.bitcoinController.getModel().getActiveWallet().toString());
+            assertTrue("Estimated balance of mining wallet is incorrect", BALANCE_AFTER_REPLAY.compareTo(controllers.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) <= 0);
+            assertTrue("Available balance of mining wallet is incorrect", BigInteger.ZERO.compareTo(controllers.bitcoinController.getModel().getActiveWallet().getBalance()) == 0);
 
             // See if the first transaction is a coinbase.
-            miningWallet = controller.getModel().getActiveWallet();
+            miningWallet = controllers.bitcoinController.getModel().getActiveWallet();
             
             Set<Transaction> transactions = miningWallet.getTransactions(true, true);
             assertTrue("Transactions are missing", !(transactions == null || transactions.isEmpty()));
@@ -169,9 +166,9 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             assertTrue("The first transaction in the wallet is not a coinbase but it should be", transaction.isCoinBase());
             
             // Force save the wallet, reload it and check the transaction is still coinbase.
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+            controllers.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
             
-            PerWalletModelData rebornPerWalletModelData = controller.getFileHandler().loadFromFile(new File(miningWalletPath));
+            PerWalletModelData rebornPerWalletModelData = controllers.bitcoinController.getFileHandler().loadFromFile(new File(miningWalletPath));
             assertNotNull("No reborn perWalletModelData", rebornPerWalletModelData);;
             assertNotNull("No reborn wallet", rebornPerWalletModelData.getWallet());
 
@@ -189,7 +186,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // Tidy up.
             multiBitService.getPeerGroup().stop();
 
-            controller.getFileHandler().deleteWalletAndWalletInfo(controller.getModel().getActivePerWalletModelData());
+            controllers.bitcoinController.getFileHandler().deleteWalletAndWalletInfo(controllers.bitcoinController.getModel().getActivePerWalletModelData());
         } else {
             log.debug("Not running functional test: MiningCoinBaseTransactionsSeenTest#testReplayMiningTransaction. Add '-DrunFunctionalTests=true' to run");
         }

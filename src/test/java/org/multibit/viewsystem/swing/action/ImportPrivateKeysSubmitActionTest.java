@@ -21,7 +21,9 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.Constants;
-import org.multibit.controller.MultiBitController;
+import org.multibit.CreateControllers;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.PrivateKeysHandlerTest;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -47,7 +49,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testImportUnencryptedPrivateKeysWithUnencryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new unencrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnencryptedWallet", false, null);
@@ -95,7 +98,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testImportEncryptedPrivateKeysWithUnencryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnEncryptedWallet", false, null);
@@ -150,7 +154,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testImportUnencryptedPrivateKeysWithEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnencryptedWallet", true, WALLET_PASSWORD);
@@ -213,7 +218,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testImportEncryptedPrivateKeysWithEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testImportUnencryptedPrivateKeysWithUnEncryptedWallet", true, WALLET_PASSWORD);
@@ -283,7 +289,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     @Test
     public void testNoWalletSelected() throws Exception {
         // Create MultiBit controller.
-        MultiBitController controller = ActionTestUtils.createController();
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        BitcoinController controller = controllers.bitcoinController;
 
         // This test runs against an empty PerWalletModelDataList.
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
@@ -302,7 +309,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         assertEquals("Wrong message after receive bitcoin confirm with no active wallet", ResetTransactionsSubmitActionTest.EXPECTED_NO_WALLET_IS_SELECTED, ((Message)messages[messages.length - 1]).getText());
     }
     
-    private void checkEveryExpectedKeyIsPresent(MultiBitController controller) {
+    private void checkEveryExpectedKeyIsPresent(Controller controller) {
         // Check every key on the expected list is now on the wallet.
         for (int i = 0; i < PrivateKeysHandlerTest.EXPECTED_ADDRESSES_FOR_TEST1_WALLET.length; i++) {
             boolean foundIt = false;

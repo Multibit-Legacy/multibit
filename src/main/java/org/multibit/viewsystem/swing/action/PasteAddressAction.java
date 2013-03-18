@@ -21,7 +21,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -35,16 +36,21 @@ public class PasteAddressAction extends AbstractAction {
 
     private static final long serialVersionUID = 114352235465057705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private SendBitcoinPanel sendBitcoinPanel;
 
     /**
      * Creates a new {@link PasteAddressAction}.
      */
-    public PasteAddressAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel, ImageIcon icon) {
+    public PasteAddressAction(BitcoinController bitcoinController, SendBitcoinPanel sendBitcoinPanel, ImageIcon icon) {
         super("", icon);
         // super(controller.getLocaliser().getString("pasteAddressAction.text"));
-        this.controller = controller;
+        
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.sendBitcoinPanel = sendBitcoinPanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -59,13 +65,13 @@ public class PasteAddressAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             TextTransfer textTransfer = new TextTransfer();
             String stringToPaste = textTransfer.getClipboardContents();

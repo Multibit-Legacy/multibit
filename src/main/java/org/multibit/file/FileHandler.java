@@ -37,7 +37,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -57,6 +58,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterException;
 
+
 /**
  * Class consolidating the File IO in MultiBit for wallets and wallet infos.
  * 
@@ -72,7 +74,8 @@ public class FileHandler {
     private static final String SEPARATOR = "-";
     public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private Date dateForBackupName = null;
     
@@ -99,8 +102,9 @@ public class FileHandler {
         }
     }
     
-    public FileHandler(MultiBitController controller) {
-        this.controller = controller;
+    public FileHandler(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         
         dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         walletProtobufSerializer = new MultiBitWalletProtobufSerializer();
@@ -457,8 +461,8 @@ public class FileHandler {
                         false, false, MultiBitModel.PRIVATE_KEY_FILE_EXTENSION);
                 privateKeysBackupFile = new File(privateKeysBackupFilename);
                 BlockChain blockChain = null;
-                if (controller.getMultiBitService() != null) {
-                    blockChain = controller.getMultiBitService() .getChain();
+                if (this.bitcoinController.getMultiBitService() != null) {
+                    blockChain = this.bitcoinController.getMultiBitService().getChain();
                 }
                 
                 privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, controller.getModel().getActiveWallet(), blockChain, true, passwordToUse, passwordToUse);
@@ -640,7 +644,7 @@ public class FileHandler {
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
     }
 
-    public static void writeUserPreferences(MultiBitController controller) {
+    public static void writeUserPreferences(Controller controller) {
         // Save all the wallets' filenames in the user preferences.
         if (controller.getModel().getPerWalletModelDataList() != null) {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();

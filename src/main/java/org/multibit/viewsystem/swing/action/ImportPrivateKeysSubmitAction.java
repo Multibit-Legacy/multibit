@@ -30,7 +30,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.file.PrivateKeyAndDate;
@@ -78,9 +79,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
     /**
      * Creates a new {@link ImportPrivateKeysSubmitAction}.
      */
-    public ImportPrivateKeysSubmitAction(MultiBitController controller, ImportPrivateKeysPanel importPrivateKeysPanel,
+    public ImportPrivateKeysSubmitAction(BitcoinController bitcoinController, ImportPrivateKeysPanel importPrivateKeysPanel,
             ImageIcon icon, JPasswordField walletPasswordField, JPasswordField passwordField1, JPasswordField passwordField2) {
-        super(controller, "importPrivateKeysSubmitAction.text", "importPrivateKeysSubmitAction.tooltip",
+        super(bitcoinController, "importPrivateKeysSubmitAction.text", "importPrivateKeysSubmitAction.tooltip",
                 "importPrivateKeysSubmitAction.mnemonicKey", icon);
         this.importPrivateKeysPanel = importPrivateKeysPanel;
         this.walletPasswordField = walletPasswordField;
@@ -88,7 +89,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         this.passwordField2 = passwordField2;
         
         // This action is a WalletBusyListener.
-        controller.registerWalletBusyListener(this);
+        super.bitcoinController.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
@@ -227,7 +228,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     "importPrivateKeysSubmitAction.importingPrivateKeys"));
             importPrivateKeysPanel.setMessageText2(" ");
 
-            controller.fireWalletBusyChange(true);
+            super.bitcoinController.fireWalletBusyChange(true);
 
             importPrivateKeysInBackground(privateKeyAndDateArray, walletPassword);
         }
@@ -240,7 +241,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             final CharSequence walletPassword) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final ImportPrivateKeysPanel finalImportPanel = importPrivateKeysPanel;
-        final MultiBitController finalController = controller;
+        final BitcoinController finalBitcoinController = super.bitcoinController;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String statusBarMessage = null;
@@ -343,19 +344,19 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
                     log.debug(walletToAddKeysTo.toString());
 
-                    controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
+                    finalBitcoinController.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
 
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
 
                     // Import was successful.
-                    uiMessage = finalController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
+                    uiMessage = finalBitcoinController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
 
-                    privateKeysBackupFile = controller.getFileHandler().backupPrivateKeys(CharBuffer.wrap(walletPassword));
+                    privateKeysBackupFile = finalBitcoinController.getFileHandler().backupPrivateKeys(CharBuffer.wrap(walletPassword));
 
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
                     if (performReplay) {
-                        controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                        finalBitcoinController.getMultiBitService().replayBlockChain(earliestTransactionDate);
                         successMeasure = Boolean.TRUE;
                     }
                 } catch (WalletSaveException wse) {
@@ -416,7 +417,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Declare that wallet is no longer busy with the task.
                     finalPerWalletModelData.setBusyTask(null);
                     finalPerWalletModelData.setBusy(false);
-                    controller.fireWalletBusyChange(false);                   
+                    finalBitcoinController.fireWalletBusyChange(false);
                 }
             }
         };

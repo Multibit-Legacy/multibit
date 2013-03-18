@@ -37,7 +37,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -61,7 +62,8 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
 
     private static final long serialVersionUID = 444992298432957705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -89,20 +91,20 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
     /**
      * Creates a new {@link AddPasswordPanel}.
      */
-    public AddPasswordPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public AddPasswordPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
-        this.controller = controller;
         
-        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        applyComponentOrientation(ComponentOrientation.getOrientation(this.controller.getLocaliser().getLocale()));
 
         initUI();
         
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
-        controller.registerWalletBusyListener(this);
+        walletBusyChange(this.controller.getModel().getActivePerWalletModelData().isBusy());
+        this.bitcoinController.registerWalletBusyListener(this);
     }
 
     @Override
@@ -559,7 +561,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        addPasswordSubmitAction = new AddPasswordSubmitAction(controller, this,
+        addPasswordSubmitAction = new AddPasswordSubmitAction(this.bitcoinController, this,
                 ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE), passwordField, repeatPasswordField);
         MultiBitButton submitButton = new MultiBitButton(addPasswordSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -672,7 +674,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
     }
 
     @Override
-    public void walletBusyChange(boolean newWalletIsBusy) {
+    public final void walletBusyChange(boolean newWalletIsBusy) {
         if (controller.getModel().getActiveWallet() != null) {
             if (controller.getModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
                 // Is already an encrypted wallet so cannot add a password

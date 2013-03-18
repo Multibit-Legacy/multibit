@@ -29,7 +29,8 @@ import javax.swing.SwingUtilities;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -61,7 +62,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
     private MultiBitFrame mainFrame;
     private MultiBitDialog sendBitcoinConfirmDialog;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private MultiBitLabel sendAddressText;
     private MultiBitLabel sendLabelText;
@@ -100,9 +102,10 @@ public class SendBitcoinConfirmPanel extends JPanel {
     /**
      * Creates a new {@link SendBitcoinConfirmPanel}.
      */
-    public SendBitcoinConfirmPanel(MultiBitController controller, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog) {
+    public SendBitcoinConfirmPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog) {
         super();
-        this.controller = controller;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         this.sendBitcoinConfirmDialog = sendBitcoinConfirmDialog;
         
@@ -455,7 +458,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
+        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, this.bitcoinController, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 
