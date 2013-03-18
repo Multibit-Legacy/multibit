@@ -1,8 +1,8 @@
 MultiBit release notes.
 
-17 Mar 2013 Version 0.4.23
+19 Mar 2013 Version 0.4.23
 
-+ Additional checking of incoming transactions.
++ Additional checking of incoming transactions, more logging.
 + Updated to bitcoinj 0.7.2.
 + Notifies user when a new version of MultiBit is available.
 + Tidied up UI when switching "look and feels".
