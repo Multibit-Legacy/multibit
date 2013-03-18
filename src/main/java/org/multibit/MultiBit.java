@@ -82,10 +82,11 @@ public class MultiBit {
      * 
      * @param args    String encoding of arguments ([0]= Bitcoin URI)
      */
+    @SuppressWarnings("deprecation")
     public static void main(String args[]) {
         // Enclosing try to enable graceful closure for unexpected errors.
         try {
-            log.debug("Starting MultiBit");
+            log.debug("Starting MultiBit at " + (new Date()).toGMTString());
             
             // Set any bespoke system properties
             try {
