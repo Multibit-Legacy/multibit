@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
+
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -38,26 +39,29 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet.BalanceType;
+
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.SeriesColor;
 import com.xeiam.xchart.SeriesLineStyle;
 import com.xeiam.xchart.SeriesMarker;
 import com.xeiam.xchart.XChartPanel;
-import org.multibit.viewsystem.Viewable;
 
 /**
  * The Charts view.
@@ -79,7 +83,8 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
     
     private static final String DATE_FORMAT = "dd-MMM";
     
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private JPanel mainPanel;
 
@@ -88,10 +93,11 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
     /**
      * Creates a new {@link ChartsPanel}.
      */
-    public ChartsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ChartsPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
 
-        this.controller = controller;
-
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         setLayout(new BorderLayout());
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         setOpaque(true);
@@ -132,8 +138,8 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }
@@ -262,11 +268,11 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
      * Get the transaction data for the chart
      */
     private Collection<ChartData> getChartData() {
-        if (controller.getModel() == null || controller.getModel().getActiveWallet() == null) {
+        if (controller.getModel() == null || this.bitcoinController.getModel().getActiveWallet() == null) {
             return new ArrayList<ChartData>();
         }
 
-        ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet().getTransactions(false, false));
+        ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(this.bitcoinController.getModel().getActiveWallet().getTransactions(false, false));
 
         // Order by date.
         Collections.sort(allTransactions, new Comparator<Transaction>() {
@@ -314,7 +320,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
                 chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));  
             } else {
                 for (Transaction loop : allTransactions) {
-                    balance = balance.add(loop.getValue(controller.getModel().getActiveWallet()));
+                    balance = balance.add(loop.getValue(this.bitcoinController.getModel().getActiveWallet()));
 
                     Date loopUpdateTime = loop.getUpdateTime();
                     if (loopUpdateTime != null) {
@@ -357,7 +363,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
 
             // Add in the balance at the end of the time window.
             chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
-            log.debug("Last transaction date = " + previousDate + ", chart balance = " + balance + ", wallet balance = " + controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED));
+            log.debug("Last transaction date = " + previousDate + ", chart balance = " + balance + ", wallet balance = " + this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED));
         } catch (com.google.bitcoin.core.ScriptException e1) {
             e1.printStackTrace();
         }

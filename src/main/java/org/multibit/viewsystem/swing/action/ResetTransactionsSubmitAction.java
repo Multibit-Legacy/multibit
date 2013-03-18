@@ -25,11 +25,12 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.SwingWorker;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.slf4j.Logger;
@@ -56,9 +57,9 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public ResetTransactionsSubmitAction(MultiBitController controller, Icon icon,
+    public ResetTransactionsSubmitAction(BitcoinController bitcoinController, Icon icon,
             ResetTransactionsDataProvider resetTransactionsDataProvider) {
-        super(controller, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
+        super(bitcoinController, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
                 "resetTransactionsSubmitAction.mnemonicKey", icon);
         this.resetTransactionsDataProvider = resetTransactionsDataProvider;
     }
@@ -81,7 +82,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
         Date resetDate = resetTransactionsDataProvider.getResetDate();
 
-        PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData activePerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
         log.debug("RT Ping 3");
 
         Date actualResetDate = null;
@@ -126,10 +127,10 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
         // Save the wallet without the transactions.
         try {
-            controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
+            super.bitcoinController.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
             log.debug("RT Ping 10");
 
-            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+            super.bitcoinController.getModel().createWalletData(super.bitcoinController, super.bitcoinController.getModel().getActiveWalletFilename());
             log.debug("RT Ping 11");
 
             controller.fireRecreateAllViews(false);
@@ -166,7 +167,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                 Boolean successMeasure = Boolean.FALSE;
 
                 try {
-                    controller.getMultiBitService().replayBlockChain(resetDate);
+                    bitcoinController.getMultiBitService().replayBlockChain(resetDate);
 
                     successMeasure = Boolean.TRUE;
                 } catch (BlockStoreException e) {

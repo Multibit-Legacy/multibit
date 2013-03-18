@@ -17,10 +17,11 @@ package org.multibit.viewsystem.swing.action;
 
 import java.math.BigInteger;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
@@ -36,10 +37,12 @@ import com.google.bitcoin.core.Wallet.BalanceType;
  */
 public class Validator {
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
-    public Validator(MultiBitController controller) {
-        this.controller = controller;
+    public Validator(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
     }
 
     /**
@@ -70,7 +73,7 @@ public class Validator {
 
     private boolean validateAmount(String amount) {
         // copy amount to wallet preferences
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE, amount);
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_VALUE, amount);
 
         Boolean amountValidatesOk = Boolean.TRUE;
 
@@ -109,15 +112,15 @@ public class Validator {
                     amountValidatesOk = Boolean.FALSE;
                     amountIsNegativeOrZero = Boolean.TRUE;
                 } else {
-                    String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+                    String fee = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
                     BigInteger feeBigInteger;
                     if (fee == null || fee.isEmpty()) {
-                        feeBigInteger = MultiBitModel.SEND_FEE_DEFAULT;
+                        feeBigInteger = BitcoinModel.SEND_FEE_DEFAULT;
                     } else {
                         feeBigInteger = Utils.toNanoCoins(fee);
                     }
                     BigInteger totalSpend = amountBigInteger.add(feeBigInteger);
-                    BigInteger availableBalance = controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
+                    BigInteger availableBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
                     if (totalSpend.compareTo(availableBalance) > 0) {
                         // not enough funds
                         amountValidatesOk = Boolean.FALSE;
@@ -126,11 +129,11 @@ public class Validator {
                 }
             }
         }
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING, amountIsMissing.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO,
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_MISSING, amountIsMissing.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO,
                 amountIsNegativeOrZero.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, amountIsInvalid.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, notEnoughFunds.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_INVALID, amountIsInvalid.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS, notEnoughFunds.toString());
 
         return amountValidatesOk.booleanValue();
     }
@@ -140,10 +143,10 @@ public class Validator {
 
         if (address != null && !address.isEmpty()) {
             // copy address to wallet preferences
-            controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, address);
+            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_ADDRESS_VALUE, address);
 
             try {
-                new Address(controller.getModel().getNetworkParameters(), address);
+                new Address(this.bitcoinController.getModel().getNetworkParameters(), address);
                 addressIsInvalid = Boolean.FALSE;
             } catch (AddressFormatException afe) {
                 // carry on
@@ -151,18 +154,18 @@ public class Validator {
                 // carry on
             }
         } else {
-            controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, "");
+            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_ADDRESS_VALUE, "");
         }
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID, addressIsInvalid.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_ADDRESS_IS_INVALID, addressIsInvalid.toString());
 
         return !addressIsInvalid.booleanValue();
     }
 
     public void clearValidationState() {
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING, Boolean.FALSE.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO, Boolean.FALSE.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, Boolean.FALSE.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, Boolean.FALSE.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID, Boolean.FALSE.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_MISSING, Boolean.FALSE.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO, Boolean.FALSE.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_INVALID, Boolean.FALSE.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS, Boolean.FALSE.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_ADDRESS_IS_INVALID, Boolean.FALSE.toString());
     }
 }

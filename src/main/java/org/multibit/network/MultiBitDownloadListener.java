@@ -19,13 +19,15 @@ package org.multibit.network;
 import java.text.DateFormat;
 import java.util.Date;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.DownloadListener;
+
 
 /**
  * Listen to chain download events and print useful informational messages.
@@ -47,12 +49,14 @@ public class MultiBitDownloadListener extends DownloadListener {
                                                           // rounding
     private static final int CRITERIA_LARGE_NUMBER_OF_BLOCKS = 1000;
 
-    MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private Object lockObject = new Object();
 
-    public MultiBitDownloadListener(MultiBitController controller) {
-        this.controller = controller;
+    public MultiBitDownloadListener(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
     }
 
     /**
@@ -87,7 +91,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                     MessageManager.INSTANCE.addMessage(message);
                 }
             }
-            controller.fireBlockDownloaded();
+            this.bitcoinController.fireBlockDownloaded();
         }
     }
 
@@ -122,7 +126,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                     MessageManager.INSTANCE.addMessage(message);
                 }
             }
-            controller.fireBlockDownloaded();
+            this.bitcoinController.fireBlockDownloaded();
         }
     }
 
@@ -139,6 +143,6 @@ public class MultiBitDownloadListener extends DownloadListener {
         message = new Message(downloadStatusText, 100);
         MessageManager.INSTANCE.addMessage(message);
 
-        controller.fireBlockDownloaded();
+        this.bitcoinController.fireBlockDownloaded();
     }
 }

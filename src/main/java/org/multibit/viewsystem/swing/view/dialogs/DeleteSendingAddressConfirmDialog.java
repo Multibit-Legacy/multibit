@@ -27,7 +27,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -47,7 +48,8 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
     private static final int HEIGHT_DELTA = 100;
     private static final int WIDTH_DELTA = 200;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private MultiBitLabel labelText;
     private MultiBitLabel addressLabelText;
@@ -62,10 +64,13 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
     /**
      * Creates a new {@link DeleteWalletConfirmDialog}.
      */
-    public DeleteSendingAddressConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame,
+    public DeleteSendingAddressConfirmDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame,
             SendBitcoinPanel sendBitcoinPanel) {
-        super(mainFrame, controller.getLocaliser().getString("deleteSendingAddressConfirmDialog.title"));
-        this.controller = controller;
+        super(mainFrame, bitcoinController.getLocaliser().getString("deleteSendingAddressConfirmDialog.title"));
+        
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.sendBitcoinPanel = sendBitcoinPanel;
 
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
@@ -86,7 +91,7 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         int minimumHeight = fontMetrics.getHeight() * 5 + HEIGHT_DELTA;
-        int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getModel().getActiveWalletFilename()),
+        int minimumWidth = Math.max(fontMetrics.stringWidth(this.bitcoinController.getModel().getActiveWalletFilename()),
                 fontMetrics.stringWidth(controller.getLocaliser().getString("deleteSendingAddressConfirmDialog.message")))
                 + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
@@ -252,7 +257,7 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        DeleteSendingAddressSubmitAction deleteWalletSubmitAction = new DeleteSendingAddressSubmitAction(controller,
+        DeleteSendingAddressSubmitAction deleteWalletSubmitAction = new DeleteSendingAddressSubmitAction(this.bitcoinController,
                 sendBitcoinPanel, this);
         deleteSendingAddressButton = new MultiBitButton(deleteWalletSubmitAction, controller);
         buttonPanel.add(deleteSendingAddressButton);

@@ -36,7 +36,6 @@ import java.nio.CharBuffer;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
-
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -48,13 +47,15 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.crypto.KeyCrypterOpenSSL;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
@@ -63,19 +64,20 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ImportPrivateKeysSubmitAction;
+import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
+import com.google.bitcoin.crypto.KeyCrypterException;
+
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
-import com.google.bitcoin.crypto.KeyCrypterException;
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
-import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 
 /**
  * The import private keys view.
@@ -84,7 +86,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
     private static final long serialVersionUID = 444992294329957705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -130,10 +133,10 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
      */
-    public ImportPrivateKeysPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ImportPrivateKeysPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -142,15 +145,15 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
         initUI();
         
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
-        controller.registerWalletBusyListener(this);
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
+        this.bitcoinController.registerWalletBusyListener(this);
         
         enableImportFilePasswordPanel(false);
         passwordField1.setText("");
         passwordField2.setText("");
 
         boolean walletPasswordRequired = false;
-        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (this.bitcoinController.getModel().getActiveWallet() != null && this.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             walletPasswordRequired = true;
         }
         enableWalletPassword(walletPasswordRequired);
@@ -310,8 +313,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }
@@ -355,7 +358,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         constraints.anchor = GridBagConstraints.LINE_END;
         inputWalletPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
         walletDescriptionLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -379,7 +382,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         constraints.anchor = GridBagConstraints.LINE_END;
         inputWalletPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(this.bitcoinController.getModel().getActiveWalletFilename());
         walletFilenameLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -790,7 +793,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(controller, this,
+        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(this.bitcoinController, this,
                 ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, passwordField1, passwordField2);
         MultiBitButton submitButton = new MultiBitButton(importPrivateKeysSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -805,16 +808,16 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletFilenameLabel.setText(this.bitcoinController.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
 
         boolean walletPasswordRequired = false;
-        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (this.bitcoinController.getModel().getActiveWallet() != null && this.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             walletPasswordRequired = true;
         }
         enableWalletPassword(walletPasswordRequired);
         
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
 
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
@@ -853,12 +856,12 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
             fileChooser.setCurrentDirectory(new File(outputFilename));
             fileChooser.setSelectedFile(new File(outputFilename));
         } else {
-            if (controller.getModel().getActiveWalletFilename() != null) {
-                fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
+            if (this.bitcoinController.getModel().getActiveWalletFilename() != null) {
+                fileChooser.setCurrentDirectory(new File(this.bitcoinController.getModel().getActiveWalletFilename()));
             }
             String defaultFileName = fileChooser.getCurrentDirectory().getAbsoluteFile() + File.separator
                     + controller.getLocaliser().getString("saveWalletAsView.untitled") + "."
-                    + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
+                    + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION;
             fileChooser.setSelectedFile(new File(defaultFileName));
         }
 
@@ -976,12 +979,12 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
             if (multiBitFileChooser.accept(file)) {
                 // Read in contents of file.
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+                PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(this.bitcoinController.getModel().getNetworkParameters());
                 Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename),
                         CharBuffer.wrap(passwordField1.getPassword()));
                 numberOfKeysLabel.setText("" + privateKeyAndDates.size());
 
-                Date replayDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel()
+                Date replayDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, this.bitcoinController.getModel()
                         .getActiveWallet());
 
                 if (replayDate == null) {
@@ -1147,13 +1150,13 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {       
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()})));
+            importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{this.bitcoinController.getModel().getActivePerWalletModelData().getBusyOperation()})));
             importPrivateKeysSubmitAction.setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip")));
                 importPrivateKeysSubmitAction.setEnabled(true);
             }

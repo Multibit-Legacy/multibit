@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
+
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -43,8 +44,9 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
@@ -70,7 +72,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
 
     private static final long serialVersionUID = 199992298245057705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private MultiBitLabel walletFilenameLabel;
 
@@ -95,8 +98,9 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     /**
      * Creates a new {@link ResetTransactionsPanel}.
      */
-    public ResetTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ResetTransactionsPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
@@ -217,8 +221,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }
@@ -290,7 +294,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(this.bitcoinController.getModel().getActiveWalletFilename());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 6;
@@ -311,7 +315,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -367,7 +371,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(controller,
+        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(this.bitcoinController,
                 ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
         MultiBitButton submitButton = new MultiBitButton(resetTransactionsSubmitAction, controller);
         buttonPanel.add(submitButton);
@@ -523,8 +527,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletFilenameLabel.setText(this.bitcoinController.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
     }
 
     @Override

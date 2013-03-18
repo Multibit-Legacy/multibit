@@ -39,12 +39,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
@@ -66,7 +67,9 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
     //private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private MultiBitFrame mainFrame;
 
     private MultiBitTabbedPane tabbedPane;
@@ -88,10 +91,10 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     /**
      * Creates a new {@link WalletListPanel}.
      */
-    public WalletListPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public WalletListPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         walletPanels = new ArrayList<SingleWalletPanel>();
 
@@ -102,7 +105,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
         initUI();
         
-        controller.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
     }
@@ -127,7 +130,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                         }
                     }
                     // Make sure the totals displayed and encryption status are correct.
-                    boolean modelBlinkEnabled = controller.getModel().isBlinkEnabled();
+                    boolean modelBlinkEnabled = this.bitcoinController.getModel().isBlinkEnabled();
                     loopSingleWalletPanel.updateFromModel(blinkEnabled && modelBlinkEnabled);
                      
                     amountFiatLabelSize = Math.max(amountFiatLabelSize, loopSingleWalletPanel.getFiatLabelWidth());
@@ -140,8 +143,8 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         }
         
         // Get the wallets from the model.
-        String activeWalletFilename = controller.getModel().getActiveWalletFilename();
-        PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
+        String activeWalletFilename = this.bitcoinController.getModel().getActiveWalletFilename();
+        WalletData activePerModelData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
 
         if (activePerModelData != null && DisplayHint.COMPLETE_REDRAW == displayHint) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
@@ -213,7 +216,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // Get the wallets from the model.
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -227,7 +230,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 
         if (perWalletModelDataList != null) {
             synchronized (walletPanels) {
-                for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     if (loopPerWalletModelData.getWallet() != null) {
                         JPanel outerPanel = new JPanel();
                         outerPanel.setOpaque(false);
@@ -244,7 +247,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                         constraints2.gridheight = 1;
                         constraints2.anchor = GridBagConstraints.CENTER;
 
-                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame, this);
+                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, this.bitcoinController, mainFrame, this);
                         loopPanel.setComponentOrientation(ComponentOrientation
                                 .getOrientation(controller.getLocaliser().getLocale()));
 
@@ -293,7 +296,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
-        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.bitcoinController, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);
         MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
         createNewWalletButton.setText(controller.getLocaliser().getString("createNewWalletAction.text"));
         createNewWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -308,7 +311,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         constraints.anchor = GridBagConstraints.CENTER;
         buttonPanel.add(createNewWalletButton, constraints);
         
-//        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
+//        OpenWalletAction openWalletAction = new OpenWalletAction(this.bitcoinController, null, mainFrame);
 //        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
 //        openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
 //        openWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -323,7 +326,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
 //        constraints.anchor = GridBagConstraints.CENTER;
 //        buttonPanel.add(openWalletButton, constraints);
 //        
-//        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller, null, mainFrame);
+//        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(this.bitcoinController, null, mainFrame);
 //        MultiBitButton deleteWalletButton = new MultiBitButton(deleteWalletAction, controller);
 //        deleteWalletButton.setText(controller.getLocaliser().getString("crudButton.delete"));
 //        deleteWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -355,7 +358,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
                         if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename()
-                                .equals(controller.getModel().getActiveWalletFilename())) {
+                                .equals(this.bitcoinController.getModel().getActiveWalletFilename())) {
                             // Found the currently selected panel.
                             if (moveToNextWallet && currentlySelectedWalletIndex < walletPanels.size() - 1) {
                                 nextSelectedWalletIndex = currentlySelectedWalletIndex + 1;
@@ -371,7 +374,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                     currentlySelectedWalletIndex++;
                 }
                 if (nextSelectedWalletIndex > -1) {
-                    controller.getModel().setActiveWalletByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
+                    this.bitcoinController.getModel().setActiveWalletByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(walletPanels.get(nextSelectedWalletIndex).getPerWalletModelData().getWalletFilename());
                     controller.fireDataChangedUpdateNow();
                 }
@@ -431,8 +434,8 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                 boolean originallySelected = selectedWalletPanel.isSelectedInternal();
 
                 if (!selectedWalletPanel.getPerWalletModelData().getWalletFilename()
-                        .equals(controller.getModel().getActiveWalletFilename())) {
-                    controller.getModel()
+                        .equals(bitcoinController.getModel().getActiveWalletFilename())) {
+                    bitcoinController.getModel()
                             .setActiveWalletByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 

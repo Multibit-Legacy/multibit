@@ -73,10 +73,11 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
-import org.multibit.model.StatusEnum;
+import org.multibit.model.core.StatusEnum;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
@@ -129,7 +130,9 @@ public class StatusBar extends JPanel implements MessageListener {
     private HashMap<String, Component> idToZones;
     private Border zoneBorder;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private MultiBitFrame mainFrame;
     
     private JProgressBar syncProgressBar; 
@@ -140,8 +143,10 @@ public class StatusBar extends JPanel implements MessageListener {
      * Construct a new StatusBar
      * 
      */
-    public StatusBar(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public StatusBar(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.mainFrame = mainFrame;
 
         setLayout(LookAndFeelTweaks.createHorizontalPercentLayout(controller.getLocaliser().getLocale()));
@@ -153,7 +158,7 @@ public class StatusBar extends JPanel implements MessageListener {
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        final MultiBitController finalController = controller;
+        final BitcoinController finalController = this.bitcoinController;
         
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 

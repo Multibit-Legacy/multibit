@@ -16,18 +16,21 @@
 package org.multibit.controller;
 
 import junit.framework.TestCase;
-
 import org.junit.Test;
+import org.multibit.CreateControllers;
+import org.multibit.CreateControllers.Controllers;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.swing.action.ActionTestUtils;
 
-public class MultiBitControllerTest extends TestCase {     
+public class BitcoinControllerTest extends TestCase {     
     public static final int MAXIMUM_BUSY_TIME = 5000;
     public static final int SLEEP_TIME = 500;
 
     @Test
     public void testWalletBusyListener() throws Exception {       
         // Create MultiBit controller
-        MultiBitController controller = ActionTestUtils.createController();
+        Controllers controllers = CreateControllers.createControllers();
+        BitcoinController controller = controllers.bitcoinController;
         
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testWalletBusyListener", false, null);

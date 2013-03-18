@@ -23,7 +23,8 @@ import java.awt.FontMetrics;
 
 import javax.swing.ImageIcon;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -42,14 +43,16 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     private MultiBitFrame mainFrame;
     private SendBitcoinConfirmPanel sendBitcoinConfirmPanel;
     
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     /**
      * Creates a new {@link SendBitcoinConfirmDialog}.
      */
-    public SendBitcoinConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame, controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
-        this.controller = controller;
+    public SendBitcoinConfirmDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        super(mainFrame, bitcoinController.getLocaliser().getString("sendBitcoinConfirmView.title"));
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
@@ -76,7 +79,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
             positionDialogRelativeToParent(this, 0.5D, 0.47D);
         }
         
-        sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(controller, mainFrame, this);
+        sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(this.bitcoinController, mainFrame, this);
         sendBitcoinConfirmPanel.setOpaque(false);
         
         setLayout(new BorderLayout());

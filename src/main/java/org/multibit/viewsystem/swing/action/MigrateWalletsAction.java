@@ -36,14 +36,15 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 import org.multibit.utils.ImageLoader;
@@ -68,7 +69,8 @@ public class MigrateWalletsAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592460523457705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private MultiBitFrame mainFrame;
 
@@ -77,9 +79,11 @@ public class MigrateWalletsAction extends AbstractAction {
     /**
      * Creates a new {@link MigrateWalletAction}.
      */
-    public MigrateWalletsAction(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("migrateWalletsAction.text"));
-        this.controller = controller;
+    public MigrateWalletsAction(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        super(bitcoinController.getLocaliser().getString("migrateWalletsAction.text"));
+        
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -120,10 +124,10 @@ public class MigrateWalletsAction extends AbstractAction {
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.start") + " " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
                        
-                FileHandler fileHandler = new FileHandler(controller);
+                FileHandler fileHandler = new FileHandler(this.bitcoinController);
                 
                 for (String walletFilename : walletFilenamesToMigrate) {
-                    PerWalletModelData loopPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
+                    WalletData loopPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                     
                     if (loopPerWalletModelData != null) {
                         MessageManager.INSTANCE.addMessage(new Message(" "));
@@ -151,7 +155,7 @@ public class MigrateWalletsAction extends AbstractAction {
                                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[]{walletMigrationErrorText})));
                                 
                                 // Save the MultiBit version so that we do not keep trying to run the migrate utility (until the next version).
-                                loopPerWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
+                                loopPerWalletModelData.getWalletInfo().put(BitcoinModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
                                 loopPerWalletModelData.setDirty(true);
                             }
                         } catch (IOException e1) {
@@ -175,8 +179,8 @@ public class MigrateWalletsAction extends AbstractAction {
                         } finally {
                             // Delete test wallet data.
                             if (testWalletFile != null) {
-                                PerWalletModelData testPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(testWalletFile.getAbsolutePath());
-                                controller.getModel().remove(testPerWalletModelData);
+                                WalletData testPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(testWalletFile.getAbsolutePath());
+                                this.bitcoinController.getModel().remove(testPerWalletModelData);
                                 fileHandler.deleteWalletAndWalletInfo(testPerWalletModelData);
                                 tempDirectory.delete();
                             }
@@ -199,7 +203,7 @@ public class MigrateWalletsAction extends AbstractAction {
                                             new Object[]{ loopPerWalletModelData.getWalletDescription()})));
                                     
                                     // Clear any 'lastMigrateFailed' properties.
-                                    loopPerWalletModelData.getWalletInfo().remove(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
+                                    loopPerWalletModelData.getWalletInfo().remove(BitcoinModel.LAST_FAILED_MIGRATE_VERSION);
                                     loopPerWalletModelData.setDirty(true);
                                 } else {                        
                                     MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.realMigrationUnsuccessful)")));
@@ -242,17 +246,17 @@ public class MigrateWalletsAction extends AbstractAction {
         }
     }
     
-    private void migrationWasNotSuccessful(PerWalletModelData perWalletModelData, Exception e) {
+    private void migrationWasNotSuccessful(WalletData perWalletModelData, Exception e) {
         // Save the MultiBit version so that we do not keep trying to run the migrate utility (until the next version).
-        perWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
+        perWalletModelData.getWalletInfo().put(BitcoinModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
         perWalletModelData.setDirty(true);
 
         e.printStackTrace();
         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.testMigrationUnsuccessful") + "\n" + localiseError(e)));
     }
     
-    private void migrationWasNotSuccessfulUseBackup(PerWalletModelData perWalletModelData, Exception e) {
-        perWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
+    private void migrationWasNotSuccessfulUseBackup(WalletData perWalletModelData, Exception e) {
+        perWalletModelData.getWalletInfo().put(BitcoinModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
         perWalletModelData.setDirty(true);
 
         e.printStackTrace();
@@ -274,7 +278,7 @@ public class MigrateWalletsAction extends AbstractAction {
      */
     private String convertToProtobufAndCheck(File walletFile, FileHandler fileHandler) {
         // Load the newly copied test serialised file.
-        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+        WalletData perWalletModelData = fileHandler.loadFromFile(walletFile);
         
         // Change wallet to protobuf.
         perWalletModelData.getWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
@@ -284,7 +288,7 @@ public class MigrateWalletsAction extends AbstractAction {
         fileHandler.savePerWalletModelData(perWalletModelData, true);
         
         // Load the newly saved test protobuf wallet.
-        PerWalletModelData protobuf = fileHandler.loadFromFile(walletFile);
+        WalletData protobuf = fileHandler.loadFromFile(walletFile);
         
         if (protobuf == null) {
             return controller.getLocaliser().getString("migrateWalletsAction.theProtobufWalletWouldNotLoad");
@@ -305,7 +309,7 @@ public class MigrateWalletsAction extends AbstractAction {
      * @param protobuf
      * @return String described error, or null if successful
      */
-    private String compareWallets(PerWalletModelData serialised, PerWalletModelData protobuf) {       
+    private String compareWallets(WalletData serialised, WalletData protobuf) {       
         // Check the number of keys are the same.
         if (protobuf.getWallet().getKeychain().size() != serialised.getWallet().getKeychain().size()) {
             return controller.getLocaliser().getString("migrateWalletsAction.numberOfPrivateKeysAreDifferent", 
@@ -327,7 +331,7 @@ public class MigrateWalletsAction extends AbstractAction {
             if (ecKey != null) {
                 if (!protobufPrivateKeysAsStrings.contains(ecKey.toStringWithPrivate())) {
                     return controller.getLocaliser().getString("migrateWalletsAction.privateKeyWasMissing", 
-                            new Object[] {ecKey.toAddress(controller.getModel().getNetworkParameters())});
+                            new Object[] {ecKey.toAddress(this.bitcoinController.getModel().getNetworkParameters())});
                 }
             }
         }
@@ -374,13 +378,13 @@ public class MigrateWalletsAction extends AbstractAction {
     
     private List<String> getWalletFilenamesToMigrate() {
         List<String> walletFilenamesToMigrate = new ArrayList<String>();
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+        List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+        for (WalletData loopPerWalletModelData : perWalletModelDataList) {
             // Is it a serialized wallet ?
             if (loopPerWalletModelData.getWalletInfo() != null) {
                 if (MultiBitWalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
                     // Have we already tried to migrate it with this version of MultiBit and failed ?
-                    String lastMigrateVersion = loopPerWalletModelData.getWalletInfo().getProperty(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
+                    String lastMigrateVersion = loopPerWalletModelData.getWalletInfo().getProperty(BitcoinModel.LAST_FAILED_MIGRATE_VERSION);
                     VersionComparator versionComparator = new VersionComparator();
                     if (lastMigrateVersion == null || versionComparator.compare(controller.getLocaliser().getVersionNumber(), lastMigrateVersion) > 0) {
                         walletFilenamesToMigrate.add(loopPerWalletModelData.getWalletFilename());
