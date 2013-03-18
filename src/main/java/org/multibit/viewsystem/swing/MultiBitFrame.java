@@ -1033,8 +1033,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewTabbedPane.removeAllTabs();
             initUI();
             
-            if (initialView != null && !initialView.toString().equals(View.TRANSACTIONS_VIEW.toString()) && !initialView.toString().equals(View.SEND_BITCOIN_VIEW.toString())
-                    && !initialView.toString().equals(View.RECEIVE_BITCOIN_VIEW)) {
+            if (initialView != null && !(initialView == View.TRANSACTIONS_VIEW) && !(initialView == View.SEND_BITCOIN_VIEW)
+                    && !(initialView == View.RECEIVE_BITCOIN_VIEW)) {
                 JPanel currentTabPanel = new JPanel(new BorderLayout());
                 Viewable currentView = viewFactory.getView(initialView);
                 currentTabPanel.add((JPanel) currentView, BorderLayout.CENTER);
@@ -1138,6 +1138,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
                         ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
                         viewTabbedPane.setSelectedIndex(i);
+                        break;
                     }
                 }
             }
@@ -1405,7 +1406,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 availableBalanceBTCButton.setText(controller.getLocaliser().bitcoinValueToString(availableToSpend, true, false));
                 if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
                     Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(availableToSpend);
-                    availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                    if (fiat != null) {
+                        availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                    }
                 } else {
                     availableBalanceFiatButton.setText(" ");
                 }

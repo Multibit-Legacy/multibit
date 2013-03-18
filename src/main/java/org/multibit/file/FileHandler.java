@@ -484,7 +484,9 @@ public class FileHandler {
                         + newWalletBackupFilename + "'");
             }
 
-            secureDelete(walletFile);
+            if (!walletFile.getAbsolutePath().equals(newWalletBackupFile.getAbsolutePath())) {
+                secureDelete(walletFile);
+            }
         }
         
         return newWalletBackupFilename;
