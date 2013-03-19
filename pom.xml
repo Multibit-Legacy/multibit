@@ -508,7 +508,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>0.9.30</version>
+            <version>1.0.9</version>
             <scope>compile</scope>
         </dependency>
         <!-- spongycastle used by bitcoinj clones -->
