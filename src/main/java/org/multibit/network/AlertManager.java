@@ -48,7 +48,7 @@ public enum AlertManager {
 
     private Logger log = LoggerFactory.getLogger(AlertManager.class);
 
-    public static final String VERSION_URL = "https://multibit.org/version.txt";
+    public static final String DEFAULT_VERSION_URL = "https://multibit.org/version.txt";
 
     public static final String RELEASES_URL = "https://multibit.org/releases.html";
 
@@ -57,6 +57,11 @@ public enum AlertManager {
     public static final String MESSAGE_WINDOW_SEPARATOR = "----------------------------------------------------------------";
 
     public static final String MESSAGE_PREFIX_TEXT = "message "; // one space
+    
+    public static final String SIGNATURE_PREFIX_TEXT = "signature "; // one space
+    
+    private String versionUrlToGet = DEFAULT_VERSION_URL;
+    
 
     public void initialise(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
@@ -86,7 +91,7 @@ public enum AlertManager {
             protected Boolean doInBackground() throws Exception {
                 try {
                     // Get the version file.
-                    final URL url = new URL(VERSION_URL + "?version=" + finalController.getLocaliser().getVersionNumber());
+                    final URL url = new URL(versionUrlToGet + "?version=" + finalController.getLocaliser().getVersionNumber());
 
                     InputStream in = url.openStream();
 
@@ -240,9 +245,10 @@ public enum AlertManager {
      *         The version of the current version is anything that the
      *         VersionComparator can understand.
      */
-    ParseResult parseAndCheckVersionText(String versionTextFromServer) {
+    public ParseResult parseAndCheckVersionText(String versionTextFromServer) {
         String versionOnServer = null;
-        List<String> messageList = new ArrayList<String>();
+        List<String> messages = new ArrayList<String>();
+        List<Signature> signatures = new ArrayList<Signature>();
 
         Scanner scanner = null;
 
@@ -256,10 +262,24 @@ public enum AlertManager {
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                if (line != null & line.startsWith(MESSAGE_PREFIX_TEXT)) {
-                    // Extract message text
-                    line = line.replaceFirst(MESSAGE_PREFIX_TEXT, "");
-                    messageList.add(line);
+                if (line != null) {
+                    if (line.startsWith(MESSAGE_PREFIX_TEXT)) {
+                        // Extract message text.
+                        line = line.replaceFirst(MESSAGE_PREFIX_TEXT, "");
+                        messages.add(line);
+                    } else {
+                        if (line.startsWith(SIGNATURE_PREFIX_TEXT)) {
+                            // Extract signature public key and signature text
+                            String[] tokens = line.split("[ ]+");
+                            // There should be 3 tokens : signature <public key> <signature text>.
+                            if (tokens != null && tokens.length == 3) {
+                                Signature signature = new Signature();
+                                signature.publicKeyAsHex = tokens[1];
+                                signature.signatureText = tokens[2];
+                                signatures.add(signature);
+                            }
+                        }   
+                    }
                 }
             }
         } finally {
@@ -283,18 +303,16 @@ public enum AlertManager {
         parseResult.newVersionIsAvailable = newVersionIsAvailable;
         parseResult.localVersion = localVersion;
         parseResult.versionOnServer = versionOnServer;
-        if (messageList.isEmpty()) {
-            parseResult.messages = null;
-        } else {
-            parseResult.messages = messageList;
-        }
+        parseResult.messages = messages;
+        parseResult.signatures = signatures;
+        
         return parseResult;
     }
 
     private void showUnableToLoadMessage(String message) {
         if (message != null) {
             Message messageToShow = new Message(controller.getLocaliser().getString("browser.unableToLoad",
-                    new String[] { VERSION_URL, message }), true);
+                    new String[] { versionUrlToGet, message }), true);
             MessageManager.INSTANCE.addMessage(messageToShow);
         }
     }
@@ -326,10 +344,23 @@ public enum AlertManager {
     }
 
     class ParseResult {
-        public boolean newVersionIsAvailable;
-        public String versionOnServer;
-        public String localVersion;
-        public List<String> messages;
+        public boolean newVersionIsAvailable = false;
+        public String versionOnServer = null;
+        public String localVersion = null;
+        public List<String> messages = new ArrayList<String>();
+        public List<Signature> signatures = new ArrayList<Signature>();
+    }
 
+    class Signature {
+        public String publicKeyAsHex = null;
+        public String signatureText = null;
+    }
+
+    public String getVersionUrlToGet() {
+        return versionUrlToGet;
+    }
+
+    public void setVersionUrlToGet(String versionUrlToGet) {
+        this.versionUrlToGet = versionUrlToGet;
     }
 }

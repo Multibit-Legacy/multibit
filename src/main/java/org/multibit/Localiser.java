@@ -246,7 +246,6 @@ public class Localiser {
         return version;
     }
 
-
     /**
      * Returns the given value in nanocoins as a 0.12345678 type string.
      * This function is localised. 
