@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 multibit.org
+ * Copyright 2013 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,8 @@ import org.junit.Test;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.network.AlertManager.ParseResult;
-import org.multibit.network.AlertManager.Signature;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
 
 public class AlertManagerTest extends TestCase {
@@ -49,7 +46,7 @@ public class AlertManagerTest extends TestCase {
         alertManager.initialise(controller, null);
         
         // Check the default source of the version.txt is correct.
-        assertEquals("Wrong default version test uri", "https://multibit.org/version.txt", alertManager.getVersionUrlToGet());
+        assertEquals("Wrong default version test uri", "https://www.multibit.org/version.txt", alertManager.getVersionUrlToGet());
     }
     
     @Test
@@ -78,27 +75,27 @@ public class AlertManagerTest extends TestCase {
         versionText.append("0.4.23");       
         ParseResult parseResult = alertManager.parseAndCheckVersionText(versionText.toString());
         assertNotNull(parseResult);
-        assertEquals("Case 1", false, parseResult.newVersionIsAvailable);
-        assertEquals("0.4.23", parseResult.localVersion);
-        assertEquals("0.4.23", parseResult.versionOnServer);
+        assertEquals("Case 1", false, parseResult.isNewVersionIsAvailable());
+        assertEquals("0.4.23", parseResult.getLocalVersion());
+        assertEquals("0.4.23", parseResult.getVersionOnServer());
         
         // Local version is behind of the "remote" version - we would want to upgrade
         versionText = new StringBuffer();
         versionText.append("0.5.1");       
         parseResult = alertManager.parseAndCheckVersionText(versionText.toString());
         assertNotNull(parseResult);
-        assertEquals("Case 2", true, parseResult.newVersionIsAvailable);
-        assertEquals("0.4.23", parseResult.localVersion);
-        assertEquals("0.5.1", parseResult.versionOnServer);
+        assertEquals("Case 2", true, parseResult.isNewVersionIsAvailable());
+        assertEquals("0.4.23", parseResult.getLocalVersion());
+        assertEquals("0.5.1", parseResult.getVersionOnServer());
         
         // Local version is ahead of the "remote" version.
         versionText = new StringBuffer();
         versionText.append("0.4.22");       
         parseResult = alertManager.parseAndCheckVersionText(versionText.toString());
         assertNotNull(parseResult);
-        assertEquals("Case 3", false, parseResult.newVersionIsAvailable);
-        assertEquals("0.4.23", parseResult.localVersion);
-        assertEquals("0.4.22", parseResult.versionOnServer);
+        assertEquals("Case 3", false, parseResult.isNewVersionIsAvailable());
+        assertEquals("0.4.23", parseResult.getLocalVersion());
+        assertEquals("0.4.22", parseResult.getVersionOnServer());
     }
 
     @Test
@@ -131,8 +128,8 @@ public class AlertManagerTest extends TestCase {
         
         ParseResult parseResult = alertManager.parseAndCheckVersionText(versionText.toString());
         assertNotNull(parseResult);
-        assertEquals(false, parseResult.newVersionIsAvailable);
-        List<String> serverMessages = parseResult.messages;
+        assertEquals(false, parseResult.isNewVersionIsAvailable());
+        List<String> serverMessages = parseResult.getMessages();
         assertNotNull(serverMessages);
         assertEquals("Wrong number of messages", 3, serverMessages.size());
         assertEquals("first Alice", serverMessages.get(0));
@@ -184,20 +181,20 @@ public class AlertManagerTest extends TestCase {
         
         ParseResult parseResult = alertManager.parseAndCheckVersionText(versionText.toString());
         assertNotNull(parseResult);
-        assertEquals(false, parseResult.newVersionIsAvailable);
-        List<String> serverMessages = parseResult.messages;
+        assertEquals(false, parseResult.isNewVersionIsAvailable());
+        List<String> serverMessages = parseResult.getMessages();
         assertNotNull(serverMessages);
         assertEquals("Wrong number of messages", 3, serverMessages.size());
         assertEquals("first Alice", serverMessages.get(0));
         assertEquals("second Bob", serverMessages.get(1));
         assertEquals("third Carol", serverMessages.get(2));
         
-        List<Signature> parseResultSignatures = parseResult.signatures;
+        List<Signature> parseResultSignatures = parseResult.getSignatures();
         assertNotNull("No signatures", parseResultSignatures);
         assertEquals("Wrong number of signatures", 2, parseResultSignatures.size());
         Signature parseResultSignature1 = parseResultSignatures.get(0);
-        assertEquals(publicKey1AsHex, parseResultSignature1.publicKeyAsHex);
-        assertEquals(signature1, parseResultSignature1.signatureText);
+        assertEquals(publicKey1AsHex, parseResultSignature1.getPublicKeyAsHex());
+        assertEquals(signature1, parseResultSignature1.getSignatureText());
         ECKey verificationKey1 = new ECKey(null, Utils.parseAsHexOrBase58(publicKey1AsHex));
         try {
             verificationKey1.verifyMessage(textToSign, signature1);
@@ -207,8 +204,8 @@ public class AlertManagerTest extends TestCase {
         }
         
         Signature parseResultSignature2 = parseResultSignatures.get(1);
-        assertEquals(publicKey2AsHex, parseResultSignature2.publicKeyAsHex);
-        assertEquals(signature2, parseResultSignature2.signatureText);
+        assertEquals(publicKey2AsHex, parseResultSignature2.getPublicKeyAsHex());
+        assertEquals(signature2, parseResultSignature2.getSignatureText());
         ECKey verificationKey2 = new ECKey(null, Utils.parseAsHexOrBase58(publicKey2AsHex));
         try {
             verificationKey2.verifyMessage(textToSign, signature2);

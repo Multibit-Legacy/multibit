@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2013 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,11 @@
  */
 package org.multibit.network;
 
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -30,15 +35,24 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.VersionComparator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
+
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet;
 
 public enum AlertManager {
     INSTANCE;
@@ -48,9 +62,9 @@ public enum AlertManager {
 
     private Logger log = LoggerFactory.getLogger(AlertManager.class);
 
-    public static final String DEFAULT_VERSION_URL = "https://multibit.org/version.txt";
+    public static final String DEFAULT_VERSION_URL = "https://www.multibit.org/version.txt";
 
-    public static final String RELEASES_URL = "https://multibit.org/releases.html";
+    public static final String RELEASES_URL = "https://www.multibit.org/releases.html";
 
     public static final int NUMBER_OF_TIMES_TO_REPEAT_ALERT = 2;
     
@@ -123,7 +137,7 @@ public enum AlertManager {
                         if (result != null && result.length() > 0) {
                             ParseResult parseResult = parseAndCheckVersionText(result);
 
-                            if (parseResult.newVersionIsAvailable) {
+                            if (parseResult.isNewVersionIsAvailable()) {
                                 // See if we have already seen the new version.
                                 String alertManagerNewVersionValue = controller.getModel().getUserPreference(
                                         MultiBitModel.ALERT_MANAGER_NEW_VERSION_VALUE);
@@ -141,8 +155,8 @@ public enum AlertManager {
                                     }
                                 }
 
-                                if (parseResult.versionOnServer != null) {
-                                    if (parseResult.versionOnServer.equals(alertManagerNewVersionValue)) {
+                                if (parseResult.getVersionOnServer() != null) {
+                                    if (parseResult.getVersionOnServer().equals(alertManagerNewVersionValue)) {
                                         // We have seen this version before -
                                         // use the number of times the user has
                                         // been alerted
@@ -156,9 +170,9 @@ public enum AlertManager {
                                 }
                                 boolean showAlertDialog = seenCount < NUMBER_OF_TIMES_TO_REPEAT_ALERT;
 
-                                if (parseResult.versionOnServer != null) {
+                                if (parseResult.getVersionOnServer() != null) {
                                     controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_VALUE,
-                                            parseResult.versionOnServer);
+                                            parseResult.getVersionOnServer());
                                 }
                                 seenCount++;
                                 controller.getModel().setUserPreference(MultiBitModel.ALERT_MANAGER_NEW_VERSION_SEEN_COUNT,
@@ -168,9 +182,9 @@ public enum AlertManager {
                                 String okText = controller.getLocaliser().getString("createOrEditAddressSubmitAction.text");
                                 String title = controller.getLocaliser().getString("alertManagerTitle");
                                 String line1 = controller.getLocaliser().getString("alertManagerLine1",
-                                        new String[] { parseResult.versionOnServer });
+                                        new String[] { parseResult.getVersionOnServer() });
                                 String line2 = controller.getLocaliser().getString("alertManagerLine2",
-                                        new String[] { parseResult.localVersion });
+                                        new String[] { parseResult.getLocalVersion() });
                                 String viewRelease = controller.getLocaliser().getString("alertManagerViewRelease");
                                 String[] choices;
                                 if (isBrowserSupported()) {
@@ -183,10 +197,10 @@ public enum AlertManager {
                                 messages.add(line1);
                                 messages.add(line2);
 
-                                if (parseResult.messages != null) {
+                                if (parseResult.getMessages() != null) {
                                     // Add spacer.
                                     messages.add(" ");
-                                    messages.addAll(parseResult.messages);
+                                    messages.addAll(parseResult.getMessages());
                                 }
                                 
                                 // Always put the alert message to the Messages window.
@@ -274,8 +288,8 @@ public enum AlertManager {
                             // There should be 3 tokens : signature <public key> <signature text>.
                             if (tokens != null && tokens.length == 3) {
                                 Signature signature = new Signature();
-                                signature.publicKeyAsHex = tokens[1];
-                                signature.signatureText = tokens[2];
+                                signature.setPublicKeyAsHex(tokens[1]);
+                                signature.setSignatureText(tokens[2]);
                                 signatures.add(signature);
                             }
                         }   
@@ -300,11 +314,11 @@ public enum AlertManager {
         log.debug("Current version of local MultiBit = '" + localVersion + "', version on server = '" + versionOnServer + "'");
         boolean newVersionIsAvailable = versionComparator.compare(localVersion, versionOnServer) < 0;
         ParseResult parseResult = new ParseResult();
-        parseResult.newVersionIsAvailable = newVersionIsAvailable;
-        parseResult.localVersion = localVersion;
-        parseResult.versionOnServer = versionOnServer;
-        parseResult.messages = messages;
-        parseResult.signatures = signatures;
+        parseResult.setNewVersionIsAvailable(newVersionIsAvailable);
+        parseResult.setLocalVersion(localVersion);
+        parseResult.setVersionOnServer(versionOnServer);
+        parseResult.setMessages(messages);
+        parseResult.setSignatures(signatures);
         
         return parseResult;
     }
@@ -343,24 +357,129 @@ public enum AlertManager {
         }
     }
 
-    class ParseResult {
-        public boolean newVersionIsAvailable = false;
-        public String versionOnServer = null;
-        public String localVersion = null;
-        public List<String> messages = new ArrayList<String>();
-        public List<Signature> signatures = new ArrayList<Signature>();
-    }
-
-    class Signature {
-        public String publicKeyAsHex = null;
-        public String signatureText = null;
-    }
-
     public String getVersionUrlToGet() {
         return versionUrlToGet;
     }
 
     public void setVersionUrlToGet(String versionUrlToGet) {
         this.versionUrlToGet = versionUrlToGet;
+    }
+    
+    /**
+     * Main method to sign a file with a specific key.
+     * The key is assumed to be in an encrypted wallet so you need to specify a password.
+     * 
+     * The usage is:
+     * 1) Store the file you want to sign, say c:/version.txt
+     * 2) Say your signing key is stored in a wallet c:/myWallets/signing.wallet, the address of your signing key starts with 1ABC123 and your password is "dog".
+     * 3) Invoke the main on the command line with:
+     * 
+     * > java -jar multbit-exe.jar c:/version.txt c:/myWallets/signing.wallet 1ABC123 dog
+     * 
+     * The version.txt file will have the correct signature appended to it.
+     * 
+     */
+    public static void main(String[] args) {
+        // Usage note.
+        if(args == null || args.length < 3) {
+            System.out.println("Usage: java -cp  multibit-exe.jar org.multibit.network.AlertManager <file to sign> <wallet location> <address to specify private key> [password]");
+            System.out.println("Usage: if you omit your password you will be prompted for it.");
+            System.exit(0);
+        }
+        
+        String fileToSignString = args[0];
+        String walletLocation = args[1];
+        String addressPrefix = args[2];
+        
+        String password = null;
+        if (args.length == 4) {
+            password = args[3];
+        } else {
+            Console c = System.console();
+            if (c == null) {
+                System.err.println("No console.");
+                System.exit(1);
+            }
+
+            password = new String(c.readPassword("Enter your wallet password: "));
+        }
+        
+        // Initialise a few things.
+        MultiBitController controller = new MultiBitController();
+        
+        Localiser localiser = new Localiser();
+        MultiBitModel model = new MultiBitModel(controller);
+        
+        controller.setLocaliser(localiser);
+        controller.setModel(model);   
+        
+        // Initialise and check
+        AlertManager alertManager = AlertManager.INSTANCE;        
+        alertManager.initialise(controller, null);
+
+        FileWriter fileWriter = null;
+        try {
+            // Get the text to sign.
+            File fileToSign = new File(fileToSignString);
+            String textToSign = readFile(fileToSign);
+            
+            // Load up the wallet containing the signing key.
+            File walletFile = new File(walletLocation);
+            FileHandler fileHandler = new FileHandler(controller);
+            PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+            
+            // Find the private key whose Bitcoin address matches the passed in addressPrefix.
+            ECKey signingKey = null;
+            Wallet wallet = perWalletModelData.getWallet();
+            List<ECKey> keys = wallet.getKeychain();
+            for (ECKey key : keys) {
+                if (key.toAddress(NetworkParameters.prodNet()).toString().toLowerCase().startsWith(addressPrefix.toLowerCase())) {
+                    // This is the signing key.
+                    signingKey = key;
+                    break;
+                }
+            }
+            
+            if (signingKey == null) {
+                System.out.println("No signing key could be found with the Bitcoin address prefix of '" + addressPrefix + "'");
+            }
+            
+            String publicKeyAsHex = Utils.bytesToHexString(signingKey.getPubKey());
+
+            KeyParameter keyParameter = wallet.getKeyCrypter().deriveKey(password);
+            ECKey decryptedSigningKey = signingKey.decrypt(wallet.getKeyCrypter(), keyParameter);
+            String signatureText = decryptedSigningKey.signMessage(textToSign, keyParameter);
+            
+            fileWriter = new FileWriter(fileToSignString, true); // The true will append the new data
+            fileWriter.write(SIGNATURE_PREFIX_TEXT + publicKeyAsHex + " " + signatureText + "\n");
+            fileWriter.close();
+            
+            System.out.println("SUCCESS. The signature for the private key with address " + signingKey.toAddress(NetworkParameters.prodNet()) + " has been appended to " + fileToSignString);
+            
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            if (fileWriter != null) {
+                try {
+                    fileWriter.close();
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    private static String readFile(File file) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        while ((line = reader.readLine()) != null) {
+            // We do not want to sign other signatures.
+            if (!line.startsWith(SIGNATURE_PREFIX_TEXT)) {
+                stringBuilder.append(line).append("\n");
+            }
+        }
+        return stringBuilder.toString();
     }
 }
