@@ -129,7 +129,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
                 buf.put(EMPTY_BYTES, 0, CHAIN_WORK_BYTES - chainWorkBytes.length);
             }
             buf.put(chainWorkBytes);
-            buf.put(block.getHeader().bitcoinSerialize());
+            buf.put(block.getHeader().cloneAsHeader().bitcoinSerialize());
             buf.position(0);
             channel.position(channel.size());
             if (channel.write(buf) < Record.SIZE)
@@ -182,7 +182,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         }
     }
 
-    synchronized private void createBlockStore(NetworkParameters params, File file, boolean copyInstalledBlockChain) throws BlockStoreException {
+    private void createBlockStore(NetworkParameters params, File file, boolean copyInstalledBlockChain) throws BlockStoreException {
         // Create a new block store if the file wasn't found or anything went wrong whilst reading.
         clearCaches();
         try {
@@ -237,9 +237,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         channel = this.file.getChannel();
         log.info("Reading block store from {}", file);
         
-        if (lock == null) {
-           lock();
-        }
+        lock();
         try {
             // Read a version byte.
             int version = this.file.read();

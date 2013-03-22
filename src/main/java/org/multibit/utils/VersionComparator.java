@@ -12,7 +12,7 @@ public class VersionComparator implements Comparator<String> {
     private static String ALPHA_STRING = "alpha";
     private static String BETA_STRING = "beta";
     private static String RELEASE_CANDIDATE_STRING = "rc";
-    private static String SNAPSHOT_STRING = "-SNAPSHOT";
+    private static String SNAPSHOT_STRING = "-snapshot";
 
     @Override
     public int compare(String first, String second) {
@@ -40,7 +40,6 @@ public class VersionComparator implements Comparator<String> {
         String[] tokens = version.split("\\.");
 
         if (tokens.length > 0) {
-            
             ordinal = ordinal + (parseInt(tokens[0]) * MAXIMIMUM_NUMBER_PER_CATEGORY * MAXIMIMUM_NUMBER_PER_CATEGORY * MAXIMIMUM_NUMBER_PER_CATEGORY);
         }
         if (tokens.length > 1) {

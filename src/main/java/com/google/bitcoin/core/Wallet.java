@@ -16,20 +16,33 @@
 
 package com.google.bitcoin.core;
 
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.spongycastle.crypto.params.KeyParameter;
+
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.WalletTransaction.Pool;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
-import com.google.bitcoin.utils.EventListenerInvoker;
+import com.google.bitcoin.utils.Locks;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.Map.Entry;
 import org.multibit.IsMultiBitClass;
 
@@ -70,6 +83,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     private static final Logger log = LoggerFactory.getLogger(Wallet.class);
     private static final long serialVersionUID = 2L;
 
+    protected final ReentrantLock lock = Locks.lock("wallet");
+
     // Algorithm for movement of transactions between pools. Outbound tx = us spending coins. Inbound tx = us
     // receiving coins. If a tx is both inbound and outbound (spend with change) it is considered outbound for the
     // purposes of the explanation below.
@@ -83,6 +98,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     //     ->inactive  (remains in pending).
     // 4. Inbound tx is accepted into the best chain:
     //     ->unspent/spent
+    //     check if any pending transactions spend these outputs, if so, potentially <-unspent ->spent
     // 5. Inbound tx is accepted into a side chain:
     //     ->inactive
     //     Whilst it's also 'pending' in some sense, in that miners will probably try and incorporate it into the
@@ -102,9 +118,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     //       <-pending ->dead
     //
     // Balance:
-    // 1. Sum up all unspent outputs of the transactions in unspent.
-    // 2. Subtract the inputs of transactions in pending.
-    // 3. If requested, re-add the outputs of pending transactions that are mine. This is the estimated balance.
+    // Take all the candidates for spending from unspent and pending. Select the ones that are actually available
+    // according to our spend policy. Sum them up.
 
     /**
      * Map of txhash->Transactions that have not made it into the best chain yet. They are eligible to move there but
@@ -163,20 +178,20 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     /**
      * A list of public/private EC keys owned by this user. Access it using addKey[s], hasKey[s] and findPubKeyFromHash.
      */
-    public final ArrayList<ECKey> keychain;
+    public ArrayList<ECKey> keychain;
 
     private NetworkParameters params;
 
-    /**
-     * The hash of the last block seen on the best chain
-     */
-    private Sha256Hash lastBlockSeenHash;
 
-    private transient ArrayList<WalletEventListener> eventListeners;
+    private Sha256Hash lastBlockSeenHash;
+    private int lastBlockSeenHeight = -1;
+
+    private transient CopyOnWriteArrayList<WalletEventListener> eventListeners;
 
     // A listener that relays confidence changes from the transaction confidence object to the wallet event listener,
     // as a convenience to API users so they don't have to register on every transaction themselves.
     private transient TransactionConfidence.Listener txConfidenceListener;
+
     // If a TX hash appears in this set then notifyNewBestBlock will ignore it, as its confidence was already set up
     // in receive() via Transaction.setBlockAppearance(). As the BlockChain always calls notifyNewBestBlock even if
     // it sent transactions to the wallet, without this we'd double count.
@@ -235,20 +250,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             for (TransactionOutput output : sortedOutputs) {
                 if (total >= target) break;
                 // Only pick chain-included transactions, or transactions that are ours and pending.
-                TransactionConfidence confidence = output.parentTransaction.getConfidence();
-                ConfidenceType type = confidence.getConfidenceType();
-                boolean pending = type.equals(ConfidenceType.NOT_SEEN_IN_CHAIN) ||
-                                  type.equals(ConfidenceType.NOT_IN_BEST_CHAIN);
-                boolean confirmed = type.equals(ConfidenceType.BUILDING);
-                if (!confirmed) {
-                    // If the transaction is still pending ...
-                    if (!pending) continue;
-                    // And it was created by us ...
-                    if (!confidence.getSource().equals(TransactionConfidence.Source.SELF)) continue;
-                    // And it's been seen by the network and propagated ...
-                    if (confidence.numBroadcastPeers() <= 1) continue;
-                    // Then it's OK to select.
-                }
+                if (!shouldSelect(output.parentTransaction)) continue;
                 selected.add(output);
                 total += output.getValue().longValue();
             }
@@ -256,15 +258,56 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             // transaction.
             return new CoinSelection(BigInteger.valueOf(total), selected);
         }
+
+        /** Sub-classes can override this to just customize whether transactions are usable, but keep age sorting. */
+        protected boolean shouldSelect(Transaction tx) {
+            return isSelectable(tx);
+        }
+
+        public static boolean isSelectable(Transaction tx) {
+            // Only pick chain-included transactions, or transactions that are ours and pending.
+            TransactionConfidence confidence = tx.getConfidence();
+            ConfidenceType type = confidence.getConfidenceType();
+            boolean pending = type.equals(ConfidenceType.NOT_SEEN_IN_CHAIN) ||
+                    type.equals(ConfidenceType.NOT_IN_BEST_CHAIN);
+            boolean confirmed = type.equals(ConfidenceType.BUILDING);
+            if (!confirmed) {
+                // If the transaction is still pending ...
+                if (!pending) return false;
+                // And it was created by us ...
+                if (!confidence.getSource().equals(TransactionConfidence.Source.SELF)) return false;
+                // And it's been seen by the network and propagated ...
+                if (confidence.numBroadcastPeers() <= 1) return false;
+                // Then it's OK to select.
+            }
+            return true;
+        }
     }
 
     private transient CoinSelector coinSelector = new DefaultCoinSelector();
+
+    // The keyCrypter for the wallet. This specifies the algorithm used for encrypting and decrypting the private keys.
+    private KeyCrypter keyCrypter;
+    // The wallet version. This is an int that can be used to track breaking changes in the wallet format.
+    // You can also use it to detect wallets that come from the future (ie they contain features you
+    // do not know how to deal with).
+    private int version;
+    // User-provided description that may help people keep track of what a wallet is for.
+    String description;
 
     /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
      * see loadFromFile.
      */
     public Wallet(NetworkParameters params) {
+        this(params, null);
+    }
+
+    /**
+     * Create a wallet with a keyCrypter to use in encrypting and decrypting keys.
+     */
+    public Wallet(NetworkParameters params, KeyCrypter keyCrypter) {
+        this.keyCrypter = keyCrypter;
         this.params = checkNotNull(params);
         keychain = new ArrayList<ECKey>();
         unspent = new HashMap<Sha256Hash, Transaction>();
@@ -275,11 +318,14 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         createTransientState();
     }
 
-    private synchronized void createTransientState() {
-        eventListeners = new ArrayList<WalletEventListener>();
+    private void createTransientState() {
+        eventListeners = new CopyOnWriteArrayList<WalletEventListener>();
         ignoreNextNewBlock = new HashSet<Sha256Hash>();
         txConfidenceListener = new TransactionConfidence.Listener() {
+            @Override
             public void onConfidenceChanged(Transaction tx) {
+                lock.lock();
+                // The invokers unlock us immediately so if an exception is thrown, the lock will be already open.
                 invokeOnTransactionConfidenceChanged(tx);
                 // Many onWalletChanged events will not occur because they are suppressed, eg, because:
                 //   - we are inside a re-org
@@ -291,10 +337,11 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                 // The latter case cannot happen today because we won't hear about it, but in future this may
                 // become more common if conflict notices are implemented.
                 invokeOnWalletChanged();
+                lock.unlock();
             }
         };
-        acceptTimeLockedTransactions = false;
         coinSelector = new DefaultCoinSelector();
+        acceptTimeLockedTransactions = false;
     }
 
     public NetworkParameters getNetworkParameters() {
@@ -308,15 +355,25 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     /**
      * Returns a snapshot of the keychain. This view is not live.
      */
-    public synchronized Iterable<ECKey> getKeys() {
-        return new ArrayList<ECKey>(keychain);
+    public Iterable<ECKey> getKeys() {
+        lock.lock();
+        try {
+            return new ArrayList<ECKey>(keychain);
+        } finally {
+            lock.unlock();
+        }
     }
     
     /**
      * Returns the number of keys in the keychain.
      */
-    public synchronized int getKeychainSize() {
-        return keychain.size();
+    public int getKeychainSize() {
+        lock.lock();
+        try {
+            return keychain.size();
+        } finally {
+            lock.unlock();
+        }
     }
     
     /**
@@ -356,14 +413,24 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * wallet.</p>
      */
     public void setAcceptTimeLockedTransactions(boolean acceptTimeLockedTransactions) {
-        this.acceptTimeLockedTransactions = acceptTimeLockedTransactions;
+        lock.lock();
+        try {
+            this.acceptTimeLockedTransactions = acceptTimeLockedTransactions;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * See {@link Wallet#setAcceptTimeLockedTransactions(boolean)} for an explanation of this property.
      */
     public boolean doesAcceptTimeLockedTransactions() {
-        return acceptTimeLockedTransactions;
+        lock.lock();
+        try {
+            return acceptTimeLockedTransactions;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -432,29 +499,6 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         in.defaultReadObject();
         createTransientState();
     }
-
-    /**
-     * Called by the {@link BlockChain} when we receive a new block that sends coins to one of our addresses or
-     * spends coins from one of our addresses (note that a single transaction can do both).<p>
-     *
-     * This is necessary for the internal book-keeping Wallet does. When a transaction is received that sends us
-     * coins it is added to a pool so we can use it later to create spends. When a transaction is received that
-     * consumes outputs they are marked as spent so they won't be used in future.<p>
-     *
-     * A transaction that spends our own coins can be received either because a spend we created was accepted by the
-     * network and thus made it into a block, or because our keys are being shared between multiple instances and
-     * some other node spent the coins instead. We still have to know about that to avoid accidentally trying to
-     * double spend.<p>
-     *
-     * A transaction may be received multiple times if is included into blocks in parallel chains. The blockType
-     * parameter describes whether the containing block is on the main/best chain or whether it's on a presently
-     * inactive side chain. We must still record these transactions and the blocks they appear in because a future
-     * block might change which chain is best causing a reorganize. A re-org can totally change our balance!
-     */
-    public synchronized void receiveFromBlock(Transaction tx, StoredBlock block,
-                                       BlockChain.NewBlockType blockType) throws VerificationException {
-        receive(tx, block, blockType, false);
-    }
     
     /**
      * Called by the {@link BlockChain} when we receive a new filtered block that contains a transactions previously
@@ -474,12 +518,17 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * inactive side chain. We must still record these transactions and the blocks they appear in because a future
      * block might change which chain is best causing a reorganize. A re-org can totally change our balance!
      */
-    public synchronized void notifyTransactionIsInBlock(Sha256Hash txHash, StoredBlock block,
-                                       BlockChain.NewBlockType blockType) throws VerificationException {
-        Transaction tx = pending.get(txHash);
-        if (tx == null)
-            return;
-        receive(tx, block, blockType, false);
+    public void notifyTransactionIsInBlock(Sha256Hash txHash, StoredBlock block,
+                                           BlockChain.NewBlockType blockType) throws VerificationException {
+        lock.lock();
+        try {
+            Transaction tx = pending.get(txHash);
+            if (tx == null)
+                return;
+            receive(tx, block, blockType, false);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /** The results of examining the dependency graph of a pending transaction for protocol abuse. */
@@ -500,53 +549,56 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * called to decide whether the wallet cares about the transaction - if it does, then this method expects the
      * transaction and any dependencies it has which are still in the memory pool.</p>
      */
-    public synchronized void receivePending(Transaction tx, List<Transaction> dependencies) throws VerificationException {
+    public void receivePending(Transaction tx, List<Transaction> dependencies) throws VerificationException {
         // Can run in a peer thread. This method will only be called if a prior call to isPendingTransactionRelevant
         // returned true, so we already know by this point that it sends coins to or from our wallet, or is a double
         // spend against one of our other pending transactions.
         //
         // Do a brief risk analysis of the transaction and its dependencies to check for any possible attacks.
-        AnalysisResult analysis = analyzeTransactionAndDependencies(tx, dependencies);
-        if (analysis.timeLocked != null && !doesAcceptTimeLockedTransactions()) {
-            log.warn("Transaction {}, dependency of {} has a time lock value of {}", new Object[] {
-                    analysis.timeLocked.getHashAsString(), tx.getHashAsString(), analysis.timeLocked.getLockTime()});
-            return;
-        }
-        BigInteger valueSentToMe = tx.getValueSentToMe(this);
-        BigInteger valueSentFromMe = tx.getValueSentFromMe(this);
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Received a pending transaction %s that spends %s BTC from our own wallet," +
-                    " and sends us %s BTC", tx.getHashAsString(), Utils.bitcoinValueToFriendlyString(valueSentFromMe),
-                    Utils.bitcoinValueToFriendlyString(valueSentToMe)));
-        }
-        if (tx.getConfidence().getSource().equals(TransactionConfidence.Source.UNKNOWN)) {
-            log.warn("Wallet received transaction with an unknown source. Consider tagging tx!");
-        }
-        // Mark the tx as having been seen but is not yet in the chain. This will normally have been done already by
-        // the Peer before we got to this point, but in some cases (unit tests, other sources of transactions) it may
-        // have been missed out.
-        TransactionConfidence.ConfidenceType currentConfidence = tx.getConfidence().getConfidenceType();
-        if (currentConfidence == TransactionConfidence.ConfidenceType.UNKNOWN) {
-            tx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
-            // Manually invoke the wallet tx confidence listener here as we didn't yet commit therefore the
-            // txConfidenceListener wasn't added.
-            invokeOnTransactionConfidenceChanged(tx);
-        }
-        // If this tx spends any of our unspent outputs, mark them as spent now, then add to the pending pool. This
-        // ensures that if some other client that has our keys broadcasts a spend we stay in sync. Also updates the
-        // timestamp on the transaction and registers/runs event listeners.
-        //
-        // Note that after we return from this function, the wallet may have been modified.
+        lock.lock();
         try {
+            // Repeat the check of relevancy here, even though the caller may have already done so - this is to avoid
+            // race conditions where receivePending may be being called in parallel.
+            if (!isPendingTransactionRelevant(tx))
+                return;
+            AnalysisResult analysis = analyzeTransactionAndDependencies(tx, dependencies);
+            if (analysis.timeLocked != null && !doesAcceptTimeLockedTransactions()) {
+                log.warn("Transaction {}, dependency of {} has a time lock value of {}", new Object[]{
+                        analysis.timeLocked.getHashAsString(), tx.getHashAsString(), analysis.timeLocked.getLockTime()});
+                return;
+            }
+            BigInteger valueSentToMe = tx.getValueSentToMe(this);
+            BigInteger valueSentFromMe = tx.getValueSentFromMe(this);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Received a pending transaction %s that spends %s BTC from our own wallet," +
+                        " and sends us %s BTC", tx.getHashAsString(), Utils.bitcoinValueToFriendlyString(valueSentFromMe),
+                        Utils.bitcoinValueToFriendlyString(valueSentToMe)));
+            }
+            if (tx.getConfidence().getSource().equals(TransactionConfidence.Source.UNKNOWN)) {
+                log.warn("Wallet received transaction with an unknown source. Consider tagging tx!");
+            }
+            // Mark the tx as having been seen but is not yet in the chain. This will normally have been done already by
+            // the Peer before we got to this point, but in some cases (unit tests, other sources of transactions) it may
+            // have been missed out.
+            ConfidenceType currentConfidence = tx.getConfidence().getConfidenceType();
+            if (currentConfidence == ConfidenceType.UNKNOWN) {
+                tx.getConfidence().setConfidenceType(ConfidenceType.NOT_SEEN_IN_CHAIN);
+                // Manually invoke the wallet tx confidence listener here as we didn't yet commit therefore the
+                // txConfidenceListener wasn't added.
+                invokeOnTransactionConfidenceChanged(tx);
+            }
+            // If this tx spends any of our unspent outputs, mark them as spent now, then add to the pending pool. This
+            // ensures that if some other client that has our keys broadcasts a spend we stay in sync. Also updates the
+            // timestamp on the transaction and registers/runs event listeners.
+            //
+            // Note that after we return from this function, the wallet may have been modified.
             commitTx(tx);
-        } catch ( IllegalArgumentException iae) {
-            // Commit may be called twice due to MultiBitPeerEventListener#onTransaction code. 
-            // This is ok but we log it anyhow.
-            log.debug("commitTx probably called twice due to MultiBitPeerEventListener#onTransaction code. This is ok. Error was: " + iae.getClass().getCanonicalName() + " " + iae.getMessage());
+        } finally {
+            lock.unlock();
         }
     }
 
-    private AnalysisResult analyzeTransactionAndDependencies(Transaction tx, List<Transaction> dependencies) {
+    private static AnalysisResult analyzeTransactionAndDependencies(Transaction tx, List<Transaction> dependencies) {
         AnalysisResult result = new AnalysisResult();
         if (tx.getLockTime() > 0)
             result.timeLocked = tx;
@@ -566,49 +618,34 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * risky it is. If this method returns true then {@link Wallet#receivePending(Transaction, java.util.List)}
      * will soon be called with the transactions dependencies as well.
      */
-    public boolean isPendingTransactionRelevant(Transaction tx) throws ScriptException {
-        // Ignore it if we already know about this transaction. Receiving a pending transaction never moves it
-        // between pools.
-        EnumSet<Pool> containingPools = getContainingPools(tx);
-        if (!containingPools.equals(EnumSet.noneOf(Pool.class))) {
-            log.debug("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
-            return false;
-        }
-
-        // We only care about transactions that:
-        //   - Send us coins
-        //   - Spend our coins
-        if (!isTransactionRelevant(tx)) {
-            log.debug("Received tx that isn't relevant to this wallet, discarding.");
-            return false;
-        }
-
-        if (tx.getLockTime() > 0 && !acceptTimeLockedTransactions) {
-            log.warn("Received transaction {} with a lock time of {}, but not configured to accept these, discarding",
-                    tx.getHashAsString(), tx.getLockTime());
-            return false;
-        }
-
-        log.debug("Received a pending tx that passed all checks. txId = " + tx.getHashAsString());
-
-        return true;
-    }
-
-    // Boilerplate that allows event listeners to delete themselves during execution, and auto locks the listener.
-    private void invokeOnCoinsReceived(final Transaction tx, final BigInteger balance, final BigInteger newBalance) {
-        EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
-            @Override public void invoke(WalletEventListener listener) {
-                listener.onCoinsReceived(Wallet.this, tx, balance, newBalance);
+    boolean isPendingTransactionRelevant(Transaction tx) throws ScriptException {
+        lock.lock();
+        try {
+            // Ignore it if we already know about this transaction. Receiving a pending transaction never moves it
+            // between pools.
+            EnumSet<Pool> containingPools = getContainingPools(tx);
+            if (!containingPools.equals(EnumSet.noneOf(Pool.class))) {
+                log.debug("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
+                return false;
             }
-        });
-    }
 
-    private void invokeOnCoinsSent(final Transaction tx, final BigInteger prevBalance, final BigInteger newBalance) {
-        EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
-            @Override public void invoke(WalletEventListener listener) {
-                listener.onCoinsSent(Wallet.this, tx, prevBalance, newBalance);
+            // We only care about transactions that:
+            //   - Send us coins
+            //   - Spend our coins
+            if (!isTransactionRelevant(tx)) {
+                log.debug("Received tx that isn't relevant to this wallet, discarding.");
+                return false;
             }
-        });
+
+            if (tx.getLockTime() > 0 && !acceptTimeLockedTransactions) {
+                log.warn("Received transaction {} with a lock time of {}, but not configured to accept these, discarding",
+                        tx.getHashAsString(), tx.getLockTime());
+                return false;
+            }
+            return true;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -619,17 +656,23 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * <p>Note that if the tx has inputs containing one of our keys, but the connected transaction is not in the wallet,
      * it will not be considered relevant.</p>
      */
-    public synchronized boolean isTransactionRelevant(Transaction tx) throws ScriptException {
-        return tx.isMine(this) || tx.getValueSentFromMe(this).compareTo(BigInteger.ZERO) > 0 ||
-               tx.getValueSentToMe(this).compareTo(BigInteger.ZERO) > 0 ||
-               findDoubleSpendAgainstPending(tx) != null;
+    public boolean isTransactionRelevant(Transaction tx) throws ScriptException {
+        lock.lock();
+        try {
+            return tx.getValueSentFromMe(this).compareTo(BigInteger.ZERO) > 0 ||
+                   tx.getValueSentToMe(this).compareTo(BigInteger.ZERO) > 0 ||
+                   checkForDoubleSpendAgainstPending(tx, false);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * Checks if "tx" is spending any inputs of pending transactions. Not a general check, but it can work even if
      * the double spent inputs are not ours. Returns the pending tx that was double spent or null if none found.
      */
-    private Transaction findDoubleSpendAgainstPending(Transaction tx) {
+    private boolean checkForDoubleSpendAgainstPending(Transaction tx, boolean takeAction) {
+        checkState(lock.isLocked());
         // Compile a set of outpoints that are spent by tx.
         HashSet<TransactionOutPoint> outpoints = new HashSet<TransactionOutPoint>();
         for (TransactionInput input : tx.getInputs()) {
@@ -638,19 +681,57 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         // Now for each pending transaction, see if it shares any outpoints with this tx.
         for (Transaction p : pending.values()) {
             for (TransactionInput input : p.getInputs()) {
-                if (outpoints.contains(input.getOutpoint())) {
+                // This relies on the fact that TransactionOutPoint equality is defined at the protocol not object
+                // level - outpoints from two different inputs that point to the same output compare the same.
+                TransactionOutPoint outpoint = input.getOutpoint();
+                if (outpoints.contains(outpoint)) {
                     // It does, it's a double spend against the pending pool, which makes it relevant.
-                    return p;
+                    if (takeAction) {
+                        // Look for the actual input object in tx that is double spending.
+                        TransactionInput overridingInput = null;
+                        for (TransactionInput txInput : tx.getInputs()) {
+                            if (txInput.getOutpoint().equals(outpoint)) overridingInput = txInput;
+                        }
+                        killTx(tx, checkNotNull(overridingInput), p);
+                    }
+                    return true;
                 }
             }
         }
-        return null;
+        return false;
     }
 
-    private synchronized void receive(Transaction tx, StoredBlock block,
-                                      BlockChain.NewBlockType blockType,
-                                      boolean reorg) throws VerificationException {
+    /**
+     * Called by the {@link BlockChain} when we receive a new block that sends coins to one of our addresses or
+     * spends coins from one of our addresses (note that a single transaction can do both).<p>
+     *
+     * This is necessary for the internal book-keeping Wallet does. When a transaction is received that sends us
+     * coins it is added to a pool so we can use it later to create spends. When a transaction is received that
+     * consumes outputs they are marked as spent so they won't be used in future.<p>
+     *
+     * A transaction that spends our own coins can be received either because a spend we created was accepted by the
+     * network and thus made it into a block, or because our keys are being shared between multiple instances and
+     * some other node spent the coins instead. We still have to know about that to avoid accidentally trying to
+     * double spend.<p>
+     *
+     * A transaction may be received multiple times if is included into blocks in parallel chains. The blockType
+     * parameter describes whether the containing block is on the main/best chain or whether it's on a presently
+     * inactive side chain. We must still record these transactions and the blocks they appear in because a future
+     * block might change which chain is best causing a reorganize. A re-org can totally change our balance!
+     */
+    public void receiveFromBlock(Transaction tx, StoredBlock block,
+                                 BlockChain.NewBlockType blockType) throws VerificationException {
+        lock.lock();
+        try {
+            receive(tx, block, blockType, false);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void receive(Transaction tx, StoredBlock block, BlockChain.NewBlockType blockType, boolean reorg) throws VerificationException {
         // Runs in a peer thread.
+        checkState(lock.isLocked());
         BigInteger prevBalance = getBalance();
 
         Sha256Hash txHash = tx.getHash();
@@ -671,13 +752,13 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         // due to a block replay so we do not want to do anything with it.
         // If it is on a sidechain then let the ELSE below deal with it
         // If it is a double spend it gets processed later.
-        Transaction doubleSpend = findDoubleSpendAgainstPending(tx);
-        boolean alreadyHaveIt = spent.containsKey(tx.getHash()) || unspent.containsKey(tx.getHash());
-        boolean noMoneyInItAndNotMine = BigInteger.ZERO.equals(valueSentFromMe) && BigInteger.ZERO.equals(valueSentToMe) && !tx.isMine(this);
-        if (bestChain && (doubleSpend == null) && (alreadyHaveIt || noMoneyInItAndNotMine)) {
-            log.info("Already have tx " + tx.getHash() + " in spent/ unspent or there is no money in it and it is not mine so ignoring");
-            return;
-        }
+//        Transaction doubleSpend = findDoubleSpendAgainstPending(tx);
+//        boolean alreadyHaveIt = spent.containsKey(tx.getHash()) || unspent.containsKey(tx.getHash());
+//        boolean noMoneyInItAndNotMine = BigInteger.ZERO.equals(valueSentFromMe) && BigInteger.ZERO.equals(valueSentToMe) && !tx.isMine(this);
+//        if (bestChain && (doubleSpend == null) && (alreadyHaveIt || noMoneyInItAndNotMine)) {
+//            log.info("Already have tx " + tx.getHash() + " in spent/ unspent or there is no money in it and it is not mine so ignoring");
+//            return;
+//        }
 
         onWalletChangedSuppressions++;
 
@@ -719,7 +800,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                 pending.put(tx.getHash(), tx);
             }
         } else {
-            // This TX didn't originate with us. It could be sending us coins and also spending our own coins if keys
+            // This TX wasn't in the memory pool. It could be sending us coins and also spending our own coins if keys
             // are being shared between different wallets.
             if (sideChain) {
                 if (unspent.containsKey(tx.getHash()) || spent.containsKey(tx.getHash())) {
@@ -733,7 +814,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
                 // Saw a non-pending transaction appear on the best chain, ie, we are replaying the chain or a spend
                 // that we never saw broadcast (and did not originate) got included.
                 //
-                // This can trigger tx confidence listeners to be run in the case of double spends. We may need to
+                // TODO: This can trigger tx confidence listeners to be run in the case of double spends. We may need to
                 // delay the execution of the listeners until the bottom to avoid the wallet mutating during updates.
                 processTxFromBestChain(tx);
             }
@@ -774,11 +855,11 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             // coins from the wallet.
             if (diff > 0) {
                 invokeOnCoinsReceived(tx, prevBalance, newBalance);
-            } else if (diff == 0) {
-                // Hack. Invoke onCoinsSent in order to let the client save the wallet. This needs to go away.
+            } else if (diff < 0) {
                 invokeOnCoinsSent(tx, prevBalance, newBalance);
             } else {
-                invokeOnCoinsSent(tx, prevBalance, newBalance);
+                // We have a transaction that didn't change our balance. Probably we sent coins between our own keys.
+                invokeOnWalletChanged();
             }
         }
 
@@ -793,33 +874,39 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * transactions are extracted and sent to us UNLESS the new block caused a re-org, in which case this will
      * not be called (the {@link Wallet#reorganize(StoredBlock, java.util.List, java.util.List)} method will
      * call this one in that case).</p>
-     *
+     * <p/>
      * <p>Used to update confidence data in each transaction and last seen block hash. Triggers auto saving.
      * Invokes the onWalletChanged event listener if there were any affected transactions.</p>
      */
-    public synchronized void notifyNewBestBlock(Block block) throws VerificationException {
+    public void notifyNewBestBlock(StoredBlock block) throws VerificationException {
         // Check to see if this block has been seen before.
-        Sha256Hash newBlockHash = block.getHash();
+        Sha256Hash newBlockHash = block.getHeader().getHash();
         if (newBlockHash.equals(getLastBlockSeenHash()))
             return;
-        // Store the new block hash.
-        setLastBlockSeenHash(newBlockHash);
-        // TODO: Clarify the code below.
-        // Notify all the BUILDING transactions of the new block.
-        // This is so that they can update their work done and depth.
-        onWalletChangedSuppressions++;
-        Set<Transaction> transactions = getTransactions(true, false);
-        for (Transaction tx : transactions) {
-            if (ignoreNextNewBlock.contains(tx.getHash())) {
-                // tx was already processed in receive() due to it appearing in this block, so we don't want to
-                // notify the tx confidence of work done twice, it'd result in miscounting.
-                ignoreNextNewBlock.remove(tx.getHash());
-            } else {
-                tx.getConfidence().notifyWorkDone(block);
+        lock.lock();
+        try {
+            // Store the new block hash.
+            setLastBlockSeenHash(newBlockHash);
+            setLastBlockSeenHeight(block.getHeight());
+            // TODO: Clarify the code below.
+            // Notify all the BUILDING transactions of the new block.
+            // This is so that they can update their work done and depth.
+            onWalletChangedSuppressions++;
+            Set<Transaction> transactions = getTransactions(true, false);
+            for (Transaction tx : transactions) {
+                if (ignoreNextNewBlock.contains(tx.getHash())) {
+                    // tx was already processed in receive() due to it appearing in this block, so we don't want to
+                    // notify the tx confidence of work done twice, it'd result in miscounting.
+                    ignoreNextNewBlock.remove(tx.getHash());
+                } else {
+                    tx.getConfidence().notifyWorkDone(block.getHeader());
+                }
             }
+            onWalletChangedSuppressions--;
+            invokeOnWalletChanged();
+        } finally {
+            lock.unlock();
         }
-        onWalletChangedSuppressions--;
-        invokeOnWalletChanged();
     }
 
     /**
@@ -827,6 +914,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * re-org making inactive transactions active.
      */
     private void processTxFromBestChain(Transaction tx) throws VerificationException {
+        checkState(lock.isLocked());
         // This TX may spend our existing outputs even though it was not pending. This can happen in unit
         // tests, if keys are moved between wallets, if we're catching up to the chain given only a set of keys,
         // or if a dead coinbase transaction has moved back onto the main chain.
@@ -847,59 +935,52 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             inactive.remove(tx.getHash());
         }
 
+        // Update tx and other unspent/pending transactions by connecting inputs/outputs.
         updateForSpends(tx, true);
 
-        if (!tx.isEveryOwnedOutputSpent(this)) {
-            // It's sending us coins.
-            log.info("  new tx {} ->unspent", tx.getHashAsString());
-            addWalletTransaction(Pool.UNSPENT, tx);
-        } else if (!tx.getValueSentFromMe(this).equals(BigInteger.ZERO)) {
-            // It spent some of our coins and did not send us any.
+        // Now make sure it ends up in the right pool. Also, handle the case where this TX is double-spending
+        // against our pending transactions. Note that a tx may double spend our pending transactions and also send
+        // us money/spend our money.
+        boolean hasOutputsToMe = tx.getValueSentToMe(this, true).compareTo(BigInteger.ZERO) > 0;
+        if (hasOutputsToMe) {
+            // Needs to go into either unspent or spent (if the outputs were already spent by a pending tx).
+            if (tx.isEveryOwnedOutputSpent(this)) {
+                log.info("  new tx {} ->spent (by pending)", tx.getHashAsString());
+                addWalletTransaction(Pool.SPENT, tx);
+            } else {
+                log.info("  new tx {} ->unspent", tx.getHashAsString());
+                addWalletTransaction(Pool.UNSPENT, tx);
+            }
+        } else if (tx.getValueSentFromMe(this).compareTo(BigInteger.ZERO) > 0) {
+            // Didn't send us any money, but did spend some. Keep it around for record keeping purposes.
             log.info("  new tx {} ->spent", tx.getHashAsString());
             addWalletTransaction(Pool.SPENT, tx);
-        } else if (tx.isMine(this)) {
-            // A transaction that does not spend or send us coins but is ours none the less
-            // this can occur when a transaction is sent from outputs in our wallet to
-            // an address in the wallet - it burns a fee but is valid.
-            log.info(" new tx -> spent (transfer within wallet - simply burns fee)");
-            addWalletTransaction(Pool.SPENT, tx);
-        } else {
-            // It didn't send us coins nor spend any of our coins. If we're processing it, that must be because it
-            // spends outpoints that are also spent by some pending transactions - maybe a double spend of somebody
-            // elses coins that were originally sent to us? ie, this might be a Finney attack where we think we
-            // received some money and then the sender co-operated with a miner to take back the coins, using a tx
-            // that isn't involving our keys at all.
-            Transaction doubleSpend = findDoubleSpendAgainstPending(tx);
-            if (doubleSpend == null)
-                throw new IllegalStateException("Received an irrelevant tx that was not a double spend.");
-            // This is mostly the same as the codepath in updateForSpends, but that one is only triggered when
-            // the transaction being double spent is actually in our wallet (ie, maybe we're double spending).
-            log.warn("Saw double spend from chain override pending tx {}", doubleSpend.getHashAsString());
-            log.warn("  <-pending ->dead");
-            pending.remove(doubleSpend.getHash());
-            addWalletTransaction(Pool.DEAD, doubleSpend);
-            // Inform the event listeners of the newly dead tx.
-            doubleSpend.getConfidence().setOverridingTransaction(tx);
         }
+
+        checkForDoubleSpendAgainstPending(tx, true);
     }
 
     /**
-     * <p>Updates the wallet by checking if this TX spends any of our outputs, and marking them as spent if so. It can
-     * be called in two contexts. One is when we receive a transaction on the best chain but it wasn't pending, this
-     * most commonly happens when we have a set of keys but the wallet transactions were wiped and we are catching up
-     * with the block chain. It can also happen if a block includes a transaction we never saw at broadcast time.
+     * <p>Updates the wallet by checking if this TX spends any of our outputs, and marking them as spent if so. If
+     * fromChain is true, also checks to see if any pending transaction spends outputs of this transaction and marks
+     * the spent flags appropriately.</p>
+     *
+     * <p>It can be called in two contexts. One is when we receive a transaction on the best chain but it wasn't pending,
+     * this most commonly happens when we have a set of keys but the wallet transactions were wiped and we are catching
+     * up with the block chain. It can also happen if a block includes a transaction we never saw at broadcast time.
      * If this tx double spends, it takes precedence over our pending transactions and the pending tx goes dead.</p>
      *
      * <p>The other context it can be called is from {@link Wallet#receivePending(Transaction, java.util.List)},
      * ie we saw a tx be broadcast or one was submitted directly that spends our own coins. If this tx double spends
      * it does NOT take precedence because the winner will be resolved by the miners - we assume that our version will
      * win, if we are wrong then when a block appears the tx will go dead.</p>
+     *
+     * @param tx The transaction which is being updated.
+     * @param fromChain If true, the tx appeared on the current best chain, if false it was pending.
      */
     private void updateForSpends(Transaction tx, boolean fromChain) throws VerificationException {
-        // tx is on the best chain by this point.
-        List<TransactionInput> inputs = tx.getInputs();
-        for (int i = 0; i < inputs.size(); i++) {
-            TransactionInput input = inputs.get(i);
+        checkState(lock.isLocked());
+        for (TransactionInput input : tx.getInputs()) {
             TransactionInput.ConnectionResult result = input.connect(unspent, TransactionInput.ConnectMode.ABORT_ON_CONFLICT);
             if (result == TransactionInput.ConnectionResult.NO_SUCH_TX) {
                 // Not found in the unspent map. Try again with the spent map.
@@ -915,73 +996,111 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             }
 
             if (result == TransactionInput.ConnectionResult.ALREADY_SPENT) {
-                // Double spend! Work backwards like so:
-                //
-                //   A  -> spent by B [pending]
-                //     \-> spent by C [chain]
-                Transaction doubleSpent = input.getOutpoint().fromTx;   // == A
-                checkNotNull(doubleSpent);
-                int index = (int) input.getOutpoint().getIndex();
-                TransactionOutput output = doubleSpent.getOutputs().get(index);
-                TransactionInput spentBy = checkNotNull(output.getSpentBy());
-                Transaction connected = checkNotNull(spentBy.getParentTransaction());
                 if (fromChain) {
-                    // This must have overridden a pending tx, or the block is bad (contains transactions
-                    // that illegally double spend: should never occur if we are connected to an honest node).
-                    if (pending.containsKey(connected.getHash())) {
-                        log.warn("Saw double spend from chain override pending tx {}", connected.getHashAsString());
-                        log.warn("  <-pending ->dead");
-                        pending.remove(connected.getHash());
-                        dead.put(connected.getHash(), connected);
-                        // Now forcibly change the connection.
-                        input.connect(unspent, TransactionInput.ConnectMode.DISCONNECT_ON_CONFLICT);
-                        // Inform the [tx] event listeners of the newly dead tx. This sets confidence type also.
-                        connected.getConfidence().setOverridingTransaction(tx);
-                    }
+                    // This will be handled later by processTxFromBestChain.
                 } else {
-                    // A pending transaction that tried to double spend our coins - we log and ignore it, because either
-                    // 1) The double-spent tx is confirmed and thus this tx has no effect .... or
-                    // 2) Both txns are pending, neither has priority. Miners will decide in a few minutes which won.
+                    // We saw two pending transactions that double spend each other. We don't know which will win.
+                    // Either that, or we somehow allowed ourselves to create double spends ourselves!
+                    // TODO: Find some way to communicate to the user that both transactions in jeopardy.
                     log.warn("Saw double spend from another pending transaction, ignoring tx {}",
-                             tx.getHashAsString());
-                    log.warn("  offending input is input {}", i);
-                    return;
+                            tx.getHashAsString());
+                    log.warn("  offending input is input {}", tx.getInputs().indexOf(input));
                 }
             } else if (result == TransactionInput.ConnectionResult.SUCCESS) {
                 // Otherwise we saw a transaction spend our coins, but we didn't try and spend them ourselves yet.
                 // The outputs are already marked as spent by the connect call above, so check if there are any more for
                 // us to use. Move if not.
                 Transaction connected = checkNotNull(input.getOutpoint().fromTx);
-                maybeMoveTxToSpent(connected, "prevtx");
+                maybeMovePool(connected, "prevtx");
+            }
+        }
+        // Now check each output and see if there is a pending transaction which spends it. This shouldn't normally
+        // ever occur because we expect transactions to arrive in temporal order, but this assumption can be violated
+        // when we receive a pending transaction from the mempool that is relevant to us, which spends coins that we
+        // didn't see arrive on the best chain yet. For instance, because of a chain replay or because of our keys were
+        // used by another wallet somewhere else.
+        if (fromChain) {
+            for (Transaction pendingTx : pending.values()) {
+                for (TransactionInput input : pendingTx.getInputs()) {
+                    TransactionInput.ConnectionResult result = input.connect(tx, TransactionInput.ConnectMode.ABORT_ON_CONFLICT);
+                    // This TX is supposed to have just appeared on the best chain, so its outputs should not be marked
+                    // as spent yet. If they are, it means something is happening out of order.
+                    checkState(result != TransactionInput.ConnectionResult.ALREADY_SPENT);
+                    if (result == TransactionInput.ConnectionResult.SUCCESS) {
+                        log.info("Connected pending tx input {}:{}",
+                                pendingTx.getHashAsString(), pendingTx.getInputs().indexOf(input));
+                    }
+                }
+                // If the transactions outputs are now all spent, it will be moved into the spent pool by the
+                // processTxFromBestChain method.
             }
         }
     }
 
+    // Updates the wallet when a double spend occurs.
+    private void killTx(Transaction overridingTx, TransactionInput overridingInput, Transaction killedTx) {
+        TransactionOutPoint overriddenOutPoint = overridingInput.getOutpoint();
+        // It is expected that we may not have the overridden/double-spent tx in our wallet ... in the (common?!) case
+        // where somebody is stealing money from us, the overriden tx belongs to someone else.
+        log.warn("Saw double spend of {} from chain override pending tx {}",
+                overriddenOutPoint, killedTx.getHashAsString());
+        log.warn("  <-pending ->dead   killed by {}", overridingTx.getHashAsString());
+        pending.remove(killedTx.getHash());
+        addWalletTransaction(Pool.DEAD, killedTx);
+        log.info("Disconnecting inputs of the newly dead tx");
+        for (TransactionInput deadInput : killedTx.getInputs()) {
+            Transaction connected = deadInput.getOutpoint().fromTx;
+            if (connected == null) continue;
+            deadInput.disconnect();
+            maybeMovePool(connected, "kill");
+        }
+        // Try and connect the overriding input to something in our wallet. It's expected that this will mostly fail
+        // because when somebody else is double-spending away a payment they made to us, we won't have the overridden
+        // tx as it's not ours to begin with. It'll only be found if we're double spending our own payments.
+        log.info("Trying to connect overriding tx back");
+        TransactionInput.ConnectionResult result = overridingInput.connect(unspent, TransactionInput.ConnectMode.DISCONNECT_ON_CONFLICT);
+        if (result == TransactionInput.ConnectionResult.SUCCESS) {
+            maybeMovePool(overridingInput.getOutpoint().fromTx, "kill");
+        } else {
+            result = overridingInput.connect(spent, TransactionInput.ConnectMode.DISCONNECT_ON_CONFLICT);
+            if (result == TransactionInput.ConnectionResult.SUCCESS) {
+                maybeMovePool(overridingInput.getOutpoint().fromTx, "kill");
+            }
+        }
+        log.info("Informing tx listeners of double spend event");
+        killedTx.getConfidence().setOverridingTransaction(overridingTx);  // RE-ENTRY POINT
+        // TODO: Recursively kill other transactions that were double spent.
+    }
+
     /**
      * If the transactions outputs are all marked as spent, and it's in the unspent map, move it.
+     * If the owned transactions outputs are not all marked as spent, and it's in the spent map, move it.
      */
-    private void maybeMoveTxToSpent(Transaction tx, String context) {
+    private void maybeMovePool(Transaction tx, String context) {
+        checkState(lock.isLocked());
         if (tx.isEveryOwnedOutputSpent(this)) {
             // There's nothing left I can spend in this transaction.
             if (unspent.remove(tx.getHash()) != null) {
                 if (log.isInfoEnabled()) {
-                    log.info("  {} {} <-unspent", tx.getHashAsString(), context);
-                    log.info("  {} {} ->spent", tx.getHashAsString(), context);
+                    log.info("  {} {} <-unspent ->spent", tx.getHashAsString(), context);
                 }
                 spent.put(tx.getHash(), tx);
+            }
+        } else {
+            if (spent.remove(tx.getHash()) != null) {
+                if (log.isInfoEnabled()) {
+                    log.info("  {} {} <-spent ->unspent", tx.getHashAsString(), context);
+                }
+                unspent.put(tx.getHash(), tx);
             }
         }
     }
 
     /**
      * Adds an event listener object. Methods on this object are called when something interesting happens,
-     * like receiving money.<p>
-     * <p/>
-     * Threading: Event listener methods are dispatched on library provided threads and the both the wallet and the
-     * listener objects are locked during dispatch, so your listeners do not have to be thread safe. However they
-     * should not block as the Peer will be unresponsive to network traffic whilst your listener is running.
+     * like receiving money.
      */
-    public synchronized void addEventListener(WalletEventListener listener) {
+    public void addEventListener(WalletEventListener listener) {
         eventListeners.add(listener);
     }
 
@@ -989,7 +1108,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * Removes the given event listener object. Returns true if the listener was removed,
      * false if that listener was never added.
      */
-    public synchronized boolean removeEventListener(WalletEventListener listener) {
+    public boolean removeEventListener(WalletEventListener listener) {
         return eventListeners.remove(listener);
     }
 
@@ -1002,40 +1121,42 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *     <li>When we receive a pending transaction that didn't appear in the chain yet, and we did not create it.</li>
      * </ol>
      */
-    public synchronized void commitTx(Transaction tx) throws VerificationException, IllegalArgumentException {
-        if (tx == null) {
-            throw new IllegalArgumentException("tx cannot be null");
-        }
-        checkArgument(!pending.containsKey(tx.getHash()), "commitTx called on the same transaction twice");
-        log.info("commitTx of {}", tx.getHashAsString());
-        BigInteger balance = getBalance();
-        tx.setUpdateTime(Utils.now());
-        // Mark the outputs we're spending as spent so we won't try and use them in future creations. This will also
-        // move any transactions that are now fully spent to the spent map so we can skip them when creating future
-        // spends.
-        updateForSpends(tx, false);
-        // Add to the pending pool. It'll be moved out once we receive this transaction on the best chain.
-        // This also registers txConfidenceListener so wallet listeners get informed.
-        log.info("->pending: {}", tx.getHashAsString());
-        addWalletTransaction(Pool.PENDING, tx);
-
-        // Event listeners may re-enter so we cannot make assumptions about wallet state after this loop completes.
+    public void commitTx(Transaction tx) throws VerificationException {
+        lock.lock();
         try {
-            BigInteger valueSentFromMe = tx.getValueSentFromMe(this);
-            BigInteger valueSentToMe = tx.getValueSentToMe(this);
-            BigInteger newBalance = balance.add(valueSentToMe).subtract(valueSentFromMe);
-            if (valueSentToMe.compareTo(BigInteger.ZERO) > 0)
-                invokeOnCoinsReceived(tx, balance, newBalance);
-            if (valueSentFromMe.compareTo(BigInteger.ZERO) > 0)
-                invokeOnCoinsSent(tx, balance, newBalance);
+            checkArgument(!pending.containsKey(tx.getHash()), "commitTx called on the same transaction twice");
+            log.info("commitTx of {}", tx.getHashAsString());
+            BigInteger balance = getBalance();
+            tx.setUpdateTime(Utils.now());
+            // Mark the outputs we're spending as spent so we won't try and use them in future creations. This will also
+            // move any transactions that are now fully spent to the spent map so we can skip them when creating future
+            // spends.
+            updateForSpends(tx, false);
+            // Add to the pending pool. It'll be moved out once we receive this transaction on the best chain.
+            // This also registers txConfidenceListener so wallet listeners get informed.
+            log.info("->pending: {}", tx.getHashAsString());
+            addWalletTransaction(Pool.PENDING, tx);
 
-            invokeOnWalletChanged();
-        } catch (ScriptException e) {
-            // Cannot happen as we just created this transaction ourselves.
-            throw new RuntimeException(e);
+            // Event listeners may re-enter so we cannot make assumptions about wallet state after this loop completes.
+            try {
+                BigInteger valueSentFromMe = tx.getValueSentFromMe(this);
+                BigInteger valueSentToMe = tx.getValueSentToMe(this);
+                BigInteger newBalance = balance.add(valueSentToMe).subtract(valueSentFromMe);
+                if (valueSentToMe.compareTo(BigInteger.ZERO) > 0)
+                    invokeOnCoinsReceived(tx, balance, newBalance);
+                if (valueSentFromMe.compareTo(BigInteger.ZERO) > 0)
+                    invokeOnCoinsSent(tx, balance, newBalance);
+
+                invokeOnWalletChanged();
+            } catch (ScriptException e) {
+                // Cannot happen as we just created this transaction ourselves.
+                throw new RuntimeException(e);
+            }
+
+            checkState(isConsistent());
+        } finally {
+            lock.unlock();
         }
-
-        checkState(isConsistent());
     }
 
     /**
@@ -1043,45 +1164,55 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @param includeDead     If true, transactions that were overridden by a double spend are included.
      * @param includeInactive If true, transactions that are on side chains (are unspendable) are included.
      */
-    public synchronized Set<Transaction> getTransactions(boolean includeDead, boolean includeInactive) {
-        Set<Transaction> all = new HashSet<Transaction>();
-        all.addAll(unspent.values());
-        all.addAll(spent.values());
-        all.addAll(pending.values());
-        if (includeDead)
-            all.addAll(dead.values());
-        if (includeInactive)
-            all.addAll(inactive.values());
-        return all;
+    public Set<Transaction> getTransactions(boolean includeDead, boolean includeInactive) {
+        lock.lock();
+        try {
+            Set<Transaction> all = new HashSet<Transaction>();
+            all.addAll(unspent.values());
+            all.addAll(spent.values());
+            all.addAll(pending.values());
+            if (includeDead)
+                all.addAll(dead.values());
+            if (includeInactive)
+                all.addAll(inactive.values());
+            return all;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * Returns a set of all WalletTransactions in the wallet.
      */
-    public synchronized Iterable<WalletTransaction> getWalletTransactions() {
-        HashSet<Transaction> pendingInactive = new HashSet<Transaction>();
-        pendingInactive.addAll(pending.values());
-        pendingInactive.retainAll(inactive.values());
-        HashSet<Transaction> onlyPending = new HashSet<Transaction>();
-        HashSet<Transaction> onlyInactive = new HashSet<Transaction>();
-        onlyPending.addAll(pending.values());
-        onlyPending.removeAll(pendingInactive);
-        onlyInactive.addAll(inactive.values());
-        onlyInactive.removeAll(pendingInactive);
-        
-        Set<WalletTransaction> all = new HashSet<WalletTransaction>();
+    public Iterable<WalletTransaction> getWalletTransactions() {
+        lock.lock();
+        try {
+            HashSet<Transaction> pendingInactive = new HashSet<Transaction>();
+            pendingInactive.addAll(pending.values());
+            pendingInactive.retainAll(inactive.values());
+            HashSet<Transaction> onlyPending = new HashSet<Transaction>();
+            HashSet<Transaction> onlyInactive = new HashSet<Transaction>();
+            onlyPending.addAll(pending.values());
+            onlyPending.removeAll(pendingInactive);
+            onlyInactive.addAll(inactive.values());
+            onlyInactive.removeAll(pendingInactive);
 
-        addWalletTransactionsToSet(all, Pool.UNSPENT, unspent.values());
-        addWalletTransactionsToSet(all, Pool.SPENT, spent.values());
-        addWalletTransactionsToSet(all, Pool.DEAD, dead.values());
-        addWalletTransactionsToSet(all, Pool.PENDING, onlyPending);
-        addWalletTransactionsToSet(all, Pool.INACTIVE, onlyInactive);
-        addWalletTransactionsToSet(all, Pool.PENDING_INACTIVE, pendingInactive);
-        return all;
+            Set<WalletTransaction> all = new HashSet<WalletTransaction>();
+
+            addWalletTransactionsToSet(all, Pool.UNSPENT, unspent.values());
+            addWalletTransactionsToSet(all, Pool.SPENT, spent.values());
+            addWalletTransactionsToSet(all, Pool.DEAD, dead.values());
+            addWalletTransactionsToSet(all, Pool.PENDING, onlyPending);
+            addWalletTransactionsToSet(all, Pool.INACTIVE, onlyInactive);
+            addWalletTransactionsToSet(all, Pool.PENDING_INACTIVE, pendingInactive);
+            return all;
+        } finally {
+            lock.unlock();
+        }
     }
 
-    private static synchronized void addWalletTransactionsToSet(Set<WalletTransaction> txs,
-            Pool poolType, Collection<Transaction> pool) {
+    private static void addWalletTransactionsToSet(Set<WalletTransaction> txs,
+                                                   Pool poolType, Collection<Transaction> pool) {
         for (Transaction tx : pool) {
             txs.add(new WalletTransaction(poolType, tx));
         }
@@ -1093,13 +1224,19 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * applications. It does not trigger auto saving.
      */
     public void addWalletTransaction(WalletTransaction wtx) {
-        addWalletTransaction(wtx.getPool(), wtx.getTransaction());
+        lock.lock();
+        try {
+            addWalletTransaction(wtx.getPool(), wtx.getTransaction());
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * Adds the given transaction to the given pools and registers a confidence change listener on it.
      */
-    private synchronized void addWalletTransaction(Pool pool, Transaction tx) {
+    private void addWalletTransaction(Pool pool, Transaction tx) {
+        checkState(lock.isLocked());
         switch (pool) {
         case UNSPENT:
             unspent.put(tx.getHash(), tx);
@@ -1143,101 +1280,126 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * requested, the cost is always the same. In future, requesting smaller numbers of transactions may be faster
      * depending on how the wallet is implemented (eg if backed by a database).
      */
-    public synchronized List<Transaction> getRecentTransactions(int numTransactions, boolean includeDead) {
-        checkArgument(numTransactions >= 0);
-        // Firstly, put all transactions into an array.
-        int size = getPoolSize(WalletTransaction.Pool.UNSPENT) +
-                getPoolSize(WalletTransaction.Pool.SPENT) +
-                getPoolSize(WalletTransaction.Pool.PENDING);
-        if (numTransactions > size || numTransactions == 0) {
-            numTransactions = size;
-        }
-        ArrayList<Transaction> all = new ArrayList<Transaction>(getTransactions(includeDead, false));
-        // Order by date.
-        Collections.sort(all, Collections.reverseOrder(new Comparator<Transaction>() {
-            public int compare(Transaction t1, Transaction t2) {
-                return t1.getUpdateTime().compareTo(t2.getUpdateTime());
+    public List<Transaction> getRecentTransactions(int numTransactions, boolean includeDead) {
+        lock.lock();
+        try {
+            checkArgument(numTransactions >= 0);
+            // Firstly, put all transactions into an array.
+            int size = getPoolSize(Pool.UNSPENT) +
+                    getPoolSize(Pool.SPENT) +
+                    getPoolSize(Pool.PENDING);
+            if (numTransactions > size || numTransactions == 0) {
+                numTransactions = size;
             }
-        }));
-        if (numTransactions == all.size()) {
-            return all;
-        } else {
-            all.subList(numTransactions, all.size()).clear();
-            return all;
+            ArrayList<Transaction> all = new ArrayList<Transaction>(getTransactions(includeDead, false));
+            // Order by date.
+            Collections.sort(all, Collections.reverseOrder(new Comparator<Transaction>() {
+                public int compare(Transaction t1, Transaction t2) {
+                    return t1.getUpdateTime().compareTo(t2.getUpdateTime());
+                }
+            }));
+            if (numTransactions == all.size()) {
+                return all;
+            } else {
+                all.subList(numTransactions, all.size()).clear();
+                return all;
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
     /**
      * Returns a transaction object given its hash, if it exists in this wallet, or null otherwise.
      */
-    public synchronized Transaction getTransaction(Sha256Hash hash) {
-        Transaction tx;
-        if ((tx = pending.get(hash)) != null)
-            return tx;
-        else if ((tx = unspent.get(hash)) != null)
-            return tx;
-        else if ((tx = spent.get(hash)) != null)
-            return tx;
-        else if ((tx = inactive.get(hash)) != null)
-            return tx;
-        else if ((tx = dead.get(hash)) != null)
-            return tx;
-        return null;
+    public Transaction getTransaction(Sha256Hash hash) {
+        lock.lock();
+        try {
+            Transaction tx;
+            if ((tx = pending.get(hash)) != null)
+                return tx;
+            else if ((tx = unspent.get(hash)) != null)
+                return tx;
+            else if ((tx = spent.get(hash)) != null)
+                return tx;
+            else if ((tx = inactive.get(hash)) != null)
+                return tx;
+            else if ((tx = dead.get(hash)) != null)
+                return tx;
+            return null;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * Deletes transactions which appeared above the given block height from the wallet, but does not touch the keys.
      * This is useful if you have some keys and wish to replay the block chain into the wallet in order to pick them up.
      */
-    public synchronized void clearTransactions(int fromHeight) {
-        if (fromHeight == 0) {
-            unspent.clear();
-            spent.clear();
-            pending.clear();
-            inactive.clear();
-            dead.clear();
-        } else {
-            throw new UnsupportedOperationException();
+    public void clearTransactions(int fromHeight) {
+        lock.lock();
+        try {
+            if (fromHeight == 0) {
+                unspent.clear();
+                spent.clear();
+                pending.clear();
+                inactive.clear();
+                dead.clear();
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
-    synchronized EnumSet<Pool> getContainingPools(Transaction tx) {
-        EnumSet<Pool> result = EnumSet.noneOf(Pool.class);
-        Sha256Hash txHash = tx.getHash();
-        if (unspent.containsKey(txHash)) {
-            result.add(Pool.UNSPENT);
+    EnumSet<Pool> getContainingPools(Transaction tx) {
+        lock.lock();
+        try {
+            EnumSet<Pool> result = EnumSet.noneOf(Pool.class);
+            Sha256Hash txHash = tx.getHash();
+            if (unspent.containsKey(txHash)) {
+                result.add(Pool.UNSPENT);
+            }
+            if (spent.containsKey(txHash)) {
+                result.add(Pool.SPENT);
+            }
+            if (pending.containsKey(txHash)) {
+                result.add(Pool.PENDING);
+            }
+            if (inactive.containsKey(txHash)) {
+                result.add(Pool.INACTIVE);
+            }
+            if (dead.containsKey(txHash)) {
+                result.add(Pool.DEAD);
+            }
+            return result;
+        } finally {
+            lock.unlock();
         }
-        if (spent.containsKey(txHash)) {
-            result.add(Pool.SPENT);
-        }
-        if (pending.containsKey(txHash)) {
-            result.add(Pool.PENDING);
-        }
-        if (inactive.containsKey(txHash)) {
-            result.add(Pool.INACTIVE);
-        }
-        if (dead.containsKey(txHash)) {
-            result.add(Pool.DEAD);
-        }
-        return result;
     }
 
-    synchronized int getPoolSize(WalletTransaction.Pool pool) {
-        switch (pool) {
-            case UNSPENT:
-                return unspent.size();
-            case SPENT:
-                return spent.size();
-            case PENDING:
-                return pending.size();
-            case INACTIVE:
-                return inactive.size();
-            case DEAD:
-                return dead.size();
-            case ALL:
-                return unspent.size() + spent.size() + pending.size() + inactive.size() + dead.size();
+    int getPoolSize(WalletTransaction.Pool pool) {
+        lock.lock();
+        try {
+            switch (pool) {
+                case UNSPENT:
+                    return unspent.size();
+                case SPENT:
+                    return spent.size();
+                case PENDING:
+                    return pending.size();
+                case INACTIVE:
+                    return inactive.size();
+                case DEAD:
+                    return dead.size();
+                case ALL:
+                    return unspent.size() + spent.size() + pending.size() + inactive.size() + dead.size();
+            }
+            throw new RuntimeException("Unreachable");
+        } finally {
+            lock.unlock();
         }
-        throw new RuntimeException("Unreachable");
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1284,6 +1446,13 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
          * correctly calculate this! As of late 2012 most transactions require no fee.
          */
         public BigInteger fee = BigInteger.ZERO;
+
+        /**
+         * The AES key to use to decrypt the private keys before signing.
+         * If null then no decryption will be performed and if decryption is required an exception will be thrown.
+         * You can get this from a password by doing wallet.getKeyCrypter().derivePassword(password).
+         */
+        public KeyParameter aesKey = null;
 
         // Tracks if this has been passed to wallet.completeTx already: just a safety check.
         private boolean completed;
@@ -1339,7 +1508,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @return either the created Transaction or null if there are insufficient coins.
      * coins as spent until commitTx is called on the result.
      */
-    public synchronized Transaction createSend(Address address, BigInteger nanocoins) {
+    public Transaction createSend(Address address, BigInteger nanocoins) {
         SendRequest req = SendRequest.to(address, nanocoins);
         if (completeTx(req)) {
             return req.tx;
@@ -1356,7 +1525,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *
      * @return the Transaction that was created, or null if there are insufficient coins in the wallet.
      */
-    public synchronized Transaction sendCoinsOffline(SendRequest request) {
+    public Transaction sendCoinsOffline(SendRequest request) {
+        lock.lock();
         try {
             if (!completeTx(request))
                 return null;  // Not enough money! :-(
@@ -1364,6 +1534,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             return request.tx;
         } catch (VerificationException e) {
             throw new RuntimeException(e);  // Cannot happen unless there's a bug, as we just created this ourselves.
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -1431,7 +1603,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      * @throws IOException if there was a problem broadcasting the transaction
      */
-    public synchronized Transaction sendCoins(Peer peer, SendRequest request) throws IOException {
+    public Transaction sendCoins(Peer peer, SendRequest request) throws IOException {
         Transaction tx = sendCoinsOffline(request);
         if (tx == null)
             return null;  // Not enough money.
@@ -1447,81 +1619,89 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @throws IllegalArgumentException if you try and complete the same SendRequest twice.
      * @return False if we cannot afford this send, true otherwise.
      */
-    public synchronized boolean completeTx(SendRequest req) {
-        Preconditions.checkArgument(!req.completed, "Given SendRequest has already been completed.");
-        // Calculate the amount of value we need to import.
-        BigInteger value = BigInteger.ZERO;
-        for (TransactionOutput output : req.tx.getOutputs()) {
-            value = value.add(output.getValue());
-        }
-        value = value.add(req.fee);
-
-        log.info("Completing send tx with {} outputs totalling {}",
-                req.tx.getOutputs().size(), bitcoinValueToFriendlyString(value));
-
-        // Calculate a list of ALL potential candidates for spending and then ask a coin selector to provide us
-        // with the actual outputs that'll be used to gather the required amount of value. In this way, users
-        // can customize coin selection policies.
-        //
-        // Note that this code is poorly optimized: the spend candidates only alter when transactions in the wallet
-        // change - it could be pre-calculated and held in RAM, and this is probably an optimization worth doing.
-        // Note that output.isMine(this) needs to test the keychain which is currently an array, so it's
-        // O(candidate outputs ^ keychain.size())! There's lots of low hanging fruit here.
-        LinkedList<TransactionOutput> candidates = calculateSpendCandidates(true);
-        // Of the coins we could spend, pick some that we actually will spend.
-        CoinSelection selection = coinSelector.select(value, candidates);
-        // Can we afford this?
-        if (selection.valueGathered.compareTo(value) < 0) {
-            log.warn("Insufficient value in wallet for send, missing " +
-                    bitcoinValueToFriendlyString(value.subtract(selection.valueGathered)));
-            // TODO: Should throw an exception here.
-            return false;
-        }
-        checkState(selection.gathered.size() > 0);
-        req.tx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
-        BigInteger change = selection.valueGathered.subtract(value);
-        if (change.compareTo(BigInteger.ZERO) > 0) {
-            // The value of the inputs is greater than what we want to send. Just like in real life then,
-            // we need to take back some coins ... this is called "change". Add another output that sends the change
-            // back to us. The address comes either from the request or getChangeAddress() as a default.
-            Address changeAddress = req.changeAddress != null ? req.changeAddress : getChangeAddress();
-            log.info("  with {} coins change", bitcoinValueToFriendlyString(change));
-            req.tx.addOutput(new TransactionOutput(params, req.tx, change, changeAddress));
-        }
-        for (TransactionOutput output : selection.gathered) {
-            req.tx.addInput(output);
-        }
-
-        // Now sign the inputs, thus proving that we are entitled to redeem the connected outputs.
+    public boolean completeTx(SendRequest req) {
+        lock.lock();
         try {
-            req.tx.signInputs(Transaction.SigHash.ALL, this);
-        } catch (ScriptException e) {
-            // If this happens it means an output script in a wallet tx could not be understood. That should never
-            // happen, if it does it means the wallet has got into an inconsistent state.
-            throw new RuntimeException(e);
+            Preconditions.checkArgument(!req.completed, "Given SendRequest has already been completed.");
+            // Calculate the amount of value we need to import.
+            BigInteger value = BigInteger.ZERO;
+            for (TransactionOutput output : req.tx.getOutputs()) {
+                value = value.add(output.getValue());
+            }
+            value = value.add(req.fee);
+
+            log.info("Completing send tx with {} outputs totalling {}",
+                    req.tx.getOutputs().size(), bitcoinValueToFriendlyString(value));
+
+            // Calculate a list of ALL potential candidates for spending and then ask a coin selector to provide us
+            // with the actual outputs that'll be used to gather the required amount of value. In this way, users
+            // can customize coin selection policies.
+            //
+            // Note that this code is poorly optimized: the spend candidates only alter when transactions in the wallet
+            // change - it could be pre-calculated and held in RAM, and this is probably an optimization worth doing.
+            // Note that output.isMine(this) needs to test the keychain which is currently an array, so it's
+            // O(candidate outputs ^ keychain.size())! There's lots of low hanging fruit here.
+            LinkedList<TransactionOutput> candidates = calculateSpendCandidates(true);
+            // Of the coins we could spend, pick some that we actually will spend.
+            CoinSelection selection = coinSelector.select(value, candidates);
+            // Can we afford this?
+            if (selection.valueGathered.compareTo(value) < 0) {
+                log.warn("Insufficient value in wallet for send, missing " +
+                        bitcoinValueToFriendlyString(value.subtract(selection.valueGathered)));
+                // TODO: Should throw an exception here.
+                return false;
+            }
+            checkState(selection.gathered.size() > 0);
+            req.tx.getConfidence().setConfidenceType(ConfidenceType.NOT_SEEN_IN_CHAIN);
+            BigInteger change = selection.valueGathered.subtract(value);
+            if (change.compareTo(BigInteger.ZERO) > 0) {
+                // The value of the inputs is greater than what we want to send. Just like in real life then,
+                // we need to take back some coins ... this is called "change". Add another output that sends the change
+                // back to us. The address comes either from the request or getChangeAddress() as a default.
+                Address changeAddress = req.changeAddress != null ? req.changeAddress : getChangeAddress();
+                log.info("  with {} coins change", bitcoinValueToFriendlyString(change));
+                req.tx.addOutput(new TransactionOutput(params, req.tx, change, changeAddress));
+            }
+            for (TransactionOutput output : selection.gathered) {
+                req.tx.addInput(output);
+            }
+
+            // Now sign the inputs, thus proving that we are entitled to redeem the connected outputs.
+            try {
+                req.tx.signInputs(Transaction.SigHash.ALL, this, req.aesKey);
+            } catch (ScriptException e) {
+                // If this happens it means an output script in a wallet tx could not be understood. That should never
+                // happen, if it does it means the wallet has got into an inconsistent state.
+                throw new RuntimeException(e);
+            }
+
+            // Check size.
+            int size = req.tx.bitcoinSerialize().length;
+            if (size > Transaction.MAX_STANDARD_TX_SIZE) {
+                // TODO: Throw an exception here.
+                log.error("Transaction could not be created without exceeding max size: {} vs {}", size,
+                          Transaction.MAX_STANDARD_TX_SIZE);
+                return false;
+            }
+
+            // Label the transaction as being self created. We can use this later to spend its change output even before
+            // the transaction is confirmed.
+            req.tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
+
+            // Keep a track of the date the tx was created (used in MultiBitService
+            // to work out the block it appears in).
+            req.tx.setUpdateTime(new Date());
+
+            req.completed = true;
+            log.info("  completed {} with {} inputs", req.tx.getHashAsString(), req.tx.getInputs().size());
+            return true;
+        } finally {
+            lock.unlock();
         }
-
-        // Check size.
-        int size = req.tx.bitcoinSerialize().length;
-        if (size > Transaction.MAX_STANDARD_TX_SIZE) {
-            // TODO: Throw an exception here.
-            log.error("Transaction could not be created without exceeding max size: {} vs {}", size, Transaction.MAX_STANDARD_TX_SIZE);
-            return false;
-        }
-
-        // Label the transaction as being self created. We can use this later to spend its change output even before
-        // the transaction is confirmed.
-        req.tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
-
-        // Keep a track of the date the tx was created (used in MultiBitService
-        // to work out the block it appears in).
-        req.tx.setUpdateTime(new Date());
-        req.completed = true;
-        log.info("  completed {}", req.tx.getHashAsString());
-        return true;
     }
 
     private LinkedList<TransactionOutput> calculateSpendCandidates(boolean excludeImmatureCoinbases) {
+        checkState(lock.isLocked());
         LinkedList<TransactionOutput> candidates = Lists.newLinkedList();
         for (Transaction tx : Iterables.concat(unspent.values(), pending.values())) {
             // Do not try and spend coinbases that were mined too recently, the protocol forbids it.
@@ -1535,19 +1715,17 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         return candidates;
     }
 
-    synchronized Address getChangeAddress() {
-        // For now let's just pick the second key in our keychain. In future we might want to do something else to
-        // give the user better privacy here, eg in incognito mode.
-        // The second key is chosen rather than the first because, by default, a wallet is created with a 
-        // single key. If the user imports say a blockchain.info backup they typically want change to go
-        // to one of the imported keys
-        checkState(keychain.size() > 0, "Can't send value without an address to use for receiving change");
-        ECKey change = keychain.get(0);
-        
-        if (keychain.size() > 1) {
-            change = keychain.get(1);
+    Address getChangeAddress() {
+        lock.lock();
+        try {
+            // For now let's just pick the first key in our keychain. In future we might want to do something else to
+            // give the user better privacy here, eg in incognito mode.
+            checkState(keychain.size() > 0, "Can't send value without an address to use for receiving change");
+            ECKey first = keychain.get(0);
+            return first.toAddress(params);
+        } finally {
+            lock.unlock();
         }
-        return change.toAddress(params);
     }
 
     /**
@@ -1556,7 +1734,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * has been called, triggers an auto save bypassing the normal coalescing delay and event handlers.
      * If the key already exists in the wallet, does nothing and returns false.
      */
-    public synchronized boolean addKey(final ECKey key) {
+    public boolean addKey(final ECKey key) {
         return addKeys(Lists.newArrayList(key)) == 1;
     }
 
@@ -1567,19 +1745,33 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * Returns the number of keys added, after duplicates are ignored. The onKeyAdded event will be called for each key
      * in the list that was not already present.
      */
-    public synchronized int addKeys(final List<ECKey> keys) {
-        // TODO: Consider making keys a sorted list or hashset so membership testing is faster.
+    public int addKeys(final List<ECKey> keys) {
         int added = 0;
-        for (final ECKey key : keys) {
-            if (keychain.contains(key)) continue;
-            keychain.add(key);
-            EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
-                @Override
-                public void invoke(WalletEventListener listener) {
-                    listener.onKeyAdded(key);
+        lock.lock();
+        try {
+            // TODO: Consider making keys a sorted list or hashset so membership testing is faster.
+            for (final ECKey key : keys) {
+                if (keychain.contains(key)) continue;
+
+                // If the key has a keyCrypter that does not match the Wallet's then a KeyCrypterException is thrown.
+                // This is done because only one keyCrypter is persisted per Wallet and hence all the keys must be homogenous.
+                if (keyCrypter != null && keyCrypter.getUnderstoodEncryptionType() != EncryptionType.UNENCRYPTED) {
+                    if (key.isEncrypted() && !keyCrypter.equals(key.getKeyCrypter())) {
+                        throw new KeyCrypterException("Cannot add key " + key.toString() + " because the keyCrypter does not match the wallets. Keys must be homogenous.");
+                    }
                 }
-            });
-            added++;
+                keychain.add(key);
+                added++;
+            }
+        } finally {
+            lock.unlock();
+        }
+
+        for (ECKey key : keys) {
+            // TODO: Change this interface to be batch-oriented.
+            for (WalletEventListener listener : eventListeners) {
+                listener.onKeyAdded(key);
+            }
         }
         return added;
     }
@@ -1590,41 +1782,55 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *
      * @return ECKey object or null if no such key was found.
      */
-    public synchronized ECKey findKeyFromPubHash(byte[] pubkeyHash) {
-        for (ECKey key : keychain) {
-            if (Arrays.equals(key.getPubKeyHash(), pubkeyHash)) return key;
+    public ECKey findKeyFromPubHash(byte[] pubkeyHash) {
+        lock.lock();
+        try {
+            for (ECKey key : keychain) {
+                if (Arrays.equals(key.getPubKeyHash(), pubkeyHash)) return key;
+            }
+            return null;
+        } finally {
+            lock.unlock();
         }
-        return null;
     }
 
     /** Returns true if the given key is in the wallet, false otherwise. Currently an O(N) operation. */
     public boolean hasKey(ECKey key) {
-        return keychain.contains(key);
+        lock.lock();
+        try {
+            return keychain.contains(key);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * Returns true if this wallet contains a public key which hashes to the given hash.
      */
-    public synchronized boolean isPubKeyHashMine(byte[] pubkeyHash) {
+    public boolean isPubKeyHashMine(byte[] pubkeyHash) {
         return findKeyFromPubHash(pubkeyHash) != null;
     }
 
     /**
      * Locates a keypair from the keychain given the raw public key bytes.
-     *
      * @return ECKey or null if no such key was found.
      */
-    public synchronized ECKey findKeyFromPubKey(byte[] pubkey) {
-        for (ECKey key : keychain) {
-            if (Arrays.equals(key.getPubKey(), pubkey)) return key;
+    public ECKey findKeyFromPubKey(byte[] pubkey) {
+        lock.lock();
+        try {
+            for (ECKey key : keychain) {
+                if (Arrays.equals(key.getPubKey(), pubkey)) return key;
+            }
+            return null;
+        } finally {
+            lock.unlock();
         }
-        return null;
     }
 
     /**
      * Returns true if this wallet contains a keypair with the given public key.
      */
-    public synchronized boolean isPubKeyMine(byte[] pubkey) {
+    public boolean isPubKeyMine(byte[] pubkey) {
         return findKeyFromPubKey(pubkey) != null;
     }
 
@@ -1656,23 +1862,28 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * Returns the AVAILABLE balance of this wallet. See {@link BalanceType#AVAILABLE} for details on what this
      * means.
      */
-    public synchronized BigInteger getBalance() {
+    public BigInteger getBalance() {
         return getBalance(BalanceType.AVAILABLE);
     }
 
     /**
      * Returns the balance of this wallet as calculated by the provided balanceType.
      */
-    public synchronized BigInteger getBalance(BalanceType balanceType) {
-        if (balanceType == BalanceType.AVAILABLE) {
-            return getBalance(coinSelector);
-        } else if (balanceType == BalanceType.ESTIMATED) {
-            LinkedList<TransactionOutput> all = calculateSpendCandidates(false);
-            BigInteger value = BigInteger.ZERO;
-            for (TransactionOutput out : all) value = value.add(out.getValue());
-            return value;
-        } else {
-            throw new AssertionError("Unknown balance type");  // Unreachable.
+    public BigInteger getBalance(BalanceType balanceType) {
+        lock.lock();
+        try {
+            if (balanceType == BalanceType.AVAILABLE) {
+                return getBalance(coinSelector);
+            } else if (balanceType == BalanceType.ESTIMATED) {
+                LinkedList<TransactionOutput> all = calculateSpendCandidates(false);
+                BigInteger value = BigInteger.ZERO;
+                for (TransactionOutput out : all) value = value.add(out.getValue());
+                return value;
+            } else {
+                throw new AssertionError("Unknown balance type");  // Unreachable.
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -1680,15 +1891,20 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * Returns the balance that would be considered spendable by the given coin selector. Just asks it to select
      * as many coins as possible and returns the total.
      */
-    public synchronized BigInteger getBalance(CoinSelector selector) {
-        checkNotNull(selector);
-        LinkedList<TransactionOutput> candidates = calculateSpendCandidates(true);
-        CoinSelection selection = selector.select(params.MAX_MONEY, candidates);
-        return selection.valueGathered;
+    public BigInteger getBalance(CoinSelector selector) {
+        lock.lock();
+        try {
+            checkNotNull(selector);
+            LinkedList<TransactionOutput> candidates = calculateSpendCandidates(true);
+            CoinSelection selection = selector.select(NetworkParameters.MAX_MONEY, candidates);
+            return selection.valueGathered;
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
-    public synchronized String toString() {
+    public String toString() {
         return toString(false, null);
     }
 
@@ -1699,50 +1915,60 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * @param chain If set, will be used to estimate lock times for block timelocked transactions.
      * @return
      */
-    public synchronized String toString(boolean includePrivateKeys, AbstractBlockChain chain) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.format("Wallet containing %s BTC in:%n", bitcoinValueToFriendlyString(getBalance())));
-        builder.append(String.format("  %d unspent transactions%n", unspent.size()));
-        builder.append(String.format("  %d spent transactions%n", spent.size()));
-        builder.append(String.format("  %d pending transactions%n", pending.size()));
-        builder.append(String.format("  %d inactive transactions%n", inactive.size()));
-        builder.append(String.format("  %d dead transactions%n", dead.size()));
-        builder.append(String.format("Last seen best block: %s%n", getLastBlockSeenHash()));
-        // Do the keys.
-        builder.append("\nKeys:\n");
-        for (ECKey key : keychain) {
-            builder.append("  addr:");
-            builder.append(key.toAddress(params));
-            builder.append(" ");
-            builder.append(includePrivateKeys ? key.toStringWithPrivate() : key.toString());
-            builder.append("\n");
+    public String toString(boolean includePrivateKeys, AbstractBlockChain chain) {
+        lock.lock();
+        try {
+            StringBuilder builder = new StringBuilder();
+            builder.append(String.format("Wallet containing %s BTC in:%n", bitcoinValueToFriendlyString(getBalance())));
+            builder.append(String.format("  %d unspent transactions%n", unspent.size()));
+            builder.append(String.format("  %d spent transactions%n", spent.size()));
+            builder.append(String.format("  %d pending transactions%n", pending.size()));
+            builder.append(String.format("  %d inactive transactions%n", inactive.size()));
+            builder.append(String.format("  %d dead transactions%n", dead.size()));
+            builder.append(String.format("Last seen best block: (%d) %s%n",
+                    getLastBlockSeenHeight(), getLastBlockSeenHash()));
+            if (this.keyCrypter != null) {
+                builder.append(String.format("Encryption: %s%n", keyCrypter.toString()));
+            }
+            // Do the keys.
+            builder.append("\nKeys:\n");
+            for (ECKey key : keychain) {
+                builder.append("  addr:");
+                builder.append(key.toAddress(params));
+                builder.append(" ");
+                builder.append(includePrivateKeys ? key.toStringWithPrivate() : key.toString());
+                builder.append("\n");
+            }
+            // Print the transactions themselves
+            if (unspent.size() > 0) {
+                builder.append("\nUNSPENT:\n");
+                toStringHelper(builder, unspent, chain);
+            }
+            if (spent.size() > 0) {
+                builder.append("\nSPENT:\n");
+                toStringHelper(builder, spent, chain);
+            }
+            if (pending.size() > 0) {
+                builder.append("\nPENDING:\n");
+                toStringHelper(builder, pending, chain);
+            }
+            if (inactive.size() > 0) {
+                builder.append("\nINACTIVE:\n");
+                toStringHelper(builder, inactive, chain);
+            }
+            if (dead.size() > 0) {
+                builder.append("\nDEAD:\n");
+                toStringHelper(builder, dead, chain);
+            }
+            return builder.toString();
+        } finally {
+            lock.unlock();
         }
-        // Print the transactions themselves
-        if (unspent.size() > 0) {
-            builder.append("\nUNSPENT:\n");
-            toStringHelper(builder, unspent, chain);
-        }
-        if (spent.size() > 0) {
-            builder.append("\nSPENT:\n");
-            toStringHelper(builder, spent, chain);
-        }
-        if (pending.size() > 0) {
-            builder.append("\nPENDING:\n");
-            toStringHelper(builder, pending, chain);
-        }
-        if (inactive.size() > 0) {
-            builder.append("\nINACTIVE:\n");
-            toStringHelper(builder, inactive, chain);
-        }
-        if (dead.size() > 0) {
-            builder.append("\nDEAD:\n");
-            toStringHelper(builder, dead, chain);
-        }
-        return builder.toString();
     }
 
     private void toStringHelper(StringBuilder builder, Map<Sha256Hash, Transaction> transactionMap,
                                 AbstractBlockChain chain) {
+        checkState(lock.isLocked());
         for (Transaction tx : transactionMap.values()) {
             try {
                 builder.append("Sends ");
@@ -1769,254 +1995,253 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      *
      * <p>The oldBlocks/newBlocks lists are ordered height-wise from top first to bottom last.</p>
      */
-    public synchronized void reorganize(StoredBlock splitPoint, List<StoredBlock> oldBlocks,
-                                        List<StoredBlock> newBlocks) throws VerificationException {
-        // This runs on any peer thread with the block chain synchronized.
-        //
-        // The reorganize functionality of the wallet is tested in ChainSplitTests.
-        //
-        // For each transaction we track which blocks they appeared in. Once a re-org takes place we have to find all
-        // transactions in the old branch, all transactions in the new branch and find the difference of those sets.
-        //
-        // receive() has been called on the block that is triggering the re-org before this is called.
+    public void reorganize(StoredBlock splitPoint, List<StoredBlock> oldBlocks, List<StoredBlock> newBlocks) throws VerificationException {
+        lock.lock();
+        try {
+            // This runs on any peer thread with the block chain synchronized.
+            //
+            // The reorganize functionality of the wallet is tested in ChainSplitTests.
+            //
+            // For each transaction we track which blocks they appeared in. Once a re-org takes place we have to find all
+            // transactions in the old branch, all transactions in the new branch and find the difference of those sets.
+            //
+            // receive() has been called on the block that is triggering the re-org before this is called.
 
-        List<Sha256Hash> oldBlockHashes = new ArrayList<Sha256Hash>(oldBlocks.size());
-        List<Sha256Hash> newBlockHashes = new ArrayList<Sha256Hash>(newBlocks.size());
-        log.info("Old part of chain (top to bottom):");
-        for (StoredBlock b : oldBlocks) {
-            log.info("  {}", b.getHeader().getHashAsString());
-            oldBlockHashes.add(b.getHeader().getHash());
-        }
-        log.info("New part of chain (top to bottom):");
-        for (StoredBlock b : newBlocks) {
-            log.info("  {}", b.getHeader().getHashAsString());
-            newBlockHashes.add(b.getHeader().getHash());
-        }
-
-        // Transactions that appear in the old chain segment.
-        Map<Sha256Hash, Transaction> oldChainTransactions = new HashMap<Sha256Hash, Transaction>();
-        // Transactions that appear in the old chain segment and NOT the new chain segment.
-        Map<Sha256Hash, Transaction> onlyOldChainTransactions = new HashMap<Sha256Hash, Transaction>();
-        // Transactions that appear in the new chain segment.
-        Map<Sha256Hash, Transaction> newChainTransactions = new HashMap<Sha256Hash, Transaction>();
-        // Transactions that don't appear in either the new or the old section, ie, the shared trunk.
-        Map<Sha256Hash, Transaction> commonChainTransactions = new HashMap<Sha256Hash, Transaction>();
-
-        Map<Sha256Hash, Transaction> all = new HashMap<Sha256Hash, Transaction>();
-        all.putAll(unspent);
-        all.putAll(spent);
-        all.putAll(inactive);
-
-        // Dead coinbase transactions are potentially resurrected so added to the list of tx to process.
-        for (Transaction tx : dead.values()) {
-            if (tx.isCoinBase()) {
-                all.put(tx.getHash(), tx);
+            List<Sha256Hash> oldBlockHashes = new ArrayList<Sha256Hash>(oldBlocks.size());
+            List<Sha256Hash> newBlockHashes = new ArrayList<Sha256Hash>(newBlocks.size());
+            log.info("Old part of chain (top to bottom):");
+            for (StoredBlock b : oldBlocks) {
+                log.info("  {}", b.getHeader().getHashAsString());
+                oldBlockHashes.add(b.getHeader().getHash());
             }
-        }
+            log.info("New part of chain (top to bottom):");
+            for (StoredBlock b : newBlocks) {
+                log.info("  {}", b.getHeader().getHashAsString());
+                newBlockHashes.add(b.getHeader().getHash());
+            }
 
-        for (Transaction tx : all.values()) {
-            Collection<Sha256Hash> appearsIn = tx.getAppearsInHashes();
-            checkNotNull(appearsIn);
-            // If the set of blocks this transaction appears in is disjoint with one of the chain segments it means
-            // the transaction was never incorporated by a miner into that side of the chain.
-            boolean inOldSection = !Collections.disjoint(appearsIn, oldBlockHashes);
-            boolean inNewSection = !Collections.disjoint(appearsIn, newBlockHashes);
-            boolean inCommonSection = !inNewSection && !inOldSection;
+            // Transactions that appear in the old chain segment.
+            Map<Sha256Hash, Transaction> oldChainTransactions = new HashMap<Sha256Hash, Transaction>();
+            // Transactions that appear in the old chain segment and NOT the new chain segment.
+            Map<Sha256Hash, Transaction> onlyOldChainTransactions = new HashMap<Sha256Hash, Transaction>();
+            // Transactions that appear in the new chain segment.
+            Map<Sha256Hash, Transaction> newChainTransactions = new HashMap<Sha256Hash, Transaction>();
+            // Transactions that don't appear in either the new or the old section, ie, the shared trunk.
+            Map<Sha256Hash, Transaction> commonChainTransactions = new HashMap<Sha256Hash, Transaction>();
 
-            if (inCommonSection) {
-                boolean alreadyPresent = commonChainTransactions.put(tx.getHash(), tx) != null;
-                checkState(!alreadyPresent, "Transaction appears twice in common chain segment");
-            } else {
-                if (inOldSection) {
-                    boolean alreadyPresent = oldChainTransactions.put(tx.getHash(), tx) != null;
-                    checkState(!alreadyPresent, "Transaction appears twice in old chain segment");
-                    if (!inNewSection) {
-                        alreadyPresent = onlyOldChainTransactions.put(tx.getHash(), tx) != null;
-                        checkState(!alreadyPresent, "Transaction appears twice in only-old map");
+            Map<Sha256Hash, Transaction> all = new HashMap<Sha256Hash, Transaction>();
+            all.putAll(unspent);
+            all.putAll(spent);
+            all.putAll(inactive);
+
+            // Dead coinbase transactions are potentially resurrected so added to the list of tx to process.
+            for (Transaction tx : dead.values()) {
+                if (tx.isCoinBase()) {
+                    all.put(tx.getHash(), tx);
+                }
+            }
+
+            for (Transaction tx : all.values()) {
+                Collection<Sha256Hash> appearsIn = tx.getAppearsInHashes();
+                checkNotNull(appearsIn);
+                // If the set of blocks this transaction appears in is disjoint with one of the chain segments it means
+                // the transaction was never incorporated by a miner into that side of the chain.
+                boolean inOldSection = !Collections.disjoint(appearsIn, oldBlockHashes);
+                boolean inNewSection = !Collections.disjoint(appearsIn, newBlockHashes);
+                boolean inCommonSection = !inNewSection && !inOldSection;
+
+                if (inCommonSection) {
+                    boolean alreadyPresent = commonChainTransactions.put(tx.getHash(), tx) != null;
+                    checkState(!alreadyPresent, "Transaction appears twice in common chain segment");
+                } else {
+                    if (inOldSection) {
+                        boolean alreadyPresent = oldChainTransactions.put(tx.getHash(), tx) != null;
+                        checkState(!alreadyPresent, "Transaction appears twice in old chain segment");
+                        if (!inNewSection) {
+                            alreadyPresent = onlyOldChainTransactions.put(tx.getHash(), tx) != null;
+                            checkState(!alreadyPresent, "Transaction appears twice in only-old map");
+                        }
                     }
-                }
-                if (inNewSection) {
-                    boolean alreadyPresent = newChainTransactions.put(tx.getHash(), tx) != null;
-                    checkState(!alreadyPresent, "Transaction appears twice in new chain segment");
-                }
-            }
-        }
-
-        // If there is no difference it means we have nothing we need to do and the user does not care.
-        boolean affectedUs = !oldChainTransactions.equals(newChainTransactions);
-        log.info(affectedUs ? "Re-org affected our transactions" : "Re-org had no effect on our transactions");
-        if (!affectedUs) return;
-
-        // Avoid spuriously informing the user of wallet changes whilst we're re-organizing. This also prevents the
-        // user from modifying wallet contents (eg, trying to spend) whilst we're in the middle of the process.
-        onWalletChangedSuppressions++;
-
-        // For simplicity we will reprocess every transaction to ensure it's in the right bucket and has the right
-        // connections. Attempting to update each one with minimal work is possible but complex and was leading to
-        // edge cases that were hard to fix. As re-orgs are rare the amount of work this implies should be manageable
-        // unless the user has an enormous wallet. As an optimization fully spent transactions buried deeper than
-        // 1000 blocks could be put into yet another bucket which we never touch and assume re-orgs cannot affect.
-
-        for (Transaction tx : onlyOldChainTransactions.values()) log.info("  Only Old: {}", tx.getHashAsString());
-        for (Transaction tx : oldChainTransactions.values()) log.info("  Old: {}", tx.getHashAsString());
-        for (Transaction tx : newChainTransactions.values()) log.info("  New: {}", tx.getHashAsString());
-
-        // Break all the existing connections.
-        for (Transaction tx : all.values())
-            tx.disconnectInputs();
-        for (Transaction tx : pending.values())
-            tx.disconnectInputs();
-        // Reconnect the transactions in the common part of the chain.
-        for (Transaction tx : commonChainTransactions.values()) {
-            TransactionInput badInput = tx.connectForReorganize(all);
-            checkState(badInput == null, "Failed to connect %s, %s", tx.getHashAsString(),
-                       badInput == null ? "" : badInput.toString());
-        }
-        // Recalculate the unspent/spent buckets for the transactions the re-org did not affect.
-        log.info("Moving transactions");
-        unspent.clear();
-        spent.clear();
-        inactive.clear();
-        for (Transaction tx : commonChainTransactions.values()) {
-            int unspentOutputs = 0;
-            for (TransactionOutput output : tx.getOutputs()) {
-                if (output.isAvailableForSpending() && output.isMine(this)) unspentOutputs++;
-            }
-            if (unspentOutputs > 0) {
-                log.info("  TX {} ->unspent", tx.getHashAsString());
-                unspent.put(tx.getHash(), tx);
-            } else {
-                log.info("  TX {} ->spent", tx.getHashAsString());
-                spent.put(tx.getHash(), tx);
-            }
-        }
-
-        // Inform all transactions that exist only in the old chain that they have moved, so they can update confidence
-        // and timestamps. Transactions will be told they're on the new best chain when the blocks are replayed.
-        for (Transaction tx : onlyOldChainTransactions.values()) {
-            tx.notifyNotOnBestChain();
-
-            // Kill any coinbase transactions that are only in the old chain.
-            // These transactions are no longer valid.
-            if (tx.isCoinBase()) {
-                // Move the transaction to the dead pool.
-                if (unspent.containsKey(tx.getHash())) {
-                    log.info("  coinbase tx {} unspent->dead", tx.getHashAsString());
-                    unspent.remove(tx.getHash());
-                } else if (spent.containsKey(tx.getHash())) {
-                    log.info("  coinbase tx {} spent->dead", tx.getHashAsString());
-                    // TODO Remove any dependent child transactions of the just removed coinbase transaction.
-                    spent.remove(tx.getHash());
-                }
-                dead.put(tx.getHash(), tx);
-
-                // Set transaction confidence to dead and notify listeners.
-                tx.getConfidence().setConfidenceType(ConfidenceType.DEAD);
-            }
-        }
-
-        // Now replay the act of receiving the blocks that were previously in a side chain. This will:
-        //   - Move any transactions that were pending and are now accepted into the right bucket.
-        //   - Connect the newly active transactions.
-
-        Collections.reverse(newBlocks);  // Need bottom-to-top but we get top-to-bottom.
-
-        // The old blocks have contributed to the depth and work done for all the transactions in the
-        // wallet that are in blocks up to and including the chain split block.
-        // The total depth and work done is calculated here and then subtracted from the appropriate transactions.
-        int depthToSubtract = oldBlocks.size();
-
-        BigInteger workDoneToSubtract = BigInteger.ZERO;
-        for (StoredBlock b : oldBlocks) {
-            workDoneToSubtract = workDoneToSubtract.add(b.getHeader().getWork());
-        }
-        log.info("DepthToSubtract = " + depthToSubtract + ", workDoneToSubtract = " + workDoneToSubtract);
-
-        // Remove depthToSubtract and workDoneToSubtract from all transactions in the wallet except for pending and inactive
-        // (i.e. the transactions in the two chains of blocks we are reorganising).
-        subtractDepthAndWorkDone(depthToSubtract, workDoneToSubtract, spent.values());
-        subtractDepthAndWorkDone(depthToSubtract, workDoneToSubtract, unspent.values());
-        subtractDepthAndWorkDone(depthToSubtract, workDoneToSubtract, dead.values());
-
-        // The effective last seen block is now the split point so set the lastSeenBlockHash.
-        setLastBlockSeenHash(splitPoint.getHeader().getHash());
-
-        for (StoredBlock b : newBlocks) {
-            log.info("Replaying block {}", b.getHeader().getHashAsString());
-            // Replay means: find the transactions that should be in that block, send them to the wallet, inform of
-            // new best block, repeat.
-            Set<Transaction> txns = new HashSet<Transaction>();
-            Sha256Hash blockHash = b.getHeader().getHash();
-            for (Transaction tx : newChainTransactions.values()) {
-                if (tx.getAppearsInHashes().contains(blockHash)) {
-                    txns.add(tx);
-                    log.info("  containing tx {}", tx.getHashAsString());
-                }
-            }
-
-            if (!txns.isEmpty()) {
-                // Add the transactions to the new blocks.
-                for (Transaction t : txns) {
-                    try {
-                        receive(t, b, BlockChain.NewBlockType.BEST_CHAIN, true);
-                    } catch (ScriptException e) {
-                        throw new RuntimeException(e);  // Cannot happen as these blocks were already verified.
+                    if (inNewSection) {
+                        boolean alreadyPresent = newChainTransactions.put(tx.getHash(), tx) != null;
+                        checkState(!alreadyPresent, "Transaction appears twice in new chain segment");
                     }
                 }
             }
-            notifyNewBestBlock(b.getHeader());
-        }
 
-        // Find the transactions that didn't make it into the new chain yet. For each input, try to connect it to the
-        // transactions that are in {spent,unspent,pending}. Check the status of each input. For inactive
-        // transactions that only send us money, we put them into the inactive pool where they sit around waiting for
-        // another re-org or re-inclusion into the main chain. For inactive transactions where we spent money we must
-        // put them back into the pending pool if we can reconnect them, so we don't create a double spend whilst the
-        // network heals itself.
-        Map<Sha256Hash, Transaction> pool = new HashMap<Sha256Hash, Transaction>();
-        pool.putAll(unspent);
-        pool.putAll(spent);
-        pool.putAll(pending);
-        Map<Sha256Hash, Transaction> toReprocess = new HashMap<Sha256Hash, Transaction>();
-        toReprocess.putAll(onlyOldChainTransactions);
-        toReprocess.putAll(pending);
-        log.info("Reprocessing transactions not in new best chain:");
-        // Note, we must reprocess dead transactions first. The reason is that if there is a double spend across
-        // chains from our own coins we get a complicated situation:
-        //
-        // 1) We switch to a new chain (B) that contains a double spend overriding a pending transaction. The
-        //    pending transaction goes dead.
-        // 2) We switch BACK to the first chain (A). The dead transaction must go pending again.
-        // 3) We resurrect the transactions that were in chain (B) and assume the miners will start work on putting them
-        //    in to the chain, but it's not possible because it's a double spend. So now that transaction must become
-        //    dead instead of pending.
-        //
-        // This only occurs when we are double spending our own coins.
-        for (Transaction tx : dead.values()) {
-            reprocessUnincludedTxAfterReorg(pool, tx);
-        }
-        for (Transaction tx : toReprocess.values()) {
-            reprocessUnincludedTxAfterReorg(pool, tx);
-        }
+            // If there is no difference it means we have nothing we need to do and the user does not care.
+            boolean affectedUs = !oldChainTransactions.equals(newChainTransactions);
+            log.info(affectedUs ? "Re-org affected our transactions" : "Re-org had no effect on our transactions");
+            if (!affectedUs) return;
 
-        log.info("post-reorg balance is {}", Utils.bitcoinValueToFriendlyString(getBalance()));
+            // Avoid spuriously informing the user of wallet changes whilst we're re-organizing. This also prevents the
+            // user from modifying wallet contents (eg, trying to spend) whilst we're in the middle of the process.
+            onWalletChangedSuppressions++;
 
-        // Inform event listeners that a re-org took place. They should save the wallet at this point.
-        EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
-            @Override
-            public void invoke(WalletEventListener listener) {
-                listener.onReorganize(Wallet.this);
+            // For simplicity we will reprocess every transaction to ensure it's in the right bucket and has the right
+            // connections. Attempting to update each one with minimal work is possible but complex and was leading to
+            // edge cases that were hard to fix. As re-orgs are rare the amount of work this implies should be manageable
+            // unless the user has an enormous wallet. As an optimization fully spent transactions buried deeper than
+            // 1000 blocks could be put into yet another bucket which we never touch and assume re-orgs cannot affect.
+
+            for (Transaction tx : onlyOldChainTransactions.values()) log.info("  Only Old: {}", tx.getHashAsString());
+            for (Transaction tx : oldChainTransactions.values()) log.info("  Old: {}", tx.getHashAsString());
+            for (Transaction tx : newChainTransactions.values()) log.info("  New: {}", tx.getHashAsString());
+
+            // Break all the existing connections.
+            for (Transaction tx : all.values())
+                tx.disconnectInputs();
+            for (Transaction tx : pending.values())
+                tx.disconnectInputs();
+            // Reconnect the transactions in the common part of the chain.
+            for (Transaction tx : commonChainTransactions.values()) {
+                TransactionInput badInput = tx.connectForReorganize(all);
+                checkState(badInput == null, "Failed to connect %s, %s", tx.getHashAsString(),
+                        badInput == null ? "" : badInput.toString());
             }
-        });
-        onWalletChangedSuppressions--;
-        invokeOnWalletChanged();
-        checkState(isConsistent());
+            // Recalculate the unspent/spent buckets for the transactions the re-org did not affect.
+            log.info("Moving transactions");
+            unspent.clear();
+            spent.clear();
+            inactive.clear();
+            for (Transaction tx : commonChainTransactions.values()) {
+                int unspentOutputs = 0;
+                for (TransactionOutput output : tx.getOutputs()) {
+                    if (output.isAvailableForSpending() && output.isMine(this)) unspentOutputs++;
+                }
+                if (unspentOutputs > 0) {
+                    log.info("  TX {} ->unspent", tx.getHashAsString());
+                    unspent.put(tx.getHash(), tx);
+                } else {
+                    log.info("  TX {} ->spent", tx.getHashAsString());
+                    spent.put(tx.getHash(), tx);
+                }
+            }
+
+            // Inform all transactions that exist only in the old chain that they have moved, so they can update confidence
+            // and timestamps. Transactions will be told they're on the new best chain when the blocks are replayed.
+            for (Transaction tx : onlyOldChainTransactions.values()) {
+                tx.notifyNotOnBestChain();
+
+                // Kill any coinbase transactions that are only in the old chain.
+                // These transactions are no longer valid.
+                if (tx.isCoinBase()) {
+                    // Move the transaction to the dead pool.
+                    if (unspent.containsKey(tx.getHash())) {
+                        log.info("  coinbase tx {} unspent->dead", tx.getHashAsString());
+                        unspent.remove(tx.getHash());
+                    } else if (spent.containsKey(tx.getHash())) {
+                        log.info("  coinbase tx {} spent->dead", tx.getHashAsString());
+                        // TODO Remove any dependent child transactions of the just removed coinbase transaction.
+                        spent.remove(tx.getHash());
+                    }
+                    dead.put(tx.getHash(), tx);
+
+                    // Set transaction confidence to dead and notify listeners.
+                    tx.getConfidence().setConfidenceType(ConfidenceType.DEAD);
+                }
+            }
+
+            // Now replay the act of receiving the blocks that were previously in a side chain. This will:
+            //   - Move any transactions that were pending and are now accepted into the right bucket.
+            //   - Connect the newly active transactions.
+
+            Collections.reverse(newBlocks);  // Need bottom-to-top but we get top-to-bottom.
+
+            // The old blocks have contributed to the depth and work done for all the transactions in the
+            // wallet that are in blocks up to and including the chain split block.
+            // The total depth and work done is calculated here and then subtracted from the appropriate transactions.
+            int depthToSubtract = oldBlocks.size();
+
+            BigInteger workDoneToSubtract = BigInteger.ZERO;
+            for (StoredBlock b : oldBlocks) {
+                workDoneToSubtract = workDoneToSubtract.add(b.getHeader().getWork());
+            }
+            log.info("DepthToSubtract = " + depthToSubtract + ", workDoneToSubtract = " + workDoneToSubtract);
+
+            // Remove depthToSubtract and workDoneToSubtract from all transactions in the wallet except for pending and inactive
+            // (i.e. the transactions in the two chains of blocks we are reorganising).
+            subtractDepthAndWorkDone(depthToSubtract, workDoneToSubtract, spent.values());
+            subtractDepthAndWorkDone(depthToSubtract, workDoneToSubtract, unspent.values());
+            subtractDepthAndWorkDone(depthToSubtract, workDoneToSubtract, dead.values());
+
+            // The effective last seen block is now the split point so set the lastSeenBlockHash.
+            setLastBlockSeenHash(splitPoint.getHeader().getHash());
+
+            for (StoredBlock b : newBlocks) {
+                log.info("Replaying block {}", b.getHeader().getHashAsString());
+                // Replay means: find the transactions that should be in that block, send them to the wallet, inform of
+                // new best block, repeat.
+                Set<Transaction> txns = new HashSet<Transaction>();
+                Sha256Hash blockHash = b.getHeader().getHash();
+                for (Transaction tx : newChainTransactions.values()) {
+                    if (tx.getAppearsInHashes().contains(blockHash)) {
+                        txns.add(tx);
+                        log.info("  containing tx {}", tx.getHashAsString());
+                    }
+                }
+
+                if (!txns.isEmpty()) {
+                    // Add the transactions to the new blocks.
+                    for (Transaction t : txns) {
+                        try {
+                            receive(t, b, BlockChain.NewBlockType.BEST_CHAIN, true);
+                        } catch (ScriptException e) {
+                            throw new RuntimeException(e);  // Cannot happen as these blocks were already verified.
+                        }
+                    }
+                }
+                notifyNewBestBlock(b);
+            }
+
+            // Find the transactions that didn't make it into the new chain yet. For each input, try to connect it to the
+            // transactions that are in {spent,unspent,pending}. Check the status of each input. For inactive
+            // transactions that only send us money, we put them into the inactive pool where they sit around waiting for
+            // another re-org or re-inclusion into the main chain. For inactive transactions where we spent money we must
+            // put them back into the pending pool if we can reconnect them, so we don't create a double spend whilst the
+            // network heals itself.
+            Map<Sha256Hash, Transaction> pool = new HashMap<Sha256Hash, Transaction>();
+            pool.putAll(unspent);
+            pool.putAll(spent);
+            pool.putAll(pending);
+            Map<Sha256Hash, Transaction> toReprocess = new HashMap<Sha256Hash, Transaction>();
+            toReprocess.putAll(onlyOldChainTransactions);
+            toReprocess.putAll(pending);
+            log.info("Reprocessing transactions not in new best chain:");
+            // Note, we must reprocess dead transactions first. The reason is that if there is a double spend across
+            // chains from our own coins we get a complicated situation:
+            //
+            // 1) We switch to a new chain (B) that contains a double spend overriding a pending transaction. The
+            //    pending transaction goes dead.
+            // 2) We switch BACK to the first chain (A). The dead transaction must go pending again.
+            // 3) We resurrect the transactions that were in chain (B) and assume the miners will start work on putting them
+            //    in to the chain, but it's not possible because it's a double spend. So now that transaction must become
+            //    dead instead of pending.
+            //
+            // This only occurs when we are double spending our own coins.
+            for (Transaction tx : dead.values()) {
+                reprocessUnincludedTxAfterReorg(pool, tx);
+            }
+            for (Transaction tx : toReprocess.values()) {
+                reprocessUnincludedTxAfterReorg(pool, tx);
+            }
+
+            log.info("post-reorg balance is {}", Utils.bitcoinValueToFriendlyString(getBalance()));
+            // Inform event listeners that a re-org took place. They should save the wallet at this point.
+            invokeOnReorganize();
+            onWalletChangedSuppressions--;
+            invokeOnWalletChanged();
+            checkState(isConsistent());
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * Subtract the supplied depth and work done from the given transactions.
      */
-    synchronized private void subtractDepthAndWorkDone(int depthToSubtract, BigInteger workDoneToSubtract, Collection<Transaction> transactions) {
+    private static void subtractDepthAndWorkDone(int depthToSubtract, BigInteger workDoneToSubtract,
+                                                 Collection<Transaction> transactions) {
         for (Transaction tx : transactions) {
             if (tx.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
                 tx.getConfidence().setDepthInBlocks(tx.getConfidence().getDepthInBlocks() - depthToSubtract);
@@ -2026,6 +2251,7 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
 
     private void reprocessUnincludedTxAfterReorg(Map<Sha256Hash, Transaction> pool, Transaction tx) {
+        checkState(lock.isLocked());
         log.info("TX {}", tx.getHashAsString() + ", confidence = " + tx.getConfidence().getConfidenceType().name());
 
         boolean isDeadCoinbase = tx.isCoinBase() && ConfidenceType.DEAD == tx.getConfidence().getConfidenceType();
@@ -2081,39 +2307,20 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
         // The act of re-connecting this un-included transaction may have caused other transactions to become fully
         // spent so move them into the right bucket here to keep performance good.
         for (Transaction maybeSpent : connectedTransactions) {
-            maybeMoveTxToSpent(maybeSpent, "reorg");
+            maybeMovePool(maybeSpent, "reorg");
         }
-    }
-
-    private void invokeOnTransactionConfidenceChanged(final Transaction tx) {
-        EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
-            @Override
-            public void invoke(WalletEventListener listener) {
-                listener.onTransactionConfidenceChanged(Wallet.this, tx);
-            }
-        });
-    }
-
-    private int onWalletChangedSuppressions;
-    private synchronized void invokeOnWalletChanged() {
-        // Don't invoke the callback in some circumstances, eg, whilst we are re-organizing or fiddling with
-        // transactions due to a new block arriving. It will be called later instead.
-        Preconditions.checkState(onWalletChangedSuppressions >= 0);
-        if (onWalletChangedSuppressions > 0) return;
-        // Call with the wallet locked.
-        EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
-            @Override
-            public void invoke(WalletEventListener listener) {
-                listener.onWalletChanged(Wallet.this);
-            }
-        });
     }
 
     /**
      * Returns an immutable view of the transactions currently waiting for network confirmations.
      */
-    public synchronized Collection<Transaction> getPendingTransactions() {
-        return Collections.unmodifiableCollection(pending.values());
+    public Collection<Transaction> getPendingTransactions() {
+        lock.lock();
+        try {
+            return Collections.unmodifiableCollection(pending.values());
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -2128,25 +2335,328 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * 
      * If there are no keys in the wallet, the current time is returned.
      */
-    public synchronized long getEarliestKeyCreationTime() {
-        if (keychain.size() == 0) {
-            return Utils.now().getTime() / 1000;
+    public long getEarliestKeyCreationTime() {
+        lock.lock();
+        try {
+            if (keychain.size() == 0) {
+                return Utils.now().getTime() / 1000;
+            }
+            long earliestTime = Long.MAX_VALUE;
+            for (ECKey key : keychain) {
+                earliestTime = Math.min(key.getCreationTimeSeconds(), earliestTime);
+            }
+            return earliestTime;
+        } finally {
+            lock.unlock();
         }
-        long earliestTime = Long.MAX_VALUE;
-        for (ECKey key : keychain) {
-            earliestTime = Math.min(key.getCreationTimeSeconds(), earliestTime);
-        }
-        return earliestTime;
     }
 
+    /** Returns the hash of the last seen best-chain block. */
     public Sha256Hash getLastBlockSeenHash() {
-        return lastBlockSeenHash;
+        lock.lock();
+        try {
+            return lastBlockSeenHash;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void setLastBlockSeenHash(Sha256Hash lastBlockSeenHash) {
-        this.lastBlockSeenHash = lastBlockSeenHash;
+        lock.lock();
+        try {
+            this.lastBlockSeenHash = lastBlockSeenHash;
+        } finally {
+            lock.unlock();
+        }
     }
-    
+
+    public void setLastBlockSeenHeight(int lastBlockSeenHeight) {
+        lock.lock();
+        try {
+            this.lastBlockSeenHeight = lastBlockSeenHeight;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /** Returns the height of the last seen best-chain block. Can be -1 if a wallet is old and doesn't have that data. */
+    public int getLastBlockSeenHeight() {
+        lock.lock();
+        try {
+            return lastBlockSeenHeight;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Convenience wrapper around {@link Wallet#encrypt(com.google.bitcoin.crypto.KeyCrypter,
+     * org.spongycastle.crypto.params.KeyParameter)} which uses the default Scrypt key derivation algorithm and
+     * parameters, derives a key from the given password and returns the created key.
+     */
+    public KeyParameter encrypt(CharSequence password) {
+        checkNotNull(password);
+        checkArgument(password.length() > 0);
+        KeyCrypter scrypt = new KeyCrypterScrypt();
+        KeyParameter derivedKey = scrypt.deriveKey(password);
+        encrypt(scrypt, derivedKey);
+        return derivedKey;
+    }
+
+    /**
+     * Encrypt the wallet using the KeyCrypter and the AES key. A good default KeyCrypter to use is
+     * {@link com.google.bitcoin.crypto.KeyCrypterScrypt}.
+     *
+     * @param keyCrypter The KeyCrypter that specifies how to encrypt/ decrypt a key
+     * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
+     * @throws KeyCrypterException Thrown if the wallet encryption fails. If so, the wallet state is unchanged.
+     */
+    public void encrypt(KeyCrypter keyCrypter, KeyParameter aesKey) {
+        lock.lock();
+        try {
+            checkNotNull(keyCrypter);
+            checkState(getEncryptionType() == EncryptionType.UNENCRYPTED, "Wallet is already encrypted");
+            // Create a new arraylist that will contain the encrypted keys
+            ArrayList<ECKey> encryptedKeyChain = new ArrayList<ECKey>();
+            for (ECKey key : keychain) {
+                if (key.isEncrypted()) {
+                    // Key is already encrypted - add as is.
+                    encryptedKeyChain.add(key);
+                } else {
+                    // Encrypt the key.
+                    ECKey encryptedKey = key.encrypt(keyCrypter, aesKey);
+
+                    // Check that the encrypted key can be successfully decrypted.
+                    // This is done as it is a critical failure if the private key cannot be decrypted successfully
+                    // (all bitcoin controlled by that private key is lost forever).
+                    // For a correctly constructed keyCrypter the encryption should always be reversible so it is just being as cautious as possible.
+                    if (!ECKey.encryptionIsReversible(key, encryptedKey, keyCrypter, aesKey)) {
+                        // Abort encryption
+                        throw new KeyCrypterException("The key " + key.toString() + " cannot be successfully decrypted after encryption so aborting wallet encryption.");
+                    }
+
+                    encryptedKeyChain.add(encryptedKey);
+                }
+            }
+
+            // Now ready to use the encrypted keychain so go through the old keychain clearing all the unencrypted private keys.
+            // (This is to avoid the possibility of key recovery from memory).
+            for (ECKey key : keychain) {
+                if (!key.isEncrypted()) {
+                    key.clearPrivateKey();
+                }
+            }
+
+            // Replace the old keychain with the encrypted one.
+            keychain = encryptedKeyChain;
+
+            // The wallet is now encrypted.
+            this.keyCrypter = keyCrypter;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Decrypt the wallet with the wallets keyCrypter and AES key.
+     *
+     * @param aesKey AES key to use (normally created using KeyCrypter#deriveKey and cached as it is time consuming to create from a password)
+     * @throws KeyCrypterException Thrown if the wallet decryption fails. If so, the wallet state is unchanged.
+     */
+    public void decrypt(KeyParameter aesKey) {
+        lock.lock();
+        try {
+            // Check the wallet is already encrypted - you cannot decrypt an unencrypted wallet.
+            checkState(getEncryptionType() != EncryptionType.UNENCRYPTED, "Wallet is already decrypted");
+            // Check that the wallet keyCrypter is non-null.
+            // This is set either at construction (if an encrypted wallet is created) or by wallet encryption.
+            checkNotNull(keyCrypter);
+
+            // Create a new arraylist that will contain the decrypted keys
+            ArrayList<ECKey> decryptedKeyChain = new ArrayList<ECKey>();
+
+            for (ECKey key : keychain) {
+                // Decrypt the key.
+                if (!key.isEncrypted()) {
+                    // Not encrypted - add to chain as is.
+                    decryptedKeyChain.add(key);
+                } else {
+                    ECKey decryptedECKey = key.decrypt(keyCrypter, aesKey);
+                    decryptedKeyChain.add(decryptedECKey);
+                }
+            }
+
+            // Replace the old keychain with the unencrypted one.
+            keychain = decryptedKeyChain;
+
+            // The wallet is now unencrypted.
+            keyCrypter = null;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Create a new, random encrypted ECKey and add it to the wallet.
+     *
+     * @param keyCrypter The keyCrypter to use in encrypting the new key
+     * @param aesKey The AES key to use to encrypt the new key
+     * @return ECKey the new, encrypted ECKey
+     */
+    public ECKey addNewEncryptedKey(KeyCrypter keyCrypter, KeyParameter aesKey) {
+        ECKey newKey = (new ECKey()).encrypt(checkNotNull(keyCrypter), checkNotNull(aesKey));
+        addKey(newKey);
+        return newKey;
+    }
+
+    /**
+     * <p>Convenience wrapper around {@link Wallet#addNewEncryptedKey(com.google.bitcoin.crypto.KeyCrypter,
+     * org.spongycastle.crypto.params.KeyParameter)} which just derives the key afresh and uses the pre-set
+     * keycrypter. The wallet must have been encrypted using one of the encrypt methods previously.</p>
+     *
+     * <p>Note that key derivation is deliberately very slow! So if you plan to add multiple keys, it can be
+     * faster to use the other method instead and re-use the {@link KeyParameter} object instead.</p>
+     */
+    public ECKey addNewEncryptedKey(CharSequence password) {
+        lock.lock();
+        try {
+            checkNotNull(keyCrypter, "Wallet is not encrypted, you must call encrypt() first.");
+            return addNewEncryptedKey(keyCrypter, keyCrypter.deriveKey(password));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     *  Check whether the password can decrypt the first key in the wallet.
+     *  This can be used to check the validity of an entered password.
+     *
+     *  @return boolean true if password supplied can decrypt the first private key in the wallet, false otherwise.
+     */
+    public boolean checkPassword(CharSequence password) {
+        lock.lock();
+        try {
+            if (keyCrypter == null) {
+                // The password cannot decrypt anything as the keyCrypter is null.
+                return false;
+            }
+            return checkAESKey(keyCrypter.deriveKey(checkNotNull(password)));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     *  Check whether the AES key can decrypt the first encrypted key in the wallet.
+     *
+     *  @returns boolean true if AES key supplied can decrypt the first encrypted private key in the wallet, false otherwise.
+     */
+    public boolean checkAESKey(KeyParameter aesKey) {
+        lock.lock();
+        try {
+            // If no keys then cannot decrypt.
+            if (!getKeys().iterator().hasNext())
+                return false;
+            // Find the first encrypted key in the wallet.
+            ECKey firstEncryptedECKey = null;
+            Iterator<ECKey> iterator = getKeys().iterator();
+            while (iterator.hasNext() && firstEncryptedECKey == null) {
+                ECKey loopECKey = iterator.next();
+                if (loopECKey.isEncrypted()) {
+                    firstEncryptedECKey = loopECKey;
+                }
+            }
+            // There are no encrypted keys in the wallet.
+            if (firstEncryptedECKey == null)
+                return false;
+            String originalAddress = firstEncryptedECKey.toAddress(getNetworkParameters()).toString();
+            if (firstEncryptedECKey.isEncrypted() && firstEncryptedECKey.getEncryptedPrivateKey() != null) {
+                try {
+                    ECKey rebornKey = firstEncryptedECKey.decrypt(keyCrypter, aesKey);
+
+                    // Check that the decrypted private key's address is correct ie it decrypted accurately.
+                    String rebornAddress = rebornKey.toAddress(getNetworkParameters()).toString();
+                    return originalAddress.equals(rebornAddress);
+                } catch (KeyCrypterException ede) {
+                    // The AES key supplied is incorrect.
+                    return false;
+                }
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Get the wallet's KeyCrypter.
+     * (Used in encrypting/ decrypting an ECKey).
+     */
+    public KeyCrypter getKeyCrypter() {
+        lock.lock();
+        try {
+            return keyCrypter;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Get the type of encryption used for this wallet.
+     *
+     * (This is a convenience method - the encryption type is actually stored in the keyCrypter).
+     */
+    public EncryptionType getEncryptionType() {
+        lock.lock();
+        try {
+            if (keyCrypter == null) {
+                // Unencrypted wallet.
+                return EncryptionType.UNENCRYPTED;
+            } else {
+                return keyCrypter.getUnderstoodEncryptionType();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /** Returns true if the wallet is encrypted using any scheme, false if not. */
+    public boolean isEncrypted() {
+        return getEncryptionType() != EncryptionType.UNENCRYPTED;
+    }
+
+    /**
+     * Get the version of the Wallet.
+     * This is an int you can use to indicate which versions of wallets your code understands,
+     * and which come from the future (and hence cannot be safely loaded).
+     */
+    public int getVersion() {
+        return version;
+    }
+
+    /**
+     * Set the version number of the wallet. See {@link Wallet#getVersion()}.
+     */
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    /**
+     * Set the description of the wallet.
+     * This is a Unicode encoding string typically entered by the user as descriptive text for the wallet.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Get the description of the wallet. See {@link Wallet#setDescription(String))}
+     * @return
+     */
+    public String getDescription() {
+        return description;
+    }
+
     /**
      * Gets the number of elements that will be added to a bloom filter returned by getBloomFilter
      */
@@ -2166,10 +2676,8 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
     
     /**
-     * Gets a bloom filter that contains all of the public keys from this wallet,
-     * and which will provide the given false-positive rate.
-     * 
-     * See the docs for {@link BloomFilter#BloomFilter(int, double)} for a brief explanation of anonymity when using bloom filters.
+     * Gets a bloom filter that contains all of the public keys from this wallet, and which will provide the given
+     * false-positive rate. See the docs for {@link BloomFilter} for a brief explanation of anonymity when using filters.
      */
     public BloomFilter getBloomFilter(double falsePositiveRate) {
         return getBloomFilter(getBloomFilterElementCount(), falsePositiveRate, (long)(Math.random()*Long.MAX_VALUE));
@@ -2185,11 +2693,16 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * 
      * See the docs for {@link BloomFilter#BloomFilter(int, double)} for a brief explanation of anonymity when using bloom filters.
      */
-    public synchronized BloomFilter getBloomFilter(int size, double falsePositiveRate, long nTweak) {
+    public BloomFilter getBloomFilter(int size, double falsePositiveRate, long nTweak) {
         BloomFilter filter = new BloomFilter(size, falsePositiveRate, nTweak);
-        for (ECKey key : keychain) {
-            filter.insert(key.getPubKey());
-            filter.insert(key.getPubKeyHash());
+        lock.lock();
+        try {
+            for (ECKey key : keychain) {
+                filter.insert(key.getPubKey());
+                filter.insert(key.getPubKeyHash());
+            }
+        } finally {
+            lock.unlock();
         }
         for (Transaction tx : getTransactions(false, true)) {
             for (int i = 0; i < tx.getOutputs().size(); i++) {
@@ -2208,8 +2721,13 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
     }
 
     /** Returns the {@link CoinSelector} object which controls which outputs can be spent by this wallet. */
-    public synchronized CoinSelector getCoinSelector() {
-        return coinSelector;
+    public CoinSelector getCoinSelector() {
+        lock.lock();
+        try {
+            return coinSelector;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -2217,8 +2735,82 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
      * selector implements a policy of spending transactions that appeared in the best chain and pending transactions
      * that were created by this wallet, but not others.
      */
-    public synchronized void setCoinSelector(CoinSelector coinSelector) {
-        this.coinSelector = coinSelector;
+    public void setCoinSelector(CoinSelector coinSelector) {
+        lock.lock();
+        try {
+            this.coinSelector = coinSelector;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Boilerplate for running event listeners - unlocks the wallet, runs, re-locks.
+
+    private void invokeOnTransactionConfidenceChanged(Transaction tx) {
+        checkState(lock.isLocked());
+        lock.unlock();
+        try {
+            for (WalletEventListener listener : eventListeners) {
+                listener.onTransactionConfidenceChanged(this, tx);
+            }
+        } finally {
+            lock.lock();
+        }
+    }
+
+    private int onWalletChangedSuppressions = 0;
+    private void invokeOnWalletChanged() {
+        // Don't invoke the callback in some circumstances, eg, whilst we are re-organizing or fiddling with
+        // transactions due to a new block arriving. It will be called later instead.
+        checkState(lock.isLocked());
+        Preconditions.checkState(onWalletChangedSuppressions >= 0);
+        if (onWalletChangedSuppressions > 0) return;
+        lock.unlock();
+        try {
+            for (WalletEventListener listener : eventListeners) {
+                listener.onWalletChanged(this);
+            }
+        } finally {
+            lock.lock();
+        }
+    }
+
+    private void invokeOnCoinsReceived(Transaction tx, BigInteger balance, BigInteger newBalance) {
+        checkState(lock.isLocked());
+        lock.unlock();
+        try {
+            for (WalletEventListener listener : eventListeners) {
+                listener.onCoinsReceived(Wallet.this, tx, balance, newBalance);
+            }
+        } finally {
+            lock.lock();
+        }
+    }
+
+    private void invokeOnCoinsSent(Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+        checkState(lock.isLocked());
+        lock.unlock();
+        try {
+            for (WalletEventListener listener : eventListeners) {
+                listener.onCoinsSent(Wallet.this, tx, prevBalance, newBalance);
+            }
+        } finally {
+            lock.lock();
+        }
+    }
+
+    private void invokeOnReorganize() {
+        checkState(lock.isLocked());
+        lock.unlock();
+        try {
+            for (WalletEventListener listener : eventListeners) {
+                listener.onReorganize(Wallet.this);
+            }
+        } finally {
+            lock.lock();
+        }
     }
 
     public synchronized ArrayList<ECKey> getKeychain() {

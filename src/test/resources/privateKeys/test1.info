@@ -1,54 +1,53 @@
 multiBit.info,1
-walletVersion,1
-receive,162zJokk8matsjGGGmyJTCBLTDc3juRxEs,From Peter
-receive,1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK,50% of LoveBitcoins.org subs
+walletVersion,2
+receive,162zJokk8matsjGGGmyJTCBLTDc3juRxEs,From%20Peter
 receive,1GtMVgFstm6hLNJnMVMfqBV3tW1S7as67v,general
-receive,1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX,From savings account
-ssss
-receive,15ZLe7GCAfdTTMMkbm38KTtahq9y549rB2,Gift card from Bitcoin Books
-receive,166ofzumkuBB8gpDqd3usn3PypRXA4wTS6,General receipts
-receive,13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct,From Simone
-receive,13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6,Wesolych Swiat Bozego Narodzenia
+receive,1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK,50%25%20of%20LoveBitcoins.org%20subs
+receive,1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX,From%20savings%20account%0Assss
+receive,15ZLe7GCAfdTTMMkbm38KTtahq9y549rB2,Gift%20card%20from%20Bitcoin%20Books
+receive,166ofzumkuBB8gpDqd3usn3PypRXA4wTS6,General%20receipts
+receive,13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct,From%20Simone
+receive,13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6,Wesolych%20Swiat%20Bozego%20Narodzenia
 send,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE,Instawallet
-send,15GkaJG5eAsGhHu9Y23WcTw52vmJQy3fh5,multibit wallet receive address
-send,13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct,from Simone
-send,14M3dRDqj44KxYnoAaReK2t4HqdLKbpqFg,Monday send test
-send,18cT65hZya3xKjHhAJ15PxHUKkfdRzKGLM,Donate to help keep this blog running :-)
-please donate
-send,1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX,From savings account
+send,15GkaJG5eAsGhHu9Y23WcTw52vmJQy3fh5,multibit%20wallet%20receive%20address
+send,13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct,from%20Simone
+send,14M3dRDqj44KxYnoAaReK2t4HqdLKbpqFg,Monday%20send%20test
+send,18cT65hZya3xKjHhAJ15PxHUKkfdRzKGLM,Donate%20to%20help%20keep%20this%20blog%20running%20%3A-%29%0Aplease%20donate
+send,1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX,From%20savings%20account
 send,19iPayacMRqw674JubytFq6uLGDfsKrxsr,default
-send,1CkJpnRXw87nKTMX2NJzC3r38TLErnRtAv,wed test
-send,16VNfZZ6mu3Q8Qn4Pjm9t5JnAuh9mgwTVF,wed test 2
-send,1MQPaZDkaMtEjPfzXxG2DqqYDu63BBXqD5,my new wallet
-send,1Pp5DMMAmXGDsFstsmiVc3Ghovu2k9GRRi,Arvis Lācis (Latvian)
-send,1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH,Agile Stack
-send,1CVxDbfd3v4vTqBot3qG7pFZmAYWr9SpHj,Win XP - test1 - Default
-send,1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty,Please donate to multibit.org
-send,1GsyjQvGwiYnCCE2rdxtf9NzCQmhgzoLwJ,The Bitcoin Trader
-send,1C869zkFmtqXyGjy7zxiYrmKBkx2NgZgjk,default- XP - myNewWallet
-send,12xwdub8AqVTM5g8KBRkWH1WMyCmTJQqmH,default receive - multibit - Ubuntu
-send,1QF4MvVeQ5CQ2TciReUJ5DBssYdqpEPuWP,default receive - multibit - XP
-send,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399,petty cash 1
+send,1CkJpnRXw87nKTMX2NJzC3r38TLErnRtAv,wed%20test
+send,16VNfZZ6mu3Q8Qn4Pjm9t5JnAuh9mgwTVF,wed%20test%202
+send,1MQPaZDkaMtEjPfzXxG2DqqYDu63BBXqD5,my%20new%20wallet
+send,1Pp5DMMAmXGDsFstsmiVc3Ghovu2k9GRRi,Arvis%20L%C4%81cis%20%28Latvian%29
+send,1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH,Agile%20Stack
+send,1CVxDbfd3v4vTqBot3qG7pFZmAYWr9SpHj,Win%20XP%20-%20test1%20-%20Default
+send,1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty,Please%20donate%20to%20multibit.org
+send,1GsyjQvGwiYnCCE2rdxtf9NzCQmhgzoLwJ,The%20Bitcoin%20Trader
+send,1C869zkFmtqXyGjy7zxiYrmKBkx2NgZgjk,default-%20XP%20-%20myNewWallet
+send,12xwdub8AqVTM5g8KBRkWH1WMyCmTJQqmH,default%20receive%20-%20multibit%20-%20Ubuntu
+send,1QF4MvVeQ5CQ2TciReUJ5DBssYdqpEPuWP,default%20receive%20-%20multibit%20-%20XP
+send,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399,petty%20cash%201
 property,receiveAddress,13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6
 property,openUriShowDialog,false
 property,validationAmountIsMissing,false
-property,walletInfoFileLastModified,1327320682000
+property,walletInfoFileLastModified,1363970132000
 property,receiveAmount,0.05
 property,sendWasSuccessful,true
 property,sendPerformPasteNow,false
-property,walletDescription,Test wallet 1
-property,walletFileSize,2578357
-property,sendErrorMessage, 
-property,walletFileLastModified,1327320683000
+property,walletBackupFile,%2FUsers%2Fjim%2Fgit%2Fmultibit-v0.3%2Fmultibit%2Fsrc%2Ftest%2Fresources%2FprivateKeys%2Ftest1-20130322163534.wallet
+property,walletDescription,Test%20wallet%201
+property,walletFileSize,16183
+property,sendErrorMessage,%20
+property,walletFileLastModified,1363970132000
 property,validationAmountValue,9.1464
 property,validationNotEnoughFunds,false
 property,validationAddressValue,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
 property,validationAmountIsNegativeOrZero,false
 property,validationAddressIsInvalid,false
 property,validationAmountIsInvalid,false
-property,walletInfoFileSize,2660
-property,receiveLabel,Wesolych Swiat Bozego Narodzenia
+property,walletInfoFileSize,2965
 property,sendAmount,9.1464
-property,earliestTransactionDate,1318003097000
+property,receiveLabel,Wesolych%20Swiat%20Bozego%20Narodzenia
 property,sendAddress,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
-property,sendLabel,petty cash 1
+property,earliestTransactionDate,1318003097000
+property,sendLabel,petty%20cash%201

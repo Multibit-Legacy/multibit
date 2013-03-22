@@ -16,12 +16,10 @@
 
 package com.google.bitcoin.core;
 
-import com.google.bitcoin.utils.EventListenerInvoker;
 import com.google.common.base.Preconditions;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -71,7 +69,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     /** The Transaction that this confidence object is associated with. */
     private Transaction transaction;
     // Lazily created listeners array.
-    private transient ArrayList<Listener> listeners;
+    private transient CopyOnWriteArrayList<Listener> listeners;
 
     // The depth of the transaction on the best chain in blocks. An unconfirmed block has depth 0.
     private int depth;
@@ -133,7 +131,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
             }
         }
 
-    };
+    }
 
     private ConfidenceType confidenceType = ConfidenceType.UNKNOWN;
     private int appearedAtChainHeight = -1;
@@ -158,6 +156,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     public TransactionConfidence(Transaction tx) {
         // Assume a default number of peers for our set.
         broadcastBy = new CopyOnWriteArrayList<PeerAddress>();
+        listeners = new CopyOnWriteArrayList<Listener>();
         broadcastByCount = 0;
         transaction = tx;
     }
@@ -173,7 +172,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      */
     public interface Listener {
         public void onConfidenceChanged(Transaction tx);
-    };
+    }
 
     /**
      * <p>Adds an event listener that will be run when this confidence object is updated. The listener will be locked and
@@ -185,18 +184,13 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      * {@link BlockChainListener}, attach it to a {@link BlockChain} and then use the getters on the
      * confidence object to determine the new depth.</p>
      */
-    public synchronized void addEventListener(Listener listener) {
+    public void addEventListener(Listener listener) {
         Preconditions.checkNotNull(listener);
-        if (listeners == null)
-            listeners = new ArrayList<Listener>(2);
-        // Dedupe registrations. This makes the wallet code simpler.
-        if (!listeners.contains(listener))
-            listeners.add(listener);
+        listeners.addIfAbsent(listener);
     }
 
-    public synchronized void removeEventListener(Listener listener) {
+    public void removeEventListener(Listener listener) {
         Preconditions.checkNotNull(listener);
-        Preconditions.checkNotNull(listeners);
         listeners.remove(listener);
     }
 
@@ -232,11 +226,13 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      * Called by other objects in the system, like a {@link Wallet}, when new information about the confidence of a 
      * transaction becomes available.
      */
-    public synchronized void setConfidenceType(ConfidenceType confidenceType) {
+    public void setConfidenceType(ConfidenceType confidenceType) {
         // Don't inform the event listeners if the confidence didn't really change.
-        if (confidenceType == this.confidenceType)
-            return;
-        this.confidenceType = confidenceType;
+        synchronized (this) {
+            if (confidenceType == this.confidenceType)
+                return;
+            this.confidenceType = confidenceType;
+        }
         runListeners();
     }
 
@@ -269,7 +265,7 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     }
 
     /**
-     * Returns a synchronized set of {@link PeerAddress}es that announced the transaction.
+     * Returns a snapshot of {@link PeerAddress}es that announced the transaction.
      */
     public ListIterator<PeerAddress> getBroadcastBy() {
         return broadcastBy.listIterator();
@@ -321,12 +317,17 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
      * Updates the internal counter that tracks how deeply buried the block is.
      * Work is the value of block.getWork().
      */
-    public synchronized void notifyWorkDone(Block block) throws VerificationException {
-        if (getConfidenceType() == ConfidenceType.BUILDING) {
-            this.depth++;
-            this.workDone = this.workDone.add(block.getWork());
-            runListeners();
+    public void notifyWorkDone(Block block) throws VerificationException {
+        boolean notify = false;
+        synchronized (this) {
+            if (getConfidenceType() == ConfidenceType.BUILDING) {
+                this.depth++;
+                this.workDone = this.workDone.add(block.getWork());
+                notify = true;
+            }
         }
+        if (notify)
+            runListeners();
     }
 
     /**
@@ -417,12 +418,8 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     }
 
     private void runListeners() {
-        EventListenerInvoker.invoke(listeners, new EventListenerInvoker<Listener>() {
-            @Override
-            public void invoke(Listener listener) {
-                listener.onConfidenceChanged(transaction);
-            }
-        });
+        for (Listener listener : listeners)
+            listener.onConfidenceChanged(transaction);
     }
 
     /**

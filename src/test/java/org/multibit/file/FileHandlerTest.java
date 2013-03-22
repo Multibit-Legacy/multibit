@@ -42,10 +42,10 @@ public class FileHandlerTest extends TestCase {
     private static final String WALLET_FUTURE = "future.wallet";
 
     private static final String WALLET_TEST1 = "test1.wallet";
-    private static final BigInteger WALLET_TEST1_BALANCE = new BigInteger("0");;
+    private static final BigInteger WALLET_TEST1_BALANCE = new BigInteger("6700000");;
 
     private static final String WALLET_TEST2 = "test2.wallet";
-    private static final BigInteger WALLET_TEST2_BALANCE = new BigInteger("0");;
+    private static final BigInteger WALLET_TEST2_BALANCE = new BigInteger("950000");;
 
     private static final String TEST_CREATE_AND_DELETE1_WALLET_PREFIX = "testCreateAndDelete1";
     
@@ -156,57 +156,57 @@ public class FileHandlerTest extends TestCase {
         assertTrue(!walletInfoFile.exists());
     }
     
-    @Test
-    public void testCreateSerialisedWallet() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        FileHandler fileHandler = new FileHandler(controller);
-
-        File temporaryWallet = File.createTempFile(TEST_CREATE_SERIALISED_PREFIX, ".wallet");
-        temporaryWallet.deleteOnExit();
-
-        String newWalletFilename = temporaryWallet.getAbsolutePath();
-
-        // Create a new serialised wallet.
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
-        ECKey newKey = new ECKey();
-        newWallet.keychain.add(newKey);
-        newKey = new ECKey();
-        newWallet.keychain.add(newKey);
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.SERIALIZED);
-        
-        perWalletModelData.setWalletInfo(walletInfo);
-       
-        perWalletModelData.setWallet(newWallet);
-        perWalletModelData.setWalletFilename(newWalletFilename);
-        perWalletModelData.setWalletDescription(TEST_CREATE_SERIALISED_PREFIX);
-        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
-
-        // Check the wallet and wallet info file exists.
-        File newWalletFile = new File(newWalletFilename);
-        assertTrue(newWalletFile.exists());
-
-        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
-
-        File walletInfoFile = new File(walletInfoFileAsString);
-        assertTrue(walletInfoFile.exists());
-
-        // Check wallet can be loaded and is still serialised.
-        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
-        assertNotNull(perWalletModelDataReborn);
-        assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
-        assertEquals(TEST_CREATE_SERIALISED_PREFIX, perWalletModelDataReborn.getWalletDescription());
-        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
-
-        assertEquals(WalletVersion.SERIALIZED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
-        
-        // Delete wallet.
-        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
-        assertTrue(!newWalletFile.exists());
-        assertTrue(!walletInfoFile.exists());
-    }
+//    @Test
+//    public void testCreateSerialisedWallet() throws IOException {
+//        MultiBitController controller = new MultiBitController();
+//        @SuppressWarnings("unused")
+//        MultiBitModel model = new MultiBitModel(controller);
+//        FileHandler fileHandler = new FileHandler(controller);
+//
+//        File temporaryWallet = File.createTempFile(TEST_CREATE_SERIALISED_PREFIX, ".wallet");
+//        temporaryWallet.deleteOnExit();
+//
+//        String newWalletFilename = temporaryWallet.getAbsolutePath();
+//
+//        // Create a new serialised wallet.
+//        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+//        ECKey newKey = new ECKey();
+//        newWallet.keychain.add(newKey);
+//        newKey = new ECKey();
+//        newWallet.keychain.add(newKey);
+//        PerWalletModelData perWalletModelData = new PerWalletModelData();
+//        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.SERIALIZED);
+//        
+//        perWalletModelData.setWalletInfo(walletInfo);
+//       
+//        perWalletModelData.setWallet(newWallet);
+//        perWalletModelData.setWalletFilename(newWalletFilename);
+//        perWalletModelData.setWalletDescription(TEST_CREATE_SERIALISED_PREFIX);
+//        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+//
+//        // Check the wallet and wallet info file exists.
+//        File newWalletFile = new File(newWalletFilename);
+//        assertTrue(newWalletFile.exists());
+//
+//        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+//
+//        File walletInfoFile = new File(walletInfoFileAsString);
+//        assertTrue(walletInfoFile.exists());
+//
+//        // Check wallet can be loaded and is still serialised.
+//        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+//        assertNotNull(perWalletModelDataReborn);
+//        assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
+//        assertEquals(TEST_CREATE_SERIALISED_PREFIX, perWalletModelDataReborn.getWalletDescription());
+//        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
+//
+//        assertEquals(WalletVersion.SERIALIZED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
+//        
+//        // Delete wallet.
+//        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
+//        assertTrue(!newWalletFile.exists());
+//        assertTrue(!walletInfoFile.exists());
+//    }
     
     @Test
     public void testCreateProtobufWallet() throws IOException {
@@ -271,13 +271,7 @@ public class FileHandlerTest extends TestCase {
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
 
-        String serialisedWalletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
-        + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_TEST1;
-
-        File serialisedWalletFile = new File(serialisedWalletName);;
-
         FileHandler fileHandler = new FileHandler(controller);
-        assertTrue(fileHandler.isWalletSerialised(serialisedWalletFile));
 
         String protobufWalletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
         + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_PROTOBUF1;

@@ -24,6 +24,12 @@ import org.multibit.IsMultiBitClass;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.bitcoinj.wallet.Protos;
+
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypter;
+
 /**
  * Optional helper for WalletProtobufSerializer that allows for serialization and deserialization of Wallet objects
  * with extensions and corresponding extended Wallet classes. If you want to store proprietary data into the wallet,
@@ -35,6 +41,10 @@ public class WalletExtensionSerializer implements IsMultiBitClass {
 
     public Wallet newWallet(NetworkParameters params) {
         return new Wallet(params);
+    }
+    
+    public Wallet newWallet(NetworkParameters params, KeyCrypter keyCrypter) {
+        return new Wallet(params, keyCrypter);
     }
 
     public void readExtension(Wallet wallet, Protos.Extension extProto) {

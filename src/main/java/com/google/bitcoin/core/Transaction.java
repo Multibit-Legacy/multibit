@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -460,15 +461,15 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
             //parse();
             //parsed = true;
-            length = calcLength(bytes, cursor, offset);
+            length = calcLength(bytes, offset);
             cursor = offset + length;
         }
     }
 
-    protected static int calcLength(byte[] buf, int cursor, int offset) {
+    protected static int calcLength(byte[] buf, int offset) {
         VarInt varint;
         // jump past version (uint32)
-        cursor = offset + 4;
+        int cursor = offset + 4;
 
         int i;
         long scriptLen;
@@ -721,6 +722,21 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @param wallet   A wallet is required to fetch the keys needed for signing.
      */
     public synchronized void signInputs(SigHash hashType, Wallet wallet) throws ScriptException {
+        signInputs(hashType, wallet, null);
+    }
+
+    /**
+     * Once a transaction has some inputs and outputs added, the signatures in the inputs can be calculated. The
+     * signature is over the transaction itself, to prove the redeemer actually created that transaction,
+     * so we have to do this step last.<p>
+     * <p/>
+     * This method is similar to SignatureHash in script.cpp
+     *
+     * @param hashType This should always be set to SigHash.ALL currently. Other types are unused.
+     * @param wallet   A wallet is required to fetch the keys needed for signing.
+     * @param aesKey The AES key to use to decrypt the key before signing. Null if no decryption is required.
+     */
+    public synchronized void signInputs(SigHash hashType, Wallet wallet, KeyParameter aesKey) throws ScriptException {
         Preconditions.checkState(inputs.size() > 0);
         Preconditions.checkState(outputs.size() > 0);
 
@@ -757,7 +773,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             try {
                 // Usually 71-73 bytes.
                 ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(73);
-                bos.write(key.sign(hash).encodeToDER());
+                bos.write(key.sign(hash, aesKey).encodeToDER());
                 bos.write((hashType.ordinal() + 1) | (anyoneCanPay ? 0x80 : 0));
                 signatures[i] = bos.toByteArray();
                 bos.close();
@@ -1016,7 +1032,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         maybeParse();
         out.defaultWriteObject();
     }
-    
+
     /**
      * Gets the count of regular SigOps in this transactions
      */
@@ -1106,22 +1122,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             return chain.estimateBlockTime((int)getLockTime());
         else
             return new Date(getLockTime()*1000);
-    }
-
-    /**
-     * Make the TransactionOutputs spendable This is used in an intrawallet
-     * transfer as what is spent from the senders's perspetive is avaiable to
-     * spend from the recipients.
-     */
-    public void markOutputsAsSpendable() {
-        if (outputs != null) {
-            for (TransactionOutput output : outputs) {
-                if (output != null) {
-                    output.markAsUnspent();
-                }
-            }
-        }
-    }
+    } 
     
     /**
      * Calculate the fee for a spend
@@ -1151,54 +1152,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         
         return totalIn.subtract(totalOut);
     }
-    
-    /**
-     * Calculates the sum of the inputs that are spending coins with keys in the
-     * wallet. This requires the transactions sending coins to those keys to be
-     * in the wallet. This method will not attempt to download the blocks
-     * containing the input transactions if the key is in the wallet but the
-     * transactions are not.
-     * 
-     * This variant includes the change
-     * 
-     * @return sum in nanocoins.
-     */
-    public BigInteger getValueSentFromMeIncludingChange(Wallet wallet) throws ScriptException {
-        maybeParse();
-        // This is tested in WalletTest.
-        BigInteger v = BigInteger.ZERO;
-        for (TransactionInput input : inputs) {
-            // This input is taking value from an transaction in our wallet. To
-            // discover the value,
-            // we must find the connected transaction.
-            TransactionOutput connected = input.getConnectedOutput(wallet.unspent);
-            if (connected == null)
-                connected = input.getConnectedOutput(wallet.spent);
-            if (connected == null)
-                connected = input.getConnectedOutput(wallet.pending);
-            if (connected == null)
-                continue;
-            v = v.add(connected.getValue());
-        }
-        return v;
-    }
-    
 
-    /**
-     * returns whether this transaction was sent by this wallet
-     * 
-     * @param wallet
-     * @return
-     */
-    public boolean sent(Wallet wallet) {
-        for (TransactionInput in : inputs) {
-            if (in.isMine(wallet)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     /** Determine whether the transaction input is in the wallet */
     public boolean isTransactionInputMine(TransactionInput transactionInput, Wallet wallet) {
         try {
