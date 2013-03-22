@@ -76,7 +76,15 @@ public enum AlertManager {
     
     private String versionUrlToGet = DEFAULT_VERSION_URL;
     
-
+    /**
+     * The public keys of private keys used to sign the version/ alert messages.
+     * These correspond to the following addresses (in order):
+     *    multibit.org's key Bitcoin address = 1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty
+     *    Tim Molter's key Bitcoin address = 1LMwcJiCjqHS1JVGEokUNwYJHfdPgudA8e
+     *    Gary Rowe's key Bitcoin address =
+     */
+    public String[] WHITELIST_PUBLIC_KEYS = new String[]{};
+    
     public void initialise(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;

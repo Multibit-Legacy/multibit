@@ -20,26 +20,40 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
+import org.junit.Before;
 import org.junit.Test;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 
+import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.bitcoin.store.MemoryBlockStore;
+import com.google.bitcoin.utils.BriefLogFormatter;
+import com.google.protobuf.ByteString;
 
 public class AlertManagerTest extends TestCase {
-    @Test
-    public void testAlertManagerURIToGet() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new TestLocaliser();
+    MultiBitController controller;
+    Localiser localiser;
+    
+    @Before
+    public void setUp() throws Exception {
+        controller = new MultiBitController();
+        localiser = new TestLocaliser();
         MultiBitModel model = new MultiBitModel(controller);
         
         controller.setLocaliser(localiser);
-        controller.setModel(model);   
-        
-        // Initialise and check
+        controller.setModel(model);
+    }
+
+    @Test
+    public void testAlertManagerURIToGet() throws Exception {
+        // Initialise.
         AlertManager alertManager = AlertManager.INSTANCE;
         assertNotNull(alertManager);
         
@@ -50,16 +64,8 @@ public class AlertManagerTest extends TestCase {
     }
     
     @Test
-    public void testAlertManagerVersion() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new TestLocaliser();
-        MultiBitModel model = new MultiBitModel(controller);
-        
-        controller.setLocaliser(localiser);
-        controller.setModel(model);   
-        
-        // Initialise and check
+    public void testAlertManagerVersion() throws Exception {        
+        // Initialise.
         AlertManager alertManager = AlertManager.INSTANCE;
         assertNotNull(alertManager);
         
@@ -100,15 +106,7 @@ public class AlertManagerTest extends TestCase {
 
     @Test
     public void testAlertManagerMessage() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new TestLocaliser();
-        MultiBitModel model = new MultiBitModel(controller);
-        
-        controller.setLocaliser(localiser);
-        controller.setModel(model);   
-        
-        // Initialise and check
+        // Initialise.
         AlertManager alertManager = AlertManager.INSTANCE;
         assertNotNull(alertManager);
         
@@ -139,15 +137,7 @@ public class AlertManagerTest extends TestCase {
     
     @Test
     public void testAlertManagerSignature() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new TestLocaliser();
-        MultiBitModel model = new MultiBitModel(controller);
-        
-        controller.setLocaliser(localiser);
-        controller.setModel(model);   
-        
-        // Initialise and check
+        // Initialise.
         AlertManager alertManager = AlertManager.INSTANCE;
         assertNotNull(alertManager);
         
@@ -171,11 +161,17 @@ public class AlertManagerTest extends TestCase {
         versionText.append("message third Carol\n");
 
         String textToSign = versionText.toString();
+        String badTextNoSignatures = textToSign + "message bad fourth line added\n";
+        
         String signature1 = signature1Key.signMessage(textToSign);
-        versionText.append("signature " + publicKey1AsHex + " " + signature1 + "\n");
+        String signatureLine1 = "signature " + publicKey1AsHex + " " + signature1 + "\n"; 
+        versionText.append(signatureLine1);
+        String badText = badTextNoSignatures + signatureLine1;
         
         String signature2 = signature2Key.signMessage(textToSign);
-        versionText.append("signature " + publicKey2AsHex + " " + signature2 + "\n");
+        String signatureLine2 = "signature " + publicKey2AsHex + " " + signature2 + "\n"; 
+        versionText.append(signatureLine2);
+        badText = badText + signatureLine2;
         
         System.out.println("------\n" + versionText.toString() + "\n------");
         
@@ -228,6 +224,32 @@ public class AlertManagerTest extends TestCase {
             fail("The second public key verified the first signature incorrectly");
         } catch (SignatureException se) {
             // Expected behaviour.
+        }
+        
+        // If the text is changed, check the signatures fail.
+        parseResult = alertManager.parseAndCheckVersionText(badText);
+        assertNotNull(parseResult);
+        
+        parseResultSignatures = parseResult.getSignatures();
+        parseResultSignature1 = parseResultSignatures.get(0);
+        assertEquals(publicKey1AsHex, parseResultSignature1.getPublicKeyAsHex());
+        assertEquals(signature1, parseResultSignature1.getSignatureText());
+        verificationKey1 = new ECKey(null, Utils.parseAsHexOrBase58(publicKey1AsHex));
+        try {
+            verificationKey1.verifyMessage(badTextNoSignatures, signature1);
+            fail("The text had changed but the signature verified ok");
+        } catch (SignatureException se) {
+            // Expected path
+        }
+        parseResultSignature2 = parseResultSignatures.get(1);
+        assertEquals(publicKey2AsHex, parseResultSignature2.getPublicKeyAsHex());
+        assertEquals(signature2, parseResultSignature2.getSignatureText());
+        verificationKey2 = new ECKey(null, Utils.parseAsHexOrBase58(publicKey2AsHex));
+        try {
+            verificationKey2.verifyMessage(badTextNoSignatures, signature2);
+            fail("The text had changed but the signature verified ok");
+        } catch (SignatureException se) {
+            // Expected path
         }
     }
 
