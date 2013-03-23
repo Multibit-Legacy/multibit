@@ -295,6 +295,7 @@ public enum AlertManager {
         if (message != null) {
             Message messageToShow = new Message(controller.getLocaliser().getString("browser.unableToLoad",
                     new String[] { VERSION_URL, message }), true);
+            messageToShow.setShowInStatusBar(false);
             MessageManager.INSTANCE.addMessage(messageToShow);
         }
     }

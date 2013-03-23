@@ -319,8 +319,9 @@ public class MultiBit {
                                 }
                             }
                         }
+                    } else {
+                        useFastCatchup = true;
                     }
- 
                 } catch (NumberFormatException nfe) {
                     // Carry on.
                 } finally {

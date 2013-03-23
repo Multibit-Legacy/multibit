@@ -79,6 +79,7 @@
                 <excludes>
                     <exclude>**/*.properties</exclude>
                     <exclude>**/*.blockchain</exclude>
+                    <exclude>**/*.checkpoints</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -223,7 +224,7 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.blockchain</include>
+                                        <include>multibit.checkpoints</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -275,7 +276,7 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.blockchain</include>
+                                        <include>multibit.checkpoints</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -329,7 +330,7 @@
                                     <directory>${basedir}/target/staging.linux</directory>
                                     <includes>
                                         <include>multibit-exe.jar</include>
-                                        <include>multibit.blockchain</include>
+                                        <include>multibit.checkpoints</include>
                                         <include>release_notes.txt</include>
                                         <include>configuration.txt</include>
                                         <include>COPYING</include>

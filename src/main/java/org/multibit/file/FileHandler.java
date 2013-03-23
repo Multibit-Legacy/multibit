@@ -708,6 +708,57 @@ public class FileHandler {
     }
 
     /**
+     * To support multiple users on the same machine, the checkpoints file is
+     * installed into the program installation directory and is then copied to
+     * the user's application data directory when MultiBit is first used.
+     * 
+     * Thus each user has their own copy of the blockchain.
+     */
+    public void copyCheckpointsFromInstallationDirectory(String destinationCheckpointsFilename)
+            throws IOException {
+        if (destinationCheckpointsFilename == null) {
+            return;
+        }
+
+        // See if the block chain in the user's application data directory
+        // exists.
+        File destinationCheckpoints = new File(destinationCheckpointsFilename);
+
+        if (!destinationCheckpoints.exists()) {
+            // Work out the source checkpoints (put into the program installation
+            // directory by the installer).
+            File directory = new File(".");
+            String currentWorkingDirectory = directory.getCanonicalPath();
+
+            String filePrefix = MultiBitService.getFilePrefix();
+            String checkpointsFilename = filePrefix + MultiBitService.CHECKPOINTS_SUFFIX;
+            String sourceCheckpointsFilename = currentWorkingDirectory + File.separator + checkpointsFilename;
+            File sourceBlockcheckpoints = new File(sourceCheckpointsFilename);
+            if (sourceBlockcheckpoints.exists() && !destinationCheckpointsFilename.equals(sourceCheckpointsFilename)) {
+                // It should exist since installer puts them in.
+                log.info("Copying checkpoints from '" + sourceCheckpointsFilename + "' to '" + destinationCheckpointsFilename + "'");
+                copyFile(sourceBlockcheckpoints, destinationCheckpoints);
+
+                // Check all the data was copied.
+                long sourceLength = sourceBlockcheckpoints.length();
+                long destinationLength = destinationCheckpoints.length();
+                if (sourceLength != destinationLength) {
+                    String errorText = "Checkpoints were not copied to user's application data directory correctly.\nThe source checkpoints '"
+                            + sourceCheckpointsFilename
+                            + "' is of length "
+                            + sourceLength
+                            + "\nbut the destination checkpoints '"
+                            + destinationCheckpointsFilename
+                            + "' is of length "
+                            + destinationLength;
+                    log.error(errorText);
+                    throw new FileHandlerException(errorText);
+                }
+            }
+        }
+    }
+
+    /**
      * To support multiple users on the same machine, the block chain is
      * installed into the program installation directory and is then copied to
      * the user's application data directory when MultiBit is first used.
