@@ -69,7 +69,9 @@ import com.google.bitcoin.core.Wallet.SendRequest;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
+import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.store.SPVBlockStore;
 
 /**
  * <p>
@@ -96,6 +98,7 @@ public class MultiBitService {
     public static final String SEPARATOR = "-";
 
     public static final String BLOCKCHAIN_SUFFIX = ".blockchain";
+    public static final String SPV_BLOCKCHAIN_SUFFIX = ".spv-blockchain";
     public static final String WALLET_SUFFIX = ".wallet";
 
     public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";
@@ -113,7 +116,7 @@ public class MultiBitService {
 
     private MultiBitBlockChain blockChain;
 
-    private ReplayableBlockStore blockStore;
+    private BlockStore blockStore;
 
     private MultiBitController controller;
 
@@ -175,22 +178,49 @@ public class MultiBitService {
         
         try {
             // Load the block chain.
+            // If the user already has a blockchain or spv blockchain use that.
+            // Otherewise create an SPVStore.
+            
             String filePrefix = getFilePrefix();
             log.debug("filePrefix = " + filePrefix);
 
+            String bobsBlockStoreFilename;
+            String spvBlockStoreFilename;
+            
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
-                blockchainFilename = filePrefix + BLOCKCHAIN_SUFFIX;
+                bobsBlockStoreFilename = filePrefix + BLOCKCHAIN_SUFFIX;
+                spvBlockStoreFilename = filePrefix + SPV_BLOCKCHAIN_SUFFIX;
             } else {
-                blockchainFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
-                        + filePrefix + BLOCKCHAIN_SUFFIX;
+                bobsBlockStoreFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
+                + filePrefix + BLOCKCHAIN_SUFFIX;
+                spvBlockStoreFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
+                + filePrefix + SPV_BLOCKCHAIN_SUFFIX;
             }
 
-            // Check to see if the user has a blockchain and copy over the sinstalled one if they do not.
-            controller.getFileHandler().copyBlockChainFromInstallationDirectory(blockchainFilename, false);
-
-            log.debug("Reading block store '{}' from disk", blockchainFilename);
-
-            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
+            File bobsBlockStore = new File(bobsBlockStoreFilename);
+            File spvBlockStore = new File(spvBlockStoreFilename);
+            
+            if (spvBlockStore.exists()) {
+                // Use the SPVBlockStore if it exists
+                log.debug("Reading SPV block store '{}' from disk", blockchainFilename);
+                blockchainFilename = spvBlockStoreFilename;
+                blockStore = new SPVBlockStore(networkParameters, new File(blockchainFilename));
+            } else {
+                if (bobsBlockStore.exists()) {
+                    // Use the bobsBlockStore if it exists.
+                    log.debug("Reading Replayable block store '{}' from disk", blockchainFilename);
+                    blockchainFilename = bobsBlockStoreFilename;
+                    blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
+                } else {
+                    // Create and use a new SPVBlockStore.
+                    log.debug("Creating SPV block store '{}' on disk", blockchainFilename);
+                    blockchainFilename = spvBlockStoreFilename;
+                    blockStore = new SPVBlockStore(networkParameters, new File(blockchainFilename));
+                }
+            }
+            
+            // Check to see if the user has a blockchain and copy over the installed one if they do not.
+            //controller.getFileHandler().copyBlockChainFromInstallationDirectory(blockchainFilename, false);
 
             log.debug("Creating blockchain ...");
             blockChain = new MultiBitBlockChain(networkParameters, blockStore);
@@ -650,7 +680,7 @@ public class MultiBitService {
         return blockChain;
     }
 
-    public ReplayableBlockStore getBlockStore() {
+    public BlockStore getBlockStore() {
         return blockStore;
     }
 
