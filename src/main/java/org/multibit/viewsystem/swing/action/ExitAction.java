@@ -36,6 +36,8 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.store.BlockStoreException;
+
 /**
  * Exit the application.
  * 
@@ -58,7 +60,8 @@ public class ExitAction extends AbstractAction {
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("exitAction.tooltip")));
+        putValue(SHORT_DESCRIPTION,
+                HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("exitAction.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("exitAction.mnemonicKey"));
     }
 
@@ -69,10 +72,11 @@ public class ExitAction extends AbstractAction {
                 @Override
                 public void run() {
                     mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                }});
-           
+                }
+            });
+
         }
-        
+
         // Save all the wallets and put their filenames in the user preferences.
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
@@ -82,13 +86,14 @@ public class ExitAction extends AbstractAction {
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                     MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-                    
+
                     // Save to backup.
                     try {
                         controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
                     } catch (WalletSaveException wse2) {
                         log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
-                        MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " " + wse2.getMessage()));
+                        MessageManager.INSTANCE
+                                .addMessage(new Message(wse2.getClass().getCanonicalName() + " " + wse2.getMessage()));
                     }
                 } catch (WalletVersionException wve) {
                     log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
@@ -108,17 +113,28 @@ public class ExitAction extends AbstractAction {
             mainFrame.setVisible(false);
         }
 
-        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
-            log.debug("Closing Bitcoin network connection...");
-            @SuppressWarnings("rawtypes")
-            SwingWorker worker = new SwingWorker() {
-                @Override
-                protected Object doInBackground() throws Exception {
-                    controller.getMultiBitService().getPeerGroup().stop();
-                    return null; // Return not used.
-                }
-            };
-            worker.execute();
+        if (controller.getMultiBitService() != null) {
+            // Save the block store to disk.
+            log.debug("Saving the blockstore");
+
+            try {
+                controller.getMultiBitService().getBlockStore().close();
+            } catch (BlockStoreException e) {
+                e.printStackTrace();
+            }
+
+            if (controller.getMultiBitService().getPeerGroup() != null) {
+                log.debug("Closing Bitcoin network connection...");
+                @SuppressWarnings("rawtypes")
+                SwingWorker worker = new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        controller.getMultiBitService().getPeerGroup().stop();
+                        return null; // Return not used.
+                    }
+                };
+                worker.execute();
+            }
         }
 
         if (mainFrame != null) {
