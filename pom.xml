@@ -302,7 +302,7 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.blockchain</include>
+                                        <include>multibit.checkpoints</include>
                                     </includes>
                                 </resource>
                                 <resource>
