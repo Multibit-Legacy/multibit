@@ -15,12 +15,14 @@
  */
 package com.google.bitcoin.core;
 
+import java.io.File;
 import java.util.List;
 
 import org.multibit.store.ReplayableBlockStore;
 
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.store.SPVBlockStore;
 
 /**
  * Extension of bitcoinj BlockChain for use with block chain replay.
@@ -45,14 +47,22 @@ public class MultiBitBlockChain extends BlockChain {
      * @param chainHead
      * @throws BlockStoreException
      */
-    public void setChainHeadClearCachesAndTruncateBlockStore(StoredBlock chainHead) throws BlockStoreException {
+    public void setChainHeadClearCachesAndTruncateBlockStore(StoredBlock chainHead, String blockStoreFilename) throws BlockStoreException {
         if (blockStore instanceof ReplayableBlockStore) {
             ((ReplayableBlockStore) blockStore).setChainHeadAndTruncate(chainHead);
-        } else {
             blockStore.setChainHead(chainHead);
-
+            super.setChainHead(chainHead);
+        } else {
+            if (blockStore instanceof SPVBlockStore) {
+                // Delete the blockstore and recreate it.
+                ((SPVBlockStore) blockStore).close();
+                
+                File blockStoreFile = new File(blockStoreFilename);
+                blockStoreFile.delete();   
+            } else {
+                blockStore.setChainHead(chainHead);
+                super.setChainHead(chainHead);                
+            }
         }
-        
-        super.setChainHead(chainHead);
     }
 }

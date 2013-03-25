@@ -28,7 +28,6 @@ import com.google.bitcoin.crypto.EncryptedPrivateKey;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
-import com.google.bitcoin.utils.EventListenerInvoker;
 import com.google.bitcoin.utils.Locks;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;

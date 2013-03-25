@@ -42,6 +42,7 @@ public class VersionComparatorTest extends TestCase {
         assertTrue(comparator.compare("1.4.7", "1.4.7") == 0);
         assertTrue(comparator.compare("1.4.8", "1.4.7") == 1);
         assertTrue(comparator.compare("1.4.7", "1.4.8") == -1);
+ 
     }
     
     @Test
@@ -59,6 +60,8 @@ public class VersionComparatorTest extends TestCase {
         assertTrue(comparator.compare("0.1", "0.1alpha") == 1);
         assertTrue(comparator.compare("0.2", "0.1alpha") == 1);
         assertTrue(comparator.compare("0.1alpha", "0.1") == -1);
+
+        assertTrue(comparator.compare("0.4.6", "0.5.0alpha") == -1);
     }    
     
     @Test
@@ -91,5 +94,14 @@ public class VersionComparatorTest extends TestCase {
         assertTrue(comparator.compare("0.0.1rc1", "0.0.1beta2") == 1);
         assertTrue(comparator.compare("0.0.1rc2", "0.0.1alpha1") == 1);
         assertTrue(comparator.compare("0.0.1rc2", "0.0.1alpha2") == 1);
+    }
+    
+    @Test
+    public void testSnapshot() throws Exception {
+        VersionComparator comparator = new VersionComparator();
+        assertTrue(comparator.compare("0.4.23", "0.4.24-SNAPSHOT") == -1);
+        assertTrue(comparator.compare("0.4.24-SNAPSHOT", "0.4.23") == 1);
+        assertTrue(comparator.compare("0.4.24-SNAPSHOT", "0.4.24-SNAPSHOT") == 0);
+
     }
 }
