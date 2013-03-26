@@ -16,7 +16,7 @@
 
         <!-- Rollover daily or when the file size exceeds 100Mb and keep a few -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>log/multibit_debug.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>log/multibit_debug.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>1MB</maxFileSize>
@@ -52,6 +52,6 @@
 
     <!-- Define logging for organisation applications only -->
     <logger name="org.multibit" level="DEBUG" />
-    <logger name="com.google.bitcoin" level="DEBUG" />
-    <logger name="com.google.bitcoin.core.Wallet" level="DEBUG" />
+    <logger name="com.google.bitcoin" level="INFO" />
+    <logger name="com.google.bitcoin.core.BitcoinSerializer" level="INFO" />
 </configuration>
