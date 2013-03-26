@@ -127,14 +127,14 @@ public enum ReplayManager {
         SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
         replayController.registerViewSystem(simpleViewSystem);
         
-        File checkpointsFile = new File(checkpointsFilename);
-        if (checkpointsFile.exists()) {
-            FileInputStream stream = new FileInputStream(checkpointsFile);
-
-            // Checkpoint by an absolute time.
-            log.info("Checkpointing by date : " + checkpointDate.toString());
-            MultiBitCheckpointManager.checkpoint(params, stream, replayController.getMultiBitService().getBlockStore(), checkpointDate.getTime() / 1000);
-        }
+//        File checkpointsFile = new File(checkpointsFilename);
+//        if (checkpointsFile.exists()) {
+//            FileInputStream stream = new FileInputStream(checkpointsFile);
+//
+//            // Checkpoint by an absolute time.
+//            log.info("Checkpointing by date : " + checkpointDate.toString());
+//            MultiBitCheckpointManager.checkpoint(params, stream, replayController.getMultiBitService().getBlockStore(), checkpointDate.getTime() / 1000);
+//        }
         
         replayController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 

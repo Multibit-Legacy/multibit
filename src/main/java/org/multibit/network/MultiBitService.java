@@ -621,9 +621,13 @@ public class MultiBitService {
         blockChain = new MultiBitBlockChain(networkParameters, blockStore);
         log.debug("Created blockchain '" + blockChain + "'");
 
+        // Hook up the wallets if it is a new blockchain.
         if (isSPVBlockStore) {
             if (blockChain != null) {
-                blockChain.addWallet(controller.getModel().getActiveWallet());
+                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    blockChain.addWallet(perWalletModelData.getWallet());
+                }
             }
         }
 
