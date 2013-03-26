@@ -479,11 +479,12 @@ public class MultiBitService {
     }
 
     /**
-     * Replay blockchain.
+     * Replay blockchain for active wallet.
      * 
      * @param dateToReplayFrom
      *            the date on the blockchain to replay from - if missing replay
      *            from genesis block
+     *            
      */
     public void replayBlockChain(Date dateToReplayFrom) throws IOException, BlockStoreException {
         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
@@ -619,6 +620,12 @@ public class MultiBitService {
         log.debug("Creating blockchain ...");
         blockChain = new MultiBitBlockChain(networkParameters, blockStore);
         log.debug("Created blockchain '" + blockChain + "'");
+
+        if (isSPVBlockStore) {
+            if (blockChain != null) {
+                blockChain.addWallet(controller.getModel().getActiveWallet());
+            }
+        }
 
         log.debug("About to restart PeerGroup.");
         restartPeerGroup();
