@@ -79,7 +79,7 @@ public class ReplayManagerTest extends TestCase {
         // Get the system property runFunctionalTest to see if the functional
         // tests need running.
         String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
-        if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
+        if (false && Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
             // Date format is UTC with century, T time separator and Z for UTC timezone.
             formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
