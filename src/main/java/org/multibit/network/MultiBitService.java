@@ -184,7 +184,7 @@ public class MultiBitService {
         try {
             // Load or create the blockStore..
             log.debug("Loading/ creating blockstore ...");
-            blockStore = createBlockStore(null, false);
+            blockStore = createBlockStore(null, false, false);
             log.debug("Blockstore is '" + blockStore + "'");
 
             log.debug("Creating blockchain ...");
@@ -215,7 +215,7 @@ public class MultiBitService {
         log.error("Error creating MultiBitService " + e.getClass().getName() + " " + e.getMessage());
     }
 
-    private BlockStore createBlockStore(Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
+    private BlockStore createBlockStore(Date checkpointDate, boolean createNew, boolean isReplay) throws BlockStoreException, IOException {
         BlockStore blockStore = null;
 
         String filePrefix = getFilePrefix();
@@ -246,7 +246,8 @@ public class MultiBitService {
             controller.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
         }
 
-        if (!spvBlockStore.exists() && !bobsBlockStore.exists()) {
+        
+        if (!spvBlockStore.exists() && (isReplay || !bobsBlockStore.exists())) {
             // If there is no SPVBlockStore and no ReplayableBlockStore create an SPVBlockStore and use it.
             blockchainFilename = spvBlockStoreFilename;
             
@@ -523,9 +524,9 @@ public class MultiBitService {
             }
         }
         if (dateToReplayFrom != null) {
-            blockStore = createBlockStore(dateToReplayFrom, true);
+            blockStore = createBlockStore(dateToReplayFrom, true, true);
         } else {
-            blockStore = createBlockStore(genesisBlockCreationDate, true);
+            blockStore = createBlockStore(genesisBlockCreationDate, true, true);
         }
         log.debug("Blockstore is '" + blockStore + "'");
 
