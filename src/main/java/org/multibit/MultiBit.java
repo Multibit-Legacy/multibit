@@ -177,16 +177,15 @@ public class MultiBit {
             try {
                 String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
  
-                // No need to load look and feel if system - will be used by default.
-                if (!"system".equalsIgnoreCase(lookAndFeel)) {
-                    if (lookAndFeel != null && lookAndFeel != "") {
-                        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                            if (lookAndFeel.equalsIgnoreCase(info.getName())) {
-                                UIManager.setLookAndFeel(info.getClassName());
-                                break;
-                            }
+                if (lookAndFeel != null && lookAndFeel != "") {
+                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                        if (lookAndFeel.equalsIgnoreCase(info.getName())) {
+                            UIManager.setLookAndFeel(info.getClassName());
+                            break;
                         }
                     }
+                } else {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
             } catch (UnsupportedLookAndFeelException e) {
                 // carry on

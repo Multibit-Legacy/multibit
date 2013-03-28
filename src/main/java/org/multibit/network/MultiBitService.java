@@ -99,8 +99,6 @@ public class MultiBitService {
     public static final String TESTNET3_PREFIX = "testnet3";
     public static final String SEPARATOR = "-";
 
-    public static final boolean USE_REPLAYABLE_BLOCKSTORE = false;
-
     public static final String BLOCKCHAIN_SUFFIX = ".blockchain";
     public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
     public static final String CHECKPOINTS_SUFFIX = ".checkpoints";
@@ -242,34 +240,32 @@ public class MultiBitService {
         File bobsBlockStore = new File(bobsBlockStoreFilename);
         File spvBlockStore = new File(spvBlockStoreFilename);
 
-        if (USE_REPLAYABLE_BLOCKSTORE) {
-            if (bobsBlockStore.exists()) {
-                // Use the bobsBlockStore if it exists.
-                blockchainFilename = bobsBlockStoreFilename;
-                log.debug("Reading Replayable block store '{}' from disk", blockchainFilename);
-                blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
-            } else {
-                log.debug("Copying Replayable block store '{}' from installation directory", blockchainFilename);
-                controller.getFileHandler().copyBlockChainFromInstallationDirectory(blockchainFilename, false);
-                blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
-            }
-        } else {
-            File checkpointsFile = new File(checkpointsFilename);
-            if (!checkpointsFile.exists()) {
-                controller.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
-            }
+        // Ensure there is a checkpoints file.
+        File checkpointsFile = new File(checkpointsFilename);
+        if (!checkpointsFile.exists()) {
+            controller.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
+        }
 
+        if (!spvBlockStore.exists() && !bobsBlockStore.exists()) {
+            // If there is no SPVBlockStore and no ReplayableBlockStore create an SPVBlockStore and use it.
+            blockchainFilename = spvBlockStoreFilename;
+            
+            blockStore = new SPVBlockStore(networkParameters, new File(blockchainFilename));
+
+            // Load the existing checkpoint file and checkpoint from today.
+            if (checkpointsFile.exists()) {
+                FileInputStream stream = new FileInputStream(checkpointsFile);
+                CheckpointManager.checkpoint(networkParameters, stream, blockStore, (new Date()).getTime() / 1000);
+            }
+        } else if (spvBlockStore.exists()) {
+            // If there is an SPVStore prefer that.
             blockchainFilename = spvBlockStoreFilename;
 
-            if (spvBlockStore.exists()) {
-                if (createNew) {
-                    boolean deletedOk = (new File(blockchainFilename)).delete();
-                    log.debug("Recreating SPV block store '{}' from disk", blockchainFilename + ", deletedOk = " + deletedOk);
-                } else {
-                    log.debug("Opening SPV block store '{}' from disk", blockchainFilename);
-                }
+            if (createNew) {
+                boolean deletedOk = (new File(blockchainFilename)).delete();
+                log.debug("Recreating SPV block store '{}' from disk", blockchainFilename + ", deletedOk = " + deletedOk);
             } else {
-                log.debug("Creating SPV block store '{}' on disk", blockchainFilename);
+                log.debug("Opening SPV block store '{}' from disk", blockchainFilename);
             }
             blockStore = new SPVBlockStore(networkParameters, new File(blockchainFilename));
 
@@ -278,6 +274,12 @@ public class MultiBitService {
                 FileInputStream stream = new FileInputStream(checkpointsFile);
                 CheckpointManager.checkpoint(networkParameters, stream, blockStore, checkpointDate.getTime() / 1000);
             }
+        } else {
+            // Use the existing bobsBlockStore.
+            // (This will be used until the first replay/ import at which point the SPVStore will be used).
+            blockchainFilename = bobsBlockStoreFilename;
+            log.debug("Reading Replayable block store '{}' from disk", blockchainFilename);
+            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
         }
         return blockStore;
     }
@@ -484,150 +486,58 @@ public class MultiBitService {
      * @param dateToReplayFrom
      *            the date on the blockchain to replay from - if missing replay
      *            from genesis block
-     *            
+     * 
      */
     public void replayBlockChain(Date dateToReplayFrom) throws IOException, BlockStoreException {
         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
                 "resetTransactionsSubmitAction.startReplay")));
 
-        // See if the blockStore is a ReplayableBlockStore or a SPVBlockStore;
-        boolean isReplayableBlockStore = controller.getMultiBitService().getBlockStore() instanceof ReplayableBlockStore;
-        boolean isSPVBlockStore = controller.getMultiBitService().getBlockStore() instanceof SPVBlockStore;
-
-        if (!(isReplayableBlockStore || isSPVBlockStore)) {
-            throw new IllegalStateException("Cannot replay when blockStore is of type "
-                    + controller.getMultiBitService().getBlockStore().getClass().getCanonicalName());
-        }
-
         log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom);
-        if (isReplayableBlockStore) {
-            // Navigate backwards in the blockchain to work out how far back in time to go.
-            StoredBlock storedBlock = null;
 
-            Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
+        // Always use SPVStore for replay.
 
-            if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
-                // Go back to the genesis block.
-                try {
-                    blockChain.setChainHeadClearCachesAndTruncateBlockStore(new StoredBlock(networkParameters.genesisBlock,
-                            networkParameters.genesisBlock.getWork(), 0), blockchainFilename);
-                } catch (VerificationException e) {
-                    throw new BlockStoreException(e);
-                }
-            } else {
-                // Not a replay from the genesis block.
-                storedBlock = blockStore.getChainHead();
-                assert storedBlock != null;
+        // Reset UI to zero peers.
+        controller.getPeerEventListener().onPeerDisconnected(null, 0);
 
-                boolean haveGoneBackInTimeEnough = false;
-                int numberOfBlocksGoneBackward = 0;
-                blockStack.push(storedBlock);
+        // Restart peerGroup and download rest of blockchain.
+        Message message;
+        if (dateToReplayFrom != null) {
+            message = new Message(controller.getLocaliser().getString(
+                    "resetTransactionSubmitAction.replayingBlockchain",
+                    new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
+                            dateToReplayFrom) }), false);
+        } else {
+            message = new Message(controller.getLocaliser().getString(
+                    "resetTransactionSubmitAction.replayingBlockchain",
+                    new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
+                            genesisBlockCreationDate) }), false);
+        }
+        MessageManager.INSTANCE.addMessage(message);
 
-                while (!haveGoneBackInTimeEnough) {
-                    if (storedBlock == null) {
-                        // Null result of previous get previous - will have to stop navigating backwards.
-                        break;
-                    }
-                    Block header = storedBlock.getHeader();
-                    if (header == null) {
-                        log.debug("No header for stored block " + storedBlock.getHeight());
-                        break;
-                    }
-
-                    long headerTimeInSeconds = header.getTimeSeconds();
-                    if (headerTimeInSeconds < (dateToReplayFrom.getTime() / NUMBER_OF_MILLISECOND_IN_A_SECOND)) {
-                        haveGoneBackInTimeEnough = true;
-                    } else {
-                        try {
-                            StoredBlock previousBlock = storedBlock.getPrev(blockStore);
-                            if (previousBlock == null) {
-                                log.debug("Could not navigate backwards form storedBlock " + storedBlock.getHeight());
-                                break;
-                            } else {
-                                storedBlock = previousBlock;
-                                blockStack.push(storedBlock);
-                            }
-                            numberOfBlocksGoneBackward++;
-                        } catch (BlockStoreException e) {
-                            e.printStackTrace();
-                            // We have to stop navigating backwards.
-                            break;
-                        }
-                    }
-                }
-
-                // In case the chain head was on an alternate fork go back more
-                // blocks to ensure back on the main chain.
-                while (numberOfBlocksGoneBackward < MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN) {
-                    try {
-                        StoredBlock previousBlock = storedBlock.getPrev(blockStore);
-                        if (previousBlock == null) {
-                            log.debug("Could not navigate backwards form storedBlock.1 " + storedBlock.getHeight());
-                            break;
-                        } else {
-                            storedBlock = previousBlock;
-                            blockStack.push(storedBlock);
-                        }
-                        numberOfBlocksGoneBackward++;
-                    } catch (BlockStoreException e) {
-                        e.printStackTrace();
-                        // We have to stop - fail.
-                        break;
-                    }
-                }
-
-                // Set the block chain head to the block just before the
-                // earliest transaction in the wallet.
-                blockChain.setChainHeadClearCachesAndTruncateBlockStore(storedBlock, blockchainFilename);
+        log.debug("Loading/ creating blockstore ...");
+        if (blockStore != null) {
+            try {
+                blockStore.close();
+            } catch (NullPointerException npe) {
+                log.debug("NullPointerException on blockstore close");
             }
         }
-
-        if (isSPVBlockStore) {
-            // Reset UI to zero peers.
-            controller.getPeerEventListener().onPeerDisconnected(null, 0);
-
-            // Restart peerGroup and download rest of blockchain.
-            Message message;
-            if (dateToReplayFrom != null) {
-                message = new Message(controller.getLocaliser().getString(
-                        "resetTransactionSubmitAction.replayingBlockchain",
-                        new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
-                                dateToReplayFrom) }), false);
-            } else {
-                message = new Message(controller.getLocaliser().getString(
-                        "resetTransactionSubmitAction.replayingBlockchain",
-                        new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
-                                genesisBlockCreationDate) }), false);
-            }
-            MessageManager.INSTANCE.addMessage(message);
-
-            log.debug("Loading/ creating blockstore ...");
-            if (blockStore != null) {
-                try {
-                    blockStore.close();
-                } catch (NullPointerException npe) {
-                    log.debug("NullPointerException on blockstore close");
-                }
-            }
-            if (dateToReplayFrom != null) {
-                blockStore = createBlockStore(dateToReplayFrom, true);
-            } else {
-                blockStore = createBlockStore(genesisBlockCreationDate, true);
-            }
-            log.debug("Blockstore is '" + blockStore + "'");
+        if (dateToReplayFrom != null) {
+            blockStore = createBlockStore(dateToReplayFrom, true);
+        } else {
+            blockStore = createBlockStore(genesisBlockCreationDate, true);
         }
+        log.debug("Blockstore is '" + blockStore + "'");
 
         log.debug("Creating blockchain ...");
         blockChain = new MultiBitBlockChain(networkParameters, blockStore);
         log.debug("Created blockchain '" + blockChain + "'");
 
         // Hook up the wallets if it is a new blockchain.
-        if (isSPVBlockStore) {
-            if (blockChain != null) {
-                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                    blockChain.addWallet(perWalletModelData.getWallet());
-                }
+        if (blockChain != null) {
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                blockChain.addWallet(perWalletModelData.getWallet());
             }
         }
 

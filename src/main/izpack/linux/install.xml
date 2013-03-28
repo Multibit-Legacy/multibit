@@ -19,7 +19,7 @@
         <appname>MultiBit</appname>
         <appsubpath>MultiBit-${project.version}</appsubpath>
         <appversion>${project.version}</appversion>
-        <url>http://multibit.org/</url>
+        <url>https://multibit.org/</url>
         <uninstaller write="yes" />
         <javaversion>1.6</javaversion>
     </info>

@@ -236,16 +236,16 @@ public enum AlertManager {
                                 }
                             }
                         } else {
-                            showUnableToLoadMessage(message);
+                            logUnableToLoadMessage(message);
                         }
                     } else {
-                        showUnableToLoadMessage(message);
+                        logUnableToLoadMessage(message);
                     }
                 } catch (InterruptedException e) {
-                    showUnableToLoadMessage(message);
+                    logUnableToLoadMessage(message);
                     e.printStackTrace();
                 } catch (ExecutionException e) {
-                    showUnableToLoadMessage(message);
+                    logUnableToLoadMessage(message);
                     e.printStackTrace();
                 }
             }
@@ -331,11 +331,9 @@ public enum AlertManager {
         return parseResult;
     }
 
-    private void showUnableToLoadMessage(String message) {
+    private void logUnableToLoadMessage(String message) {
         if (message != null) {
-            Message messageToShow = new Message(controller.getLocaliser().getString("browser.unableToLoad",
-                    new String[] { versionUrlToGet, message }), true);
-            MessageManager.INSTANCE.addMessage(messageToShow);
+            log.error(controller.getLocaliser().getString("browser.unableToLoad", new String[] { versionUrlToGet, message }));
         }
     }
 
