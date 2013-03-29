@@ -17,11 +17,14 @@
 package org.multibit.network;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,19 +45,30 @@ import com.google.bitcoin.core.DownloadListener;
 public class MultiBitDownloadListener extends DownloadListener {
     private static final Logger log = LoggerFactory.getLogger(MultiBitDownloadListener.class);
 
-    private static final double DONE_FOR_DOUBLES = 99.99; // not quite 100 per
+    public static final double DONE_FOR_DOUBLES = 99.99; // not quite 100 per
                                                           // cent to cater for
                                                           // rounding
     private static final int CRITERIA_LARGE_NUMBER_OF_BLOCKS = 1000;
 
-    MultiBitController controller;
+    private MultiBitController controller;
+    
+    private List<SingleWalletPanelDownloadListener> singleWalletPanelDownloadListeners;
 
     private Object lockObject = new Object();
 
     public MultiBitDownloadListener(MultiBitController controller) {
         this.controller = controller;
+        this.singleWalletPanelDownloadListeners = new ArrayList<SingleWalletPanelDownloadListener>();
     }
 
+    public void addSingleWalletPanelDownloadListener(SingleWalletPanelDownloadListener downloadListener) {
+        singleWalletPanelDownloadListeners.add(downloadListener);
+    }
+    
+    public void removeDownloadListener(SingleWalletPanelDownloadListener downloadListener) {
+        singleWalletPanelDownloadListeners.remove(downloadListener);
+    }
+    
     /**
      * Called when download progress is made.
      * 
@@ -85,6 +99,10 @@ public class MultiBitDownloadListener extends DownloadListener {
                 if (!(downloadStatusText.indexOf("multiBitDownloadListener") > -1)) {
                     Message message = new Message(downloadStatusText, pct);
                     MessageManager.INSTANCE.addMessage(message);
+                }
+                
+                for (SingleWalletPanelDownloadListener singleWalletPanelDownloadListener : singleWalletPanelDownloadListeners) {
+                    singleWalletPanelDownloadListener.progress(pct, blocksSoFar, date);
                 }
             }
             controller.fireBlockDownloaded();
@@ -121,6 +139,10 @@ public class MultiBitDownloadListener extends DownloadListener {
                     message = new Message(startDownloadTextForLabel, 0);
                     MessageManager.INSTANCE.addMessage(message);
                 }
+                
+                for (SingleWalletPanelDownloadListener singleWalletPanelDownloadListener : singleWalletPanelDownloadListeners) {
+                    singleWalletPanelDownloadListener.startDownload(blocks);
+                }
             }
             controller.fireBlockDownloaded();
         }
@@ -139,6 +161,9 @@ public class MultiBitDownloadListener extends DownloadListener {
         message = new Message(downloadStatusText, 100);
         MessageManager.INSTANCE.addMessage(message);
 
+        for (SingleWalletPanelDownloadListener singleWalletPanelDownloadListener : singleWalletPanelDownloadListeners) {
+            singleWalletPanelDownloadListener.doneDownload();
+        }
         controller.fireBlockDownloaded();
     }
 }

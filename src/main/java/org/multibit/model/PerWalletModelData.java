@@ -31,6 +31,8 @@ public class PerWalletModelData {
     private String walletFilename;
     private WalletInfo walletInfo;
     private List<WalletTableData> walletTableDataList;
+    
+    private transient boolean currentlySynchronising;
 
     /**
      * The wallet filename used for when a backup is being written to.
@@ -177,5 +179,13 @@ public class PerWalletModelData {
 
     public void setBusyTask(String busyOperation) {
         this.busyOperation = busyOperation;
+    }
+
+    public boolean isCurrentlySynchronising() {
+        return currentlySynchronising;
+    }
+
+    public void setCurrentlySynchronising(boolean currentlySynchronising) {
+        this.currentlySynchronising = currentlySynchronising;
     }
 }

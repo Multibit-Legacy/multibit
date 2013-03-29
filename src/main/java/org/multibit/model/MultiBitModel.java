@@ -241,7 +241,7 @@ public class MultiBitModel {
      * Used to enable/ disable blinking of the SingleWalletPanels when language changes etc.
      */
     private boolean blinkEnabled = true;
-
+    
      public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
     }

@@ -790,7 +790,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(controller, this,
+        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(controller, mainFrame, this,
                 ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, passwordField1, passwordField2);
         MultiBitButton submitButton = new MultiBitButton(importPrivateKeysSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

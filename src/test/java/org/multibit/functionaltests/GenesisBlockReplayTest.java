@@ -109,7 +109,7 @@ public class GenesisBlockReplayTest extends TestCase {
             //multiBitService.replayBlockChain(null);
             List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
             perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
-            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, null, -1);
+            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, null, null, -1);
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
             //assertEquals(BLOCKSIZE_BEFORE_REPLAY, multiBitService.getBlockStore().getFile().length());            

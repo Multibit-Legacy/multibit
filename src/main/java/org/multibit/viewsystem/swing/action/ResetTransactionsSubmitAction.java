@@ -172,7 +172,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 //                try {
                     List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
                     perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
-                    ReplayTask replayTask = new ReplayTask(perWalletModelDataList, resetDate, null, -1);
+                    ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, resetDate, null, -1);
                     ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
                     //controller.getMultiBitService().replayBlockChain(resetDate);

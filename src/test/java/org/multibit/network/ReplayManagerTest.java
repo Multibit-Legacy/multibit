@@ -132,7 +132,7 @@ public class ReplayManagerTest extends TestCase {
             List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
             perWalletModelDataList.add(perWalletModelData);
             
-            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, formatter.parse(START_OF_REPLAY_PERIOD), formatter.parse(END_OF_REPLAY_PERIOD), -1);
+            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, formatter.parse(START_OF_REPLAY_PERIOD), formatter.parse(END_OF_REPLAY_PERIOD), -1);
             replayManager.offerReplayTask(replayTask);
 
             // Check new balance on wallet - estimated balance should be at least the expected (may have later tx too)..

@@ -39,6 +39,7 @@ import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
+import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.BlockStoreException;
@@ -81,23 +82,6 @@ public enum ReplayManager {
             BlockStoreException {
         log.info("Starting replay task : " + replayTask.toString());
 
-        final Wallet wallet = perWalletModelData.getWallet();
-        final NetworkParameters params = controller.getModel().getNetworkParameters();
-        final String checkpointsFilename;
-        if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
-            checkpointsFilename = MultiBitService.getFilePrefix() + MultiBitService.CHECKPOINTS_SUFFIX;
-        } else {
-            checkpointsFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
-                    + MultiBitService.getFilePrefix() + MultiBitService.CHECKPOINTS_SUFFIX;
-        }
-
-        // long earliestKeyCreationTime = wallet.getEarliestKeyCreationTime();
-        // log.debug("Earliest key creation time = " + new
-        // Date(earliestKeyCreationTime * 1000));
-
-        // Sha256Hash lastBlockSeenHash = wallet.getLastBlockSeenHash();
-        // int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
-
         Date dateToReplayFrom = replayTask.getStartDate();
 
         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
@@ -128,6 +112,11 @@ public enum ReplayManager {
         log.debug("About to restart PeerGroup.");
         controller.getMultiBitService().restartPeerGroup();
         log.debug("Restarted PeerGroup.");
+        
+        PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
+        if (peerGroup instanceof MultiBitPeerGroup && replayTask.getSingleWalletPanelDownloadListener() != null) {
+            ((MultiBitPeerGroup)peerGroup).getMultiBitDownloadListener().addSingleWalletPanelDownloadListener(replayTask.getSingleWalletPanelDownloadListener());
+        }
 
         log.debug("About to start  blockchain download.");
         controller.getMultiBitService().downloadBlockChain();

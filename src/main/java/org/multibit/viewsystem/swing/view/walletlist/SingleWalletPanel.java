@@ -50,7 +50,9 @@ import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
+import org.multibit.message.Message;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.network.MultiBitDownloadListener;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
@@ -149,11 +151,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private FontMetrics fontMetrics;
 
     private final SingleWalletPanel thisPanel;
+    
+    private final SingleWalletPanelDownloadListener singleWalletDownloadListener;
           
     public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
+        this.singleWalletDownloadListener = new SingleWalletPanelDownloadListener(controller, this);
   
         thisPanel = this;
 
@@ -710,21 +715,18 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")";
         }
         
-        if (amountLabelBTC != null && amountLabelBTC.getText() != null && !"".equals(amountLabelBTC.getText()) && !balanceTextToShowBTC.equals(amountLabelBTC.getText()) && blinkEnabled) {
-            amountLabelBTC.blink(balanceTextToShowBTC);
-            amountLabelFiat.blink(balanceTextToShowFiat);
-        } else {
-            amountLabelBTC.setText(balanceTextToShowBTC);
-            amountLabelFiat.setText(balanceTextToShowFiat);
-        }
-              
-        String encryptionText = "";
-        if (perWalletModelData.getWallet() != null) {
-            if (perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
-                encryptionText = controller.getLocaliser().getString("singleWalletPanel.encrypted");
+        if (!perWalletModelData.isCurrentlySynchronising()) {
+            if (amountLabelBTC != null && amountLabelBTC.getText() != null && !"".equals(amountLabelBTC.getText())
+                    && !balanceTextToShowBTC.equals(amountLabelBTC.getText()) && blinkEnabled) {
+                amountLabelBTC.blink(balanceTextToShowBTC);
+                amountLabelFiat.blink(balanceTextToShowFiat);
             } else {
-                encryptionText = controller.getLocaliser().getString("singleWalletPanel.unencrypted");
+                amountLabelBTC.setText(balanceTextToShowBTC);
+                amountLabelFiat.setText(balanceTextToShowFiat);
             }
+        }
+
+        if (perWalletModelData.getWallet() != null) {
             setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
     
             if (walletFormatButton != null) {
@@ -999,6 +1001,24 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         return outerPanel;
     }
+    
+    public void setSyncMessage(String message, double percent) {
+        if (percent > MultiBitDownloadListener.DONE_FOR_DOUBLES) {
+            updateFromModel(false);
+        } else {
+            String percentText = " ";
+            if (percent > Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
+                percentText = "(" + (int)percent + "%)"; 
+            }
+            amountLabelBTC.setText(message);
+            amountLabelFiat.setText(percentText);
+            
+            if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
+                mainFrame.updateHeader(message, percent);
+            }
+        }
+               
+    }
 
     public int getFiatLabelWidth() {
         return fontMetrics.stringWidth(amountLabelFiat.getText());
@@ -1012,5 +1032,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     public boolean isSelectedInternal() {
         return selected;
+    }
+
+    public SingleWalletPanelDownloadListener getSingleWalletDownloadListener() {
+        return singleWalletDownloadListener;
     }
 }

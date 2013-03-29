@@ -45,11 +45,16 @@ import org.multibit.model.WalletBusyListener;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
+import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
+import com.google.bitcoin.core.DownloadListener;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
@@ -67,6 +72,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
     private static final long serialVersionUID = 1923492087598757765L;
 
+    private MultiBitFrame mainFrame;
     private ImportPrivateKeysPanel importPrivateKeysPanel;
     private JPasswordField walletPasswordField;
     private JPasswordField passwordField;
@@ -81,10 +87,11 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
     /**
      * Creates a new {@link ImportPrivateKeysSubmitAction}.
      */
-    public ImportPrivateKeysSubmitAction(MultiBitController controller, ImportPrivateKeysPanel importPrivateKeysPanel,
+    public ImportPrivateKeysSubmitAction(MultiBitController controller, MultiBitFrame mainFrame, ImportPrivateKeysPanel importPrivateKeysPanel,
             ImageIcon icon, JPasswordField walletPasswordField, JPasswordField passwordField1, JPasswordField passwordField2) {
         super(controller, "importPrivateKeysSubmitAction.text", "importPrivateKeysSubmitAction.tooltip",
                 "importPrivateKeysSubmitAction.mnemonicKey", icon);
+        this.mainFrame = mainFrame;
         this.importPrivateKeysPanel = importPrivateKeysPanel;
         this.walletPasswordField = walletPasswordField;
         this.passwordField = passwordField1;
@@ -360,7 +367,19 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     if (performReplay) {
                         List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
                         perWalletModelDataList.add(finalPerWalletModelData);
-                        ReplayTask replayTask = new ReplayTask(perWalletModelDataList, earliestTransactionDate, null, -1);
+                        
+                        // Work out the downloadListener.
+                        SingleWalletPanelDownloadListener singleWalletPanelDownloadListener = null;
+                        if (mainFrame != null) {
+                            WalletListPanel walletListPanel = mainFrame.getWalletsView();
+                            if (walletListPanel != null) {
+                                SingleWalletPanel singleWalletPanel = walletListPanel.findWalletPanelByFilename(finalPerWalletModelData.getWalletFilename());
+                                if (singleWalletPanel != null) {
+                                    singleWalletPanelDownloadListener = singleWalletPanel.getSingleWalletDownloadListener();
+                                }
+                            }
+                        }
+                        ReplayTask replayTask = new ReplayTask(perWalletModelDataList, singleWalletPanelDownloadListener, earliestTransactionDate, null, -1);
                         ReplayManager.INSTANCE.offerReplayTask(replayTask);
                         
                         //controller.getMultiBitService().replayBlockChain(earliestTransactionDate);

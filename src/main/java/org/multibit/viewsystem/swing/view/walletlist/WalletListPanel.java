@@ -171,6 +171,22 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         }
     }
 
+    public SingleWalletPanel findWalletPanelByFilename(String filename) {
+        if (walletPanels != null) {
+            synchronized(walletPanels) {
+                for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
+                        if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(filename)) {
+                            return loopSingleWalletPanel;
+                        }
+                    }
+                }
+            }
+            return null;
+        } else {
+            return null;
+        }
+    }
     @Override
     public void navigateAwayFromView() {
     }
@@ -307,36 +323,6 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         buttonPanel.add(createNewWalletButton, constraints);
-        
-//        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
-//        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
-//        openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
-//        openWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-//               
-//        constraints.fill = GridBagConstraints.NONE;
-//        constraints.gridx = 1;
-//        constraints.gridy = 0;
-//        constraints.weightx = 0.33;
-//        constraints.weighty = 1.0;
-//        constraints.gridwidth = 1;
-//        constraints.gridheight = 1;
-//        constraints.anchor = GridBagConstraints.CENTER;
-//        buttonPanel.add(openWalletButton, constraints);
-//        
-//        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller, null, mainFrame);
-//        MultiBitButton deleteWalletButton = new MultiBitButton(deleteWalletAction, controller);
-//        deleteWalletButton.setText(controller.getLocaliser().getString("crudButton.delete"));
-//        deleteWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-//
-//        constraints.fill = GridBagConstraints.NONE;
-//        constraints.gridx = 2;
-//        constraints.gridy = 0;
-//        constraints.weightx = 0.33;
-//        constraints.weighty = 1.0;
-//        constraints.gridwidth = 1;
-//        constraints.gridheight = 1;
-//        constraints.anchor = GridBagConstraints.CENTER;
-//        buttonPanel.add(deleteWalletButton, constraints);
 
         return buttonPanel;
     }
