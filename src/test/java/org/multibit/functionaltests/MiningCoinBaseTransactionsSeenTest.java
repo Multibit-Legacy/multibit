@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
@@ -35,6 +37,8 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.network.MultiBitService;
+import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
@@ -100,6 +104,8 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
             controller.registerViewSystem(simpleViewSystem);
+            
+            ReplayManager.INSTANCE.initialise(controller);
 
             //
             // MultiBit runtime is now setup and running.
@@ -139,7 +145,11 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             log.debug("Now online.");
 
             log.debug("Replaying blockchain");
-            multiBitService.replayBlockChain(formatter.parse(START_OF_REPLAY_PERIOD));
+            //multiBitService.replayBlockChain(formatter.parse(START_OF_REPLAY_PERIOD));
+            List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+            perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
+            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, formatter.parse(START_OF_REPLAY_PERIOD), null, -1);
+            ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
             // Wait for blockchain replay to download more than the required amount.
             log.debug("Waiting for blockchain replay to download more than " + NUMBER_OF_BLOCKS_TO_REPLAY + " blocks. . . ");

@@ -17,8 +17,8 @@
 package org.multibit.network;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -27,18 +27,15 @@ import java.util.Locale;
 import java.util.Queue;
 import java.util.TimeZone;
 
-import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
-import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.GetDataMessage;
-import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
@@ -61,14 +58,15 @@ public enum ReplayManager {
 
     private static final Logger log = LoggerFactory.getLogger(ReplayManager.class);
 
-    private MultiBitController multiBitController;
+    private MultiBitController controller;
 
     private SimpleDateFormat formatter;
 
-    public void initialise(MultiBitController multiBitController) {
-        this.multiBitController = multiBitController;
-        
-        // Date format is UTC with century, T time separator and Z for UTC timezone.
+    public void initialise(MultiBitController controller) {
+        this.controller = controller;
+
+        // Date format is UTC with century, T time separator and Z for UTC
+        // timezone.
         formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
@@ -76,117 +74,71 @@ public enum ReplayManager {
     private Queue<ReplayTask> replayTaskQueue = new LinkedList<ReplayTask>();
 
     /**
-     * Synchronise a wallet with the blockchain. Assumes MultiBitService has been initialised
+     * Synchronise a wallet with the blockchain. Assumes MultiBitService has
+     * been initialised Always uses SPVBlockStore
      */
     public void syncWallet(final PerWalletModelData perWalletModelData, ReplayTask replayTask) throws IOException,
             BlockStoreException {
         log.info("Starting replay task : " + replayTask.toString());
 
         final Wallet wallet = perWalletModelData.getWallet();
-        final NetworkParameters params = multiBitController.getModel().getNetworkParameters();
+        final NetworkParameters params = controller.getModel().getNetworkParameters();
         final String checkpointsFilename;
-        if ("".equals(multiBitController.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
+        if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
             checkpointsFilename = MultiBitService.getFilePrefix() + MultiBitService.CHECKPOINTS_SUFFIX;
         } else {
-            checkpointsFilename = multiBitController.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
-            + MultiBitService.getFilePrefix() + MultiBitService.CHECKPOINTS_SUFFIX;  
+            checkpointsFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
+                    + MultiBitService.getFilePrefix() + MultiBitService.CHECKPOINTS_SUFFIX;
         }
 
-//        long earliestKeyCreationTime = wallet.getEarliestKeyCreationTime();
-//        log.debug("Earliest key creation time = " + new Date(earliestKeyCreationTime * 1000));
+        // long earliestKeyCreationTime = wallet.getEarliestKeyCreationTime();
+        // log.debug("Earliest key creation time = " + new
+        // Date(earliestKeyCreationTime * 1000));
 
-//        Sha256Hash lastBlockSeenHash = wallet.getLastBlockSeenHash();
-//        int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
+        // Sha256Hash lastBlockSeenHash = wallet.getLastBlockSeenHash();
+        // int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
 
-        Date checkpointDate = null;
-        if (replayTask.getStartDate() != null) {
-            checkpointDate = replayTask.getStartDate();
+        Date dateToReplayFrom = replayTask.getStartDate();
+
+        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
+                "resetTransactionsSubmitAction.startReplay")));
+
+        log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom);
+
+        // Reset UI to zero peers.
+        controller.getPeerEventListener().onPeerDisconnected(null, 0);
+
+        // Restart peerGroup and download rest of blockchain.
+        Message message;
+        if (dateToReplayFrom != null) {
+            message = new Message(controller.getLocaliser().getString(
+                    "resetTransactionSubmitAction.replayingBlockchain",
+                    new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
+                            dateToReplayFrom) }), false);
         } else {
-            throw new IllegalArgumentException("No replay start time specified");
+            message = new Message(controller.getLocaliser().getString(
+                    "resetTransactionSubmitAction.replayingBlockchain",
+                    new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
+                            MultiBitService.genesisBlockCreationDate) }), false);
         }
+        MessageManager.INSTANCE.addMessage(message);
 
-        // Create a separate MultiBit runtime just for the replay.
-        File multiBitDirectory = createMultiBitRuntime();
+        controller.getMultiBitService().createNewBlockStoreForReplay(dateToReplayFrom);
 
-        // Set the application data directory to be the one we just created.
-        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
+        log.debug("About to restart PeerGroup.");
+        controller.getMultiBitService().restartPeerGroup();
+        log.debug("Restarted PeerGroup.");
 
-        // Create the replayController.
-        final MultiBitController replayController = new MultiBitController(applicationDataDirectoryLocator);
-
-        // Create the model - gets hooked up to controller automatically.
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(replayController);
-
-        log.debug("Creating Bitcoin service");
-        // Create the MultiBitService that connects to the bitcoin network.
-        MultiBitService multiBitService = new MultiBitService(replayController);
-        replayController.setMultiBitService(multiBitService);
-
-        // Add the simple view system (no Swing).
-        SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
-        replayController.registerViewSystem(simpleViewSystem);
-        
-//        File checkpointsFile = new File(checkpointsFilename);
-//        if (checkpointsFile.exists()) {
-//            FileInputStream stream = new FileInputStream(checkpointsFile);
-//
-//            // Checkpoint by an absolute time.
-//            log.info("Checkpointing by date : " + checkpointDate.toString());
-//            MultiBitCheckpointManager.checkpoint(params, stream, replayController.getMultiBitService().getBlockStore(), checkpointDate.getTime() / 1000);
-//        }
-        
-        replayController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
-
-        // Get the multibitService to load it up and hook it up to the blockchain.
-        replayController.getMultiBitService().addWalletFromFilename(perWalletModelData.getWalletFilename());
-        replayController.getModel().setActiveWalletByFilename(perWalletModelData.getWalletFilename());
-
-        // Wait for a peer connection.
-        log.debug("Waiting for peer connection. . . ");
-        while (!simpleViewSystem.isOnline()) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        log.debug("Now online.");
-        
-        // Now download and process the block chain.
-        ReplayPeerEventListener peerEventListener = new ReplayPeerEventListener();
-        replayController.getMultiBitService().getPeerGroup().startBlockChainDownload(peerEventListener);
-
-        log.debug("Waiting for blockchain replay to reach a height of " + replayTask.getStopBlockHeight() + " or date "
-                + replayTask.getStopDate().toString());
-        boolean continueDownload = true;
-        while (continueDownload) {
-            try {
-                Thread.sleep(1000);
-                log.debug("Blocks downloaded =  " + simpleViewSystem.getNumberOfBlocksDownloaded());
-                log.debug("Last block = " + peerEventListener.lastBlock + ", blocksLeft = " + peerEventListener.blocksLeft);
-                if (peerEventListener.lastBlock != null) {
-                    if (replayTask.getStopDate() != null && peerEventListener.lastBlock.getTime().after(replayTask.getStopDate())) {
-                        continueDownload = false;
-                    }
-                }
-                if (peerEventListener.blocksLeft == 0) {
-                    continueDownload = false;
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        replayController.getMultiBitService().getPeerGroup().removeWallet(wallet);
-        replayController.getMultiBitService().getPeerGroup().stop();
-
-        log.info("Completed replay task : " + replayTask.toString());
-        log.debug(wallet.toString());
-        
-        // TODO - just save the wallet.
+        log.debug("About to start  blockchain download.");
+        controller.getMultiBitService().downloadBlockChain();
+        log.debug("Blockchain download started.");
     }
 
+    /**
+     * Add a ReplayTask to the ReplayManager's list of tasks to do.
+     * 
+     * @param replayTask
+     */
     public boolean offerReplayTask(ReplayTask replayTask) {
         replayTaskQueue.offer(replayTask);
 
@@ -200,26 +152,6 @@ public enum ReplayManager {
             bse.printStackTrace();
         }
         return true;
-    }
-    
-    /**
-     * Create a working, portable runtime of MultiBit in a temporary directory.
-     * 
-     * @return the temporary directory the multibit runtime has been created in.
-     */
-    private File createMultiBitRuntime() throws IOException {
-        File multiBitDirectory = FileHandler.createTempDirectory("multibit");
-        multiBitDirectory.deleteOnExit();
-        String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
-
-        System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
-
-        // create an empty multibit.properties
-        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
-        multibitProperties.createNewFile();
-        multibitProperties.deleteOnExit();
-
-        return multiBitDirectory;
     }
 
     class ReplayPeerEventListener implements PeerEventListener {
@@ -249,7 +181,7 @@ public enum ReplayManager {
         }
 
         @Override
-        public Message onPreMessageReceived(Peer peer, Message m) {
+        public com.google.bitcoin.core.Message onPreMessageReceived(Peer peer, com.google.bitcoin.core.Message m) {
             return null;
         }
 
@@ -258,7 +190,7 @@ public enum ReplayManager {
         }
 
         @Override
-        public List<Message> getData(Peer peer, GetDataMessage m) {
+        public List<com.google.bitcoin.core.Message> getData(Peer peer, GetDataMessage m) {
             return null;
         }
     }

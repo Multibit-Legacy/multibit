@@ -52,6 +52,7 @@ public class ReplayManagerTest extends TestCase {
 
     private MultiBitController controller;
     private Localiser localiser;
+    private File multiBitDirectory;
 
     // The address for this private key is "1N4qu8a6NwBrxM5PvSoFh4qe6QSWmG6Xds".
     private static final String REPLAY1_PRIVATE_KEY = "5Jsokwg1ypfCPgJXv4vnhW11YWSp4anh9UbHoCZFZdwAnEpU69u";
@@ -66,12 +67,26 @@ public class ReplayManagerTest extends TestCase {
 
     @Before
     public void setUp() throws Exception {
-        controller = new MultiBitController();
-        localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
+        multiBitDirectory = createMultiBitRuntime();
 
-        controller.setLocaliser(localiser);
+        // Set the application data directory to be the one we just created.
+        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
+
+        // Create the controller.
+        controller = new MultiBitController(applicationDataDirectoryLocator);
+        MultiBit.setController(controller);
+
+        // Create the model - gets hooked up to controller automatically.
+        @SuppressWarnings("unused")
+        MultiBitModel model = new MultiBitModel(controller);
         controller.setModel(model);
+
+        controller.setLocaliser(new Localiser());
+
+        log.debug("Creating Bitcoin service");
+        // Create the MultiBitService that connects to the bitcoin network.
+        MultiBitService multiBitService = new MultiBitService(controller);
+        controller.setMultiBitService(multiBitService);
     }
 
     @Test
@@ -79,36 +94,23 @@ public class ReplayManagerTest extends TestCase {
         // Get the system property runFunctionalTest to see if the functional
         // tests need running.
         String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
-        if (false && Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
+        if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
             // Date format is UTC with century, T time separator and Z for UTC timezone.
             formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-            File multiBitDirectory = createMultiBitRuntime();
-
-            // Set the application data directory to be the one we just created.
-            ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
-
-            // Create the controller.
-            final MultiBitController replayController = new MultiBitController(applicationDataDirectoryLocator);
-            MultiBit.setController(controller);
-
-            // Create the model - gets hooked up to controller automatically.
-            @SuppressWarnings("unused")
-            MultiBitModel model = new MultiBitModel(replayController);
 
             // Initialise replay manager
             ReplayManager replayManager = ReplayManager.INSTANCE;
             assertNotNull(replayManager);
 
-            replayManager.initialise(replayController);
+            replayManager.initialise(controller);
 
-            String miningWalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "mining.wallet";
+            String replayWalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "replay.wallet";
 
             // Create a new wallet.
             Wallet replayWallet = new Wallet(NetworkParameters.prodNet());
 
-            // Add in the mining key that has the coinbase transactions.
+            // Add in the replay key.
             DumpedPrivateKey replayDumpedPrivateKey = new DumpedPrivateKey(NetworkParameters.prodNet(), REPLAY1_PRIVATE_KEY);
             ECKey replayKey = replayDumpedPrivateKey.getKey();
             replayKey.setCreationTimeSeconds(formatter.parse(START_OF_REPLAY_PERIOD).getTime() / 1000);
@@ -116,9 +118,9 @@ public class ReplayManagerTest extends TestCase {
             
             replayWallet.addKey(replayKey);
             PerWalletModelData perWalletModelData = new PerWalletModelData();
-            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath, MultiBitWalletVersion.PROTOBUF));
+            perWalletModelData.setWalletInfo(new WalletInfo(replayWalletPath, MultiBitWalletVersion.PROTOBUF));
             perWalletModelData.setWallet(replayWallet);
-            perWalletModelData.setWalletFilename(miningWalletPath);
+            perWalletModelData.setWalletFilename(replayWalletPath);
             perWalletModelData.setWalletDescription("testReplayManagerSyncSingleWallet test");
 
             log.debug("Replay wallet before replay = \n" + replayWallet.toString());
@@ -134,7 +136,6 @@ public class ReplayManagerTest extends TestCase {
             replayManager.offerReplayTask(replayTask);
 
             // Check new balance on wallet - estimated balance should be at least the expected (may have later tx too)..
-
             log.debug("Replay wallet estimated balance is:\n" + replayWallet.getBalance(BalanceType.ESTIMATED).toString());
             log.debug("Replay wallet spendable balance is:\n" + replayWallet.getBalance().toString());
             assertTrue("Balance of replay wallet is incorrect", BALANCE_AFTER_REPLAY.compareTo(replayWallet.getBalance(BalanceType.ESTIMATED)) <= 0);
@@ -162,17 +163,11 @@ public class ReplayManagerTest extends TestCase {
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
-        // Copy in the checkpoints and blockchain stored in git - this is in
-        // source/main/resources/.
+        // Copy in the checkpoints and blockchain stored in git - this is in source/main/resources/.
         File multibitBlockcheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
         FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitBlockcheckpoints);
         multibitBlockcheckpoints.deleteOnExit();
         
-        File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
-        FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
-        multibitBlockchain.deleteOnExit();
-
         return multiBitDirectory;
     }
-
 }

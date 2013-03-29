@@ -108,6 +108,9 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
         // Set the action up to use test parameters and succeed-on-send.
         sendBitcoinNowAction.setTestParameters(true, true);
         
+        // Wait for peer connections
+        Thread.sleep(5000);
+
         // Execute - this should complain that the wallet password is not set.
         sendBitcoinNowAction.actionPerformed(null);
         // Wait a while and the message should be that it has completed the send.

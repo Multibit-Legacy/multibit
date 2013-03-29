@@ -615,10 +615,17 @@ public class Wallet implements Serializable, BlockChainListener, IsMultiBitClass
             }
             BigInteger valueSentToMe = tx.getValueSentToMe(this);
             BigInteger valueSentFromMe = tx.getValueSentFromMe(this);
+            
+            if (!isTransactionRelevant(tx)) {
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Received an irrelevant transaction for wallet (%s). Ignoring.", getDescription()));
+                }  
+                return;
+            }
             if (log.isInfoEnabled()) {
-                log.info(String.format("Received a pending transaction %s that spends %s BTC from our own wallet," +
+                log.info(String.format("Received a pending transaction %s that spends %s BTC from our own wallet (%s)," +
                         " and sends us %s BTC", tx.getHashAsString(), Utils.bitcoinValueToFriendlyString(valueSentFromMe),
-                        Utils.bitcoinValueToFriendlyString(valueSentToMe)));
+                        getDescription(), Utils.bitcoinValueToFriendlyString(valueSentToMe)));
             }
             if (tx.getConfidence().getSource().equals(TransactionConfidence.Source.UNKNOWN)) {
                 log.warn("Wallet received transaction with an unknown source. Consider tagging tx!");

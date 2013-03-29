@@ -91,7 +91,6 @@ public class MultiBitService {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
-    private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
     public static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
 
     public static final String MULTIBIT_PREFIX = "multibit";
@@ -481,40 +480,7 @@ public class MultiBitService {
         return perWalletModelDataToReturn;
     }
 
-    /**
-     * Replay blockchain for active wallet.
-     * 
-     * @param dateToReplayFrom
-     *            the date on the blockchain to replay from - if missing replay
-     *            from genesis block
-     * 
-     */
-    public void replayBlockChain(Date dateToReplayFrom) throws IOException, BlockStoreException {
-        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
-                "resetTransactionsSubmitAction.startReplay")));
-
-        log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom);
-
-        // Always use SPVStore for replay.
-
-        // Reset UI to zero peers.
-        controller.getPeerEventListener().onPeerDisconnected(null, 0);
-
-        // Restart peerGroup and download rest of blockchain.
-        Message message;
-        if (dateToReplayFrom != null) {
-            message = new Message(controller.getLocaliser().getString(
-                    "resetTransactionSubmitAction.replayingBlockchain",
-                    new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
-                            dateToReplayFrom) }), false);
-        } else {
-            message = new Message(controller.getLocaliser().getString(
-                    "resetTransactionSubmitAction.replayingBlockchain",
-                    new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
-                            genesisBlockCreationDate) }), false);
-        }
-        MessageManager.INSTANCE.addMessage(message);
-
+    public void createNewBlockStoreForReplay(Date dateToReplayFrom) throws IOException, BlockStoreException {
         log.debug("Loading/ creating blockstore ...");
         if (blockStore != null) {
             try {
@@ -526,31 +492,23 @@ public class MultiBitService {
         if (dateToReplayFrom != null) {
             blockStore = createBlockStore(dateToReplayFrom, true, true);
         } else {
-            blockStore = createBlockStore(genesisBlockCreationDate, true, true);
+            blockStore = createBlockStore(MultiBitService.genesisBlockCreationDate, true, true);
         }
         log.debug("Blockstore is '" + blockStore + "'");
 
         log.debug("Creating blockchain ...");
-        blockChain = new MultiBitBlockChain(networkParameters, blockStore);
+        blockChain = new MultiBitBlockChain(controller.getModel().getNetworkParameters(), blockStore);
         log.debug("Created blockchain '" + blockChain + "'");
 
-        // Hook up the wallets if it is a new blockchain.
+        // Hook up the wallets to the new blockchain.
         if (blockChain != null) {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                blockChain.addWallet(perWalletModelData.getWallet());
+            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                blockChain.addWallet(loopPerWalletModelData.getWallet());
             }
-        }
-
-        log.debug("About to restart PeerGroup.");
-        restartPeerGroup();
-        log.debug("Restarted PeerGroup.");
-
-        log.debug("About to start  blockchain download.");
-        downloadBlockChain();
-        log.debug("Blockchain download started.");
+        }    
     }
-
+    
     public void restartPeerGroup() {
         // Restart peerGroup and download.
         Message message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"),
@@ -632,17 +590,15 @@ public class MultiBitService {
             }
 
             try {
-                // Notify other wallets of the send (it might be a send to or
-                // from them).
+                // Notify other wallets of the send (it might be a send to or from them).
                 List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
                 if (perWalletModelDataList != null) {
                     for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                         if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
                             Wallet loopWallet = loopPerWalletModelData.getWallet();
-                            if (loopWallet.isTransactionRelevant(sendTransaction)) {
-                                // The loopPerWalletModelData is marked as
-                                // dirty.
+                            if (loopWallet.isPendingTransactionRelevant(sendTransaction)) {
+                                // The loopPerWalletModelData is marked as dirty.
                                 if (loopPerWalletModelData.getWalletInfo() != null) {
                                     synchronized (loopPerWalletModelData.getWalletInfo()) {
                                         loopPerWalletModelData.setDirty(true);

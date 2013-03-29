@@ -18,6 +18,8 @@ package org.multibit.functionaltests;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -30,7 +32,10 @@ import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.network.MultiBitService;
+import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +91,8 @@ public class GenesisBlockReplayTest extends TestCase {
             // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
             controller.registerViewSystem(simpleViewSystem);
+            
+            ReplayManager.INSTANCE.initialise(controller);
 
             //
             // MultiBit runtime is now setup and running.
@@ -99,7 +106,12 @@ public class GenesisBlockReplayTest extends TestCase {
             log.debug("Now online.");
 
             log.debug("Replaying blockchain from genesis block");
-            multiBitService.replayBlockChain(null);
+            //multiBitService.replayBlockChain(null);
+            List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+            perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
+            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, null, -1);
+            ReplayManager.INSTANCE.offerReplayTask(replayTask);
+
             //assertEquals(BLOCKSIZE_BEFORE_REPLAY, multiBitService.getBlockStore().getFile().length());            
 
             // Wait for blockchain replay to download more than the required amount.

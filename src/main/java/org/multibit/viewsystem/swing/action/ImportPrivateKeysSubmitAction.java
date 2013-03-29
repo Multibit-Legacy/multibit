@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -41,6 +42,8 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
+import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.slf4j.Logger;
@@ -355,7 +358,12 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
                     if (performReplay) {
-                        controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                        List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+                        perWalletModelDataList.add(finalPerWalletModelData);
+                        ReplayTask replayTask = new ReplayTask(perWalletModelDataList, earliestTransactionDate, null, -1);
+                        ReplayManager.INSTANCE.offerReplayTask(replayTask);
+                        
+                        //controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
                         successMeasure = Boolean.TRUE;
                     }
                 } catch (WalletSaveException wse) {
@@ -364,13 +372,13 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     logError(kce);
                 } catch (PrivateKeysHandlerException pkhe) {
                     logError(pkhe);
-                } catch (BlockStoreException bse) {
-                    log.error(bse.getClass().getName() + " " + bse.getMessage());
-                    bse.printStackTrace();
-                    statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
-                            new Object[] { bse.getMessage() });
-                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-                            new Object[] { bse.getClass().getName() + " " + bse.getMessage() });
+//                } catch (BlockStoreException bse) {
+//                    log.error(bse.getClass().getName() + " " + bse.getMessage());
+//                    bse.printStackTrace();
+//                    statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
+//                            new Object[] { bse.getMessage() });
+//                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+//                            new Object[] { bse.getClass().getName() + " " + bse.getMessage() });
                 }
                 return successMeasure;
             }

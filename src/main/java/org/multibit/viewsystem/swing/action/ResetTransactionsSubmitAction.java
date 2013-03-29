@@ -16,7 +16,9 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,6 +32,8 @@ import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.slf4j.Logger;
@@ -165,14 +169,20 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             protected Boolean doInBackground() throws Exception {
                 Boolean successMeasure = Boolean.FALSE;
 
-                try {
-                    controller.getMultiBitService().replayBlockChain(resetDate);
+//                try {
+                    List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+                    perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
+                    ReplayTask replayTask = new ReplayTask(perWalletModelDataList, resetDate, null, -1);
+                    ReplayManager.INSTANCE.offerReplayTask(replayTask);
+
+                    //controller.getMultiBitService().replayBlockChain(resetDate);
 
                     successMeasure = Boolean.TRUE;
-                } catch (BlockStoreException e) {
-                    message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
-                            new Object[] { e.getMessage() });
-                }
+//                } 
+//                catch (BlockStoreException e) {
+//                    message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
+//                            new Object[] { e.getMessage() });
+//                }
 
                 return successMeasure;
             }

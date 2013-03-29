@@ -42,6 +42,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.AlertManager;
 import org.multibit.network.MultiBitService;
+import org.multibit.network.ReplayManager;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
@@ -172,6 +173,9 @@ public class MultiBit {
 
             // Initialise currency converter.
             CurrencyConverter.INSTANCE.initialise(finalController);
+            
+            // Initialise repla manager.
+            ReplayManager.INSTANCE.initialise(controller);
             
             log.debug("Setting look and feel");
             try {
