@@ -45,6 +45,7 @@ import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
@@ -66,7 +67,7 @@ import com.toedter.calendar.JCalendar;
 /**
  * The reset blockchain and transactions view.
  */
-public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTransactionsDataProvider {
+public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTransactionsDataProvider, WalletBusyListener {
 
     private static final long serialVersionUID = 199992298245057705L;
 
@@ -116,6 +117,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         dateFormatter = new SimpleDateFormat("dd MMM yyyy", controller.getLocaliser().getLocale());
 
         initUI();
+        
+        controller.registerWalletBusyListener(this);
     }
 
     private void initUI() {
@@ -578,6 +581,22 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
             return resetFromFirstTransactionRadioButton.isSelected();
         } else {
             return true;
+        }
+    }
+    
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {       
+        // Update the enable status of the action to match the wallet busy status.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()})));
+            resetTransactionsSubmitAction.setEnabled(false);           
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip")));
+                resetTransactionsSubmitAction.setEnabled(true);
+            }
         }
     }
 }

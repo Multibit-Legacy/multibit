@@ -825,7 +825,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
                 changePasswordSubmitAction.putValue(
                         Action.SHORT_DESCRIPTION,
                         controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
-                                new Object[] { controller.getModel().getActivePerWalletModelData().getBusyOperation() }));
+                                new Object[] { controller.getModel().getActivePerWalletModelData().getBusyTask() }));
                 changePasswordSubmitAction.setEnabled(false);
             } else {
                 // Enable unless wallet has been modified by another process.

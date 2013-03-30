@@ -74,7 +74,7 @@ public class MultiBitWalletBusyAction extends AbstractAction implements WalletBu
         // Enable/ disable is done by MultiBitFrame.
         if (newWalletIsBusy) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));          
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));          
         } else {
             // Enable unless wallet has been modified by another process.
             if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {

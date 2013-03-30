@@ -52,6 +52,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.network.MultiBitDownloadListener;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
@@ -70,7 +71,7 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 
-public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
+public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, WalletBusyListener {
 
     private static final int WIDTH_OF_TEXT_FIELD = 12;
 
@@ -153,6 +154,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private final SingleWalletPanel thisPanel;
     
     private final SingleWalletPanelDownloadListener singleWalletDownloadListener;
+    private String lastSyncMessage;
+    private double lastSyncPercent;
           
     public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
@@ -564,7 +567,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // Update the tooltip.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            hourglassLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()})));           
+            hourglassLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()})));           
         } else {
             hourglassLabel.setToolTipText(null);
         }
@@ -715,7 +718,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")";
         }
         
-        if (!perWalletModelData.isCurrentlySynchronising()) {
+        if (perWalletModelData.isBusy()) {
+            setSyncMessage(lastSyncMessage, lastSyncPercent);
+        } else {
             if (amountLabelBTC != null && amountLabelBTC.getText() != null && !"".equals(amountLabelBTC.getText())
                     && !balanceTextToShowBTC.equals(amountLabelBTC.getText()) && blinkEnabled) {
                 amountLabelBTC.blink(balanceTextToShowBTC);
@@ -724,7 +729,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 amountLabelBTC.setText(balanceTextToShowBTC);
                 amountLabelFiat.setText(balanceTextToShowFiat);
             }
-        }
+        } 
 
         if (perWalletModelData.getWallet() != null) {
             setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
@@ -1002,19 +1007,26 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         return outerPanel;
     }
     
-    public void setSyncMessage(String message, double percent) {
-        if (percent > MultiBitDownloadListener.DONE_FOR_DOUBLES) {
+    public void setSyncMessage(String message, double syncPercent) {
+        if (message == null) {
+            return;
+        }
+        
+        lastSyncMessage = message;
+        lastSyncPercent = syncPercent;
+        
+        if (syncPercent > MultiBitDownloadListener.DONE_FOR_DOUBLES) {
             updateFromModel(false);
         } else {
             String percentText = " ";
-            if (percent > Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
-                percentText = "(" + (int)percent + "%)"; 
+            if (syncPercent > Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
+                percentText = "(" + (int)syncPercent + "%)"; 
             }
             amountLabelBTC.setText(message);
             amountLabelFiat.setText(percentText);
             
             if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
-                mainFrame.updateHeader(message, percent);
+                mainFrame.updateHeader(message, syncPercent);
             }
         }
                
@@ -1036,5 +1048,16 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     public SingleWalletPanelDownloadListener getSingleWalletDownloadListener() {
         return singleWalletDownloadListener;
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        if (lastSyncMessage != null) {
+            // Already have a sync message.
+        } else {
+            if (perWalletModelData.isBusy()) {
+                setSyncMessage(perWalletModelData.getBusyTaskVerb(), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
+            }
+        }
     }
 }

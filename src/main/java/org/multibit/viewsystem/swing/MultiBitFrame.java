@@ -211,6 +211,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     
     private MultiBitWalletBusyAction showImportPrivateKeysAction;
     private MultiBitWalletBusyAction showExportPrivateKeysAction;
+    private MultiBitWalletBusyAction resetTransactionsAction;
  
     /**
      * For events coming from Peers condense the events into regular updates.
@@ -984,7 +985,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         toolsMenu.addSeparator();
 
-        MultiBitAction resetTransactionsAction = new MultiBitAction(controller, ImageLoader.RESET_TRANSACTIONS_ICON_FILE,
+        resetTransactionsAction = new MultiBitWalletBusyAction(controller, ImageLoader.RESET_TRANSACTIONS_ICON_FILE,
                 "resetTransactionsAction.text", "resetTransactionsAction.tooltip", "resetTransactionsAction.mnemonic",
                 View.RESET_TRANSACTIONS_VIEW);
         resetTransactionsAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("resetTransactionsAction.tooltip")));
@@ -1211,6 +1212,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private void updateMenuItemsOnWalletChange() {
         showImportPrivateKeysAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
         showExportPrivateKeysAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
+        resetTransactionsAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
 
         if (controller.getModel().getActiveWallet() == null) {
             // Cannot do anything password related.
@@ -1359,13 +1361,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public void updateHeader(final String syncMessage, final double syncPercent) {
         final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
-        final boolean isCurrentlySynchronising = controller.getModel().getActivePerWalletModelData().isCurrentlySynchronising();
+        final boolean isBusy = controller.getModel().getActivePerWalletModelData().isBusy();
         if (EventQueue.isDispatchThread()) {
-            updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, null, null, isCurrentlySynchronising, syncMessage, syncPercent);
+            updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, null, null, isBusy, syncMessage, syncPercent);
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, null, null, isCurrentlySynchronising, syncMessage, syncPercent);
+                    updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, null, null, isBusy, syncMessage, syncPercent);
                 }
             });
         }
@@ -1375,14 +1377,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         final BigInteger finalEstimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
         final BigInteger finalAvailableToSpend = model.getActiveWalletAvailableBalance();
         final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
-        final boolean isCurrentlySynchronising = controller.getModel().getActivePerWalletModelData().isCurrentlySynchronising();
+        final boolean isBusy = controller.getModel().getActivePerWalletModelData().isBusy();
         
         if (EventQueue.isDispatchThread()) {
-            updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend, isCurrentlySynchronising, null, -1);
+            updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend, isBusy, null, -1);
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend, isCurrentlySynchronising, null, -1);
+                    updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend, isBusy, null, -1);
                 }
             });
         }

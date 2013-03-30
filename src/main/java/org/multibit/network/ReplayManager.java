@@ -16,16 +16,12 @@
 
 package org.multibit.network;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Queue;
-import java.util.TimeZone;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
@@ -34,14 +30,7 @@ import org.multibit.model.PerWalletModelData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Block;
-import com.google.bitcoin.core.GetDataMessage;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Peer;
-import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
@@ -51,8 +40,6 @@ import com.google.bitcoin.store.BlockStoreException;
  * date wallet is opened 4) Encrypted wallets are opened when the user has used
  * an older version of MultiBit that does not understand them (they then get out
  * of date).
- * 
- * MemoryBlockStore is used where necessary with a separate PeerGroup.
  */
 public enum ReplayManager {
     INSTANCE;
@@ -61,15 +48,8 @@ public enum ReplayManager {
 
     private MultiBitController controller;
 
-    private SimpleDateFormat formatter;
-
     public void initialise(MultiBitController controller) {
         this.controller = controller;
-
-        // Date format is UTC with century, T time separator and Z for UTC
-        // timezone.
-        formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     private Queue<ReplayTask> replayTaskQueue = new LinkedList<ReplayTask>();
@@ -78,10 +58,21 @@ public enum ReplayManager {
      * Synchronise a wallet with the blockchain. Assumes MultiBitService has
      * been initialised Always uses SPVBlockStore
      */
-    public void syncWallet(final PerWalletModelData perWalletModelData, ReplayTask replayTask) throws IOException,
+    public void syncWallet(final ReplayTask replayTask) throws IOException,
             BlockStoreException {
         log.info("Starting replay task : " + replayTask.toString());
 
+        // Mark the wallets as busy.
+        List<PerWalletModelData> perWalletModelDataList = replayTask.getPerWalletModelDataToReplay();
+        if (perWalletModelDataList != null) {
+            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                perWalletModelData.setBusy(true);
+                perWalletModelData.setBusyTask(controller.getLocaliser().getString("multiBitDownloadListener.downloadingText"));
+                perWalletModelData.setBusyTaskVerb(controller.getLocaliser().getString(
+                        "multiBitDownloadListener.downloadingTextShort"));
+            }
+            controller.fireWalletBusyChange(true);
+        }
         Date dateToReplayFrom = replayTask.getStartDate();
 
         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
@@ -107,17 +98,35 @@ public enum ReplayManager {
         }
         MessageManager.INSTANCE.addMessage(message);
 
+        log.debug("About to restart PeerGroup.");       
+        message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"),
+                false, 0);
+        MessageManager.INSTANCE.addMessage(message);
+
+        controller.getMultiBitService().getPeerGroup().stopAndWait();
+        log.debug("PeerGroup is now stopped.");
+ 
+        // Reset UI to zero peers.
+        controller.getPeerEventListener().onPeerDisconnected(null, 0);
+
+        // TODO Save wallets.
+        
+        // Close the blockstore and recreate a new one.
         controller.getMultiBitService().createNewBlockStoreForReplay(dateToReplayFrom);
 
-        log.debug("About to restart PeerGroup.");
-        controller.getMultiBitService().restartPeerGroup();
-        log.debug("Restarted PeerGroup.");
+        // Create a new PeerGroup.
+        controller.getMultiBitService().createNewPeerGroup();
+        log.debug("Recreated PeerGroup.");
         
         PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
         if (peerGroup instanceof MultiBitPeerGroup && replayTask.getSingleWalletPanelDownloadListener() != null) {
             ((MultiBitPeerGroup)peerGroup).getMultiBitDownloadListener().addSingleWalletPanelDownloadListener(replayTask.getSingleWalletPanelDownloadListener());
         }
 
+        // Start up the PeerGroup.
+        peerGroup.start();
+        log.debug("Restarted PeerGroup.");
+        
         log.debug("About to start  blockchain download.");
         controller.getMultiBitService().downloadBlockChain();
         log.debug("Blockchain download started.");
@@ -131,10 +140,9 @@ public enum ReplayManager {
     public boolean offerReplayTask(ReplayTask replayTask) {
         replayTaskQueue.offer(replayTask);
 
-        // TODO This would be done in a different thread and hook up listeners
-        // for all the wallets to sync.
+        // TODO - put in worker thread.
         try {
-            syncWallet(replayTask.getPerWalletModelDataToReplay().get(0), replayTask);
+            syncWallet(replayTask);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         } catch (BlockStoreException bse) {
@@ -142,45 +150,29 @@ public enum ReplayManager {
         }
         return true;
     }
-
-    class ReplayPeerEventListener implements PeerEventListener {
-        public Block lastBlock = null;
-        public int blocksLeft = -1;
-
-        @Override
-        public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-            this.lastBlock = block;
-            this.blocksLeft = blocksLeft;
-            log.debug("onBlocksDownloaded blocksLeft = " + blocksLeft);
-        }
-
-        @Override
-        public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-            log.debug("onChainDownloadStarted blocksLeft = " + blocksLeft);
-        }
-
-        @Override
-        public void onPeerConnected(Peer peer, int peerCount) {
-            log.debug("peerConnected, peerCount = " + peerCount);
-        }
-
-        @Override
-        public void onPeerDisconnected(Peer peer, int peerCount) {
-            log.debug("peerDisconnected, peerCount = " + peerCount);
-        }
-
-        @Override
-        public com.google.bitcoin.core.Message onPreMessageReceived(Peer peer, com.google.bitcoin.core.Message m) {
-            return null;
-        }
-
-        @Override
-        public void onTransaction(Peer peer, Transaction t) {
-        }
-
-        @Override
-        public List<com.google.bitcoin.core.Message> getData(Peer peer, GetDataMessage m) {
-            return null;
+    
+    public void currentTaskHasCompleted() {
+        // The downloadlistener listening to the replay reports that the current task has completed.
+        ReplayTask currentTask = replayTaskQueue.peek();
+        if (currentTask != null) {
+            // This task is complete.
+            List<PerWalletModelData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    perWalletModelData.setBusyTaskVerb(null);
+                    perWalletModelData.setBusyTask(null);
+                    perWalletModelData.setBusy(false);
+                }
+            }
+            // TODO - does not look quite right.
+            controller.fireWalletBusyChange(false);
+            
+            // Remove that task from the queue.
+            log.debug("ReplayTask " + currentTask.toString() + " has completed.");
+            replayTaskQueue.poll();
+            
+            // Start the next task.
+            // TODO start the next replayTask in the queue.
         }
     }
 }

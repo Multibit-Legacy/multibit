@@ -32,6 +32,7 @@ import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -51,7 +52,7 @@ import com.google.bitcoin.core.Transaction;
 /**
  * The send bitcoin confirm panel.
  */
-public class SendBitcoinConfirmPanel extends JPanel {
+public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListener {
     private static final long serialVersionUID = 191435612399957705L;
    
     private static final Logger log = LoggerFactory.getLogger(SendBitcoinConfirmPanel.class);
@@ -112,6 +113,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
         
         cancelButton.requestFocusInWindow();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
+        controller.registerWalletBusyListener(this);
     }
 
     /**
@@ -500,11 +503,12 @@ public class SendBitcoinConfirmPanel extends JPanel {
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler6, constraints);
         
-        enableSendAccordingToNumberOfConnectedPeers();
+        enableSendAccordingToNumberOfConnectedPeersAndWalletBusy();
     }
 
-    private void enableSendAccordingToNumberOfConnectedPeers() {
+    private void enableSendAccordingToNumberOfConnectedPeersAndWalletBusy() {
         boolean enableSend = false;
+        String message = " ";
 
         MultiBitModel model = controller.getModel();
         if (model != null) {
@@ -518,26 +522,25 @@ public class SendBitcoinConfirmPanel extends JPanel {
                 if (!singleNodeConnectionOverride && !singlePeerOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                      // Disable send button
                     enableSend = false;
+                    message = controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline");
                 } else {
                     // Enable send button
                     enableSend = true;
+                    message = " ";
                 }
                 thisPanel.sendBitcoinNowAction.setEnabled(enableSend);
+            }
+            
+            if (model.getActivePerWalletModelData().isBusy()) {
+                message = controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()});
+                enableSend = false;
             }
         }
         
         if (sendBitcoinNowAction != null) {
             sendBitcoinNowAction.setEnabled(enableSend);
-            if (enableSend) {
-                if (confirmText1 != null) {
-                    if (controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline").equals(confirmText1)){
-                        confirmText1.setText(" ");
-                    }
-                }
-            } else {
-                if (confirmText1 != null) {
-                    confirmText1.setText(controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline"));
-                }
+            if (confirmText1 != null) {
+                confirmText1.setText(message);
             }
         }
     }
@@ -724,5 +727,10 @@ public class SendBitcoinConfirmPanel extends JPanel {
 
     public MultiBitLabel getConfirmText2() {
         return confirmText2;
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        enableSendAccordingToNumberOfConnectedPeersAndWalletBusy();
     }
 }

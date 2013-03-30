@@ -31,9 +31,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
@@ -54,14 +53,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.bitcoin.core.DownloadListener;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import com.piuk.blockchain.MyWallet;
-
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 /**
  * This {@link Action} imports the private keys to the active wallet.
@@ -232,6 +229,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
             perWalletModelData.setBusyTask(controller.getLocaliser().getString("importPrivateKeysSubmitAction.text"));
+            perWalletModelData.setBusyTaskVerb(controller.getLocaliser().getString("importPrivateKeysSubmitAction.verb"));
 
             importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                     "importPrivateKeysSubmitAction.importingPrivateKeys"));
@@ -381,8 +379,6 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                         }
                         ReplayTask replayTask = new ReplayTask(perWalletModelDataList, singleWalletPanelDownloadListener, earliestTransactionDate, null, -1);
                         ReplayManager.INSTANCE.offerReplayTask(replayTask);
-                        
-                        //controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
                         successMeasure = Boolean.TRUE;
                     }
                 } catch (WalletSaveException wse) {
@@ -391,13 +387,6 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     logError(kce);
                 } catch (PrivateKeysHandlerException pkhe) {
                     logError(pkhe);
-//                } catch (BlockStoreException bse) {
-//                    log.error(bse.getClass().getName() + " " + bse.getMessage());
-//                    bse.printStackTrace();
-//                    statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
-//                            new Object[] { bse.getMessage() });
-//                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-//                            new Object[] { bse.getClass().getName() + " " + bse.getMessage() });
                 }
                 return successMeasure;
             }
@@ -439,12 +428,13 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 } catch (Exception e) {
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
-                } finally {
-                    // Declare that wallet is no longer busy with the task.
-                    finalPerWalletModelData.setBusyTask(null);
-                    finalPerWalletModelData.setBusy(false);
-                    controller.fireWalletBusyChange(false);                   
-                }
+                } 
+//                finally {
+//                    // Declare that wallet is no longer busy with the task.
+//                    finalPerWalletModelData.setBusyTask(null);
+//                    finalPerWalletModelData.setBusy(false);
+//                    controller.fireWalletBusyChange(false);                   
+//                }
             }
         };
         log.debug("Importing private keys in background SwingWorker thread");
@@ -482,7 +472,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         // Update the enable status of the action to match the wallet busy status.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));
             setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.

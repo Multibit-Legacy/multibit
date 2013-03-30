@@ -32,8 +32,6 @@ public class PerWalletModelData {
     private WalletInfo walletInfo;
     private List<WalletTableData> walletTableDataList;
     
-    private transient boolean currentlySynchronising;
-
     /**
      * The wallet filename used for when a backup is being written to.
      */
@@ -49,23 +47,31 @@ public class PerWalletModelData {
      * The files that store the PerWalletModelData have been changed by some
      * other process i.e. NOT this copy of MultiBit.
      */
-    private boolean filesHaveBeenChangedByAnotherProcess;
+    private transient boolean filesHaveBeenChangedByAnotherProcess;
 
     /**
      * The PerWalletModelData has changed since last been written to disk.
      */
-    private boolean isDirty;
+    private transient boolean isDirty;
     
     /**
      * This wallet is currently busy with an operation that affects the private keys.
      * (Note this is a UI hint rather than a hard lock. Synchronize on wallet.
      */
-    private boolean busy;
+    private transient boolean busy;
     
     /**
      * The localised name of the operation that is currently operating on the wallets private keys.
+     * This is typically a sentence in length.
      */
-    private String busyOperation;
+    private transient String busyTask;
+    
+    /**
+     * The present continuous verb describing the current busy operation. Localised.
+     * This is something like "Synchronising...", "Waiting...", "Importing...".
+     * It is displayed instead of the balance amount so needs to be short.
+     */
+    private transient String busyTaskVerb;
     
     public PerWalletModelData() {
         isDirty = false;
@@ -173,19 +179,19 @@ public class PerWalletModelData {
         this.busy = busy;
     }
 
-    public String getBusyOperation() {
-        return busyOperation;
+    public String getBusyTask() {
+        return busyTask;
     }
 
-    public void setBusyTask(String busyOperation) {
-        this.busyOperation = busyOperation;
+    public void setBusyTask(String busyTask) {
+        this.busyTask = busyTask;
     }
 
-    public boolean isCurrentlySynchronising() {
-        return currentlySynchronising;
+    public String getBusyTaskVerb() {
+        return busyTaskVerb;
     }
 
-    public void setCurrentlySynchronising(boolean currentlySynchronising) {
-        this.currentlySynchronising = currentlySynchronising;
+    public void setBusyTaskVerb(String busyTaskVerb) {
+        this.busyTaskVerb = busyTaskVerb;
     }
 }

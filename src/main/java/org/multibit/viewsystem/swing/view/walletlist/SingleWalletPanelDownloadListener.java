@@ -71,7 +71,6 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
             doneDownload();
         } else {
             synchronized (lockObject) {
-                singleWalletPanel.getPerWalletModelData().setCurrentlySynchronising(true);
                 String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.downloadingTextShort");
 
                 // When busy occasionally the localiser fails to localise
@@ -94,7 +93,6 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
             doneDownload();
         } else {
             synchronized (lockObject) {
-                singleWalletPanel.getPerWalletModelData().setCurrentlySynchronising(true);
                 String startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.downloadingTextShort");
  
                 // When busy occasionally the localiser fails to localise.
@@ -110,7 +108,6 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
      */
     @Override
     public void doneDownload() {
-        singleWalletPanel.getPerWalletModelData().setCurrentlySynchronising(false);
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
         singleWalletPanel.setSyncMessage(downloadStatusText, 100);
     }

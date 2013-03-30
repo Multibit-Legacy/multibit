@@ -153,6 +153,8 @@ public class MultiBitDownloadListener extends DownloadListener {
      */
     @Override
     protected void doneDownload() {
+        ReplayManager.INSTANCE.currentTaskHasCompleted();
+
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
      
         Message message = new Message(downloadStatusText, true, Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
@@ -164,6 +166,7 @@ public class MultiBitDownloadListener extends DownloadListener {
         for (SingleWalletPanelDownloadListener singleWalletPanelDownloadListener : singleWalletPanelDownloadListeners) {
             singleWalletPanelDownloadListener.doneDownload();
         }
+                
         controller.fireBlockDownloaded();
     }
 }

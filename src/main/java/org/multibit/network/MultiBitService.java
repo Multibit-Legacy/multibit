@@ -284,7 +284,7 @@ public class MultiBitService {
         return blockStore;
     }
 
-    private MultiBitPeerGroup createNewPeerGroup() {
+    public MultiBitPeerGroup createNewPeerGroup() {
         MultiBitPeerGroup peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
@@ -515,7 +515,7 @@ public class MultiBitService {
                 false, 0);
         MessageManager.INSTANCE.addMessage(message);
 
-        peerGroup.stop();
+        peerGroup.stopAndWait();
 
         // Reset UI to zero peers.
         controller.getPeerEventListener().onPeerDisconnected(null, 0);
