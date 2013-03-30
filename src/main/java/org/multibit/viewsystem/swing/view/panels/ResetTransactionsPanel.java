@@ -72,6 +72,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     private static final long serialVersionUID = 199992298245057705L;
 
     private MultiBitController controller;
+    private MultiBitFrame mainFrame;
 
     private MultiBitLabel walletFilenameLabel;
 
@@ -98,6 +99,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
      */
     public ResetTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
+        this.mainFrame = mainFrame;
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
@@ -119,6 +121,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         initUI();
         
         controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     private void initUI() {
@@ -370,7 +373,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(controller,
+        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(controller, mainFrame,
                 ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
         MultiBitButton submitButton = new MultiBitButton(resetTransactionsSubmitAction, controller);
         buttonPanel.add(submitButton);
@@ -528,6 +531,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         }
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     @Override
@@ -594,7 +599,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         } else {
             // Enable unless wallet has been modified by another process.
             if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip")));
+                resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip")));
                 resetTransactionsSubmitAction.setEnabled(true);
             }
         }

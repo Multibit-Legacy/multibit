@@ -27,6 +27,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,8 +126,8 @@ public enum ReplayManager {
 
         // Start up the PeerGroup.
         peerGroup.start();
-        log.debug("Restarted PeerGroup.");
-        
+        log.debug("Restarted PeerGroup = " + peerGroup.toString());
+              
         log.debug("About to start  blockchain download.");
         controller.getMultiBitService().downloadBlockChain();
         log.debug("Blockchain download started.");

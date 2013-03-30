@@ -18,11 +18,12 @@ package org.multibit.viewsystem.swing.action;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.multibit.Constants;
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 
-public class SendBitcoinNowSubmitActionTest extends TestCase {      
+public class SendBitcoinNowSubmitActionTest extends TestCase {
     private static final String EXPECTED_ENTER_THE_WALLET_PASSWORD = "Enter the wallet password";
 
     private static final String EXPECTED_TEST_SEND_FAILED_ERROR = " test - send failed";
@@ -38,127 +39,182 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
     private static final int DELAY_TO_COMPLETE_OPERATION = 12000; // milliseconds
     private static final int DELAY_TO_UPDATE_MESSAGES = 4000; // milliseconds
-    
+
     @Test
-    public void testSendBitcoinWithNonEncryptedWallet() throws Exception {       
-        // Create MultiBit controller
-        MultiBitController controller = ActionTestUtils.createController();
-        
-        // Create a new unencrypted wallet and put it in the model as the active wallet.
-        ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", false, null);
+    public void testSendBitcoinWithNonEncryptedWallet() throws Exception {
+        // Get the system property runFunctionalTest to see if the functional
+        // tests need running.
+        String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
+        if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
 
-        // Create a new SendBitcoinNowSubmitAction to test.
-        FontSizer.INSTANCE.initialise(controller);
-        SendBitcoinConfirmPanel sendBitcoinConfirmPanel= new SendBitcoinConfirmPanel(controller, null, null);
-        SendBitcoinNowAction sendBitcoinNowAction = sendBitcoinConfirmPanel.getSendBitcoinNowAction();
+            // Create MultiBit controller
+            MultiBitController controller = ActionTestUtils.createController();
 
-        assertNotNull("sendBitcoinNowAction was not created successfully", sendBitcoinNowAction);
-        assertTrue("Wallet password was enabled when it should not be", !sendBitcoinConfirmPanel.isWalletPasswordFieldEnabled());
-        
-        // Set the action up to use test parameters and succeed-on-send.
-        sendBitcoinNowAction.setTestParameters(true, true);
-        
-        // Execute - this should give the sending message or sent message.
-        sendBitcoinNowAction.actionPerformed(null);
-        assertTrue("Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1() + "'", "".equals(sendBitcoinConfirmPanel.getMessageText1().trim()) || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1()) ||
-                EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));    
-        assertEquals("Wrong message - expecting sending on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());    
-        
-        // Wait a while and the message should be that it has completed the send.
-        Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
+            // Create a new unencrypted wallet and put it in the model as the
+            // active wallet.
+            ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", false, null);
 
-        // Bitcoins should now be sent
-        assertEquals("Wrong message - expecting success on messageText1", EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY, sendBitcoinConfirmPanel.getMessageText1());    
-        assertEquals("Wrong message - expecting success on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());    
-  
-        // Set the action up to use test parameters and fail-on-send.
-        sendBitcoinNowAction.setTestParameters(true, false);
-        Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
-        
-        // Execute - this should give the sending or failed message.
-        sendBitcoinNowAction.actionPerformed(null);
-        Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
-        assertTrue("Wrong message - expecting sending/sent on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1() + "'", "".equals(sendBitcoinConfirmPanel.getMessageText1().trim()) || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1()) ||
-                EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));    
-        assertEquals("Wrong message - expecting sending on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR, sendBitcoinConfirmPanel.getMessageText2());    
-        
-        // Wait a while and the message should be that it has failed the send.
-        Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
+            // Create a new SendBitcoinNowSubmitAction to test.
+            FontSizer.INSTANCE.initialise(controller);
+            SendBitcoinConfirmPanel sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(controller, null, null);
+            SendBitcoinNowAction sendBitcoinNowAction = sendBitcoinConfirmPanel.getSendBitcoinNowAction();
 
-        assertEquals("Wrong message - expecting success on messageText1", EXPECTED_SEND_FAILED, sendBitcoinConfirmPanel.getMessageText1());    
-        assertEquals("Wrong message - expecting success on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR, sendBitcoinConfirmPanel.getMessageText2());    
+            assertNotNull("sendBitcoinNowAction was not created successfully", sendBitcoinNowAction);
+            assertTrue("Wallet password was enabled when it should not be", !sendBitcoinConfirmPanel.isWalletPasswordFieldEnabled());
+
+            // Set the action up to use test parameters and succeed-on-send.
+            sendBitcoinNowAction.setTestParameters(true, true);
+
+            // Execute - this should give the sending message or sent message.
+            sendBitcoinNowAction.actionPerformed(null);
+            assertTrue(
+                    "Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1()
+                            + "'",
+                    "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
+                            || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
+                            || EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));
+            assertEquals("Wrong message - expecting sending on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
+
+            // Wait a while and the message should be that it has completed the
+            // send.
+            Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
+
+            // Bitcoins should now be sent
+            assertEquals("Wrong message - expecting success on messageText1", EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY,
+                    sendBitcoinConfirmPanel.getMessageText1());
+            assertEquals("Wrong message - expecting success on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
+
+            // Set the action up to use test parameters and fail-on-send.
+            sendBitcoinNowAction.setTestParameters(true, false);
+            Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
+
+            // Execute - this should give the sending or failed message.
+            sendBitcoinNowAction.actionPerformed(null);
+            Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
+            assertTrue(
+                    "Wrong message - expecting sending/sent on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1()
+                            + "'",
+                    "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
+                            || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
+                            || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
+            assertEquals("Wrong message - expecting sending on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR,
+                    sendBitcoinConfirmPanel.getMessageText2());
+
+            // Wait a while and the message should be that it has failed the
+            // send.
+            Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
+
+            assertEquals("Wrong message - expecting success on messageText1", EXPECTED_SEND_FAILED,
+                    sendBitcoinConfirmPanel.getMessageText1());
+            assertEquals("Wrong message - expecting success on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR,
+                    sendBitcoinConfirmPanel.getMessageText2());
+        }
     }
-    
+
     @Test
-    public void testSendBitcoinWithEncryptedWallet() throws Exception {       
-        // Create MultiBit controller
-        MultiBitController controller = ActionTestUtils.createController();
-        
-        // Create a new encrypted wallet and put it in the model as the active wallet.
-        ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", true, WALLET_PASSWORD);
+    public void testSendBitcoinWithEncryptedWallet() throws Exception {
+        // Get the system property runFunctionalTest to see if the functional
+        // tests need running.
+        String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
+        if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
 
-        // Create a new SendBitcoinNowSubmitAction to test.
-        FontSizer.INSTANCE.initialise(controller);
-        SendBitcoinConfirmPanel sendBitcoinConfirmPanel= new SendBitcoinConfirmPanel(controller, null, null);
-        SendBitcoinNowAction sendBitcoinNowAction = sendBitcoinConfirmPanel.getSendBitcoinNowAction();
+            // Create MultiBit controller
+            MultiBitController controller = ActionTestUtils.createController();
 
-        assertNotNull("sendBitcoinNowAction was not created successfully", sendBitcoinNowAction);
-        assertTrue("Wallet password was disabled when it should not be", sendBitcoinConfirmPanel.isWalletPasswordFieldEnabled());
-        
-        // Set the action up to use test parameters and succeed-on-send.
-        sendBitcoinNowAction.setTestParameters(true, true);
-        
-        // Wait for peer connections
-        Thread.sleep(5000);
+            // Create a new encrypted wallet and put it in the model as the
+            // active wallet.
+            ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", true,
+                    WALLET_PASSWORD);
 
-        // Execute - this should complain that the wallet password is not set.
-        sendBitcoinNowAction.actionPerformed(null);
-        // Wait a while and the message should be that it has completed the send.
-        Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
+            // Create a new SendBitcoinNowSubmitAction to test.
+            FontSizer.INSTANCE.initialise(controller);
+            SendBitcoinConfirmPanel sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(controller, null, null);
+            SendBitcoinNowAction sendBitcoinNowAction = sendBitcoinConfirmPanel.getSendBitcoinNowAction();
 
-        assertTrue("Wrong message - expecting no wallet password on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1() + "'", EXPECTED_ENTER_THE_WALLET_PASSWORD.equals(sendBitcoinConfirmPanel.getMessageText1()));
-        
-        // Set the wallet password.
-        sendBitcoinConfirmPanel.setWalletPassword(WALLET_PASSWORD);
-        
-        // Execute - this should give the sending message or sent message.
-        sendBitcoinNowAction.actionPerformed(null);
-        assertTrue("Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1() + "'", "".equals(sendBitcoinConfirmPanel.getMessageText1().trim()) || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1()) ||
-                EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));    
-        assertEquals("Wrong message - expecting sending on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());    
-        
-        // Wait a while and the message should be that it has completed the send.
-        Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
+            assertNotNull("sendBitcoinNowAction was not created successfully", sendBitcoinNowAction);
+            assertTrue("Wallet password was disabled when it should not be", sendBitcoinConfirmPanel.isWalletPasswordFieldEnabled());
 
-        // Bitcoins should now be sent
-        assertEquals("Wrong message - expecting success on messageText1", EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY, sendBitcoinConfirmPanel.getMessageText1());    
-        assertEquals("Wrong message - expecting success on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());    
-  
-        // Set the action up to use test parameters and fail-on-send.
-        sendBitcoinNowAction.setTestParameters(true, false);
+            // Set the action up to use test parameters and succeed-on-send.
+            sendBitcoinNowAction.setTestParameters(true, true);
 
-        // Execute - this should complain that the wallet password is not set.
-        sendBitcoinNowAction.actionPerformed(null);
-        // Wait a while and the message should be that it has completed the send.
-        Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
+            // Wait for peer connections
+            Thread.sleep(5000);
 
-        assertTrue("Wrong message - expecting no wallet password on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1() + "'", EXPECTED_ENTER_THE_WALLET_PASSWORD.equals(sendBitcoinConfirmPanel.getMessageText1()));
-        
-        // Set the wallet password.
-        sendBitcoinConfirmPanel.setWalletPassword(WALLET_PASSWORD);
-        
-        // Execute - this should give the sending or failed message.
-        sendBitcoinNowAction.actionPerformed(null);
-        assertTrue("Wrong message - expecting sending/failed on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1() + "'", "".equals(sendBitcoinConfirmPanel.getMessageText1().trim()) || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1()) ||
-                EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));    
-        assertTrue("Wrong message - expecting blank/errormessage on messageText2 was '" + sendBitcoinConfirmPanel.getMessageText2() + "'", "".equals(sendBitcoinConfirmPanel.getMessageText2().trim()) || EXPECTED_TEST_SEND_FAILED_ERROR.equals(sendBitcoinConfirmPanel.getMessageText2()) ||
-                EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));    
-        
-        // Wait a while and the message should be that it has failed the send.
-        Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
+            // Execute - this should complain that the wallet password is not
+            // set.
+            sendBitcoinNowAction.actionPerformed(null);
+            // Wait a while and the message should be that it has completed the
+            // send.
+            Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
 
-        assertEquals("Wrong message - expecting success on messageText1", EXPECTED_SEND_FAILED, sendBitcoinConfirmPanel.getMessageText1());    
-        assertEquals("Wrong message - expecting success on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR, sendBitcoinConfirmPanel.getMessageText2());    
-  
+            assertTrue(
+                    "Wrong message - expecting no wallet password on messageText1, was '"
+                            + sendBitcoinConfirmPanel.getMessageText1() + "'",
+                    EXPECTED_ENTER_THE_WALLET_PASSWORD.equals(sendBitcoinConfirmPanel.getMessageText1()));
+
+            // Set the wallet password.
+            sendBitcoinConfirmPanel.setWalletPassword(WALLET_PASSWORD);
+
+            // Execute - this should give the sending message or sent message.
+            sendBitcoinNowAction.actionPerformed(null);
+            assertTrue(
+                    "Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1()
+                            + "'",
+                    "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
+                            || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
+                            || EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));
+            assertEquals("Wrong message - expecting sending on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
+
+            // Wait a while and the message should be that it has completed the
+            // send.
+            Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
+
+            // Bitcoins should now be sent
+            assertEquals("Wrong message - expecting success on messageText1", EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY,
+                    sendBitcoinConfirmPanel.getMessageText1());
+            assertEquals("Wrong message - expecting success on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
+
+            // Set the action up to use test parameters and fail-on-send.
+            sendBitcoinNowAction.setTestParameters(true, false);
+
+            // Execute - this should complain that the wallet password is not
+            // set.
+            sendBitcoinNowAction.actionPerformed(null);
+            // Wait a while and the message should be that it has completed the
+            // send.
+            Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
+
+            assertTrue(
+                    "Wrong message - expecting no wallet password on messageText1, was '"
+                            + sendBitcoinConfirmPanel.getMessageText1() + "'",
+                    EXPECTED_ENTER_THE_WALLET_PASSWORD.equals(sendBitcoinConfirmPanel.getMessageText1()));
+
+            // Set the wallet password.
+            sendBitcoinConfirmPanel.setWalletPassword(WALLET_PASSWORD);
+
+            // Execute - this should give the sending or failed message.
+            sendBitcoinNowAction.actionPerformed(null);
+            assertTrue(
+                    "Wrong message - expecting sending/failed on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1()
+                            + "'",
+                    "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
+                            || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
+                            || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
+            assertTrue(
+                    "Wrong message - expecting blank/errormessage on messageText2 was '"
+                            + sendBitcoinConfirmPanel.getMessageText2() + "'",
+                    "".equals(sendBitcoinConfirmPanel.getMessageText2().trim())
+                            || EXPECTED_TEST_SEND_FAILED_ERROR.equals(sendBitcoinConfirmPanel.getMessageText2())
+                            || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
+
+            // Wait a while and the message should be that it has failed the
+            // send.
+            Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
+
+            assertEquals("Wrong message - expecting success on messageText1", EXPECTED_SEND_FAILED,
+                    sendBitcoinConfirmPanel.getMessageText1());
+            assertEquals("Wrong message - expecting success on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR,
+                    sendBitcoinConfirmPanel.getMessageText2());
+        }
     }
 }

@@ -36,6 +36,10 @@ import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
+import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,14 +60,17 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     private static final long BUTTON_DOWNCLICK_TIME = 400;
 
     private ResetTransactionsDataProvider resetTransactionsDataProvider;
+    
+    private MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public ResetTransactionsSubmitAction(MultiBitController controller, Icon icon,
+    public ResetTransactionsSubmitAction(MultiBitController controller, MultiBitFrame mainFrame, Icon icon,
             ResetTransactionsDataProvider resetTransactionsDataProvider) {
         super(controller, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
                 "resetTransactionsSubmitAction.mnemonicKey", icon);
+        this.mainFrame = mainFrame;
         this.resetTransactionsDataProvider = resetTransactionsDataProvider;
     }
 
@@ -144,23 +151,35 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
         }
         log.debug("RT Ping 13");
+        
+        // Double check wallet is not busy then declare that the active wallet
+        // is busy with the task
+        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
 
-        resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate);
-        log.debug("RT Ping 14");
+        if (!perWalletModelData.isBusy()) {
+            perWalletModelData.setBusy(true);
+            perWalletModelData.setBusyTask(controller.getLocaliser().getString("resetTransactionsSubmitAction.text"));
+            perWalletModelData.setBusyTaskVerb(controller.getLocaliser().getString("resetTransactionsSubmitAction.verb"));
 
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                thisAction.setEnabled(true);
-            }
-        }, BUTTON_DOWNCLICK_TIME);
+            controller.fireWalletBusyChange(true);
+
+            resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate, activePerWalletModelData.getWalletFilename());
+            log.debug("RT Ping 14");
+        }
+//
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                thisAction.setEnabled(true);
+//            }
+//        }, BUTTON_DOWNCLICK_TIME);
     }
 
     /**
      * Reset the transaction in a background Swing worker thread.
      */
-    private void resetTransactionsInBackground(final boolean resetFromFirstTransaction, final Date resetDate) {
+    private void resetTransactionsInBackground(final boolean resetFromFirstTransaction, final Date resetDate, final String walletFilename) {
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
 
             private String message = "";
@@ -169,20 +188,26 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             protected Boolean doInBackground() throws Exception {
                 Boolean successMeasure = Boolean.FALSE;
 
-//                try {
-                    List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
-                    perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
-                    ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, resetDate, null, -1);
-                    ReplayManager.INSTANCE.offerReplayTask(replayTask);
+                log.debug("Starting replay from date = " + resetDate);
+                List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+                perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
 
-                    //controller.getMultiBitService().replayBlockChain(resetDate);
+                // Work out the downloadListener.
+                SingleWalletPanelDownloadListener singleWalletPanelDownloadListener = null;
+                if (mainFrame != null) {
+                    WalletListPanel walletListPanel = mainFrame.getWalletsView();
+                    if (walletListPanel != null) {
+                        SingleWalletPanel singleWalletPanel = walletListPanel.findWalletPanelByFilename(walletFilename);
+                        if (singleWalletPanel != null) {
+                            singleWalletPanelDownloadListener = singleWalletPanel.getSingleWalletDownloadListener();
+                        }
+                    }
+                }
+                ReplayTask replayTask = new ReplayTask(perWalletModelDataList, singleWalletPanelDownloadListener, resetDate, null,
+                        -1);
+                ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
-                    successMeasure = Boolean.TRUE;
-//                } 
-//                catch (BlockStoreException e) {
-//                    message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
-//                            new Object[] { e.getMessage() });
-//                }
+                successMeasure = Boolean.TRUE;
 
                 return successMeasure;
             }

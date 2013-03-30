@@ -191,7 +191,7 @@ public class MultiBitService {
             log.debug("Created blockchain '" + blockChain + "'");
 
             log.debug("Creating peergroup ...");
-            peerGroup = createNewPeerGroup();
+            createNewPeerGroup();
             log.debug("Created peergroup '" + peerGroup + "'");
 
             log.debug("Starting peergroup ...");
@@ -284,8 +284,8 @@ public class MultiBitService {
         return blockStore;
     }
 
-    public MultiBitPeerGroup createNewPeerGroup() {
-        MultiBitPeerGroup peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
+    public void createNewPeerGroup() {
+        peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
@@ -343,7 +343,6 @@ public class MultiBitService {
                 }
             }
         }
-        return peerGroup;
     }
 
     public static String getFilePrefix() {
@@ -507,21 +506,6 @@ public class MultiBitService {
                 blockChain.addWallet(loopPerWalletModelData.getWallet());
             }
         }    
-    }
-    
-    public void restartPeerGroup() {
-        // Restart peerGroup and download.
-        Message message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"),
-                false, 0);
-        MessageManager.INSTANCE.addMessage(message);
-
-        peerGroup.stopAndWait();
-
-        // Reset UI to zero peers.
-        controller.getPeerEventListener().onPeerDisconnected(null, 0);
-
-        peerGroup = createNewPeerGroup();
-        peerGroup.start();
     }
 
     /**

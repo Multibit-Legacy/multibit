@@ -1241,6 +1241,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 }
             }
         }
+        
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            String walletIsBusyText = HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));
+            showImportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
+            showExportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
+            resetTransactionsAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
+            addPasswordAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
+            changePasswordAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
+            removePasswordAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
+
+        } else {
+            showImportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("showImportPrivateKeysAction.tooltip")));
+            showExportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip")));
+            resetTransactionsAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("resetTransactionsAction.tooltip")));
+            addPasswordAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("addPasswordAction.tooltip")));
+            changePasswordAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("changePasswordAction.tooltip")));
+            removePasswordAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("removePasswordAction.tooltip")));            
+        }
     }
 
     @Override
@@ -1390,7 +1408,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
         
-    private void updateHeaderOnSwingThread(final boolean filesHaveBeenChangedByAnotherProcess, final BigInteger estimatedBalance, final BigInteger availableToSpend, final boolean isCurrentlySynchronising, final String syncMessage, final double syncPercent) {
+    private void updateHeaderOnSwingThread(final boolean filesHaveBeenChangedByAnotherProcess, final BigInteger estimatedBalance, final BigInteger availableToSpend, final boolean isBusy, final String syncMessage, final double syncPercent) {
         if (filesHaveBeenChangedByAnotherProcess) {
             // Files have been changed by another process - blank totals
             // and put 'Updates stopped' message.
@@ -1402,17 +1420,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             availableBalanceBTCButton.setText(" ");
             availableBalanceFiatButton.setText(" ");
         } else {
-            if (syncMessage != null) {
+            if (isBusy) {
                 estimatedBalanceLabelLabel.setText(" ");
-                if (syncMessage != null) {
+                estimatedBalanceLabelLabel.setToolTipText(null);
+                if (syncMessage != null && !syncMessage.isEmpty()) {
                     estimatedBalanceBTCLabel.setText(syncMessage);
-                } else {
-                    estimatedBalanceBTCLabel.setText(" ");
+                    estimatedBalanceBTCLabel.setToolTipText(syncMessage);
                 }
                 if (syncPercent > -1) {
-                    estimatedBalanceFiatLabel.setText("(" + (int)syncPercent + "%)");
-                } else {
+                    estimatedBalanceFiatLabel.setText("(" + (int) syncPercent + "%)");
+                    estimatedBalanceFiatLabel.setToolTipText(syncMessage);
+                } else if (syncPercent == 0 || (syncMessage != null && !syncMessage.isEmpty())) {
                     estimatedBalanceFiatLabel.setText(" ");
+                    estimatedBalanceFiatLabel.setToolTipText(null);
+                } else {
+                    estimatedBalanceFiatLabel.setToolTipText(null);
                 }
                 availableBalanceBTCButton.setText(" ");
                 availableBalanceFiatButton.setText(" ");
@@ -1424,44 +1446,45 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 availableBalanceFiatButton.setVisible(false);
 
             } else {
-                if (!isCurrentlySynchronising) {
-                    estimatedBalanceLabelLabel.setText(controller.getLocaliser().getString("multiBitFrame.balanceLabel"));
-                    estimatedBalanceBTCLabel.setText(controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false));
-                    if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-                        Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
-                        estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
-                    } else {
-                        estimatedBalanceFiatLabel.setText(" ");
-                    }
+                estimatedBalanceLabelLabel.setText(controller.getLocaliser().getString("multiBitFrame.balanceLabel"));
+                estimatedBalanceLabelLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+                estimatedBalanceBTCLabel.setText(controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false));
+                estimatedBalanceBTCLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+                estimatedBalanceFiatLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+                if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+                    Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
+                    estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                } else {
+                    estimatedBalanceFiatLabel.setText(" ");
+                }
 
-                    if (availableToSpend != null && availableToSpend.equals(estimatedBalance)) {
-                        availableBalanceBTCButton.setText(" ");
-                        availableBalanceFiatButton.setText(" ");
-                        availableBalanceLabelButton.setEnabled(false);
-                        availableBalanceBTCButton.setEnabled(false);
-                        availableBalanceFiatButton.setEnabled(false);
-                        availableBalanceLabelButton.setVisible(false);
-                        availableBalanceBTCButton.setVisible(false);
-                        availableBalanceFiatButton.setVisible(false);
-                    } else {
-                        availableBalanceBTCButton.setText(controller.getLocaliser().bitcoinValueToString(availableToSpend, true,
-                                false));
-                        if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-                            Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(availableToSpend);
-                            if (fiat != null) {
-                                availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat)
-                                        + ")");
-                            }
-                        } else {
-                            availableBalanceFiatButton.setText(" ");
+                if (availableToSpend != null && availableToSpend.equals(estimatedBalance)) {
+                    availableBalanceBTCButton.setText(" ");
+                    availableBalanceFiatButton.setText(" ");
+                    availableBalanceLabelButton.setEnabled(false);
+                    availableBalanceBTCButton.setEnabled(false);
+                    availableBalanceFiatButton.setEnabled(false);
+                    availableBalanceLabelButton.setVisible(false);
+                    availableBalanceBTCButton.setVisible(false);
+                    availableBalanceFiatButton.setVisible(false);
+                } else {
+                    availableBalanceBTCButton
+                            .setText(controller.getLocaliser().bitcoinValueToString(availableToSpend, true, false));
+                    if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+                        Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(availableToSpend);
+                        if (fiat != null) {
+                            availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat)
+                                    + ")");
                         }
-                        availableBalanceLabelButton.setEnabled(true);
-                        availableBalanceBTCButton.setEnabled(true);
-                        availableBalanceFiatButton.setEnabled(true);
-                        availableBalanceLabelButton.setVisible(true);
-                        availableBalanceBTCButton.setVisible(true);
-                        availableBalanceFiatButton.setVisible(true);
+                    } else {
+                        availableBalanceFiatButton.setText(" ");
                     }
+                    availableBalanceLabelButton.setEnabled(true);
+                    availableBalanceBTCButton.setEnabled(true);
+                    availableBalanceFiatButton.setEnabled(true);
+                    availableBalanceLabelButton.setVisible(true);
+                    availableBalanceBTCButton.setVisible(true);
+                    availableBalanceFiatButton.setVisible(true);
                 }
             }
 
