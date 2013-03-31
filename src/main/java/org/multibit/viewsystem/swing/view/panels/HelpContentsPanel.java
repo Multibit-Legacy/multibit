@@ -102,7 +102,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         String useScreenMenuBar = System.getProperty("apple.laf.useScreenMenuBar");
         String lookAndFeel = "" + MultiBit.getController().getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL);
 
-        log.debug("apple.laf.useScreenMenuBar = " + useScreenMenuBar + ", lookAndFeel = " + lookAndFeel);
+        //log.debug("apple.laf.useScreenMenuBar = " + useScreenMenuBar + ", lookAndFeel = " + lookAndFeel);
 
         if (Boolean.TRUE.toString().equalsIgnoreCase(useScreenMenuBar) && ("system".equalsIgnoreCase(lookAndFeel)
                 || "null".equalsIgnoreCase(lookAndFeel)

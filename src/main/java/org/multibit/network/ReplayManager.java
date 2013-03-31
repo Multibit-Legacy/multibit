@@ -22,12 +22,14 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Timer;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
+import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,18 +48,25 @@ public enum ReplayManager {
     INSTANCE;
 
     private static final Logger log = LoggerFactory.getLogger(ReplayManager.class);
-
+    private ReplayManagerTimerTask replayManagerTimerTask;
+    private Timer replayManagerTimer;
+    
+    private static final int REPLAY_MANAGER_DELAY_TIME = 0; // ms
+    private static final int REPLAY_MANAGER_REPEAT_TIME = 333; // ms
+    
     private MultiBitController controller;
+
+    final private Queue<ReplayTask> replayTaskQueue = new LinkedList<ReplayTask>();
 
     public void initialise(MultiBitController controller) {
         this.controller = controller;
+        replayManagerTimerTask = new ReplayManagerTimerTask(controller, replayTaskQueue);
+        replayManagerTimer = new Timer();
+        replayManagerTimer.scheduleAtFixedRate(replayManagerTimerTask, REPLAY_MANAGER_DELAY_TIME, REPLAY_MANAGER_REPEAT_TIME);
     }
 
-    private Queue<ReplayTask> replayTaskQueue = new LinkedList<ReplayTask>();
-
     /**
-     * Synchronise a wallet with the blockchain. Assumes MultiBitService has
-     * been initialised Always uses SPVBlockStore
+     * Synchronise one or more wallets with the blockchain.
      */
     public void syncWallet(final ReplayTask replayTask) throws IOException,
             BlockStoreException {
@@ -139,41 +148,40 @@ public enum ReplayManager {
      * @param replayTask
      */
     public boolean offerReplayTask(ReplayTask replayTask) {
-        replayTaskQueue.offer(replayTask);
-
-        // TODO - put in worker thread.
-        try {
-            syncWallet(replayTask);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } catch (BlockStoreException bse) {
-            bse.printStackTrace();
+        synchronized(replayTaskQueue) {
+            replayTaskQueue.offer(replayTask);
         }
         return true;
     }
     
+    /**
+     * Called by the downloadlistener when the synchronise completes.
+     */
     public void currentTaskHasCompleted() {
-        // The downloadlistener listening to the replay reports that the current task has completed.
-        ReplayTask currentTask = replayTaskQueue.peek();
-        if (currentTask != null) {
-            // This task is complete.
-            List<PerWalletModelData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
-            if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                    perWalletModelData.setBusyTaskVerb(null);
-                    perWalletModelData.setBusyTask(null);
-                    perWalletModelData.setBusy(false);
+        // Tell the ReplayTimerTask that we are cleaning up.
+        replayManagerTimerTask.currentTaskIsTidyingUp(true);
+        
+        try {
+            ReplayTask currentTask = replayTaskQueue.peek();
+            if (currentTask != null) {
+                // This task is complete. Inform the UI.
+                List<PerWalletModelData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
+                if (perWalletModelDataList != null) {
+                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                        perWalletModelData.setBusyTaskVerb(null);
+                        perWalletModelData.setBusyTask(null);
+                        perWalletModelData.setBusy(false);
+                    }
                 }
+                // TODO - does not look quite right.
+                controller.fireWalletBusyChange(false);
             }
-            // TODO - does not look quite right.
-            controller.fireWalletBusyChange(false);
-            
-            // Remove that task from the queue.
-            log.debug("ReplayTask " + currentTask.toString() + " has completed.");
-            replayTaskQueue.poll();
-            
-            // Start the next task.
-            // TODO start the next replayTask in the queue.
+        } finally {
+            // No longer tidying up.
+            replayManagerTimerTask.currentTaskIsTidyingUp(false);
+
+            // Everything is completed - clear to start the next task.
+            replayManagerTimerTask.currentTaskHasCompleted();
         }
     }
 }

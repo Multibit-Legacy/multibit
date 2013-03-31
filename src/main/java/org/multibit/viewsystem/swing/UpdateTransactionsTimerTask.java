@@ -60,7 +60,8 @@ public class UpdateTransactionsTimerTask extends TimerTask {
     }
 
     public boolean isUpdateTransactions() {
-        return updateTransactions;
+        // Clone before return.
+        return updateTransactions ? true : false;
     }
 
     public void setUpdateTransactions(boolean updateTransactions) {
