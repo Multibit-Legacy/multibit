@@ -153,7 +153,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private final SingleWalletPanel thisPanel;
     
-    private final SingleWalletPanelDownloadListener singleWalletDownloadListener;
     private String lastSyncMessage;
     private double lastSyncPercent;
           
@@ -161,7 +160,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
-        this.singleWalletDownloadListener = new SingleWalletPanelDownloadListener(controller, this);
+        perWalletModelData.setSingleWalletDownloadListener(new SingleWalletPanelDownloadListener(controller, this));
   
         thisPanel = this;
 
@@ -567,7 +566,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // Update the tooltip.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            hourglassLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()})));           
+            if (perWalletModelData != null) {
+                String toolTipText = HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                        new Object[]{perWalletModelData.getBusyTask()}));
+                hourglassLabel.setToolTipText(toolTipText);           
+            } else {
+                hourglassLabel.setToolTipText(null);                
+            }
         } else {
             hourglassLabel.setToolTipText(null);
         }
@@ -1044,10 +1049,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     public boolean isSelectedInternal() {
         return selected;
-    }
-
-    public SingleWalletPanelDownloadListener getSingleWalletDownloadListener() {
-        return singleWalletDownloadListener;
     }
 
     @Override

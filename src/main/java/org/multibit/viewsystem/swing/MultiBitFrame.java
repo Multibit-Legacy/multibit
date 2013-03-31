@@ -34,6 +34,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Timer;
 
 import javax.swing.Action;
@@ -71,6 +72,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletBusyListener;
+import org.multibit.network.ReplayManager;
 import org.multibit.platform.GenericApplication;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
@@ -78,6 +80,7 @@ import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.Viewable;
+import org.multibit.viewsystem.swing.action.CloseWalletAction;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.ExitAction;
@@ -757,6 +760,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
+        CloseWalletAction closeWalletAction = new CloseWalletAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.CLOSE_WALLET_ICON_FILE), this);
+        menuItem = new JMenuItem(closeWalletAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        fileMenu.add(menuItem);
+
+        fileMenu.addSeparator();
+        
         DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
         menuItem = new JMenuItem(deleteWalletAction);
@@ -1027,6 +1039,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         if (initUI) {
+            // Remember and replay task and remove any listeners.
+            List<PerWalletModelData> replayPerWalletModelDataList = null;
+            if (ReplayManager.INSTANCE.getCurrentReplayTask() != null) {
+                replayPerWalletModelDataList = ReplayManager.INSTANCE.getCurrentReplayTask().getPerWalletModelDataToReplay();
+            }
+            ReplayManager.INSTANCE.removeDownloadListenersToPeerGroup(replayPerWalletModelDataList);
+            
             thisFrame.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
             viewFactory.initialise();
@@ -1034,6 +1053,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewTabbedPane.removeAllTabs();
             initUI();
             
+            // TODO check task is still running by taskid.
+            if (replayPerWalletModelDataList != null) {
+                ReplayManager.INSTANCE.addDownloadListenersToPeerGroup(replayPerWalletModelDataList);
+            }
+                
             if (initialView != null && !(initialView == View.TRANSACTIONS_VIEW) && !(initialView == View.SEND_BITCOIN_VIEW)
                     && !(initialView == View.RECEIVE_BITCOIN_VIEW)) {
                 JPanel currentTabPanel = new JPanel(new BorderLayout());

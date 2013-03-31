@@ -202,7 +202,6 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         log.debug("User preferences with old wallet deleted were written successfully");
 
         controller.fireRecreateAllViews(true);
-        controller.fireDataChangedUpdateNow();
         
         return newWalletCreated;
     }

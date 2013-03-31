@@ -2,13 +2,12 @@ package org.multibit.network;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Map;
 
-import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.VerificationException;
 
 public class MultiBitCheckpointManager extends CheckpointManager {
 
@@ -17,10 +16,10 @@ public class MultiBitCheckpointManager extends CheckpointManager {
     }
     
     /**
-     * Returns a {@link StoredBlock} representing the last checkpoint before the given block height, for example, normally
+     * Returns a {@link Date} representing the date of the last checkpoint before the given block height, for example, normally
      * you would want to know the checkpoint before the last block the wallet had seen.
      */
-    public StoredBlock getCheckpointBeforeHeight(int height) {
+    public Date getCheckpointDateBeforeOrAtHeight(int height) {
         Map.Entry<Long, StoredBlock> highestCheckpointBeforeHeight = null;
         
         for (Map.Entry<Long, StoredBlock> loop : checkpoints.entrySet()) {
@@ -38,13 +37,8 @@ public class MultiBitCheckpointManager extends CheckpointManager {
         }
         
         if (highestCheckpointBeforeHeight == null) {
-            try {
-                Block genesis = params.genesisBlock.cloneAsHeader();
-                return new StoredBlock(genesis, genesis.getWork(), 0);
-            } catch (VerificationException e) {
-                throw new RuntimeException(e);  // Cannot happen.
-            }
+            return params.genesisBlock.getTime();
         }
-        return highestCheckpointBeforeHeight.getValue();
+        return new Date(highestCheckpointBeforeHeight.getKey() * 1000);
     }
 }

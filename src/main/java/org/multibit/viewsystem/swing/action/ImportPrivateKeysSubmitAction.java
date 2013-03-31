@@ -47,7 +47,6 @@ import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
-import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -366,18 +365,18 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                         List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
                         perWalletModelDataList.add(finalPerWalletModelData);
                         
-                        // Work out the downloadListener.
-                        SingleWalletPanelDownloadListener singleWalletPanelDownloadListener = null;
+                        // Initialise the message shown in the SingleWalletPanel
                         if (mainFrame != null) {
                             WalletListPanel walletListPanel = mainFrame.getWalletsView();
                             if (walletListPanel != null) {
                                 SingleWalletPanel singleWalletPanel = walletListPanel.findWalletPanelByFilename(finalPerWalletModelData.getWalletFilename());
+
                                 if (singleWalletPanel != null) {
-                                    singleWalletPanelDownloadListener = singleWalletPanel.getSingleWalletDownloadListener();
+                                    singleWalletPanel.setSyncMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.verb"), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
                                 }
                             }
                         }
-                        ReplayTask replayTask = new ReplayTask(perWalletModelDataList, singleWalletPanelDownloadListener, earliestTransactionDate, null, -1);
+                        ReplayTask replayTask = new ReplayTask(perWalletModelDataList, earliestTransactionDate, null, -1);
                         ReplayManager.INSTANCE.offerReplayTask(replayTask);
                         successMeasure = Boolean.TRUE;
                     }

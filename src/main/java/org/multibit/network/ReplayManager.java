@@ -16,6 +16,8 @@
 
 package org.multibit.network;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
@@ -33,6 +35,7 @@ import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.store.BlockStoreException;
 
@@ -128,18 +131,45 @@ public enum ReplayManager {
         controller.getMultiBitService().createNewPeerGroup();
         log.debug("Recreated PeerGroup.");
         
-        PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
-        if (peerGroup instanceof MultiBitPeerGroup && replayTask.getSingleWalletPanelDownloadListener() != null) {
-            ((MultiBitPeerGroup)peerGroup).getMultiBitDownloadListener().addSingleWalletPanelDownloadListener(replayTask.getSingleWalletPanelDownloadListener());
-        }
+        // Hook up the download listeners.
+        addDownloadListenersToPeerGroup(perWalletModelDataList);
 
         // Start up the PeerGroup.
+        PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
         peerGroup.start();
         log.debug("Restarted PeerGroup = " + peerGroup.toString());
               
         log.debug("About to start  blockchain download.");
         controller.getMultiBitService().downloadBlockChain();
         log.debug("Blockchain download started.");
+    }
+    
+    public void addDownloadListenersToPeerGroup(List<PerWalletModelData> perWalletModelDataList) {
+        PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
+        if (peerGroup instanceof MultiBitPeerGroup) {
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    if (perWalletModelData.getSingleWalletDownloadListener() != null) {
+                        ((MultiBitPeerGroup) peerGroup).getMultiBitDownloadListener().addSingleWalletPanelDownloadListener(
+                                perWalletModelData.getSingleWalletDownloadListener());
+                    }
+                }
+            }
+        }
+    }
+
+    public void removeDownloadListenersToPeerGroup(List<PerWalletModelData> perWalletModelDataList) {
+        PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
+        if (peerGroup instanceof MultiBitPeerGroup) {
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    if (perWalletModelData.getSingleWalletDownloadListener() != null) {
+                        ((MultiBitPeerGroup) peerGroup).getMultiBitDownloadListener().removeDownloadListener(
+                                perWalletModelData.getSingleWalletDownloadListener());
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -148,12 +178,16 @@ public enum ReplayManager {
      * @param replayTask
      */
     public boolean offerReplayTask(ReplayTask replayTask) {
+        if (replayTask == null) {
+            return false;
+        }
+        
         synchronized(replayTaskQueue) {
             replayTaskQueue.offer(replayTask);
         }
         return true;
     }
-    
+     
     /**
      * Called by the downloadlistener when the synchronise completes.
      */
@@ -162,6 +196,8 @@ public enum ReplayManager {
         replayManagerTimerTask.currentTaskIsTidyingUp(true);
         
         try {
+            PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
+
             ReplayTask currentTask = replayTaskQueue.peek();
             if (currentTask != null) {
                 // This task is complete. Inform the UI.
@@ -171,6 +207,8 @@ public enum ReplayManager {
                         perWalletModelData.setBusyTaskVerb(null);
                         perWalletModelData.setBusyTask(null);
                         perWalletModelData.setBusy(false);
+                        ((MultiBitPeerGroup) peerGroup).getMultiBitDownloadListener().removeDownloadListener(
+                                perWalletModelData.getSingleWalletDownloadListener());
                     }
                 }
                 // TODO - does not look quite right.
@@ -182,6 +220,16 @@ public enum ReplayManager {
 
             // Everything is completed - clear to start the next task.
             replayManagerTimerTask.currentTaskHasCompleted();
+        }
+    }
+    
+    public ReplayTask getCurrentReplayTask() {
+        synchronized (replayTaskQueue) {
+            if (replayTaskQueue.isEmpty()) {
+                return null;
+            } else {
+                return replayTaskQueue.peek();
+            }
         }
     }
 }

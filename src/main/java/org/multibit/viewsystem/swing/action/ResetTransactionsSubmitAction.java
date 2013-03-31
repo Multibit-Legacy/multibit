@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -44,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * This {@link Action} resets the blockchain and transactions.
@@ -56,8 +53,6 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     private static final long serialVersionUID = 1923492460523457765L;
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
-
-    private static final long BUTTON_DOWNCLICK_TIME = 400;
 
     private ResetTransactionsDataProvider resetTransactionsDataProvider;
     
@@ -166,14 +161,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate, activePerWalletModelData.getWalletFilename());
             log.debug("RT Ping 14");
         }
-//
-//        Timer timer = new Timer();
-//        timer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                thisAction.setEnabled(true);
-//            }
-//        }, BUTTON_DOWNCLICK_TIME);
+
     }
 
     /**
@@ -192,18 +180,17 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                 List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
                 perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
 
-                // Work out the downloadListener.
-                SingleWalletPanelDownloadListener singleWalletPanelDownloadListener = null;
+                // Initialise the message in the SingleWalletPanel.
                 if (mainFrame != null) {
                     WalletListPanel walletListPanel = mainFrame.getWalletsView();
                     if (walletListPanel != null) {
                         SingleWalletPanel singleWalletPanel = walletListPanel.findWalletPanelByFilename(walletFilename);
                         if (singleWalletPanel != null) {
-                            singleWalletPanelDownloadListener = singleWalletPanel.getSingleWalletDownloadListener();
+                            singleWalletPanel.setSyncMessage(controller.getLocaliser().getString("resetTransactionsSubmitAction.verb"), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
                         }
                     }
                 }
-                ReplayTask replayTask = new ReplayTask(perWalletModelDataList, singleWalletPanelDownloadListener, resetDate, null,
+                ReplayTask replayTask = new ReplayTask(perWalletModelDataList, resetDate, null,
                         -1);
                 ReplayManager.INSTANCE.offerReplayTask(replayTask);
 

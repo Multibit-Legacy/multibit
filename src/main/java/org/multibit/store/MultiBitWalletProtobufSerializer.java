@@ -91,6 +91,10 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
         if (lastSeenBlockHash != null) {
             walletBuilder.setLastSeenBlockHash(hashToByteString(lastSeenBlockHash));
         }
+        
+        // Populate the lastSeenBlockHeight field.
+        int lastSeenBlockHeight = wallet.getLastBlockSeenHeight();
+        walletBuilder.setLastSeenBlockHeight(lastSeenBlockHeight);
 
         // Populate the scrypt parameters.
         KeyCrypter keyCrypter = wallet.getKeyCrypter();
@@ -208,6 +212,12 @@ public class MultiBitWalletProtobufSerializer extends WalletProtobufSerializer {
             wallet.setLastBlockSeenHash(null);
         } else {
             wallet.setLastBlockSeenHash(byteStringToHash(walletProto.getLastSeenBlockHash()));
+        }
+        
+        if (!walletProto.hasLastSeenBlockHeight()) {
+            wallet.setLastBlockSeenHeight(-1);
+        } else {
+            wallet.setLastBlockSeenHeight(walletProto.getLastSeenBlockHeight());
         }
 
         for (Protos.Extension extProto : walletProto.getExtensionList()) {

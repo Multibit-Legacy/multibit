@@ -111,4 +111,15 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
         singleWalletPanel.setSyncMessage(downloadStatusText, 100);
     }
+    
+    /**
+     *  Set a sync message on the underlying SingleWalletPanel
+     * @param message
+     * @param syncPercent
+     */
+    public void setSyncMessage(String message, double syncPercent) {
+        if (singleWalletPanel != null) {
+            singleWalletPanel.setSyncMessage(message, syncPercent);
+        }
+    }
 }

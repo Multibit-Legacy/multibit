@@ -126,9 +126,11 @@ public class MultiBitService {
 
     private SecureRandom secureRandom = new SecureRandom();
 
+    private MultiBitCheckpointManager checkpointManager;
     private String checkpointsFilename;
 
     public static Date genesisBlockCreationDate;
+    
 
     static {
         try {
@@ -204,6 +206,22 @@ public class MultiBitService {
         } catch (Exception e) {
             handleError(e);
         }
+        
+        FileInputStream stream = null;
+        try {
+            stream = new FileInputStream(checkpointsFilename);
+            checkpointManager = new MultiBitCheckpointManager(networkParameters, stream);
+        } catch (IOException e) {
+            log.error("Error creating checkpointManager " + e.getClass().getName() + " " + e.getMessage());
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    log.error("Error tidying up checkpointManager creation" + e.getClass().getName() + " " + e.getMessage());
+                }
+            }
+        }
     }
 
     private void handleError(Exception e) {
@@ -233,7 +251,7 @@ public class MultiBitService {
             spvBlockStoreFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
                     + filePrefix + SPV_BLOCKCHAIN_SUFFIX;
             checkpointsFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
-                    + filePrefix + CHECKPOINTS_SUFFIX;
+            + filePrefix + CHECKPOINTS_SUFFIX;
         }
 
         File bobsBlockStore = new File(bobsBlockStoreFilename);
@@ -626,5 +644,9 @@ public class MultiBitService {
 
     public String getCheckpointsFilename() {
         return checkpointsFilename;
+    }
+
+    public MultiBitCheckpointManager getCheckpointManager() {
+        return checkpointManager;
     };
 }

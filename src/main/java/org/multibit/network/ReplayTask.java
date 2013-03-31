@@ -4,9 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
-
-import com.google.bitcoin.core.DownloadListener;
 
 /**
  * A class encapsulating a request on one or more wallets to perform a
@@ -20,18 +17,12 @@ public class ReplayTask {
     private final Date stopDate;
     
     private final int stopBlockHeight;
-    
-    /**
-     * A single wallet download listener that will be informed of progress of the download.
-     */
-    private final SingleWalletPanelDownloadListener singleWalletPanelDownloadListener;
-    
-    public ReplayTask( List<PerWalletModelData> perWalletModelDataToReplay, SingleWalletPanelDownloadListener singleWalletPanelDownloadListener, Date startDate, Date stopDate, int stopBlockHeight) {
+       
+    public ReplayTask( List<PerWalletModelData> perWalletModelDataToReplay, Date startDate, Date stopDate, int stopBlockHeight) {
         this.perWalletModelDataToReplay = perWalletModelDataToReplay;
         this.startDate = startDate;
         this.stopDate = stopDate;
         this.stopBlockHeight = stopBlockHeight;
-        this.singleWalletPanelDownloadListener = singleWalletPanelDownloadListener;
     }
 
     public List<PerWalletModelData> getPerWalletModelDataToReplay() {
@@ -94,9 +85,5 @@ public class ReplayTask {
     public String toString() {
         return "ReplayTask [startDate=" + startDate + ", stopDate=" + stopDate
                 + ", stopBlockHeight=" + stopBlockHeight + "]";
-    }
-
-    public SingleWalletPanelDownloadListener getSingleWalletPanelDownloadListener() {
-        return singleWalletPanelDownloadListener;
     }
 }

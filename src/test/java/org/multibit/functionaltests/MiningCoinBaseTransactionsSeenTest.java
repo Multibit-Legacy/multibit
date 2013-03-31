@@ -148,7 +148,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             //multiBitService.replayBlockChain(formatter.parse(START_OF_REPLAY_PERIOD));
             List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
             perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
-            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, formatter.parse(START_OF_REPLAY_PERIOD), null, -1);
+            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, formatter.parse(START_OF_REPLAY_PERIOD), null, -1);
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
             // Wait for blockchain replay to download more than the required amount.

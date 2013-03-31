@@ -23,6 +23,9 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -38,16 +41,23 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.network.MultiBitCheckpointManager;
+import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
+import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.Wallet;
+
 /**
- * This {@link Action} opens a wallet from a file
+ * This {@link Action} opens a wallet from a file.
  */
 public class OpenWalletAction extends AbstractAction {
 
@@ -79,7 +89,7 @@ public class OpenWalletAction extends AbstractAction {
     }
 
     /**
-     * show open file chooser and load wallet
+     * Show open file chooser and load wallet.
      */
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -107,6 +117,8 @@ public class OpenWalletAction extends AbstractAction {
 
             fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             int returnVal = fileChooser.showOpenDialog(mainFrame);
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
@@ -133,7 +145,7 @@ public class OpenWalletAction extends AbstractAction {
     }
 
     /**
-     * open a wallet in a background Swing worker thread
+     * Open a wallet in a background Swing worker thread.
      * @param selectedWalletFilename Filename of wallet to open
      */
     private void openWalletInBackground(String selectedWalletFilename) {
@@ -146,16 +158,16 @@ public class OpenWalletAction extends AbstractAction {
             @Override
             protected Boolean doInBackground() throws Exception {
                 try {
-                    log.debug("Opening wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
+                    log.debug("Opening wallet '" + selectedWalletFilenameFinal + "'.");
 
                     controller.addWalletFromFilename(selectedWalletFilenameFinal);
                     controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
 
-                    // save the user properties to disk
+                    // Save the user properties to disk.
                     FileHandler.writeUserPreferences(controller);
                     log.debug("User preferences with new wallet written successfully");
  
-                    message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal});
+                    message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal}); 
                     
                     return Boolean.TRUE;
                 } catch (WalletLoadException e) {
@@ -183,8 +195,57 @@ public class OpenWalletAction extends AbstractAction {
                         messageMessage.setShowInStatusBar(false);
                         MessageManager.INSTANCE.addMessage(messageMessage);  
                         
+                        // Work out the late date/ block the wallet saw to see if it needs syncing.
+                        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+                        Wallet wallet = perWalletModelData.getWallet();
+                        int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
+                        log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was " + lastBlockSeenHeight);
+                        
+                        int currentChainHeight = -1;
+                        if (controller.getMultiBitService().getChain() != null) {
+                            if (controller.getMultiBitService().getChain().getChainHead() != null) {
+                                currentChainHeight = controller.getMultiBitService().getChain().getChainHead().getHeight();
+                            }
+                        }
+                        log.debug("The current chain height is " + currentChainHeight);
+                        
+                        boolean needToSync = false;
+                        Date syncFromDate = null;
+                        
+                        // Check if we have both the lastBlockSeenHeight and the currentChainHeight.
+                        if (lastBlockSeenHeight > 0 && currentChainHeight > 0) {
+                            if (lastBlockSeenHeight >= currentChainHeight) {
+                                // Wallet is at or ahead of current chain - no need to sync.
+                            } else {
+                                // Wallet is behind the current chain - need to sync.
+                                needToSync = true;
+                                MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
+                                if (checkpointManager != null) {
+                                    syncFromDate = checkpointManager.getCheckpointDateBeforeOrAtHeight(lastBlockSeenHeight);
+                                }
+                            }
+                        }
+                        
+                        log.debug("needToSync = " + needToSync + ", syncFromDate =" + syncFromDate);
+
+                        
+                        if (needToSync) {
+                            // Initialise the message in the singleWalletPanel.
+                            if (mainFrame != null) {
+                                WalletListPanel walletListPanel = mainFrame.getWalletsView();
+                                if (walletListPanel != null) {
+                                    SingleWalletPanel singleWalletPanel = walletListPanel.findWalletPanelByFilename(selectedWalletFilenameFinal);
+                                    if (singleWalletPanel != null) {
+                                        singleWalletPanel.setSyncMessage(controller.getLocaliser().getString("multiBitDownloadListener.downloadingTextShort"), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
+                                    }
+                                }
+                            }
+                            List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+                            perWalletModelDataList.add(perWalletModelData);
+                            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, syncFromDate, null, -1);
+                            ReplayManager.INSTANCE.offerReplayTask(replayTask);
+                        }
                         controller.fireRecreateAllViews(true);
-                        controller.fireDataChangedUpdateNow();
                     } else {
                         log.error(message);
                         MessageManager.INSTANCE.addMessage(new Message(message));
@@ -197,7 +258,7 @@ public class OpenWalletAction extends AbstractAction {
                         }
                     }
                 } catch (Exception e) {
-                    // not really used but caught so that SwingWorker shuts down cleanly
+                    // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
                 } finally {
                     setEnabled(true);
@@ -207,18 +268,20 @@ public class OpenWalletAction extends AbstractAction {
                 }
             }
         };
-        log.debug("Executing open of wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
+        log.debug("Executing open of wallet '" + selectedWalletFilenameFinal + "'.");
         worker.execute();
     }
     
     private void setFileChooserFont(Component[] comp) {
         for (int x = 0; x < comp.length; x++) {
-            if (comp[x] instanceof Container)
+            if (comp[x] instanceof Container) {
                 setFileChooserFont(((Container) comp[x]).getComponents());
+            }
             try {
                 comp[x].setFont(adjustedFont);
             } catch (Exception e) {
-            }// do nothing
+                // Do nothing.
+            }
         }
     }
 }

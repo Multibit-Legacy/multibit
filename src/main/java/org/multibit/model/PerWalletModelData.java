@@ -17,6 +17,8 @@ package org.multibit.model;
 
 import java.util.List;
 
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
+
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -72,6 +74,12 @@ public class PerWalletModelData {
      * It is displayed instead of the balance amount so needs to be short.
      */
     private transient String busyTaskVerb;
+    
+    /**
+     * A listener used by the SingleWalletPanel to receive updates on busy status.
+     */
+    private transient SingleWalletPanelDownloadListener singleWalletDownloadListener;
+
     
     public PerWalletModelData() {
         isDirty = false;
@@ -193,5 +201,13 @@ public class PerWalletModelData {
 
     public void setBusyTaskVerb(String busyTaskVerb) {
         this.busyTaskVerb = busyTaskVerb;
+    }
+
+    public void setSingleWalletDownloadListener(SingleWalletPanelDownloadListener singleWalletDownloadListener) {
+        this.singleWalletDownloadListener = singleWalletDownloadListener;
+    }
+
+    public SingleWalletPanelDownloadListener getSingleWalletDownloadListener() {
+        return singleWalletDownloadListener;
     }
 }
