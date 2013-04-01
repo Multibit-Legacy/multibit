@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Timer;
+import java.util.UUID;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
@@ -75,7 +76,7 @@ public enum ReplayManager {
             BlockStoreException {
         log.info("Starting replay task : " + replayTask.toString());
 
-        // Mark the wallets as busy.
+        // Mark the wallets as busy and set the replay task uuid into the model
         List<PerWalletModelData> perWalletModelDataList = replayTask.getPerWalletModelDataToReplay();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
@@ -83,6 +84,7 @@ public enum ReplayManager {
                 perWalletModelData.setBusyTask(controller.getLocaliser().getString("multiBitDownloadListener.downloadingText"));
                 perWalletModelData.setBusyTaskVerb(controller.getLocaliser().getString(
                         "multiBitDownloadListener.downloadingTextShort"));
+                perWalletModelData.setReplayTaskUUID(replayTask.getUuid());
             }
             controller.fireWalletBusyChange(true);
         }
@@ -132,7 +134,7 @@ public enum ReplayManager {
         log.debug("Recreated PeerGroup.");
         
         // Hook up the download listeners.
-        addDownloadListenersToPeerGroup(perWalletModelDataList);
+        addDownloadListeners(perWalletModelDataList);
 
         // Start up the PeerGroup.
         PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
@@ -144,7 +146,7 @@ public enum ReplayManager {
         log.debug("Blockchain download started.");
     }
     
-    public void addDownloadListenersToPeerGroup(List<PerWalletModelData> perWalletModelDataList) {
+    public void addDownloadListeners(List<PerWalletModelData> perWalletModelDataList) {
         PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
         if (peerGroup instanceof MultiBitPeerGroup) {
             if (perWalletModelDataList != null) {
@@ -158,7 +160,7 @@ public enum ReplayManager {
         }
     }
 
-    public void removeDownloadListenersToPeerGroup(List<PerWalletModelData> perWalletModelDataList) {
+    public void removeDownloadListeners(List<PerWalletModelData> perWalletModelDataList) {
         PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
         if (peerGroup instanceof MultiBitPeerGroup) {
             if (perWalletModelDataList != null) {
@@ -184,21 +186,42 @@ public enum ReplayManager {
         
         synchronized(replayTaskQueue) {
             replayTaskQueue.offer(replayTask);
+            String waitingText = controller.getLocaliser().getString("singleWalletPanel.waiting.text");
+            String waitingVerb = controller.getLocaliser().getString("singleWalletPanel.waiting.verb");
+            
+            for (PerWalletModelData perWalletModelData : replayTask.getPerWalletModelDataToReplay()) {
+                if (perWalletModelData != null) {
+                    perWalletModelData.setBusy(true);
+                    perWalletModelData.setBusyTaskVerb(waitingVerb);
+                    perWalletModelData.setBusyTask(waitingText);
+                }
+            }
         }
         return true;
     }
      
     /**
      * Called by the downloadlistener when the synchronise completes.
+     * @param replayTaskUUID TODO
      */
-    public void currentTaskHasCompleted() {
+    public void taskHasCompleted(UUID replayTaskUUID) {
+        log.debug("ReplayTask with UUID " + replayTaskUUID + " has completed.");
+        // Check the UUID matches the current task.
+        ReplayTask currentTask = replayTaskQueue.peek();
+        if (currentTask == null) {
+            return;
+        } else {
+            // Not relevant - ignore.
+            if (!currentTask.getUuid().equals(replayTaskUUID)) {
+                return;
+            }
+        }
+        
         // Tell the ReplayTimerTask that we are cleaning up.
         replayManagerTimerTask.currentTaskIsTidyingUp(true);
         
         try {
             PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
-
-            ReplayTask currentTask = replayTaskQueue.peek();
             if (currentTask != null) {
                 // This task is complete. Inform the UI.
                 List<PerWalletModelData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
@@ -207,8 +230,7 @@ public enum ReplayManager {
                         perWalletModelData.setBusyTaskVerb(null);
                         perWalletModelData.setBusyTask(null);
                         perWalletModelData.setBusy(false);
-                        ((MultiBitPeerGroup) peerGroup).getMultiBitDownloadListener().removeDownloadListener(
-                                perWalletModelData.getSingleWalletDownloadListener());
+                        perWalletModelData.setReplayTaskUUID(null);
                     }
                 }
                 // TODO - does not look quite right.
@@ -229,6 +251,33 @@ public enum ReplayManager {
                 return null;
             } else {
                 return replayTaskQueue.peek();
+            }
+        }
+    }
+    
+    /**
+     * See if there is a waiting replay task for a perWalletModelData
+     * @param perModelWalletData
+     * @return the waiting ReplayTask or null if there is not one.
+     */
+    @SuppressWarnings("unchecked")
+    public ReplayTask getWaitingReplayTask(PerWalletModelData perWalletModelData) {
+        synchronized (replayTaskQueue) {
+            if (replayTaskQueue.isEmpty()) {
+                return null;
+            } else {
+                for (ReplayTask replayTask : (List<ReplayTask>)replayTaskQueue) {
+                    List<PerWalletModelData> list = replayTask.getPerWalletModelDataToReplay();
+                    if (list != null) {
+                        for (PerWalletModelData item : list) {
+                            if (perWalletModelData.getWalletFilename().equals(item.getWalletFilename())) {
+                                return replayTask;
+                            }
+                        }
+                    }
+                    
+                }
+                return null;
             }
         }
     }

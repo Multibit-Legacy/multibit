@@ -54,6 +54,8 @@ import org.multibit.message.Message;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.network.MultiBitDownloadListener;
+import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
@@ -153,7 +155,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private final SingleWalletPanel thisPanel;
     
-    private String lastSyncMessage;
     private double lastSyncPercent;
           
     public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
@@ -393,20 +394,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.gridy = 3;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 2;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         myRoundedPanel.add(amountLabelBTC, constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 7;
-        constraints.gridy = 3;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        myRoundedPanel.add(MultiBitTitledPanel.createStent(1), constraints);
 
         constraints.fill = GridBagConstraints.VERTICAL;
         constraints.gridx = 8;
@@ -480,7 +471,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         setSelected(false);
              
-        updateFromModel(false);
+        updateFromModel(false, true);
         
         addKeyListener(new KeyAdapter() {
             @Override
@@ -491,6 +482,18 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 super.keyTyped(arg0);                
             }    
         });
+        
+        // See if there is a waiting ReplayTask for this SingleWalletPanel and set up UI accordingly.
+        ReplayTask replayTask = ReplayManager.INSTANCE.getWaitingReplayTask(perWalletModelData);
+        if (replayTask != null) {
+            String waitingText = controller.getLocaliser().getString("singleWalletPanel.waiting.verb");
+            
+            // When busy occasionally the localiser fails to localise.
+            if (!(waitingText.indexOf("singleWalletPanel.waiting.verb") > -1)) {
+                setSyncMessage(waitingText, Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
+            }
+
+        }
     }
 
     private void setIconForWalletType(EncryptionType walletType, JButton button) {
@@ -560,7 +563,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletFilenameLabel.addMouseListener(mouseListener);
     }
 
-    public void setBusy(boolean isBusy) {
+    public void setBusyIconStatus(boolean isBusy) {
         hourglassLabel.setVisible(isBusy);
         
         // Update the tooltip.
@@ -711,7 +714,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     /**
      * Update any UI elements from the model (hint that data has changed).
      */
-    public void updateFromModel(boolean blinkEnabled) { 
+    public void updateFromModel(boolean blinkEnabled, boolean useBusyStatus) { 
         inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
                 ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
 
@@ -723,8 +726,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")";
         }
         
-        if (perWalletModelData.isBusy()) {
-            setSyncMessage(lastSyncMessage, lastSyncPercent);
+        if (useBusyStatus && perWalletModelData.isBusy()) {
+            if (lastSyncPercent > 0) {
+                setSyncMessage(perWalletModelData.getBusyTaskVerb(), lastSyncPercent);
+            } else {
+                setSyncMessage(perWalletModelData.getBusyTaskVerb(), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);                
+            }
         } else {
             if (amountLabelBTC != null && amountLabelBTC.getText() != null && !"".equals(amountLabelBTC.getText())
                     && !balanceTextToShowBTC.equals(amountLabelBTC.getText()) && blinkEnabled) {
@@ -1017,19 +1024,29 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             return;
         }
         
-        lastSyncMessage = message;
         lastSyncPercent = syncPercent;
         
         if (syncPercent > MultiBitDownloadListener.DONE_FOR_DOUBLES) {
-            updateFromModel(false);
+            updateFromModel(false, false);
         } else {
+            if (perWalletModelData.isBusy()) {
+                // It shoud always be whilst a download is occurring.
+                setBusyIconStatus(true);
+            }
+            
             String percentText = " ";
             if (syncPercent > Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
                 percentText = "(" + (int)syncPercent + "%)"; 
             }
+            amountLabelBTC.setBlinkEnabled(false);
+            amountLabelFiat.setBlinkEnabled(false);
+            
             amountLabelBTC.setText(message);
             amountLabelFiat.setText(percentText);
-            
+
+            amountLabelBTC.setBlinkEnabled(true);
+            amountLabelFiat.setBlinkEnabled(true);
+
             if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
                 mainFrame.updateHeader(message, syncPercent);
             }
@@ -1053,12 +1070,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
-        if (lastSyncMessage != null) {
-            // Already have a sync message.
-        } else {
-            if (perWalletModelData.isBusy()) {
-                setSyncMessage(perWalletModelData.getBusyTaskVerb(), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
-            }
+        if (perWalletModelData.isBusy()) {
+            setSyncMessage(perWalletModelData.getBusyTaskVerb(), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
         }
     }
 }

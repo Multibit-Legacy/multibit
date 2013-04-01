@@ -41,8 +41,10 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.AlertManager;
+import org.multibit.network.MultiBitCheckpointManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
@@ -55,8 +57,12 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
+import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.Wallet;
 
 /**
  * Main MultiBit entry class.
@@ -445,8 +451,8 @@ public class MultiBit {
             controller.handleOpenURI();
 
             // Check if any wallets need migrating from serialised to protobuf.
-            MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, (MultiBitFrame) swingViewSystem);
-            migrateWalletsAction.actionPerformed(null);
+            //MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, (MultiBitFrame) swingViewSystem);
+            //migrateWalletsAction.actionPerformed(null);
 
             // Check to see if there is a new version.
             AlertManager.INSTANCE.initialise(controller, (MultiBitFrame) swingViewSystem);
@@ -458,7 +464,71 @@ public class MultiBit {
                 controller.getMultiBitService().getPeerGroup().setFastCatchupTimeSecs(earliestTimeSecs);
                 log.debug("Using FastCatchup for blockchain sync with time of " + (new Date(earliestTimeSecs)).toString());
             }
-            multiBitService.downloadBlockChain();
+            
+            // Work out the late date/ block the wallets saw to see if it needs syncing
+            // or if we can use regular downloading
+            int currentChainHeight = -1;
+            if (controller.getMultiBitService().getChain() != null) {
+                if (controller.getMultiBitService().getChain().getChainHead() != null) {
+                    currentChainHeight = controller.getMultiBitService().getChain().getChainHead().getHeight();
+                }
+            }
+            
+            log.debug("The current chain height is " + currentChainHeight);
+            
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            boolean needToSync = false;
+            int syncFromHeight = -1;
+
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    Wallet wallet = perWalletModelData.getWallet();
+                    int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
+                    log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was " + lastBlockSeenHeight);
+    
+                    // Check if we have both the lastBlockSeenHeight and the currentChainHeight.
+                    if (lastBlockSeenHeight > 0 && currentChainHeight > 0) {
+                        if (lastBlockSeenHeight >= currentChainHeight) {
+                            // Wallet is at or ahead of current chain - no need to sync for this wallet.
+                        } else {
+                            // Wallet is behind the current chain - need to sync.
+                            needToSync = true;
+                            
+                            
+                            if (syncFromHeight == -1) {
+                                syncFromHeight = lastBlockSeenHeight;
+                            } else {
+                                syncFromHeight = Math.min(syncFromHeight, lastBlockSeenHeight);
+                            }
+                        }
+                    }
+                }
+            } 
+            log.debug("needToSync = " + needToSync);
+
+            if (needToSync) {
+                Date syncFromDate = null;
+
+                MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
+                if (checkpointManager != null) {
+                    syncFromDate = checkpointManager.getCheckpointDateBeforeOrAtHeight(syncFromHeight);
+                }
+//                // Initialise the message in the singleWalletPanel.
+//                if (mainFrame != null) {
+//                    WalletListPanel walletListPanel = mainFrame.getWalletsView();
+//                    if (walletListPanel != null) {
+//                        SingleWalletPanel singleWalletPanel = walletListPanel.findWalletPanelByFilename(selectedWalletFilenameFinal);
+//                        if (singleWalletPanel != null) {
+//                            singleWalletPanel.setSyncMessage(controller.getLocaliser().getString("multiBitDownloadListener.downloadingTextShort"), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
+//                        }
+//                    }
+//                }
+                ReplayTask replayTask = new ReplayTask(perWalletModelDataList, syncFromDate);
+                ReplayManager.INSTANCE.offerReplayTask(replayTask);
+            } else {
+                // Just sync the blockchain without a replay task being involved.
+                multiBitService.downloadBlockChain();
+            }
         } catch (Exception e) {
             // An unexcepted, unrecoverable error occurred.
             e.printStackTrace();

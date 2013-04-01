@@ -242,7 +242,7 @@ public class OpenWalletAction extends AbstractAction {
                             }
                             List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
                             perWalletModelDataList.add(perWalletModelData);
-                            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, syncFromDate, null, -1);
+                            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, syncFromDate);
                             ReplayManager.INSTANCE.offerReplayTask(replayTask);
                         }
                         controller.fireRecreateAllViews(true);

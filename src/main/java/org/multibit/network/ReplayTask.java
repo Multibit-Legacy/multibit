@@ -2,7 +2,9 @@ package org.multibit.network;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
+import org.multibit.message.Message;
 import org.multibit.model.PerWalletModelData;
 
 /**
@@ -14,15 +16,16 @@ public class ReplayTask {
     private final List<PerWalletModelData> perWalletModelDataToReplay;
     
     private final Date startDate;
-    private final Date stopDate;
     
-    private final int stopBlockHeight;
+    private final UUID uuid;
+    
+    private long percentComplete;
        
-    public ReplayTask( List<PerWalletModelData> perWalletModelDataToReplay, Date startDate, Date stopDate, int stopBlockHeight) {
+    public ReplayTask( List<PerWalletModelData> perWalletModelDataToReplay, Date startDate) {
         this.perWalletModelDataToReplay = perWalletModelDataToReplay;
         this.startDate = startDate;
-        this.stopDate = stopDate;
-        this.stopBlockHeight = stopBlockHeight;
+        this.percentComplete = Message.NOT_RELEVANT_PERCENTAGE_COMPLETE;
+        this.uuid = UUID.randomUUID();
     }
 
     public List<PerWalletModelData> getPerWalletModelDataToReplay() {
@@ -33,22 +36,13 @@ public class ReplayTask {
         return startDate;
     }
 
-    public Date getStopDate() {
-        return stopDate;
-    }
-
-    public int getStopBlockHeight() {
-        return stopBlockHeight;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((perWalletModelDataToReplay == null) ? 0 : perWalletModelDataToReplay.hashCode());
+        result = prime * result + (int) (percentComplete ^ (percentComplete >>> 32));
         result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
-        result = prime * result + stopBlockHeight;
-        result = prime * result + ((stopDate == null) ? 0 : stopDate.hashCode());
         return result;
     }
 
@@ -66,24 +60,31 @@ public class ReplayTask {
                 return false;
         } else if (!perWalletModelDataToReplay.equals(other.perWalletModelDataToReplay))
             return false;
+        if (percentComplete != other.percentComplete)
+            return false;
         if (startDate == null) {
             if (other.startDate != null)
                 return false;
         } else if (!startDate.equals(other.startDate))
-            return false;
-        if (stopBlockHeight != other.stopBlockHeight)
-            return false;
-        if (stopDate == null) {
-            if (other.stopDate != null)
-                return false;
-        } else if (!stopDate.equals(other.stopDate))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "ReplayTask [startDate=" + startDate + ", stopDate=" + stopDate
-                + ", stopBlockHeight=" + stopBlockHeight + "]";
+        return "ReplayTask [perWalletModelDataToReplay=" + perWalletModelDataToReplay + ", startDate=" + startDate + ", uuid="
+                + uuid + ", percentComplete=" + percentComplete + "]";
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public long getPercentComplete() {
+        return percentComplete;
+    }
+
+    public void setPercentComplete(long percentComplete) {
+        this.percentComplete = percentComplete;
     }
 }

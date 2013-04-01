@@ -16,6 +16,7 @@
 package org.multibit.model;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
 
@@ -74,6 +75,11 @@ public class PerWalletModelData {
      * It is displayed instead of the balance amount so needs to be short.
      */
     private transient String busyTaskVerb;
+    
+    /**
+     * The UUID of the replay task that is being running on this wallet.
+     */
+    private transient UUID replayTaskUUID;
     
     /**
      * A listener used by the SingleWalletPanel to receive updates on busy status.
@@ -209,5 +215,13 @@ public class PerWalletModelData {
 
     public SingleWalletPanelDownloadListener getSingleWalletDownloadListener() {
         return singleWalletDownloadListener;
+    }
+
+    public UUID getReplayTaskUUID() {
+        return replayTaskUUID;
+    }
+
+    public void setReplayTaskUUID(UUID replayTaskUUID) {
+        this.replayTaskUUID = replayTaskUUID;
     }
 }

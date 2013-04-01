@@ -1044,7 +1044,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             if (ReplayManager.INSTANCE.getCurrentReplayTask() != null) {
                 replayPerWalletModelDataList = ReplayManager.INSTANCE.getCurrentReplayTask().getPerWalletModelDataToReplay();
             }
-            ReplayManager.INSTANCE.removeDownloadListenersToPeerGroup(replayPerWalletModelDataList);
+            ReplayManager.INSTANCE.removeDownloadListeners(replayPerWalletModelDataList);
             
             thisFrame.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
@@ -1055,7 +1055,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             
             // TODO check task is still running by taskid.
             if (replayPerWalletModelDataList != null) {
-                ReplayManager.INSTANCE.addDownloadListenersToPeerGroup(replayPerWalletModelDataList);
+                ReplayManager.INSTANCE.addDownloadListeners(replayPerWalletModelDataList);
             }
                 
             if (initialView != null && !(initialView == View.TRANSACTIONS_VIEW) && !(initialView == View.SEND_BITCOIN_VIEW)
@@ -1468,7 +1468,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 availableBalanceLabelButton.setVisible(false);
                 availableBalanceBTCButton.setVisible(false);
                 availableBalanceFiatButton.setVisible(false);
-
             } else {
                 estimatedBalanceLabelLabel.setText(controller.getLocaliser().getString("multiBitFrame.balanceLabel"));
                 estimatedBalanceLabelLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));

@@ -17,9 +17,12 @@
 package org.multibit.viewsystem.swing.view.walletlist;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
+import org.multibit.model.PerWalletModelData;
+import org.multibit.network.ReplayManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +49,7 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
 
     MultiBitController controller;
     final SingleWalletPanel singleWalletPanel;
-
+    
     private Object lockObject = new Object();
 
     public SingleWalletPanelDownloadListener(MultiBitController controller, SingleWalletPanel singleWalletPanel) {
@@ -110,6 +113,15 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
     public void doneDownload() {
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
         singleWalletPanel.setSyncMessage(downloadStatusText, 100);
+
+        // Tell the replay manager this task is finished.
+        PerWalletModelData perWalletModelData = singleWalletPanel.getPerWalletModelData();
+        if (perWalletModelData != null) {
+            UUID replayTaskUUID = perWalletModelData.getReplayTaskUUID();
+            if (replayTaskUUID != null) {
+                ReplayManager.INSTANCE.taskHasCompleted(replayTaskUUID);                
+            }
+        }
     }
     
     /**

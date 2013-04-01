@@ -376,7 +376,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                                 }
                             }
                         }
-                        ReplayTask replayTask = new ReplayTask(perWalletModelDataList, earliestTransactionDate, null, -1);
+                        ReplayTask replayTask = new ReplayTask(perWalletModelDataList, earliestTransactionDate);
                         ReplayManager.INSTANCE.offerReplayTask(replayTask);
                         successMeasure = Boolean.TRUE;
                     }

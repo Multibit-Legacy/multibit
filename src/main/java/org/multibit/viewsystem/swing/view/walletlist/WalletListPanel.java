@@ -128,7 +128,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                     }
                     // Make sure the totals displayed and encryption status are correct.
                     boolean modelBlinkEnabled = controller.getModel().isBlinkEnabled();
-                    loopSingleWalletPanel.updateFromModel(blinkEnabled && modelBlinkEnabled);
+                    loopSingleWalletPanel.updateFromModel(blinkEnabled && modelBlinkEnabled, true);
                      
                     amountFiatLabelSize = Math.max(amountFiatLabelSize, loopSingleWalletPanel.getFiatLabelWidth());
                 }
@@ -156,7 +156,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
         if (walletPanels != null) {
             synchronized(walletPanels) {
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
-                    loopSingleWalletPanel.updateFromModel(false);
+                    loopSingleWalletPanel.updateFromModel(false, true);
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
                         if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(filename)) {
                             loopSingleWalletPanel.setSelected(true);
@@ -505,7 +505,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
     public void walletBusyChange(boolean newWalletIsBusy) {
         for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
             // Update the visibility of the hourglass if wallet is busy.
-            loopSingleWalletPanel.setBusy(loopSingleWalletPanel.getPerWalletModelData().isBusy());
+            loopSingleWalletPanel.setBusyIconStatus(loopSingleWalletPanel.getPerWalletModelData().isBusy());
             loopSingleWalletPanel.invalidate();
             loopSingleWalletPanel.revalidate();
             loopSingleWalletPanel.repaint();

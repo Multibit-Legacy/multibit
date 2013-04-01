@@ -153,7 +153,7 @@ public class MultiBitDownloadListener extends DownloadListener {
      */
     @Override
     protected void doneDownload() {
-        ReplayManager.INSTANCE.currentTaskHasCompleted();
+        ReplayManager.INSTANCE.taskHasCompleted(null);
 
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
      
