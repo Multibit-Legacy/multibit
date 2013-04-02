@@ -33,7 +33,6 @@ public class IsMultiBitClassTest extends TestCase {
     public void testIsMultiBitClass() throws ClassNotFoundException {
         checkClass("core.Transaction");
         checkClass("core.TransactionConfidence");
-        checkClass("core.TransactionInput");
         checkClass("core.TransactionOutput");
         checkClass("core.Wallet");
     }

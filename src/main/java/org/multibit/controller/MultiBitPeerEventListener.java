@@ -109,4 +109,9 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     public List<Message> getData(Peer peer, GetDataMessage m) {
         return null;
     }
+
+    @Override
+    public void onException(Throwable throwable) {
+        throwable.printStackTrace();
+    }
 }

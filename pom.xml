@@ -138,8 +138,7 @@
                                     <includes>**/*.*</includes>
                                     <!-- excludes classes that are duplicated in multibit -->
                                     <excludes> **/Transaction.class, **/Transaction$*.class,
-                                        **/TransactionConfidence.class, **/TransactionConfidence$*.class,
-                                        **/TransactionInput.class,                                        
+                                        **/TransactionConfidence.class, **/TransactionConfidence$*.class,                               
                                         **/TransactionOutput.class,
                                         **/Wallet.class, **/Wallet$*.class
                                     </excludes>
@@ -717,7 +716,7 @@
         </staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
-        <bitcoinj.version>0.8-SNAPSHOT</bitcoinj.version>
+        <bitcoinj.version>0.8-MB-ALICE-SNAPSHOT</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
         <xchange.version>1.5.0</xchange.version>
