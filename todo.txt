@@ -96,3 +96,5 @@ Packaging
   
 Address format
 + track Jon Waller's idea for Chrome extension of bitcoin addresses in a 'special page' on web sites.   Could do a look of of web address to bitcoin address.
+
+Verify
