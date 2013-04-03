@@ -362,7 +362,11 @@ public class TickerTimerTask extends TimerTask {
             }
 
             return exchangeToReturn;
-        } catch (NoClassDefFoundError e) {
+        } catch (com.xeiam.xchange.ExchangeException e) {
+            // Probably xchange is not on classpath - ticker will not run
+            // but error should not spread out from here to rest of MultiBit.
+            log.error(e.getClass().getName() + " " + e.getMessage());
+        }catch (NoClassDefFoundError e) {
             // Probably xchange is not on classpath - ticker will not run
             // but error should not spread out from here to rest of MultiBit.
             log.error(e.getClass().getName() + " " + e.getMessage());

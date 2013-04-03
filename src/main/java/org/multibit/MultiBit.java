@@ -484,22 +484,27 @@ public class MultiBit {
             if (perWalletModelDataList != null) {
                 for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                     Wallet wallet = perWalletModelData.getWallet();
-                    int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
-                    log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was " + lastBlockSeenHeight);
-    
-                    // Check if we have both the lastBlockSeenHeight and the currentChainHeight.
-                    if (lastBlockSeenHeight > 0 && currentChainHeight > 0) {
-                        if (lastBlockSeenHeight >= currentChainHeight) {
-                            // Wallet is at or ahead of current chain - no need to sync for this wallet.
-                        } else {
-                            // Wallet is behind the current chain - need to sync.
-                            needToSync = true;
-                            
-                            replayPerWalletModelList.add(perWalletModelData);
-                            if (syncFromHeight == -1) {
-                                syncFromHeight = lastBlockSeenHeight;
+                    if (wallet != null) {
+                        int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
+                        log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was "
+                                + lastBlockSeenHeight);
+
+                        // Check if we have both the lastBlockSeenHeight and the
+                        // currentChainHeight.
+                        if (lastBlockSeenHeight > 0 && currentChainHeight > 0) {
+                            if (lastBlockSeenHeight >= currentChainHeight) {
+                                // Wallet is at or ahead of current chain - no
+                                // need to sync for this wallet.
                             } else {
-                                syncFromHeight = Math.min(syncFromHeight, lastBlockSeenHeight);
+                                // Wallet is behind the current chain - need to sync.
+                                needToSync = true;
+
+                                replayPerWalletModelList.add(perWalletModelData);
+                                if (syncFromHeight == -1) {
+                                    syncFromHeight = lastBlockSeenHeight;
+                                } else {
+                                    syncFromHeight = Math.min(syncFromHeight, lastBlockSeenHeight);
+                                }
                             }
                         }
                     }

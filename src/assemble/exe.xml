@@ -14,17 +14,12 @@
       <excludes>
         <exclude>org.codehaus.jackson:*</exclude>
         <exclude>org.codehaus.izpack:*</exclude>
-        <exclude>org.apache.derby:*</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>
       <directory>target/classes</directory>
-      <outputDirectory></outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/bitcoinj</directory>
       <outputDirectory></outputDirectory>
     </fileSet>
    </fileSets>

@@ -102,8 +102,7 @@
             </resource>
         </resources>
         <plugins>
-            <!-- Standard compile to ensure Java6 is used in all environments (e.g. 
-        				Jenkins) -->
+            <!-- Standard compile to ensure Java6 is used in all environments (e.g. Jenkins) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -118,8 +117,7 @@
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!-- Put izPack2app into linux staging dir for production of linux installer 
-              						later -->
+                    <!-- Put izPack2app into linux staging dir for production of linux installer later -->
                     <execution>
                         <id>unpack-shared-resources-ipack2app-linux</id>
                         <goals>
@@ -137,8 +135,7 @@
                         </configuration>
                     </execution>
 
-                    <!-- Put izPack2app into windows staging dir for production of windows 
-              						installer later -->
+                    <!-- Put izPack2app into windows staging dir for production of windows installer later -->
                     <execution>
                         <id>unpack-shared-resources-ipack2app-windows</id>
                         <goals>
@@ -164,8 +161,6 @@
                 <version>2.2.1</version>
                 <configuration>
                     <descriptors>
-                        <!-- this assembly descriptor also includes the bitcoinj classes unpacked 
-                 							earlier -->
                         <descriptor>src/assemble/exe.xml</descriptor>
                     </descriptors>
                     <archive>
