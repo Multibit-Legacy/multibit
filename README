@@ -10,13 +10,26 @@ MultiBit use Maven as the build system, so the usual Maven processes apply. If y
 with Maven then download it first from http://maven.apache.com and after verifying that it's working,
 you're ready. 
 
+Bitcoinj dependency
+===================
+MultiBit depends on a clone of bitcoinj for its Bitcoin support.
+This clone is currently located at:
+http://code.google.com/r/jimburton618-bitcoinj-coinbase-tx/source/browse
+
+The branch used is:
+bcj-master-mb-alice
+
+You need to clone this repo and then build and install this version of bitcoinj into your local repo using:
+mvn clean install
+
+
 Maven build targets
 ===================
 The important targets are:
 
 mvn clean package
 
-which will package the MultiBit project into multibit-x.y.z.jar where x.y.z is the current version
+which will package the MultiBit project into multibit-x.y.jar where x.y is the current version
 number. This is suitable for local development work.
 
 If you want to generate a complete set of multi-platform installers (Windows, Mac and Linux) you 
@@ -27,31 +40,12 @@ maven clean install
 After some processing, you will have the folowing artifacts in the target directory:
 
 + an executable jar = multibit-exe.jar
-+ a Mac application bundle = MultiBit-x.y.z.app
-+ a Mac DMG file = multibit-x.y.z.dmg
-+ an installer for Windows = multibit-x.y.z-windows.exe
-+ an installer for Linux = multibit-x.y.z-linux.jar
++ a Mac application bundle = MultiBit-x.y.app
++ a Mac DMG file = multibit-x.y.dmg
++ an installer for Windows = multibit-x.y-windows.exe
++ an installer for Linux = multibit-x.y-linux.jar
 
 To run MultiBit from these artifacts you can follow the instructions provided on the main MultiBit
 website here: http://multibit.org/help.html 
 
-Testnet
-=======
-To use MultiBit on testNet set the property "testOrProductionNetwork" in the file multibit.properties 
-to be "test".
-
-
-Connect to single node
-======================
-If you want to connect to a single node set the following property in multibit.properties:
-singleConnectionNode=<node to connect to>
-
-The node can be specified as either a domain name (www.myNode.com) or an IP address.
-
-Show Merchant Menu
-==================
-MultiBit works with a sister project called MultiBit Merchant (see https://github.com/gary-rowe/MultiBitMerchant)
-which offers specialised features suitable for merchants. To activate these features within the MultiBit client
-add the following property into multibit.properties:
-
-showMerchantMenu=true
+Configuration parameters are described in the configuration.txt

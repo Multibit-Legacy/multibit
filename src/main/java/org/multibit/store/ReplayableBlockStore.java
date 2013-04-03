@@ -36,7 +36,6 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
@@ -62,7 +61,7 @@ import com.google.bitcoin.store.BlockStoreException;
  *
  * This variant of BlockStore has the ability to replay blocks
  */
-public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
+public class ReplayableBlockStore implements BlockStore {
     private static final Logger log = LoggerFactory.getLogger(ReplayableBlockStore.class);
     private static final byte FILE_FORMAT_VERSION = 1;
     private static NamedSemaphores semaphores = new NamedSemaphores();

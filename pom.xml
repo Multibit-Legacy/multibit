@@ -118,35 +118,6 @@
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!-- Put bitcoinj classes into target dir for production of the executable 
-              						jar later -->
-                    <execution>
-                        <id>unpack-bitcoinj-classes</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.google</groupId>
-                                    <artifactId>bitcoinj</artifactId>
-                                    <version>${bitcoinj.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
-                                    <includes>**/*.*</includes>
-                                    <!-- excludes classes that are duplicated in multibit -->
-                                    <excludes> **/Transaction.class, **/Transaction$*.class,
-                                        **/TransactionConfidence.class, **/TransactionConfidence$*.class,                               
-                                        **/TransactionOutput.class,
-                                        **/Wallet.class, **/Wallet$*.class
-                                    </excludes>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-
                     <!-- Put izPack2app into linux staging dir for production of linux installer 
               						later -->
                     <execution>

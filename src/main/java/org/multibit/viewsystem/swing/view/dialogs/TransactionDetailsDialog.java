@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
@@ -471,9 +472,9 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         if (transaction.getLockTime() > 0) {
             // Non standard transaction.
             String transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ". ";
-            return transactionTrustfulness + transaction.getConfidence().toString(); 
+            return transactionTrustfulness + transactionConfidenceToStringLocalised(transaction.getConfidence()); 
         } else {
-            return transaction.getConfidence().toString();   
+            return transactionConfidenceToStringLocalised(transaction.getConfidence());   
         }
     }
 
@@ -597,4 +598,40 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     public boolean isInitialisedOk() {
         return initialisedOk;
     }
+    
+    private String transactionConfidenceToStringLocalised(TransactionConfidence transactionConfidence) {
+        StringBuilder builder = new StringBuilder();
+
+        if (MultiBit.getController() != null && MultiBit.getController().getLocaliser() != null) {
+            int peers = transactionConfidence.getBroadcastByCount();
+            if (peers > 0) {
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+                builder.append(peers);
+                if (peers > 1)
+                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ". ");
+                else
+                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ". ");
+            }
+            switch (transactionConfidence.getConfidenceType()) {
+            case UNKNOWN:
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.unknownConfidenceLevel"));
+                break;
+            case DEAD:
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.dead"));
+                break;
+            case NOT_IN_BEST_CHAIN:
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.sideChain"));
+                break;
+            case NOT_SEEN_IN_CHAIN:
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.notSeenInChain"));
+                break;
+            case BUILDING:
+                builder.append(MultiBit.getController().getLocaliser()
+                        .getString("transactionConfidence.appearedInBestChain", new Object[] { transactionConfidence.getAppearedAtChainHeight() }));
+                break;
+            }
+        }
+        return builder.toString();
+    }
+
 }

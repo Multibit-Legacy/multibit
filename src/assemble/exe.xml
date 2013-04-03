@@ -12,9 +12,9 @@
       <useProjectArtifact>false></useProjectArtifact>
       <scope>runtime</scope>
       <excludes>
+        <exclude>org.codehaus.jackson:*</exclude>
         <exclude>org.codehaus.izpack:*</exclude>
         <exclude>org.apache.derby:*</exclude>
-        <exclude>com.google:bitcoinj</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
