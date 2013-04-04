@@ -479,6 +479,10 @@ public class MultiBitModel {
                 }
             }
         }
+        
+        // If there are no wallets, clear the activeWalletModelData.
+        activeWalletModelData = new PerWalletModelData();
+       
     }
 
     /**
