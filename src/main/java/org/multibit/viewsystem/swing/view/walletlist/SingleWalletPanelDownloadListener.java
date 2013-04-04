@@ -23,6 +23,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

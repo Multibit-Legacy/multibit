@@ -497,7 +497,14 @@ public class MultiBitService {
         return perWalletModelDataToReturn;
     }
 
-    public void createNewBlockStoreForReplay(Date dateToReplayFrom) throws IOException, BlockStoreException {
+    /**
+     * Create a new block store.
+     * @param dateToReplayFrom
+     * @return height tof new block chain after truncate.
+     * @throws IOException
+     * @throws BlockStoreException
+     */
+    public int createNewBlockStoreForReplay(Date dateToReplayFrom) throws IOException, BlockStoreException {
         log.debug("Loading/ creating blockstore ...");
         if (blockStore != null) {
             try {
@@ -523,7 +530,8 @@ public class MultiBitService {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 blockChain.addWallet(loopPerWalletModelData.getWallet());
             }
-        }    
+        }  
+        return blockChain.getBestChainHeight();
     }
 
     /**

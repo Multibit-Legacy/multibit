@@ -95,7 +95,19 @@ public class MultiBitDownloadListener extends DownloadListener {
                                 new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
                                         .format(date) });
 
-                // when busy occasionally the localiser fails to localise
+                // Work out the percent as the total amount of blocks at beginning of the replay task.
+                // (If a peer dies and a new one starts the download listener percents are based on the
+                // total that peer knows about which is confusing in the UI).
+                ReplayTask currentReplayTask = ReplayManager.INSTANCE.getCurrentReplayTask();
+                if (currentReplayTask != null) {
+                    if (currentReplayTask.getStartHeight() != ReplayTask.UNKNOWN_START_HEIGHT) {
+                        pct = (int)(100 * ( 1.0 - (double)blocksSoFar/(double)(ReplayManager.INSTANCE.getActualLastChainHeight() - currentReplayTask.getStartHeight())));
+                    }
+                    log.debug("blocksSoFar = " + blocksSoFar + ", actualLastChainHeight = " + ReplayManager.INSTANCE.getActualLastChainHeight() +
+                            ", startHeight = " + currentReplayTask.getStartHeight() + ", percent = " + pct);
+                }
+                
+                // When busy occasionally the localiser fails to localise.
                 if (!(downloadStatusText.indexOf("multiBitDownloadListener") > -1)) {
                     Message message = new Message(downloadStatusText, pct);
                     MessageManager.INSTANCE.addMessage(message);
@@ -132,7 +144,7 @@ public class MultiBitDownloadListener extends DownloadListener {
 
                 String startDownloadTextForLabel = controller.getLocaliser().getString("multiBitDownloadListener.downloadingText");
 
-                // when busy occasionally the localiser fails to localise
+                // When busy occasionally the localiser fails to localise
                 if (!(startDownloadText.indexOf("multiBitDownloadListener") > -1)) {
                     Message message = new Message(startDownloadTextForLabel, Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
                     MessageManager.INSTANCE.addMessage(message);

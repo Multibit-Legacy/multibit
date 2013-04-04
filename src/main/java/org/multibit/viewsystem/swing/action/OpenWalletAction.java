@@ -209,27 +209,35 @@ public class OpenWalletAction extends AbstractAction {
                         }
                         log.debug("The current chain height is " + currentChainHeight);
                         
-                        boolean needToSync = false;
-                        Date syncFromDate = null;
-                        
+                        boolean needToSync = false;                        
                         // Check if we have both the lastBlockSeenHeight and the currentChainHeight.
                         if (lastBlockSeenHeight > 0 && currentChainHeight > 0) {
                             if (lastBlockSeenHeight >= currentChainHeight) {
-                                // Wallet is at or ahead of current chain - no need to sync.
+                                // Wallet is at or ahead of current chain - check there isnt a replay at the moment.
+                                if (ReplayManager.INSTANCE.getCurrentReplayTask() != null) {
+                                    int actualLastChainHeight = ReplayManager.INSTANCE.getActualLastChainHeight();
+                                    if (lastBlockSeenHeight < actualLastChainHeight) {
+                                        needToSync = true;
+                                    }
+                                }
                             } else {
                                 // Wallet is behind the current chain - need to sync.
                                 needToSync = true;
-                                MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
-                                if (checkpointManager != null) {
-                                    syncFromDate = checkpointManager.getCheckpointDateBeforeOrAtHeight(lastBlockSeenHeight);
-                                }
                             }
                         }
                         
-                        log.debug("needToSync = " + needToSync + ", syncFromDate =" + syncFromDate);
+                        log.debug("needToSync = " + needToSync);
 
                         
                         if (needToSync) {
+                            Date syncFromDate = null;
+
+                            MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
+                            if (checkpointManager != null) {
+                                syncFromDate = checkpointManager.getCheckpointDateBeforeOrAtHeight(lastBlockSeenHeight);
+                            }
+                            log.debug("syncFromDate =" + syncFromDate);
+                            
                             // Initialise the message in the singleWalletPanel.
                             if (mainFrame != null) {
                                 WalletListPanel walletListPanel = mainFrame.getWalletsView();
@@ -242,7 +250,7 @@ public class OpenWalletAction extends AbstractAction {
                             }
                             List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
                             perWalletModelDataList.add(perWalletModelData);
-                            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, syncFromDate);
+                            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, syncFromDate, lastBlockSeenHeight);
                             ReplayManager.INSTANCE.offerReplayTask(replayTask);
                         }
                         controller.fireRecreateAllViews(true);

@@ -190,7 +190,8 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                         }
                     }
                 }
-                ReplayTask replayTask = new ReplayTask(perWalletModelDataList, resetDate);
+
+                ReplayTask replayTask = new ReplayTask(perWalletModelDataList, resetDate, ReplayTask.UNKNOWN_START_HEIGHT);
                 ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
                 successMeasure = Boolean.TRUE;

@@ -83,7 +83,7 @@ public class MultiBitInExecutableJar {
                     .getAppender("DETAIL_APPENDER");
             rfappender.setFile(debugOutputFilename);
             TimeBasedRollingPolicy rollingPolicy = (TimeBasedRollingPolicy) rfappender.getRollingPolicy();
-            rollingPolicy.setFileNamePattern(debugOutputFilename + ".%d{yyyy-MM-dd}.gz");
+            rollingPolicy.setFileNamePattern(debugOutputFilename + ".%d{yyyy-MM-dd}.%i.gz");
 
             rollingPolicy.stop();
             rfappender.stop();

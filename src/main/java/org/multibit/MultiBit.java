@@ -520,7 +520,7 @@ public class MultiBit {
                     syncFromDate = checkpointManager.getCheckpointDateBeforeOrAtHeight(syncFromHeight);
                 }
 
-                ReplayTask replayTask = new ReplayTask(replayPerWalletModelList, syncFromDate);
+                ReplayTask replayTask = new ReplayTask(replayPerWalletModelList, syncFromDate, syncFromHeight);
                 ReplayManager.INSTANCE.offerReplayTask(replayTask);
             } else {
                 // Just sync the blockchain without a replay task being involved.

@@ -16,8 +16,6 @@
 
 package org.multibit.network;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
@@ -31,13 +29,11 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.simple.SimpleViewSystem;
-import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.core.PeerGroup;
+import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
@@ -54,6 +50,12 @@ public enum ReplayManager {
     private static final Logger log = LoggerFactory.getLogger(ReplayManager.class);
     private ReplayManagerTimerTask replayManagerTimerTask;
     private Timer replayManagerTimer;
+    
+    /**
+     * The actual chain height prior to any replay
+     * (as opposed to the current height whilst replaying).
+     */
+    private int actualLastChainHeight;
     
     private static final int REPLAY_MANAGER_DELAY_TIME = 0; // ms
     private static final int REPLAY_MANAGER_REPEAT_TIME = 333; // ms
@@ -75,6 +77,11 @@ public enum ReplayManager {
     public void syncWallet(final ReplayTask replayTask) throws IOException,
             BlockStoreException {
         log.info("Starting replay task : " + replayTask.toString());
+        
+        // Remember the chain height.
+        if (controller.getMultiBitService().getChain() != null) {
+            actualLastChainHeight = controller.getMultiBitService().getChain().getBestChainHeight();
+        }
 
         // Mark the wallets as busy and set the replay task uuid into the model
         List<PerWalletModelData> perWalletModelDataList = replayTask.getPerWalletModelDataToReplay();
@@ -88,6 +95,7 @@ public enum ReplayManager {
             }
             controller.fireWalletBusyChange(true);
         }
+
         Date dateToReplayFrom = replayTask.getStartDate();
 
         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
@@ -127,8 +135,11 @@ public enum ReplayManager {
         // TODO Save wallets.
         
         // Close the blockstore and recreate a new one.
-        controller.getMultiBitService().createNewBlockStoreForReplay(dateToReplayFrom);
-
+        int newChainHeightAfterTruncate = controller.getMultiBitService().createNewBlockStoreForReplay(dateToReplayFrom);
+        if (replayTask.getStartHeight() == ReplayTask.UNKNOWN_START_HEIGHT) {
+            replayTask.setStartHeight(newChainHeightAfterTruncate);
+        }
+        
         // Create a new PeerGroup.
         controller.getMultiBitService().createNewPeerGroup();
         log.debug("Recreated PeerGroup.");
@@ -221,7 +232,6 @@ public enum ReplayManager {
         replayManagerTimerTask.currentTaskIsTidyingUp(true);
         
         try {
-            PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
             if (currentTask != null) {
                 // This task is complete. Inform the UI.
                 List<PerWalletModelData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
@@ -280,5 +290,13 @@ public enum ReplayManager {
                 return null;
             }
         }
+    }
+    
+    /**
+     * The actual height of the block chain just prior to a replay being started.
+     * @return
+     */
+    public int getActualLastChainHeight() {
+        return actualLastChainHeight;   
     }
 }

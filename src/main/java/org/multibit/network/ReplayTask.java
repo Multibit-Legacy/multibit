@@ -12,18 +12,35 @@ import org.multibit.model.PerWalletModelData;
  * blockchain replay
  */
 public class ReplayTask {
+    
+    public static final int UNKNOWN_START_HEIGHT = -1;
 
     private final List<PerWalletModelData> perWalletModelDataToReplay;
     
+    /**
+     * The start date of the replay task.
+     */
     private final Date startDate;
     
+    /**
+     * The height the blockchain needs to be truncated to.
+     */
+    private int startHeight;
+  
+    /**
+     * A UUID identifying this replay task.
+     */
     private final UUID uuid;
     
+    /**
+     * The percent complete as reported by the downloadlistener.
+     */
     private long percentComplete;
        
-    public ReplayTask( List<PerWalletModelData> perWalletModelDataToReplay, Date startDate) {
+    public ReplayTask( List<PerWalletModelData> perWalletModelDataToReplay, Date startDate, int startHeight) {
         this.perWalletModelDataToReplay = perWalletModelDataToReplay;
         this.startDate = startDate;
+        this.startHeight = startHeight;
         this.percentComplete = Message.NOT_RELEVANT_PERCENTAGE_COMPLETE;
         this.uuid = UUID.randomUUID();
     }
@@ -43,6 +60,7 @@ public class ReplayTask {
         result = prime * result + ((perWalletModelDataToReplay == null) ? 0 : perWalletModelDataToReplay.hashCode());
         result = prime * result + (int) (percentComplete ^ (percentComplete >>> 32));
         result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
+        result = prime * result + startHeight;
         return result;
     }
 
@@ -67,13 +85,16 @@ public class ReplayTask {
                 return false;
         } else if (!startDate.equals(other.startDate))
             return false;
+        if (startHeight != other.startHeight)
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "ReplayTask [perWalletModelDataToReplay=" + perWalletModelDataToReplay + ", startDate=" + startDate + ", uuid="
-                + uuid + ", percentComplete=" + percentComplete + "]";
+        return "ReplayTask [perWalletModelDataToReplay=" + perWalletModelDataToReplay + ", startDate=" + startDate
+                + ", startHeight=" + startHeight + ", uuid=" + uuid
+                + ", percentComplete=" + percentComplete + "]";
     }
 
     public UUID getUuid() {
@@ -86,5 +107,13 @@ public class ReplayTask {
 
     public void setPercentComplete(long percentComplete) {
         this.percentComplete = percentComplete;
+    }
+
+    public int getStartHeight() {
+        return startHeight;
+    }
+
+    public void setStartHeight(int startHeight) {
+        this.startHeight = startHeight;
     }
 }
