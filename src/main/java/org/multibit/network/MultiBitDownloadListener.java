@@ -103,8 +103,8 @@ public class MultiBitDownloadListener extends DownloadListener {
                     if (currentReplayTask.getStartHeight() != ReplayTask.UNKNOWN_START_HEIGHT) {
                         pct = (int)(100 * ( 1.0 - (double)blocksSoFar/(double)(ReplayManager.INSTANCE.getActualLastChainHeight() - currentReplayTask.getStartHeight())));
                     }
-                    log.debug("blocksSoFar = " + blocksSoFar + ", actualLastChainHeight = " + ReplayManager.INSTANCE.getActualLastChainHeight() +
-                            ", startHeight = " + currentReplayTask.getStartHeight() + ", percent = " + pct);
+                    //log.debug("blocksSoFar = " + blocksSoFar + ", actualLastChainHeight = " + ReplayManager.INSTANCE.getActualLastChainHeight() +
+                    //        ", startHeight = " + currentReplayTask.getStartHeight() + ", percent = " + pct);
                 }
                 
                 // When busy occasionally the localiser fails to localise.

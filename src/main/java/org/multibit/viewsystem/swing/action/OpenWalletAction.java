@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -55,6 +56,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -202,6 +205,22 @@ public class OpenWalletAction extends AbstractAction {
                         int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
                         log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was " + lastBlockSeenHeight);
                         
+                        // If there was no lastBlockSeenHeight, find the latest confirmed transaction height.
+                        if (lastBlockSeenHeight <= 0) {
+                            Set<Transaction> transactions = perWalletModelData.getWallet().getTransactions(true, false);
+                            if (transactions != null) {
+                                for (Transaction transaction : transactions) {
+                                    TransactionConfidence confidence = transaction.getConfidence();
+                                    if (confidence != null) {
+                                        if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidence.getConfidenceType())) {
+                                            lastBlockSeenHeight = Math.max(lastBlockSeenHeight, confidence.getAppearedAtChainHeight());
+                                        }
+                                    }
+                                }
+                            }                            
+                        }
+                        log.debug("For wallet '" + perWalletModelData.getWalletFilename() + ", after transactions, the lastBlockSeenHeight was " + lastBlockSeenHeight);
+
                         int currentChainHeight = -1;
                         if (controller.getMultiBitService().getChain() != null) {
                             if (controller.getMultiBitService().getChain().getChainHead() != null) {
@@ -210,11 +229,15 @@ public class OpenWalletAction extends AbstractAction {
                         }
                         log.debug("The current chain height is " + currentChainHeight);
                         
-                        boolean needToSync = false;                        
+                        boolean needToSync = false; 
+                        long requiredSyncTimeInSeconds = -1;
+                        
                         // Check if we have both the lastBlockSeenHeight and the currentChainHeight.
                         if (lastBlockSeenHeight > 0 && currentChainHeight > 0) {
                             if (lastBlockSeenHeight >= currentChainHeight) {
-                                // Wallet is at or ahead of current chain - check there isnt a replay at the moment.
+                                // Wallet is at or ahead of current chain - but check there isnt a replay at the moment.
+                                // If there is, use the actual last chain height to check.
+                                // (The user might have opened a wallet whilst a replay was occurring).
                                 if (ReplayManager.INSTANCE.getCurrentReplayTask() != null) {
                                     int actualLastChainHeight = ReplayManager.INSTANCE.getActualLastChainHeight();
                                     if (lastBlockSeenHeight < actualLastChainHeight) {
@@ -225,17 +248,29 @@ public class OpenWalletAction extends AbstractAction {
                                 // Wallet is behind the current chain - need to sync.
                                 needToSync = true;
                             }
+                        } else {
+                            // If we still dont have a sync date/height, use the key birth date of the wallet
+                            // and sync from that. This might be expensive, but hould only be used for empty
+                            // wallets.
+                            requiredSyncTimeInSeconds = wallet.getEarliestKeyCreationTime();
+                            needToSync = true;
+                            log.debug("requiredSyncTimeInSeconds worked out from earliestKeyCreationTime = " + requiredSyncTimeInSeconds);
                         }
                         
                         log.debug("needToSync = " + needToSync);
 
-                        
                         if (needToSync) {
                             StoredBlock syncFromStoredBlock = null;
 
                             MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
                             if (checkpointManager != null) {
-                                 syncFromStoredBlock = checkpointManager.getCheckpointBeforeOrAtHeight(lastBlockSeenHeight);
+                                if (lastBlockSeenHeight > 0) {
+                                    syncFromStoredBlock = checkpointManager.getCheckpointBeforeOrAtHeight(lastBlockSeenHeight);
+                                } else {
+                                    if (requiredSyncTimeInSeconds >= 0) {
+                                        syncFromStoredBlock = checkpointManager.getCheckpointBefore(requiredSyncTimeInSeconds);
+                                    }
+                                }
                             }
                             log.debug("syncFromStoredBlock =" + syncFromStoredBlock);
                             

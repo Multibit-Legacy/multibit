@@ -134,7 +134,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                 }
                 
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
-                    loopSingleWalletPanel.setFiatLabelWidth(amountFiatLabelSize + 10);
+                    loopSingleWalletPanel.setFiatLabelWidth(amountFiatLabelSize + 20);
                 }
             }
         }
