@@ -54,6 +54,7 @@ import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -230,13 +231,13 @@ public class OpenWalletAction extends AbstractAction {
 
                         
                         if (needToSync) {
-                            Date syncFromDate = null;
+                            StoredBlock syncFromStoredBlock = null;
 
                             MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
                             if (checkpointManager != null) {
-                                syncFromDate = checkpointManager.getCheckpointDateBeforeOrAtHeight(lastBlockSeenHeight);
+                                 syncFromStoredBlock = checkpointManager.getCheckpointBeforeOrAtHeight(lastBlockSeenHeight);
                             }
-                            log.debug("syncFromDate =" + syncFromDate);
+                            log.debug("syncFromStoredBlock =" + syncFromStoredBlock);
                             
                             // Initialise the message in the singleWalletPanel.
                             if (mainFrame != null) {
@@ -250,7 +251,17 @@ public class OpenWalletAction extends AbstractAction {
                             }
                             List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
                             perWalletModelDataList.add(perWalletModelData);
-                            ReplayTask replayTask = new ReplayTask(perWalletModelDataList, syncFromDate, lastBlockSeenHeight);
+                            ReplayTask replayTask;
+                            if (syncFromStoredBlock == null) {
+                                // Sync from genesis block.
+                                replayTask = new ReplayTask(perWalletModelDataList, null, 0);
+                            } else {
+                                Date syncDate = null;
+                                if (syncFromStoredBlock.getHeader() != null) {
+                                    syncDate = new Date(syncFromStoredBlock.getHeader().getTimeSeconds() * 1000);
+                                }
+                                replayTask = new ReplayTask(perWalletModelDataList, syncDate, syncFromStoredBlock.getHeight());
+                            }
                             ReplayManager.INSTANCE.offerReplayTask(replayTask);
                         }
                         controller.fireRecreateAllViews(true);

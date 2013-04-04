@@ -69,13 +69,47 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         try {
             String walletDescription = controller.getModel().getActivePerWalletModelData().getWalletDescription();
 
+            // Work out which wallet to select after the wallet is removed.
+            String activeWalletFilename = controller.getModel().getActivePerWalletModelData().getWalletFilename();
+  
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            int numberOfOpenWalletsBefore = perWalletModelDataList.size();
+            int positionInList = -1;
+            for (int i = 0; i < numberOfOpenWalletsBefore; i++) {
+                if (activeWalletFilename.equals(perWalletModelDataList.get(i).getWalletFilename())) {
+                    positionInList = i;
+                    break;
+                }
+            }
+
+            // By default select the first wallet.
+            int newWalletToSelect = 0;
+            
+            if (numberOfOpenWalletsBefore > 1) {
+                // If deleting the last, then select the new last one.
+                if (positionInList == numberOfOpenWalletsBefore - 1) {
+                    newWalletToSelect = numberOfOpenWalletsBefore - 2;
+                } else {
+                    // Select the same position in the list
+                    newWalletToSelect = positionInList;
+                }
+            } else {
+                // One wallet open before. One auto created after.
+            }
+            
             // Delete the wallet.
             boolean newWalletCreated = deleteActiveWallet();
             
-            // Set the first wallet to be the active wallet.
-            PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
-            controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
-             
+            // Set the new Wallet to be the active wallet.
+            if (!controller.getModel().getPerWalletModelDataList().isEmpty()) {
+                PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(newWalletToSelect);
+                controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
+            } else {
+                // No wallets are selected.
+                // Clear all the views
+                // Should not happen as one is auto created.
+            }
+            
             String confirm2 = newWalletCreated ? controller.getLocaliser().getString("deleteWalletConfirmDialog.newWalletCreated") : " ";
             if (deleteWalletConfirmDialog != null) {
                 deleteWalletConfirmDialog.getExplainLabel().setText(" ");

@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -63,14 +64,45 @@ public class CloseWalletAction extends MultiBitSubmitAction {
             // Save it.
             FileHandler fileHandler = new FileHandler(controller);
             fileHandler.savePerWalletModelData(perWalletModelData, true);
+ 
+            // Work out which wallet to select after the wallet is removed.
+            String activeWalletFilename = perWalletModelData.getWalletFilename();
+            
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            int numberOfOpenWalletsBefore = perWalletModelDataList.size();
+            int positionInList = -1;
+            for (int i = 0; i < numberOfOpenWalletsBefore; i++) {
+                if (activeWalletFilename.equals(perWalletModelDataList.get(i).getWalletFilename())) {
+                    positionInList = i;
+                    break;
+                }
+            }
+
+            // By default select the first wallet.
+            int newWalletToSelect = 0;
+            
+            if (numberOfOpenWalletsBefore > 1) {
+                // If removing the last, then select the new last one.
+                if (positionInList == numberOfOpenWalletsBefore - 1) {
+                    newWalletToSelect = numberOfOpenWalletsBefore - 2;
+                } else {
+                    // Select the same position in the list
+                    newWalletToSelect = positionInList;
+                }
+            } else {
+                // One wallet open before. None after.
+            }
             
             // Remove it from the model.
             controller.getModel().remove(perWalletModelData);
             
-            // Set the first wallet to be the active wallet.
+            // Set the new Wallet to be the active wallet.
             if (!controller.getModel().getPerWalletModelDataList().isEmpty()) {
-                PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
-                controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());  
+                PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(newWalletToSelect);
+                controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
+            } else {
+                // No wallets are selected.
+                // Clear all the views.
             }
         } finally {
             controller.fireRecreateAllViews(true);

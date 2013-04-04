@@ -55,13 +55,11 @@ import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
-import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -513,14 +511,24 @@ public class MultiBit {
             log.debug("needToSync = " + needToSync);
 
             if (needToSync) {
-                Date syncFromDate = null;
+                StoredBlock syncFromStoredBlock = null;
 
                 MultiBitCheckpointManager checkpointManager = controller.getMultiBitService().getCheckpointManager();
                 if (checkpointManager != null) {
-                    syncFromDate = checkpointManager.getCheckpointDateBeforeOrAtHeight(syncFromHeight);
+                    syncFromStoredBlock = checkpointManager.getCheckpointBeforeOrAtHeight(syncFromHeight);
                 }
 
-                ReplayTask replayTask = new ReplayTask(replayPerWalletModelList, syncFromDate, syncFromHeight);
+                ReplayTask replayTask;
+                if (syncFromStoredBlock == null) {
+                    // Sync from genesis block.
+                    replayTask = new ReplayTask(replayPerWalletModelList, null, 0);
+                } else {
+                    Date syncDate = null;
+                    if (syncFromStoredBlock.getHeader() != null) {
+                        syncDate = new Date(syncFromStoredBlock.getHeader().getTimeSeconds() * 1000);
+                    }
+                    replayTask = new ReplayTask(replayPerWalletModelList, syncDate, syncFromStoredBlock.getHeight());
+                }
                 ReplayManager.INSTANCE.offerReplayTask(replayTask);
             } else {
                 // Just sync the blockchain without a replay task being involved.
