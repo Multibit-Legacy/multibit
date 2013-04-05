@@ -594,7 +594,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         // Update the enable status of the action to match the wallet busy status.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()})));
+            resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
             resetTransactionsSubmitAction.setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.

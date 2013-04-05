@@ -1267,7 +1267,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
         
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
-            String walletIsBusyText = HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));
+            String walletIsBusyText = HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
             showImportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             showExportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             resetTransactionsAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);

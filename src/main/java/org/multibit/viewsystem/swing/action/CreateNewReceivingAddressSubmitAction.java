@@ -133,7 +133,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         // Double check wallet is not busy then declare that the active wallet is busy with the addReceivingAddresses task
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
-            perWalletModelData.setBusyTask(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
+            perWalletModelData.setBusyTaskKey("createNewReceivingAddressSubmitAction.tooltip");
 
             // Can no longer cancel as the task has started.
             createNewReceivingAddressPanel.getCancelButton().setEnabled(false);
@@ -287,7 +287,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
 
                     // Declare that wallet is no longer busy with the task.
-                    finalPerWalletModelData.setBusyTask(null);
+                    finalPerWalletModelData.setBusyTaskKey(null);
                     finalPerWalletModelData.setBusy(false);
                     controller.fireWalletBusyChange(false);                   
                 }
@@ -302,7 +302,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         // Update the enable status of the action to match the wallet busy status.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
             setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.

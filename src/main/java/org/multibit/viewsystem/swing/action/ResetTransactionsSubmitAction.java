@@ -153,8 +153,8 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
-            perWalletModelData.setBusyTask(controller.getLocaliser().getString("resetTransactionsSubmitAction.text"));
-            perWalletModelData.setBusyTaskVerb(controller.getLocaliser().getString("resetTransactionsSubmitAction.verb"));
+            perWalletModelData.setBusyTaskKey("resetTransactionsSubmitAction.text");
+            perWalletModelData.setBusyTaskVerbKey("resetTransactionsSubmitAction.verb");
 
             controller.fireWalletBusyChange(true);
 

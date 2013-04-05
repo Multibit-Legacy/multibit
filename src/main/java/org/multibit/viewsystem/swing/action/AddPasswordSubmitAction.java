@@ -120,7 +120,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
 
                 if (!perWalletModelData.isBusy()) {
                     perWalletModelData.setBusy(true);
-                    perWalletModelData.setBusyTask(controller.getLocaliser().getString("addPasswordSubmitAction.text"));
+                    perWalletModelData.setBusyTaskKey("addPasswordSubmitAction.text");
 
                     controller.fireWalletBusyChange(true);
 
@@ -156,7 +156,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                 return;
             } finally {
                 // Declare that wallet is no longer busy with the task.
-                perWalletModelData.setBusyTask(null);
+                perWalletModelData.setBusyTaskKey(null);
                 perWalletModelData.setBusy(false);
                 controller.fireWalletBusyChange(false);                   
             }
@@ -186,7 +186,8 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
         // Update the enable status of the action to match the wallet busy status.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));         
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
         } else {
             // Enable unless wallet has been modified by another process.
             if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {

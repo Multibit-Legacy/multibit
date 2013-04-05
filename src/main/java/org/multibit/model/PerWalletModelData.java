@@ -64,17 +64,17 @@ public class PerWalletModelData {
     private transient boolean busy;
     
     /**
-     * The localised name of the operation that is currently operating on the wallets private keys.
+     * The localisation key for the name of the operation that is currently operating on the wallets private keys.
      * This is typically a sentence in length.
      */
-    private transient String busyTask;
+    private transient String busyTaskKey;
     
     /**
-     * The present continuous verb describing the current busy operation. Localised.
-     * This is something like "Synchronising...", "Waiting...", "Importing...".
+     * The present continuous verb describing the current busy operation. The localisation key.
+     * This is something like the key for "Synchronising...", "Waiting...", "Importing...".
      * It is displayed instead of the balance amount so needs to be short.
      */
-    private transient String busyTaskVerb;
+    private transient String busyTaskVerbKey;
     
     /**
      * The UUID of the replay task that is being running on this wallet.
@@ -193,20 +193,20 @@ public class PerWalletModelData {
         this.busy = busy;
     }
 
-    public String getBusyTask() {
-        return busyTask;
+    public String getBusyTaskKey() {
+        return busyTaskKey;
     }
 
-    public void setBusyTask(String busyTask) {
-        this.busyTask = busyTask;
+    public void setBusyTaskKey(String busyTaskKey) {
+        this.busyTaskKey = busyTaskKey;
     }
 
-    public String getBusyTaskVerb() {
-        return busyTaskVerb;
+    public String getBusyTaskVerbKey() {
+        return busyTaskVerbKey;
     }
 
-    public void setBusyTaskVerb(String busyTaskVerb) {
-        this.busyTaskVerb = busyTaskVerb;
+    public void setBusyTaskVerbKey(String busyTaskVerbKey) {
+        this.busyTaskVerbKey = busyTaskVerbKey;
     }
 
     public void setSingleWalletDownloadListener(SingleWalletPanelDownloadListener singleWalletDownloadListener) {

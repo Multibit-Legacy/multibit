@@ -689,7 +689,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
                     addPasswordSubmitAction.putValue(
                             Action.SHORT_DESCRIPTION,
                             controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
-                                    new Object[] { controller.getModel().getActivePerWalletModelData().getBusyTask() }));
+                                    new Object[] { controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
                     addPasswordSubmitAction.setEnabled(false);
                 } else {
                     // Enable unless wallet has been modified by another

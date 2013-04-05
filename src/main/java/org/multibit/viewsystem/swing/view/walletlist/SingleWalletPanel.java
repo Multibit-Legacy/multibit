@@ -571,7 +571,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
             if (perWalletModelData != null) {
                 String toolTipText = HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                        new Object[]{perWalletModelData.getBusyTask()}));
+                        new Object[]{controller.getLocaliser().getString(perWalletModelData.getBusyTaskKey())}));
                 hourglassLabel.setToolTipText(toolTipText);           
             } else {
                 hourglassLabel.setToolTipText(null);                
@@ -728,9 +728,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         
         if (useBusyStatus && perWalletModelData.isBusy()) {
             if (lastSyncPercent > 0) {
-                setSyncMessage(perWalletModelData.getBusyTaskVerb(), lastSyncPercent);
+                setSyncMessage(controller.getLocaliser().getString(perWalletModelData.getBusyTaskVerbKey()), lastSyncPercent);
             } else {
-                setSyncMessage(perWalletModelData.getBusyTaskVerb(), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);                
+                setSyncMessage(controller.getLocaliser().getString(perWalletModelData.getBusyTaskVerbKey()), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);                
             }
         } else {
             if (amountLabelBTC != null && amountLabelBTC.getText() != null && !"".equals(amountLabelBTC.getText())
@@ -1071,7 +1071,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
         if (perWalletModelData.isBusy()) {
-            setSyncMessage(perWalletModelData.getBusyTaskVerb(), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
+            setSyncMessage(controller.getLocaliser().getString(perWalletModelData.getBusyTaskVerbKey()), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
         }
     }
 }

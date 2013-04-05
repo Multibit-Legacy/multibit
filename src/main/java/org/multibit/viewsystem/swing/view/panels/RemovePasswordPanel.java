@@ -573,7 +573,7 @@ public class RemovePasswordPanel extends JPanel implements Viewable, WalletBusyL
                 removePasswordSubmitAction.putValue(
                         Action.SHORT_DESCRIPTION,
                         controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
-                                new Object[] { controller.getModel().getActivePerWalletModelData().getBusyTask() }));
+                                new Object[] { controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey()) }));
                 removePasswordSubmitAction.setEnabled(false);
             } else {
                 // Enable unless wallet has been modified by another process.

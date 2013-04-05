@@ -90,7 +90,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
 
                         if (!perWalletModelData.isBusy()) {
                             perWalletModelData.setBusy(true);
-                            perWalletModelData.setBusyTask(controller.getLocaliser().getString("removePasswordSubmitAction.text"));
+                            perWalletModelData.setBusyTaskKey("removePasswordSubmitAction.text");
 
                             controller.fireWalletBusyChange(true);
 
@@ -106,7 +106,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                         return;
                     } finally {
                         // Declare that wallet is no longer busy with the task.
-                        perWalletModelData.setBusyTask(null);
+                        perWalletModelData.setBusyTaskKey(null);
                         perWalletModelData.setBusy(false);
                         controller.fireWalletBusyChange(false);                   
                     }
@@ -130,7 +130,8 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
         // Update the enable status of the action to match the wallet busy status.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));         
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
         } else {
             // Enable unless wallet has been modified by another process.
             if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {

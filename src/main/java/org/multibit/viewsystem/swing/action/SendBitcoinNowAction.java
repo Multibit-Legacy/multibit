@@ -161,7 +161,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             // Double check wallet is not busy then declare that the active wallet is busy with the task
             if (!perWalletModelData.isBusy()) {
                 perWalletModelData.setBusy(true);
-                perWalletModelData.setBusyTask(controller.getLocaliser().getString("sendBitcoinConfirmAction"));
+                perWalletModelData.setBusyTaskKey("sendBitcoinConfirmAction");
 
                 sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
                 
@@ -256,7 +256,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         }
         
         // Declare that wallet is no longer busy with the task.
-        perWalletModelData.setBusyTask(null);
+        perWalletModelData.setBusyTaskKey(null);
         perWalletModelData.setBusy(false);
         controller.fireWalletBusyChange(false);                   
 
@@ -279,7 +279,8 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         // Update the enable status of the action to match the wallet busy status.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
             setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.

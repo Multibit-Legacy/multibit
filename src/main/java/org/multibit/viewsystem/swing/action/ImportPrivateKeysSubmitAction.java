@@ -227,8 +227,8 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
-            perWalletModelData.setBusyTask(controller.getLocaliser().getString("importPrivateKeysSubmitAction.text"));
-            perWalletModelData.setBusyTaskVerb(controller.getLocaliser().getString("importPrivateKeysSubmitAction.verb"));
+            perWalletModelData.setBusyTaskKey("importPrivateKeysSubmitAction.text");
+            perWalletModelData.setBusyTaskVerbKey("importPrivateKeysSubmitAction.verb");
 
             importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                     "importPrivateKeysSubmitAction.importingPrivateKeys"));
@@ -472,7 +472,8 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         // Update the enable status of the action to match the wallet busy status.
         if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()}));
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
             setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.

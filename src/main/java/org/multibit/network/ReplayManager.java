@@ -88,9 +88,8 @@ public enum ReplayManager {
         if (perWalletModelDataList != null) {
             for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                 perWalletModelData.setBusy(true);
-                perWalletModelData.setBusyTask(controller.getLocaliser().getString("multiBitDownloadListener.downloadingText"));
-                perWalletModelData.setBusyTaskVerb(controller.getLocaliser().getString(
-                        "multiBitDownloadListener.downloadingTextShort"));
+                perWalletModelData.setBusyTaskKey("multiBitDownloadListener.downloadingText");
+                perWalletModelData.setBusyTaskVerbKey("multiBitDownloadListener.downloadingTextShort");
                 perWalletModelData.setReplayTaskUUID(replayTask.getUuid());
             }
             controller.fireWalletBusyChange(true);
@@ -197,14 +196,14 @@ public enum ReplayManager {
         
         synchronized(replayTaskQueue) {
             replayTaskQueue.offer(replayTask);
-            String waitingText = controller.getLocaliser().getString("singleWalletPanel.waiting.text");
-            String waitingVerb = controller.getLocaliser().getString("singleWalletPanel.waiting.verb");
+            String waitingText = "singleWalletPanel.waiting.text";
+            String waitingVerb = "singleWalletPanel.waiting.verb";
             
             for (PerWalletModelData perWalletModelData : replayTask.getPerWalletModelDataToReplay()) {
                 if (perWalletModelData != null) {
                     perWalletModelData.setBusy(true);
-                    perWalletModelData.setBusyTaskVerb(waitingVerb);
-                    perWalletModelData.setBusyTask(waitingText);
+                    perWalletModelData.setBusyTaskVerbKey(waitingVerb);
+                    perWalletModelData.setBusyTaskKey(waitingText);
                 }
             }
         }
@@ -237,8 +236,8 @@ public enum ReplayManager {
                 List<PerWalletModelData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
                 if (perWalletModelDataList != null) {
                     for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                        perWalletModelData.setBusyTaskVerb(null);
-                        perWalletModelData.setBusyTask(null);
+                        perWalletModelData.setBusyTaskVerbKey(null);
+                        perWalletModelData.setBusyTaskKey(null);
                         perWalletModelData.setBusy(false);
                         perWalletModelData.setReplayTaskUUID(null);
                     }

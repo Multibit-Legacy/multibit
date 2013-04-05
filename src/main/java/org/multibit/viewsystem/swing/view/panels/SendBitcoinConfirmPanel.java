@@ -530,7 +530,8 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                 }
                 if (model.getActivePerWalletModelData().isBusy()) {
                     enableSend = false;
-                    message = controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyTask()});
+                    message = controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                            new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())});
                 }
                 thisPanel.sendBitcoinNowAction.setEnabled(enableSend);
             }
