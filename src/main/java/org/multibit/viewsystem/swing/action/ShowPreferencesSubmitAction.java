@@ -19,8 +19,6 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Timer;
 
 import javax.swing.AbstractAction;
@@ -44,6 +42,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
@@ -106,6 +105,17 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                     updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.aFeeMustBeSet");
                 }
 
+                if (!feeValidationError) {
+                    if (newSendFee.startsWith(ShowPreferencesPanel.UNPARSEABLE_FEE)) {
+                        String newSendFeeTrimmed = newSendFee.substring(ShowPreferencesPanel.UNPARSEABLE_FEE.length() + 1);
+                        // Recycle the old fee and set status message.
+                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                        feeValidationError = true;
+                        updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
+                                new Object[] { newSendFeeTrimmed });
+                    }
+                }
+                
                 if (!feeValidationError) {
                     try {
                         // Check fee is a number.

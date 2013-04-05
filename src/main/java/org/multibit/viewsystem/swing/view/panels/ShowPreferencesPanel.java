@@ -90,6 +90,8 @@ import org.slf4j.LoggerFactory;
 public class ShowPreferencesPanel extends JPanel implements Viewable, PreferencesDataProvider {
     private static final Logger log = LoggerFactory.getLogger(ShowPreferencesPanel.class);
 
+    public static String UNPARSEABLE_FEE = "UNPARSEABLE_FEE";
+    
     private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
 
     private static final int LANGUAGE_CODE_IMAGE_HEIGHT = 20;
@@ -1894,8 +1896,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             return controller.getLocaliser().bitcoinValueToStringNotLocalised(
                     converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
         } else {
-            // Return the unparsable fee for the action to deal with it.
-            return feeTextField.getText();
+            // Return UNPARSEABLE for the action to deal with it.
+            return ShowPreferencesPanel.UNPARSEABLE_FEE + " " + feeTextField.getText();
         }
     }
     
