@@ -604,6 +604,9 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                                 // Enable send button
                                 enableSend = true;
                             }
+                            if (model.getActivePerWalletModelData().isBusy()) {
+                                enableSend = false;
+                            }
                             thisPanel.sendBitcoinNowAction.setEnabled(enableSend);
                         }
 

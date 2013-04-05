@@ -3,6 +3,12 @@ MultiBit release notes.
 
 Version 0.5.9beta
 + changed 'Reset blockchain and transactions' suggested replay date to 2 days ago.
++ fix for unparseable fee amount
++ added 'Close Wallet'
++ wallets now resync automatically when opened
++ added better sync control
++ changed blockstore to SPVBlockStore - smaller download.
+
 
 Mar 2013 Version 0.4.23
 
