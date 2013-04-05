@@ -161,7 +161,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             // Double check wallet is not busy then declare that the active wallet is busy with the task
             if (!perWalletModelData.isBusy()) {
                 perWalletModelData.setBusy(true);
-                perWalletModelData.setBusyTaskKey("sendBitcoinConfirmAction");
+                perWalletModelData.setBusyTaskVerbKey("sendBitcoinNowAction.sendingBitcoin");
 
                 sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
                 
@@ -221,48 +221,49 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             log.error(e.getMessage(), e);
             message = e.getMessage();
         } finally {
-            // save the wallet
+            // Save the wallet.
+
             try {
                 controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             } catch (WalletSaveException e) {
                 log.error(e.getMessage(), e);
                 message = e.getMessage();
             }
-        }
-
-        if (sendWasSuccessful) {
-            String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
-            if (sendBitcoinConfirmPanel != null && (sendBitcoinConfirmPanel.isVisible() || useTestParameters)) {
-                sendBitcoinConfirmPanel.setMessageText(
-                        controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"));
-                sendBitcoinConfirmPanel.showOkButton();
-                sendBitcoinConfirmPanel.clearPassword();
+            
+            if (sendWasSuccessful) {
+                String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
+                if (sendBitcoinConfirmPanel != null && (sendBitcoinConfirmPanel.isVisible() || useTestParameters)) {
+                    sendBitcoinConfirmPanel.setMessageText(
+                            controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"));
+                    sendBitcoinConfirmPanel.showOkButton();
+                    sendBitcoinConfirmPanel.clearPassword();
+                } else {
+                    MessageManager.INSTANCE.addMessage(new Message(successMessage));
+                }
             } else {
-                MessageManager.INSTANCE.addMessage(new Message(successMessage));
-            }
-        } else {
-            log.error(message);
+                log.error(message);
 
-            if (message != null && message.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
-                message = message.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
-            }
+                if (message != null && message.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
+                    message = message.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
+                }
 
-            String errorMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSendFailed");
-            if (sendBitcoinConfirmPanel != null  && (sendBitcoinConfirmPanel.isVisible() || useTestParameters)) {
-                sendBitcoinConfirmPanel.setMessageText(errorMessage, message);
-            } else {
-                MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
+                String errorMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSendFailed");
+                if (sendBitcoinConfirmPanel != null  && (sendBitcoinConfirmPanel.isVisible() || useTestParameters)) {
+                    sendBitcoinConfirmPanel.setMessageText(errorMessage, message);
+                } else {
+                    MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
+                }
             }
+            
+            // Declare that wallet is no longer busy with the task.
+            perWalletModelData.setBusyTaskKey(null);
+            perWalletModelData.setBusy(false);
+            controller.fireWalletBusyChange(false);                   
+
+            log.debug("firing fireRecreateAllViews...");
+            controller.fireRecreateAllViews(false);
+            log.debug("firing fireRecreateAllViews...done");
         }
-        
-        // Declare that wallet is no longer busy with the task.
-        perWalletModelData.setBusyTaskKey(null);
-        perWalletModelData.setBusy(false);
-        controller.fireWalletBusyChange(false);                   
-
-        log.debug("firing fireRecreateAllViews...");
-        controller.fireRecreateAllViews(false);
-        log.debug("firing fireRecreateAllViews...done");
     }
     
     public Transaction getTransaction() {

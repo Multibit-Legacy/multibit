@@ -114,6 +114,9 @@ public class Localiser {
     }
 
     synchronized public String getString(String key) {
+        if (key == null) {
+            return "";
+        }
         // See if it is the number of languages or a language code.
         if (languageProperties != null) {
             String toReturn = (String) languageProperties.get(key);
