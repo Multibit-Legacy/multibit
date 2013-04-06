@@ -117,6 +117,7 @@ public class Localiser {
         if (key == null) {
             return "";
         }
+
         // See if it is the number of languages or a language code.
         if (languageProperties != null) {
             String toReturn = (String) languageProperties.get(key);
@@ -141,6 +142,10 @@ public class Localiser {
     }
 
     synchronized public String getString(String key, Object[] parameters) {
+        if (key == null) {
+            return "";
+        }
+
         if (resourceBundle != null) {
             try {
                 String pattern = resourceBundle.getString(key);

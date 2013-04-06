@@ -34,10 +34,10 @@ public class ColorAndFontConstants {
     public static int MULTIBIT_DEFAULT_FONT_SIZE;
     public static int MULTIBIT_LARGE_FONT_INCREASE = 1;
 
-    public static Color BACKGROUND_COLOR = UIManager.get("Label.background") == null ? new Color(250, 250, 253) : (Color) UIManager
+    public static Color BACKGROUND_COLOR = UIManager.get("Label.background") == null ? new Color(251, 251, 254) : (Color) UIManager
             .get("Label.background");
     public static Color DARK_BACKGROUND_COLOR;
-    public static Color DEFAULT_VERY_LIGHT_BACKGROUND_COLOR = new Color(250, 250, 253);
+    public static Color DEFAULT_VERY_LIGHT_BACKGROUND_COLOR = new Color(251, 251, 254);
     public static Color VERY_LIGHT_BACKGROUND_COLOR;
 
     public static Color SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
@@ -67,7 +67,7 @@ public class ColorAndFontConstants {
                     Math.min(255, labelBackground.getBlue() + BRIGHTEN_CONSTANT));
         }
         
-        BACKGROUND_COLOR = labelBackground == null ? new Color(250, 250, 253) : labelBackground;
+        BACKGROUND_COLOR = labelBackground == null ? new Color(251, 251, 254) : labelBackground;
         DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
         ALTERNATE_TABLE_COLOR = DEFAULT_ALTERNATE_TABLE_COLOR;
         VERY_LIGHT_BACKGROUND_COLOR = DEFAULT_VERY_LIGHT_BACKGROUND_COLOR;

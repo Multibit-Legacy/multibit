@@ -113,7 +113,5 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
         if (deleteSendingAddressConfirmDialog != null) {
             deleteSendingAddressConfirmDialog.setVisible(false);
         }
-        
-        controller.displayView(controller.getCurrentView());
     }
 }

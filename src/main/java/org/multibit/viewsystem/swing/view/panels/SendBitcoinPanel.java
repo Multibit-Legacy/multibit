@@ -90,7 +90,11 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
     @Override
     protected Action getDeleteAddressAction() {
-        return new DeleteSendingAddressAction(controller, mainFrame, this);
+        if (deleteAddressAction == null) {
+            return new DeleteSendingAddressAction(controller, mainFrame, this);
+        } else {
+            return deleteAddressAction;
+        }
     }
     
     @Override

@@ -1370,11 +1370,12 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 createNewButton.setToolTipText(HelpContentsPanel.createTooltipText(getLocalisationString(CREATE_NEW_TOOLTIP, null)));
             }
             if (deleteButton != null) {
-                boolean deleteEnable = true;
-                if (addressesTableModel != null) {
-                    deleteEnable = addressesTableModel.getRowCount() > 0;
-                }
-                deleteButton.setEnabled(deleteEnable);
+                checkDeleteSendingEnabled();
+//                boolean deleteEnable = false;
+//                if (addressesTableModel != null) {
+//                    deleteEnable = addressesTableModel.getRowCount() > 0;
+//                }
+//                deleteButton.setEnabled(deleteEnable);
                 deleteButton.setToolTipText(HelpContentsPanel.createTooltipText(getLocalisationString(DELETE_TOOLTIP, null)));
             }
             if (pasteSwatchButton != null) {
@@ -1962,14 +1963,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     public MultiBitTextField getAddressTextField() {
         return addressTextField;
-    }
-
-    public Action getCreateNewSendingAddressAction() {
-        return createNewAddressAction;
-    }
-
-    public Action getDeleteSendingAddressAction() {
-        return deleteAddressAction;
     }
     
     @Override

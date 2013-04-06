@@ -252,9 +252,9 @@ public class DeleteSendingAddressConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        DeleteSendingAddressSubmitAction deleteWalletSubmitAction = new DeleteSendingAddressSubmitAction(controller,
+        DeleteSendingAddressSubmitAction deleteSendingAddressSubmitAction = new DeleteSendingAddressSubmitAction(controller,
                 sendBitcoinPanel, this);
-        deleteSendingAddressButton = new MultiBitButton(deleteWalletSubmitAction, controller);
+        deleteSendingAddressButton = new MultiBitButton(deleteSendingAddressSubmitAction, controller);
         buttonPanel.add(deleteSendingAddressButton);
 
         JLabel filler4 = new JLabel();
