@@ -481,17 +481,12 @@ public class MultiBitService {
                         + "This is bad. MultiBit is currently looking for a blockChain at '" + blockchainFilename + "'");
             }
 
-            // Add wallet to PeerGroup - this is done in a background thread as
-            // it is slow.
-            @SuppressWarnings("rawtypes")
-            SwingWorker worker = new SwingWorker() {
-                @Override
-                protected Object doInBackground() throws Exception {
-                    peerGroup.addWallet(wallet);
-                    return null; // not used
-                }
-            };
-            worker.execute();
+            // Add wallet to peergroup.
+            if (peerGroup != null) {
+                peerGroup.addWallet(wallet);
+            } else {
+                log.error("Could not add wallet '" + walletFilename + "' to the peerGroup as the peerGroup is null. This is bad. ");
+            }
         }
 
         return perWalletModelDataToReturn;
