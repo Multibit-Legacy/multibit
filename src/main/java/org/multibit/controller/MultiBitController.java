@@ -50,13 +50,9 @@ import org.multibit.viewsystem.swing.action.ExitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.PeerEventListener;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
@@ -322,6 +318,16 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
         // log.debug("Fire blockdownloaded");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.blockDownloaded();
+        }
+        
+        // Mark all the wallets as dirty as their lastBlockSeenHeight will need changing.
+        if (getModel() != null) {
+            List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                    loopPerWalletModelData.setDirty(true);
+                }
+            }
         }
     }
 

@@ -217,7 +217,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, previousLookAndFeel);
 
             if (newLookAndFeel != null
-                    && (!newLookAndFeel.equals(previousLookAndFeel) || !newLookAndFeel.equals(UIManager.getLookAndFeel().getName()))) {
+                    && (!newLookAndFeel.equals(previousLookAndFeel) && !newLookAndFeel.equals(UIManager.getLookAndFeel().getName()))) {
                 controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, newLookAndFeel);
 
                 lookAndFeelHasChanged = true;
@@ -437,7 +437,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             }
 
             if (feeValidationError) {
-                MessageManager.INSTANCE.addMessage(new Message(updateStatusText));
+                MessageManager.INSTANCE.addMessage(new Message(updateStatusText, false));
             } else {
                 // Clear any previous validation error.
                 MessageManager.INSTANCE.addMessage(new Message(" "));

@@ -79,6 +79,7 @@ import org.multibit.message.MessageListener;
 import org.multibit.model.StatusEnum;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
@@ -100,6 +101,8 @@ import com.google.bitcoin.core.Block;
  */
 public class StatusBar extends JPanel implements MessageListener {
 
+    private static final Logger log = LoggerFactory.getLogger(StatusBar.class);
+
     private static final long serialVersionUID = 7824115980324911080L;
 
     private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
@@ -112,7 +115,7 @@ public class StatusBar extends JPanel implements MessageListener {
     public static final int ONLINE_LABEL_HEIGHT_DELTA = 8;
 
     private MultiBitLabel onlineLabel;
-    private MultiBitButton statusLabel;
+    final private MultiBitButton statusLabel;
     private StatusEnum statusEnum;
 
     public static final long TIMER_REPEAT_TIME = 5000; // millisecond
@@ -195,6 +198,8 @@ public class StatusBar extends JPanel implements MessageListener {
         statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         statusLabel.setOpaque(true);
         statusLabel.setBorderPainted(false);
+        statusLabel.setForeground(Color.BLACK);
+        //statusLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         statusLabel.setFocusPainted(false);
 
         statusLabel.setContentAreaFilled(false);
@@ -374,6 +379,7 @@ public class StatusBar extends JPanel implements MessageListener {
             @Override
             public void run() {
                 if (statusLabel != null) {
+                    log.debug("Sttus label = '" + newStatusLabel + "'");
                     statusLabel.setText(newStatusLabel);
                 }
             }
