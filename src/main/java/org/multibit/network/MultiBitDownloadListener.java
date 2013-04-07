@@ -55,6 +55,8 @@ public class MultiBitDownloadListener extends DownloadListener {
     private List<SingleWalletPanelDownloadListener> singleWalletPanelDownloadListeners;
 
     private Object lockObject = new Object();
+    
+    private int blocksToDownloadAtStart = -1;
 
     public MultiBitDownloadListener(MultiBitController controller) {
         this.controller = controller;
@@ -101,10 +103,11 @@ public class MultiBitDownloadListener extends DownloadListener {
                 ReplayTask currentReplayTask = ReplayManager.INSTANCE.getCurrentReplayTask();
                 if (currentReplayTask != null) {
                     if (currentReplayTask.getStartHeight() != ReplayTask.UNKNOWN_START_HEIGHT) {
-                        pct = (int)(100 * ( 1.0 - (double)blocksSoFar/(double)(ReplayManager.INSTANCE.getActualLastChainHeight() - currentReplayTask.getStartHeight())));
+                        double denominator = Math.max(blocksToDownloadAtStart, ReplayManager.INSTANCE.getActualLastChainHeight() - currentReplayTask.getStartHeight());
+                        pct = (int)(100 * ( 1.0 - (double)blocksSoFar/denominator));
                     }
-                    //log.debug("blocksSoFar = " + blocksSoFar + ", actualLastChainHeight = " + ReplayManager.INSTANCE.getActualLastChainHeight() +
-                    //        ", startHeight = " + currentReplayTask.getStartHeight() + ", percent = " + pct);
+                    log.debug("blocksSoFar = " + blocksSoFar + ", actualLastChainHeight = " + ReplayManager.INSTANCE.getActualLastChainHeight() +
+                            ", startHeight = " + currentReplayTask.getStartHeight() + ", percent = " + pct);
                 }
                 
                 // When busy occasionally the localiser fails to localise.
@@ -133,6 +136,8 @@ public class MultiBitDownloadListener extends DownloadListener {
             doneDownload();
         } else {
             synchronized (lockObject) {
+                blocksToDownloadAtStart = blocks;
+                
                 String startDownloadText;
                 if (blocks <= CRITERIA_LARGE_NUMBER_OF_BLOCKS) {
                     startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort",

@@ -379,7 +379,7 @@ public class StatusBar extends JPanel implements MessageListener {
             @Override
             public void run() {
                 if (statusLabel != null) {
-                    log.debug("Sttus label = '" + newStatusLabel + "'");
+                    log.debug("StatusBar label = '" + newStatusLabel + "'");
                     statusLabel.setText(newStatusLabel);
                 }
             }

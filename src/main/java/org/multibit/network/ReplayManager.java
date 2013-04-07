@@ -139,9 +139,7 @@ public enum ReplayManager {
         
         // Close the blockstore and recreate a new one.
         int newChainHeightAfterTruncate = controller.getMultiBitService().createNewBlockStoreForReplay(dateToReplayFrom);
-        if (replayTask.getStartHeight() == ReplayTask.UNKNOWN_START_HEIGHT) {
-            replayTask.setStartHeight(newChainHeightAfterTruncate);
-        }
+        replayTask.setStartHeight(newChainHeightAfterTruncate);
         
         // Create a new PeerGroup.
         controller.getMultiBitService().createNewPeerGroup();
@@ -198,6 +196,8 @@ public enum ReplayManager {
             return false;
         }
         
+        log.debug("Received ReplayTask of " + replayTask.toString());
+        
         // Work out for this replay task where the blockchain will be truncated to.
         int startHeight = replayTask.getStartHeight();
         if (startHeight == ReplayTask.UNKNOWN_START_HEIGHT) {
@@ -210,6 +210,9 @@ public enum ReplayManager {
                     StoredBlock checkpoint = checkpointManager.getCheckpointBefore(replayTask.getStartDate().getTime() / 1000);
                     if (checkpoint != null) {
                         startHeight = checkpoint.getHeight();
+                        
+                        // Store it in the replay task as it will be used for percents.
+                        replayTask.setStartHeight(startHeight);
                     }
                 } catch (IOException e) {
                     log.error(e.getClass().getName() + " " + e.getMessage());
@@ -225,7 +228,7 @@ public enum ReplayManager {
                
             }
         }
-        log.debug("For replayTask UUID = " + replayTask.getUuid().toString() + " the blockchain replay height will be " + startHeight);
+        log.debug("Actual replayTask offered = " + replayTask.toString());
         synchronized(replayTaskQueue) {
             replayTaskQueue.offer(replayTask);
             String waitingText = "singleWalletPanel.waiting.text";
