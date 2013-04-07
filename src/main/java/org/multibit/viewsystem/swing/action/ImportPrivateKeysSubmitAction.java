@@ -337,8 +337,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                             }
                         }
                     } finally {
-                        // Wipe the collection of private key bytes to remove it
-                        // from memory.
+                        // Wipe the work collection of private key bytes to remove it from memory.
                         for (byte[] privateKeyBytes : unencryptedWalletPrivateKeys) {
                             if (privateKeyBytes != null) {
                                 for (int i = 0; i < privateKeyBytes.length; i++) {
@@ -387,6 +386,8 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     logError(kce);
                 } catch (PrivateKeysHandlerException pkhe) {
                     logError(pkhe);
+                } catch (Exception e) {
+                    logError(e);
                 }
                 return successMeasure;
             }
@@ -429,12 +430,6 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
                 } 
-//                finally {
-//                    // Declare that wallet is no longer busy with the task.
-//                    finalPerWalletModelData.setBusyTask(null);
-//                    finalPerWalletModelData.setBusy(false);
-//                    controller.fireWalletBusyChange(false);                   
-//                }
             }
         };
         log.debug("Importing private keys in background SwingWorker thread");

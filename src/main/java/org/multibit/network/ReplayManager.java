@@ -16,6 +16,9 @@
 
 package org.multibit.network;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
@@ -32,8 +35,9 @@ import org.multibit.model.PerWalletModelData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
@@ -194,6 +198,34 @@ public enum ReplayManager {
             return false;
         }
         
+        // Work out for this replay task where the blockchain will be truncated to.
+        int startHeight = replayTask.getStartHeight();
+        if (startHeight == ReplayTask.UNKNOWN_START_HEIGHT) {
+            File checkpointsFile = new File(controller.getMultiBitService().getCheckpointsFilename());
+            if (checkpointsFile.exists() && replayTask.getStartDate() != null) {
+                FileInputStream stream = null;
+                try {
+                    stream = new FileInputStream(checkpointsFile);
+                    CheckpointManager checkpointManager = new CheckpointManager(controller.getModel().getNetworkParameters(), stream);
+                    StoredBlock checkpoint = checkpointManager.getCheckpointBefore(replayTask.getStartDate().getTime() / 1000);
+                    if (checkpoint != null) {
+                        startHeight = checkpoint.getHeight();
+                    }
+                } catch (IOException e) {
+                    log.error(e.getClass().getName() + " " + e.getMessage());
+                } finally {
+                    if (stream != null) {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+               
+            }
+        }
+        log.debug("For replayTask UUID = " + replayTask.getUuid().toString() + " the blockchain replay height will be " + startHeight);
         synchronized(replayTaskQueue) {
             replayTaskQueue.offer(replayTask);
             String waitingText = "singleWalletPanel.waiting.text";
@@ -204,7 +236,14 @@ public enum ReplayManager {
                     perWalletModelData.setBusy(true);
                     perWalletModelData.setBusyTaskVerbKey(waitingVerb);
                     perWalletModelData.setBusyTaskKey(waitingText);
-                }
+                    
+                    // Set the height on the wallet to be the startHeight.
+                    // This means that if the user shuts down MultBit replay on start up
+                    // will be from the required startHeight.
+                    perWalletModelData.getWallet().setLastBlockSeenHeight(startHeight);
+                    perWalletModelData.getWallet().setLastBlockSeenHash(null);
+                    perWalletModelData.setDirty(true);
+                 }
             }
         }
         return true;

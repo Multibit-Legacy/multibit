@@ -487,8 +487,7 @@ public class MultiBit {
                         log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was "
                                 + lastBlockSeenHeight);
 
-                        // Check if we have both the lastBlockSeenHeight and the
-                        // currentChainHeight.
+                        // Check if we have both the lastBlockSeenHeight and the currentChainHeight.
                         if (lastBlockSeenHeight > 0 && currentChainHeight > 0) {
                             if (lastBlockSeenHeight >= currentChainHeight) {
                                 // Wallet is at or ahead of current chain - no

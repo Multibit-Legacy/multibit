@@ -215,6 +215,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         logError(kce);
                     } catch (IOException io) {
                         logError(io);
+                    } catch (Exception e) {
+                        logError(e);
                     }
                 
                 return successMeasure;
