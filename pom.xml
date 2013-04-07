@@ -206,7 +206,7 @@
                             <outputDirectory>${staging.linux.dir}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/izpack/linux</directory>
+                                    <directory>${basedir}/src/main/izpack/linux</directory>
                                     <filtering>true</filtering>
                                     <includes>
                                         <include>install.xml</include>
@@ -258,7 +258,7 @@
                             <outputDirectory>${staging.windows.dir}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/izpack/windows</directory>
+                                    <directory>${basedir}/src/main/izpack/windows</directory>
                                     <filtering>true</filtering>
                                     <includes>
                                         <include>install.xml</include>
@@ -354,7 +354,7 @@
             <plugin>
                 <groupId>org.codehaus.izpack</groupId>
                 <artifactId>izpack-maven-plugin</artifactId>
-                <version>1.0-alpha-5</version>
+                <version>1.0-alpha-5</version> <!-- 5.0.0-beta11 -->
                 <executions>
                     <execution>
                         <id>create-linux-installer</id>
