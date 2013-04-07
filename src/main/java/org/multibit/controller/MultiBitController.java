@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -291,7 +292,8 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     public void fireWalletBusyChange(boolean newWalletIsBusy) {
         //log.debug("fireWalletBusyChange called");
-        for (WalletBusyListener walletBusyListener : walletBusyListeners) {
+        for( Iterator<WalletBusyListener> it = walletBusyListeners.iterator(); it.hasNext();) {
+            WalletBusyListener walletBusyListener = it.next();
             walletBusyListener.walletBusyChange(newWalletIsBusy);
         }
     }

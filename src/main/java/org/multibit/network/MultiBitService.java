@@ -279,13 +279,17 @@ public class MultiBitService {
             // If there is an SPVStore prefer that.
             blockchainFilename = spvBlockStoreFilename;
 
+            File blockchainFile = new File(blockchainFilename);
             if (createNew) {
-                boolean deletedOk = (new File(blockchainFilename)).delete();
+                // Garbage collect any closed references to the blockchainFile.
+                System.gc();
+                blockchainFile.setWritable(true);
+                boolean deletedOk = blockchainFile.delete();
                 log.debug("Recreating SPV block store '{}' from disk", blockchainFilename + ", deletedOk = " + deletedOk);
             } else {
                 log.debug("Opening SPV block store '{}' from disk", blockchainFilename);
             }
-            blockStore = new SPVBlockStore(networkParameters, new File(blockchainFilename));
+            blockStore = new SPVBlockStore(networkParameters, blockchainFile);
 
             // Load the existing checkpoint file, setting the checkpoint date if it is a replay.
             if (checkpointsFile.exists() && checkpointDate != null) {
@@ -504,6 +508,7 @@ public class MultiBitService {
         if (blockStore != null) {
             try {
                 blockStore.close();
+                blockStore = null;
             } catch (NullPointerException npe) {
                 log.debug("NullPointerException on blockstore close");
             }
