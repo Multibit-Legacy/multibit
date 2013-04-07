@@ -42,6 +42,9 @@
   <native type="3rdparty" name="COIOSHelper.dll" stage="both">
     <os family="windows"/>
   </native>
+  <native type="3rdparty" name="COIOSHelper_x64.dll" stage="both">
+    <os family="windows" />
+  </native>
 
   <!--
       The gui preferences indication.
