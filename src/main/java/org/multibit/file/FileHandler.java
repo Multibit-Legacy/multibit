@@ -1017,6 +1017,11 @@ public class FileHandler {
         RandomAccessFile raf = null;
         if (file != null && file.exists()) {
             try {
+                // Prep for file delete as this can be fiddly on windows.
+                // Make sure it is writable and any references to it are garbage collected and finalized.
+                file.setWritable(true);
+                System.gc();
+                
                 long length = file.length();
                 raf = new RandomAccessFile(file, "rws");
                 raf.seek(0);
