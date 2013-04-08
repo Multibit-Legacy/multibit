@@ -149,6 +149,8 @@ public class Localiser {
         if (resourceBundle != null) {
             try {
                 String pattern = resourceBundle.getString(key);
+                // Change any apostrophes to  \u2032 as MessageFormatter swallows them
+                pattern = pattern.replaceAll("\u0027", "\u2032");
                 formatter.applyPattern(pattern);
                 return formatter.format(parameters);
             } catch (NullPointerException npe) {
