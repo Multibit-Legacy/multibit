@@ -10,6 +10,7 @@ Tim Molter
 Internationalisation:
 ---------------------
 3phase              - Greek
+alpaycan            - Turkish
 anod1               - French
 AnonX               - Norwegian
 Arvis Lacis         - Latvian
@@ -33,12 +34,14 @@ DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
 eqawasmi            - Arabic
 Ermo                - Italian
+fengp3301           - Simplified Chinese
 ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
 ftechx              - Arabic
 gaasje              - Dutch
 gilgilgil           - Hebrew
+gongjianhui         - Simplified Chinese
 grouver             - Dutch
 GSBank              - French
 guillo.92199        - French
@@ -52,6 +55,7 @@ ildubbioso          - Italian
 Ipaboo              - Greek
 lzsaver             - Russian
 Jan-steenbergen     - Dutch
+Jardo               - Slovak
 JeppeJ              - Swedish
 JeromeS             - Arabic
 jesusangel          - Spanish
@@ -71,6 +75,7 @@ Marx1996xvx         - Polish
 Mats Henricson      - Swedish
 MBH                 - Arabic
 Memory Dealers      - Japanese
+mnm                 - Arabic
 mohammad_rafigh     - Persian
 moole               - Czech
 mrmx                - Spanish
@@ -82,12 +87,14 @@ okahira             - Chinese Simplified
 pallikarva          - Finnish
 pginvest            - Portuguese
 Piotr Waskiewicz    - Polish
+R2D221              - Esperanto
 raymccarthy         - Swedish
 rbreban             - Spanish
 robsned             - Hindi
 ronimo              - French
 samer               - Arabic
 sasha               - Russian
+scorpion9979        - Arabic
 SeNiels             - Dutch
 shelart             - Russian
 spiccioli           - Italian

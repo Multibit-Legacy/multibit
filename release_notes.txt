@@ -2,13 +2,19 @@ MultiBit release notes.
 
 
 Version 0.5.9beta
-+ changed 'Reset blockchain and transactions' suggested replay date to 2 days ago.
-+ fix for unparseable fee amount
-+ reduced default fee to 0.0005 BTC
+Features:
++ I18n update.
++ Update to bitcoinj 0.8-SNAPSHOT
 + added 'Close Wallet'
 + wallets now resync automatically when opened
-+ added better sync control
-+ changed blockstore to SPVBlockStore - smaller download.
++ added better sync control on import and reset blockchain
++ changed blockstore to SPVBlockStore - smaller download
++ changed 'Reset blockchain and transactions' suggested replay date to 2 days ago.
++ reduced default fee to 0.0005 BTC
+
+Bug fixes:
++ fix for unparseable fee amount
++ apostrophes now appear in French and Italian translations properly
 
 
 Mar 2013 Version 0.4.23
