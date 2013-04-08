@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
@@ -74,12 +75,12 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     /**
      * The view systems under control of the MultiBitController.
      */
-    private Collection<ViewSystem> viewSystems;
+    private final Collection<ViewSystem> viewSystems;
 
     /**
      * The WalletBusy listeners
      */
-    private Collection<WalletBusyListener> walletBusyListeners;
+    private final Collection<WalletBusyListener> walletBusyListeners;
     
     /**
      * The data model backing the views.
@@ -99,17 +100,17 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     /**
      * Class encapsulating File IO.
      */
-    private FileHandler fileHandler;
+    private final FileHandler fileHandler;
     
     /**
      * The listener handling Peer events.
      */
-    private PeerEventListener peerEventListener;
+    private final PeerEventListener peerEventListener;
     
     /**
      * Class encapsulating the location of the Application Data Directory.
      */
-    private ApplicationDataDirectoryLocator applicationDataDirectoryLocator;
+    private final ApplicationDataDirectoryLocator applicationDataDirectoryLocator;
 
     /**
      * Multiple threads will write to this variable so require it to be volatile
@@ -129,7 +130,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
     public MultiBitController(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
         this.applicationDataDirectoryLocator = applicationDataDirectoryLocator;
 
-        viewSystems = new ArrayList<ViewSystem>();
+        viewSystems = new CopyOnWriteArrayList<ViewSystem>();
         
         walletBusyListeners = new ArrayList<WalletBusyListener>();
 
@@ -201,6 +202,20 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      */
     public void registerWalletBusyListener(WalletBusyListener walletBusyListener) {
         walletBusyListeners.add(walletBusyListener);
+    }
+    
+    /**
+     * Clear the wallet busy listeners
+     */
+    public void clearWalletBusyListeners() {
+        walletBusyListeners.clear();
+    }
+    
+    /**
+     * Log the number of wallet busy listeners
+     */
+    public void logNumberOfWalletBusyListeners() {
+        log.debug("There are " + walletBusyListeners.size() + " walletBusyListeners.");
     }
 
     public MultiBitModel getModel() {

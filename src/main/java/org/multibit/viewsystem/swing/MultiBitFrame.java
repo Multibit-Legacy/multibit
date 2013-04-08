@@ -1046,6 +1046,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
             ReplayManager.INSTANCE.removeDownloadListeners(replayPerWalletModelDataList);
             
+            // Remove the WalletBusyListeners.
+            controller.logNumberOfWalletBusyListeners();
+            controller.clearWalletBusyListeners();
+            
             thisFrame.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
             viewFactory.initialise();
@@ -1101,6 +1105,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 }
             }
         }
+        
+        controller.logNumberOfWalletBusyListeners();
     }
 
     /**

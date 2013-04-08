@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
@@ -251,7 +252,7 @@ public class MultiBitModel {
         this.controller = controller;
         this.userPreferences = userPreferences;
 
-        perWalletModelDataList = new LinkedList<PerWalletModelData>();
+        perWalletModelDataList = new CopyOnWriteArrayList<PerWalletModelData>();
 
         activeWalletModelData = new PerWalletModelData();
         perWalletModelDataList.add(activeWalletModelData);
