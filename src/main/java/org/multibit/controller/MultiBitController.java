@@ -149,7 +149,7 @@ public class MultiBitController implements GenericOpenURIEventListener, GenericP
      *            View to display. Must be one of the View constants
      */
     public void displayView(View viewToDisplay) {
-        //log.debug("Displaying view '" + viewToDisplay + "'");
+        log.debug("Displaying view '" + viewToDisplay + "'");
 
         // Tell all views to close the current view.
         for (ViewSystem viewSystem : viewSystems) {

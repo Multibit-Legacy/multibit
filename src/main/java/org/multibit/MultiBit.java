@@ -211,7 +211,7 @@ public class MultiBit {
             CurrencyConverter.INSTANCE.initialise(finalController);
             
             // This is when the GUI is first displayed to the user.
-            log.debug("Creating user interface");
+            log.debug("Creating user interface with initial view : " + controller.getCurrentView());
             swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());
 
             log.debug("Registering with controller");

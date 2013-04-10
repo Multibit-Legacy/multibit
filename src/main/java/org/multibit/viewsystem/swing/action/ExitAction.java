@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.Cursor;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
@@ -66,12 +67,16 @@ public class ExitAction extends AbstractAction {
     public void actionPerformed(ActionEvent arg0) {
         log.debug("exit 1");
         if (mainFrame != null) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                }});
-           
+            if (EventQueue.isDispatchThread()) {
+                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    }
+                });
+            }
         }
         log.debug("exit 2");
 

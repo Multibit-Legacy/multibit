@@ -280,7 +280,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         viewFactory = new ViewFactory(controller, this);
 
-        initUI();
+        initUI(initialView);
 
         controller.registerWalletBusyListener(this);
 
@@ -345,7 +345,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setLocation((int) (width * startHorizontalPositionRatio), (int) (height * startVerticalPositionRatio));
     }
 
-    private void initUI() {
+    private void initUI(View initialView) {
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridBagLayout());
         contentPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -393,6 +393,35 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Create the tabbedpane that holds the views.
         viewTabbedPane = new MultiBitTabbedPane(controller);
         viewTabbedPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        
+        // Add the send bitcoin tab.
+        JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
+        Viewable sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
+        sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinView.getViewTooltip(),
+                sendBitcoinOutlinePanel);
+
+        // Add the receive bitcoin tab.
+        JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
+        Viewable receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
+        receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(),
+                receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
+
+        // Add the transactions tab.
+        JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
+        Viewable transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
+        transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
+                transactionsOutlinePanel);
+        
+        if (initialView == View.SEND_BITCOIN_VIEW) {
+            viewTabbedPane.setSelectedIndex(0);
+        } else if (initialView == View.RECEIVE_BITCOIN_VIEW) {
+            viewTabbedPane.setSelectedIndex(1);
+        } else if (initialView == View.TRANSACTIONS_VIEW) {
+            viewTabbedPane.setSelectedIndex(2);
+        } 
 
         // Create a split pane with the two scroll panes in it.
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -424,28 +453,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         // Cannot get the RTL wallets drawing nicely so switch off adjustment.
         splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
-
-        // Add the send bitcoin tab.
-        JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        Viewable sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
-        sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinView.getViewTooltip(),
-                sendBitcoinOutlinePanel);
-
-        // Add the receive bitcoin tab.
-        JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        Viewable receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
-        receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(),
-                receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
-
-        // Add the transactions tab.
-        JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
-        Viewable transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
-        transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
-                transactionsOutlinePanel);
-
+        
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
         MessageManager.INSTANCE.addMessageListener(statusBar);
@@ -1055,7 +1063,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewFactory.initialise();
             contentPane.removeAll();
             viewTabbedPane.removeAllTabs();
-            initUI();
+            initUI(null);
             
             // TODO check task is still running by taskid.
             if (replayPerWalletModelDataList != null) {
@@ -1114,7 +1122,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     @Override
     public void displayView(View viewToDisplay) {
-        //log.debug("Displaying view '" + viewToDisplay + "'");
+        log.debug("Displaying view '" + viewToDisplay + "'");
         // Open wallet view obselete - show transactions
         if (View.OPEN_WALLET_VIEW == viewToDisplay) {
             viewToDisplay = View.TRANSACTIONS_VIEW;

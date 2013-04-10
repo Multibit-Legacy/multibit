@@ -68,10 +68,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
     @Override
     public void setSelectedIndex(int index) {
         super.setSelectedIndex(index);
-
+        
         if (!enableUpdates) {
             return;
         }
+
+        log.debug("Set selected index = " + index);
 
         try {
             // Get current tab.
