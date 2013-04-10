@@ -448,10 +448,6 @@ public class MultiBit {
             // Check for any pending URI operations.
             controller.handleOpenURI();
 
-            // Check if any wallets need migrating from serialised to protobuf.
-            //MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, (MultiBitFrame) swingViewSystem);
-            //migrateWalletsAction.actionPerformed(null);
-
             // Check to see if there is a new version.
             AlertManager.INSTANCE.initialise(controller, (MultiBitFrame) swingViewSystem);
             AlertManager.INSTANCE.checkVersion();

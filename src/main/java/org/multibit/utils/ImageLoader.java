@@ -37,9 +37,6 @@ public class ImageLoader {
     public static final String CROSS_ICON_FILE = "/images/cross.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
     public static final String DELETE_ADDRESS_ICON_FILE = "/images/book_open_delete.png";
-//    public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
-//    public static final String TWISTY_LEFT_ICON_FILE = "/images/twistyLeft.png";
-//    public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
     public static final String HELP_CONTENTS_BIG_ICON_FILE = "/images/helpContentsBig.png";
