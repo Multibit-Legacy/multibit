@@ -51,7 +51,6 @@ public class ImageLoader {
     public static final String MULTIBIT_128_ICON_FILE = "/images/multibit128.png";
     public static final String MULTIBIT_ICON_FILE = "/images/multibit.png";
     public static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.png";
-    public static final String OPEN_LOCK_ICON_FILE = "/images/openLock.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
     public static final String PREFERENCES_ICON_FILE = "/images/preferences.png";

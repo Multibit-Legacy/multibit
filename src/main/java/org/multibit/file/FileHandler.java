@@ -237,8 +237,7 @@ public class FileHandler {
 
         if (walletInfo != null) {
             synchronized (walletInfo) {
-                // Save the perWalletModelData if it is dirty or if forceWrite
-                // is true.
+                // Save the perWalletModelData if it is dirty or if forceWrite is true.
                 if (perWalletModelData.isDirty() || forceWrite) {
                     // Check dates and sizes of files.
                     boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
@@ -616,8 +615,7 @@ public class FileHandler {
      *            The wallet info
      */
     private void rememberFileSizesAndLastModified(File walletFile, WalletInfo walletInfo) {
-        // Get the files' last modified data and sizes and store them in the
-        // wallet properties.
+        // Get the files' last modified data and sizes and store them in the wallet properties.
         if (walletFile == null || walletInfo == null) {
             return;
         }
@@ -848,13 +846,11 @@ public class FileHandler {
             return;
         }
 
-        // See if the block chain in the user's application data directory
-        // exists.
+        // See if the block chain in the user's application data directory exists.
         File destinationCheckpoints = new File(destinationCheckpointsFilename);
 
         if (!destinationCheckpoints.exists()) {
-            // Work out the source checkpoints (put into the program installation
-            // directory by the installer).
+            // Work out the source checkpoints (put into the program installation directory by the installer).
             File directory = new File(".");
             String currentWorkingDirectory = directory.getCanonicalPath();
 

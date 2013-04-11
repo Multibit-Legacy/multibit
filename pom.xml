@@ -423,6 +423,17 @@
                                     file="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub"
                                     perm="777" />
 
+                                <!-- Sign the Mac app -->
+                               <exec executable="codesign" os="'Mac OS X'">
+                                    <arg
+                                        line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app" />
+                                </exec>
+                                <!-- Verify it is signed ok -->
+                               <exec executable="codesign" os="'Mac OS X'">
+                                    <arg
+                                        line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app" />
+                                </exec>                            
+                                    
                                 <!-- create a DMG file -->
                                 <exec executable="hdiutil" os="'Mac OS X'">
                                     <arg value="create" />
