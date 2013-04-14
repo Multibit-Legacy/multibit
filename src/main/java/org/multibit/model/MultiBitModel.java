@@ -78,6 +78,8 @@ public class MultiBitModel {
     public static final String LOOK_AND_FEEL = "lookAndFeel";
     public static final String SYSTEM_LOOK_AND_FEEL = "system";
     
+    public static final String SHOW_DELETE_WALLET = "showDeleteWallet";
+    
     public static final int SCROLL_INCREMENT = 12;
 
     // Currency ticker.

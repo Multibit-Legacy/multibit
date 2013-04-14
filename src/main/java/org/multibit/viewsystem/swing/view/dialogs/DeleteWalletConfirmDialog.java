@@ -37,6 +37,8 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
  * The delete wallet confirm dialog
@@ -45,7 +47,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
     private static final long serialVersionUID = 191435612345057705L;
 
     private static final int HEIGHT_DELTA = 100;
-    private static final int WIDTH_DELTA = 200;
+    private static final int WIDTH_DELTA = 250;
 
     private MultiBitController controller;
 
@@ -55,6 +57,11 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
 
     private MultiBitLabel explainLabel;
     private MultiBitLabel confirmText1, confirmText2;
+    
+    private MultiBitLabel question1;
+    private MultiBitLabel question2;
+    private MultiBitTextField answer;
+    
 
     private MultiBitButton deleteWalletButton;
     private MultiBitButton cancelButton;
@@ -83,7 +90,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
     public void initUI() {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        int minimumHeight = fontMetrics.getHeight() * 10 + HEIGHT_DELTA;
+        int minimumHeight = fontMetrics.getHeight() * 15 + HEIGHT_DELTA;
         int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getModel().getActiveWalletFilename()),
                 fontMetrics.stringWidth(controller.getLocaliser().getString("deleteWalletConfirmDialog.message")))
                 + WIDTH_DELTA;
@@ -126,20 +133,21 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 2;
-        constraints.weightx = 0.5;
+        constraints.weightx = 0.001;
         constraints.weighty = 0.2;
         constraints.gridwidth = 1;
         constraints.gridheight = 5;
         constraints.anchor = GridBagConstraints.CENTER;
         JLabel bigIconLabel = new JLabel(bigIcon);
         mainPanel.add(bigIconLabel, constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(60), constraints);
 
         explainLabel = new MultiBitLabel("");
         explainLabel.setText(controller.getLocaliser().getString("deleteWalletConfirmDialog.message"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        constraints.weightx = 0.8;
+        constraints.weightx = 0.08;
         constraints.weighty = 0.3;
         constraints.gridwidth = 5;
         constraints.gridheight = 1;
@@ -151,12 +159,22 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 2;
-        constraints.weightx = 0.6;
+        constraints.weightx = 4;
         constraints.weighty = 0.8;
         constraints.gridwidth = 3;
         constraints.gridheight = 5;
         constraints.anchor = GridBagConstraints.CENTER;
         mainPanel.add(detailPanel, constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 5;
+        constraints.gridy = 5;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(MultiBitTitledPanel.createStent(30), constraints);
 
         GridBagConstraints constraints2 = new GridBagConstraints();
 
@@ -244,14 +262,49 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler2, constraints2);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
+        question1 = new MultiBitLabel("");
+        question1.setText(controller.getLocaliser().getString("deleteWalletConfirmDialog.question1"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 7;
         constraints.weightx = 0.8;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 7;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(question1, constraints);
+
+        question2 = new MultiBitLabel("");
+        question2.setText(controller.getLocaliser().getString("deleteWalletConfirmDialog.question2"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 8;
+        constraints.weightx = 0.8;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 77;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(question2, constraints);
+
+        answer = new MultiBitTextField("", 18, controller);
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.gridx = 1;
+        constraints.gridy = 9;
+        constraints.weightx = 0.8;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 7;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(answer, constraints);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 10;
+        constraints.weightx = 0.01;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 4;
+        constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(buttonPanel, constraints);
@@ -267,43 +320,41 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         confirmText1 = new MultiBitLabel("");
         confirmText1.setText(" ");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 8;
-        constraints.weightx = 0.8;
+        constraints.gridx = 1;
+        constraints.gridy = 11;
+        constraints.weightx = 0.01;
         constraints.weighty = 0.15;
         constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText1, constraints);
 
-        JLabel filler3 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
-        constraints.gridy = 8;
+        constraints.gridy = 10;
         constraints.weightx = 0.05;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(filler3, constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(30), constraints);
 
         confirmText2 = new MultiBitLabel(" ");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 9;
-        constraints.weightx = 0.8;
+        constraints.gridx = 1;
+        constraints.gridy = 13;
+        constraints.weightx = 0.01;
         constraints.weighty = 0.15;
         constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText2, constraints);
 
-        JLabel filler4 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
-        constraints.gridy = 9;
+        constraints.gridy = 13;
         constraints.weightx = 0.05;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(filler4, constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(30), constraints);
     }
 
     public void setDeleteConfirmText(String confirm1, String confirm2) {
@@ -318,5 +369,9 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
 
     public MultiBitLabel getExplainLabel() {
         return explainLabel;
+    }
+    
+    public String getAnswer() {
+        return answer.getText();
     }
 }

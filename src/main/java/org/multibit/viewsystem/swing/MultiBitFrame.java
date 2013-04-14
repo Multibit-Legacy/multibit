@@ -777,14 +777,18 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         fileMenu.addSeparator();
         
-        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller,
-                ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
-        menuItem = new JMenuItem(deleteWalletAction);
-        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        menuItem.setComponentOrientation(componentOrientation);
-        fileMenu.add(menuItem);
+        // See if user has enabled the delete wallet action
+        String showDeleteWalletString = controller.getModel().getUserPreference(MultiBitModel.SHOW_DELETE_WALLET);
+        if (Boolean.TRUE.toString().equalsIgnoreCase(showDeleteWalletString)) {
+            DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller,
+                    ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
+            menuItem = new JMenuItem(deleteWalletAction);
+            menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            menuItem.setComponentOrientation(componentOrientation);
+            fileMenu.add(menuItem);
 
-        fileMenu.addSeparator();
+            fileMenu.addSeparator();
+        }
         
         // Add password action.
         addPasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",

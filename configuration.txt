@@ -23,6 +23,17 @@ multibit.properties. Multibit looks in a few places for this file:
 
 Wherever this file is found, that directory is used as the application data directory for Multibit.
 
+Show Delete Wallet
+------------------
+To enable the display in the File menu of the 'Delete Wallet' option, set the following property:
+showDeleteWallet = true
+
+When deleting a wallet, to avoid accidental deletion, MultiBit asks you:
+"To confirm this action enter the name of the creator of Bitcoin"
+
+The answer is:
+satoshi nakamoto
+
 
 Connect to specific peers
 -------------------------

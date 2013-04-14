@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.DeleteWalletException;
@@ -32,6 +33,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
+import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,11 +64,25 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     }
 
     /**
-     * Delete the wallet and updates the dialog.
+     * Deletes the wallet and updates the dialog.
      */
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
+            String answer = null;
+            
+            if (deleteWalletConfirmDialog != null) {
+                answer = deleteWalletConfirmDialog.getAnswer();
+            }
+            
+            if (answer == null || !"satoshi nakamoto".equalsIgnoreCase(answer.trim())) {
+                if (deleteWalletConfirmDialog != null) {
+                    deleteWalletConfirmDialog.getExplainLabel().setText(" ");
+                    deleteWalletConfirmDialog.setDeleteConfirmText(
+                        controller.getLocaliser().getString("deleteWalletConfirmDialog.wrongAnswer"), " ");
+                }    
+                return;
+            }
             String walletDescription = controller.getModel().getActivePerWalletModelData().getWalletDescription();
 
             // Work out which wallet to select after the wallet is removed.
