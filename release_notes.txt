@@ -2,7 +2,8 @@ MultiBit release notes.
 
 Version 0.5.9rc1
 + Upgrade to bitcoinj v0.8
-+ Romanian added
++ Delete Wallet not shown by default, challenge question added.
++ Romanian added as target language.
 + Mac app is now signed with a "James Burton" developer id.
 + Fix for Mac retina display showing fuzzy text.
 + Twisty and callout panel in the wallet panels have been removed.

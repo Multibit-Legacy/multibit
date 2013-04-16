@@ -205,7 +205,7 @@
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>src/main/resources/images</directory>
+                                    <directory>${basedir}/src/main/resources/images</directory>
                                     <includes>
                                         <include>installerLeft.png</include>
                                         <include>multibit48.png</include>
@@ -258,7 +258,7 @@
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>src/main/resources/images</directory>
+                                    <directory>${basedir}/src/main/resources/images</directory>
                                     <includes>
                                         <include>installerLeft.png</include>
                                         <include>multibit.ico</include>
