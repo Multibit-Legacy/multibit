@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -129,10 +130,35 @@ public class OpenWalletAction extends AbstractAction {
                 if (file != null) {
                     if (!file.isDirectory()) {
                         selectedWalletFilename = file.getAbsolutePath();
-                        Message openMessage = new Message(controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilename}));
-                        openMessage.setShowInStatusBar(false);
-                        MessageManager.INSTANCE.addMessage(openMessage);
-                        openWalletInBackground(selectedWalletFilename);
+                        
+                        // See if the wallet is already open.
+                        boolean walletIsAlreadyOpen = false;
+                        if (controller != null && controller.getModel() != null) {
+                            List<PerWalletModelData> perWalletDataModels = controller.getModel().getPerWalletModelDataList();
+                            if (perWalletDataModels != null) {
+                                Iterator<PerWalletModelData> iterator = perWalletDataModels.iterator();
+                                if (iterator != null) {
+                                    while(iterator.hasNext()) {
+                                        PerWalletModelData perWalletModelData = iterator.next();
+                                        if (perWalletModelData != null && perWalletModelData.getWalletFilename() != null) {
+                                            if (perWalletModelData.getWalletFilename().equals(selectedWalletFilename)) {
+                                                walletIsAlreadyOpen = true;
+                                                controller.getModel().setActiveWalletByFilename(selectedWalletFilename);
+                                                controller.fireDataChangedUpdateNow();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (!walletIsAlreadyOpen) {
+                            Message openMessage = new Message(controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilename}));
+                            openMessage.setShowInStatusBar(false);
+                            MessageManager.INSTANCE.addMessage(openMessage);
+                            openWalletInBackground(selectedWalletFilename);
+                        }
                     }
                 } else {
                     selectedWalletFilename = null;
@@ -163,11 +189,13 @@ public class OpenWalletAction extends AbstractAction {
             protected Boolean doInBackground() throws Exception {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "'.");
-
                     controller.addWalletFromFilename(selectedWalletFilenameFinal);
+ 
+                    log.debug("Setting active wallet for file '" + selectedWalletFilenameFinal + "'.");
                     controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
 
                     // Save the user properties to disk.
+                    log.debug("Writing user preferences. . .");
                     FileHandler.writeUserPreferences(controller);
                     log.debug("User preferences with new wallet written successfully");
  
@@ -184,6 +212,9 @@ public class OpenWalletAction extends AbstractAction {
                     message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
                     return Boolean.FALSE;
                 }  catch (WalletSaveException e) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
+                    return Boolean.FALSE;
+                } catch (Exception e) {
                     message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
                     return Boolean.FALSE;
                 }

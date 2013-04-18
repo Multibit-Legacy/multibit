@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SimpleTimeZone;
 import java.util.Stack;
@@ -358,9 +359,13 @@ public class MultiBitService {
         if (controller != null && controller.getModel() != null) {
             List<PerWalletModelData> perWalletDataModels = controller.getModel().getPerWalletModelDataList();
             if (perWalletDataModels != null) {
-                for (PerWalletModelData perWalletDataModel : perWalletDataModels) {
-                    if (perWalletDataModel != null && perWalletDataModel.getWallet() != null) {
-                        peerGroup.addWallet(perWalletDataModel.getWallet());
+                Iterator<PerWalletModelData> iterator = perWalletDataModels.iterator();
+                if (iterator != null) {
+                    while(iterator.hasNext()) {
+                        PerWalletModelData perWalletModelData = iterator.next();
+                        if (perWalletModelData != null && perWalletModelData.getWallet() != null) {
+                            peerGroup.addWallet(perWalletModelData.getWallet());
+                        }
                     }
                 }
             }
