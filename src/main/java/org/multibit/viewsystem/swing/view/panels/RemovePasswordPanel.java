@@ -182,7 +182,7 @@ public class RemovePasswordPanel extends JPanel implements Viewable, WalletBusyL
 
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                HelpContentsPanel.HELP_WALLET_TYPES_URL);
+                HelpContentsPanel.HELP_PASSWORD_PROTECTION_URL);
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
         helpButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

@@ -301,7 +301,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit-${project.version}.app
+                            <outputDirectory>${basedir}/target/MultiBit.app
                             </outputDirectory>
                             <resources>
                                 <resource>
@@ -318,7 +318,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit-${project.version}.app/Contents/Resources/Java
+                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java
                             </outputDirectory>
                             <resources>
                                 <resource>
@@ -396,14 +396,14 @@
                                 <!-- Make the JavaApplicationStub in the Mac application bundle executable 
                        									(it loses its 'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub"
+                                    file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub"
                                     perm="777" />
 
                                 <mkdir
-                                    dir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app" />
+                                    dir="${basedir}/target/MultiBit-mac/MultiBit.app" />
                                 <copy
-                                    todir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app">
-                                    <fileset dir="${basedir}/target/MultiBit-${project.version}.app"
+                                    todir="${basedir}/target/MultiBit-mac/MultiBit.app">
+                                    <fileset dir="${basedir}/target/MultiBit.app"
                                              includes="**" />
                                 </copy>
                                 <copy file="${basedir}/src/main/izpack/mac/readme.txt"
@@ -420,18 +420,18 @@
                                 <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 
                        									'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub"
+                                    file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
                                     perm="777" />
 
                                 <!-- Sign the Mac app -->
                                <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                        line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app" />
+                                        line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit.app" />
                                 </exec>
                                 <!-- Verify it is signed ok -->
                                <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                        line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app" />
+                                        line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit.app" />
                                 </exec>                            
                                     
                                 <!-- create a DMG file -->

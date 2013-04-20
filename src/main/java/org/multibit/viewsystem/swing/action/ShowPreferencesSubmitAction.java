@@ -239,8 +239,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 restartTickerTimer = true;
             } else if (dataProvider.getPreviousShowBitcoinConvertedToFiat() != showBitcoinConvertedToFiat) {
                 wantToFireDataStructureChanged = true;
+                if (showBitcoinConvertedToFiat) {
+                    restartTickerTimer = true;
+                }
             } else if (dataProvider.getPreviousShowTicker() != showTicker || showTicker != dataProvider.isTickerVisible()) {
                 wantToFireDataStructureChanged = true;
+                if (showTicker) {
+                    restartTickerTimer = true;
+                }
             } else if (dataProvider.getPreviousShowRate() != showRate) {
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;

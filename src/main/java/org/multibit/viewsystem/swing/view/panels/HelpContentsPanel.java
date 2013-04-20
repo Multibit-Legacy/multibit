@@ -56,6 +56,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
     public static final String HELP_RESET_BLOCKCHAIN_URL = "help_resetBlockchain.html";
     public static final String HELP_WALLET_FORMATS_URL = "help_walletFormats.html";
     public static final String HELP_WALLET_TYPES_URL = "help_walletTypes.html";
+    public static final String HELP_PASSWORD_PROTECTION_URL = "help_passwordProtection.html";
     
     private static final long serialVersionUID = 4921443778446348403L;
 
