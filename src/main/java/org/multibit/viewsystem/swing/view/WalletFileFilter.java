@@ -17,26 +17,26 @@ package org.multibit.viewsystem.swing.view;
 
 import java.io.File;
 
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.controller.Controller;
+import org.multibit.model.bitcoin.BitcoinModel;
 
 public class WalletFileFilter extends javax.swing.filechooser.FileFilter {
 
     private static final String MAC_APPLICATION_SUFFIX = ".app";
-    private MultiBitController controller;
+    private Controller controller;
     
-    public WalletFileFilter(MultiBitController controller) {
+    public WalletFileFilter(Controller controller) {
         this.controller = controller;
     }
     
     @Override
     public boolean accept(File file) {
-        return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) || (file.getName().toLowerCase().endsWith(MultiBitModel.WALLET_FILE_EXTENSION));
+        return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) || (file.getName().toLowerCase().endsWith(BitcoinModel.WALLET_FILE_EXTENSION));
     }
 
     @Override
     public String getDescription() {
         String multiBitText = controller.getLocaliser().getString("multiBitFrame.title");
-        return multiBitText + " (*." + MultiBitModel.WALLET_FILE_EXTENSION + ")";
+        return multiBitText + " (*." + BitcoinModel.WALLET_FILE_EXTENSION + ")";
     }
 }

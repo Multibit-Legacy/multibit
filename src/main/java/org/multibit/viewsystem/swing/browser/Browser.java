@@ -26,14 +26,15 @@ import javax.swing.SwingWorker;
 import javax.swing.text.Document;
 import javax.swing.text.html.HTMLEditorKit;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +50,9 @@ public class Browser extends javax.swing.JEditorPane {
     private boolean loading = false;
      
     private MultiBitFrame mainFrame;
-    private MultiBitController controller;
+    private Controller controller;
     
-    public Browser(MultiBitController controller, MultiBitFrame mainFrame, String currentHref) {
+    public Browser(Controller controller, MultiBitFrame mainFrame, String currentHref) {
         super();
         
         this.controller = controller;
@@ -69,7 +70,7 @@ public class Browser extends javax.swing.JEditorPane {
             setEditable(false);
             setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
             
-            String fontName = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
+            String fontName = controller.getModel().getUserPreference(CoreModel.FONT_NAME);
             if (fontName == null || "".equals(fontName)) {
                 fontName = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
             }

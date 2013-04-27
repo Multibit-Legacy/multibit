@@ -1,17 +1,17 @@
 /**
  * Copyright 2011 multibit.org
  *
- * Licensed under the MIT license (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the MIT license (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License
+ * at
  *
  *    http://opensource.org/licenses/mit-license.php
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.multibit.viewsystem.swing.action;
 
@@ -20,20 +20,20 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.multibit.ApplicationInstanceManager;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,24 +43,34 @@ import org.slf4j.LoggerFactory;
  * @author jim
  * 
  */
-public class ExitAction extends AbstractAction {
-    private static final long serialVersionUID = 8784284740245520863L;
-    private MultiBitController controller;
-    private MultiBitFrame mainFrame;
+public class ExitAction extends AbstractExitAction {
 
+    private static final long serialVersionUID = 8784284740245520863L;
+    
+    private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
+
+    private CoreController coreController = null;
+    private BitcoinController bitcoinController = null;
 
     /**
      * Creates a new {@link ExitAction}.
      */
-    public ExitAction(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("exitAction.text"));
-        this.controller = controller;
+    public ExitAction(Controller controller, MultiBitFrame mainFrame) {
+        super(controller);
         this.mainFrame = mainFrame;
+    }
 
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("exitAction.tooltip")));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("exitAction.mnemonicKey"));
+    public void setCoreController(CoreController coreController) {
+        if (null == coreController) {
+            this.coreController = coreController;
+        }
+    }
+
+    public void setBitcoinController(BitcoinController bitcoinController) {
+        if (null == this.bitcoinController) {
+            this.bitcoinController = bitcoinController;
+        }
     }
 
     @Override
@@ -80,13 +90,14 @@ public class ExitAction extends AbstractAction {
         }
         log.debug("exit 2");
 
+        if (null != this.bitcoinController) {
         // Save all the wallets and put their filenames in the user preferences.
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 try {
                     log.debug("exit 3a");
-                    controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
+                        this.bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
                     log.debug("exit 3b");
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
@@ -95,7 +106,7 @@ public class ExitAction extends AbstractAction {
                     // Save to backup.
                     try {
                         log.debug("exit 4a");
-                        controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
+                            this.bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
                         log.debug("exit 4b");
                     } catch (WalletSaveException wse2) {
                         log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
@@ -108,11 +119,14 @@ public class ExitAction extends AbstractAction {
             }
         }
         log.debug("exit 5");
+        }
 
-        // Write the user properties.
-        log.debug("Saving user preferences ...");
-        FileHandler.writeUserPreferences(controller);
-        log.debug("exit 6");
+        if (null != this.bitcoinController) {
+            // Write the user properties.
+            log.debug("Saving user preferences ...");
+            FileHandler.writeUserPreferences(this.bitcoinController);
+            log.debug("exit 6");
+        }
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
@@ -124,14 +138,15 @@ public class ExitAction extends AbstractAction {
         }
         log.debug("exit 8");
 
-        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
+        if (null != this.bitcoinController) {
+            if (this.bitcoinController.getMultiBitService() != null && this.bitcoinController.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
             @SuppressWarnings("rawtypes")
             SwingWorker worker = new SwingWorker() {
                 @Override
                 protected Object doInBackground() throws Exception {
                     log.debug("exit background-a");
-                    controller.getMultiBitService().getPeerGroup().stop();
+                        bitcoinController.getMultiBitService().getPeerGroup().stop();
                     log.debug("exit background-b");
                     return null; // return not used
                 }
@@ -139,6 +154,7 @@ public class ExitAction extends AbstractAction {
             worker.execute();
         }
         log.debug("exit 9");
+        }
 
         if (mainFrame != null) {
             mainFrame.dispose();

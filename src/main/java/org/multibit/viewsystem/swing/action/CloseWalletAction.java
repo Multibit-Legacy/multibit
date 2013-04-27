@@ -20,10 +20,10 @@ import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
@@ -38,9 +38,8 @@ public class CloseWalletAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link CloseWalletAction}.
      */
-    public CloseWalletAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(controller, "closeWalletAction.text", "closeWalletAction.tooltip", "closeWalletAction.mnemonicKey", icon);
-        this.controller = controller;
+    public CloseWalletAction(BitcoinController bitcoinController, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(bitcoinController, "closeWalletAction.text", "closeWalletAction.tooltip", "closeWalletAction.mnemonicKey", icon);
         this.mainFrame = mainFrame;
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("closeWalletAction.tooltip")));
     }
@@ -56,19 +55,19 @@ public class CloseWalletAction extends MultiBitSubmitAction {
         
         try {
             // Close the wallet.
-            PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+            WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
             
             // Unhook it from the PeerGroup.
-            controller.getMultiBitService().getPeerGroup().removeWallet(perWalletModelData.getWallet());
+            super.bitcoinController.getMultiBitService().getPeerGroup().removeWallet(perWalletModelData.getWallet());
             
             // Save it.
-            FileHandler fileHandler = new FileHandler(controller);
+            FileHandler fileHandler = new FileHandler(super.bitcoinController);
             fileHandler.savePerWalletModelData(perWalletModelData, true);
  
             // Work out which wallet to select after the wallet is removed.
             String activeWalletFilename = perWalletModelData.getWalletFilename();
             
-            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
             int numberOfOpenWalletsBefore = perWalletModelDataList.size();
             int positionInList = -1;
             for (int i = 0; i < numberOfOpenWalletsBefore; i++) {
@@ -94,12 +93,12 @@ public class CloseWalletAction extends MultiBitSubmitAction {
             }
             
             // Remove it from the model.
-            controller.getModel().remove(perWalletModelData);
+            this.bitcoinController.getModel().remove(perWalletModelData);
             
             // Set the new Wallet to be the active wallet.
-            if (!controller.getModel().getPerWalletModelDataList().isEmpty()) {
-                PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(newWalletToSelect);
-                controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
+            if (!this.bitcoinController.getModel().getPerWalletModelDataList().isEmpty()) {
+                WalletData firstPerWalletModelData = this.bitcoinController.getModel().getPerWalletModelDataList().get(newWalletToSelect);
+                this.bitcoinController.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
             } else {
                 // No wallets are selected.
                 // Clear all the views.

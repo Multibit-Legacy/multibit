@@ -29,15 +29,16 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -59,7 +60,9 @@ public class CreateWalletSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private MultiBitFrame mainFrame;
 
     private Font adjustedFont;
@@ -67,9 +70,11 @@ public class CreateWalletSubmitAction extends AbstractAction {
     /**
      * Creates a new {@link CreateWalletSubmitAction}.
      */
-    public CreateWalletSubmitAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("createNewWalletAction.text"), icon);
-        this.controller = controller;
+    public CreateWalletSubmitAction(BitcoinController bitcoinController, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(bitcoinController.getLocaliser().getString("createNewWalletAction.text"), icon);
+        
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -100,13 +105,13 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 setFileChooserFont(new Container[] {fileChooser});
             }
             fileChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-            if (controller.getModel().getActiveWalletFilename() != null) {
-                fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
+            if (this.bitcoinController.getModel().getActiveWalletFilename() != null) {
+                fileChooser.setCurrentDirectory(new File(this.bitcoinController.getModel().getActiveWalletFilename()));
             }
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setFileFilter(new WalletFileFilter(controller));
             String defaultFileName = fileChooser.getCurrentDirectory().getAbsoluteFile() + File.separator
-                    + controller.getLocaliser().getString("saveWalletAsView.untitled") + "." + MultiBitModel.WALLET_FILE_EXTENSION;
+                    + controller.getLocaliser().getString("saveWalletAsView.untitled") + "." + BitcoinModel.WALLET_FILE_EXTENSION;
             fileChooser.setSelectedFile(new File(defaultFileName));
 
             fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -140,7 +145,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
 
         // If the filename has no extension, put on the wallet extension.
         if (!newWalletFilename.contains(".")) {
-             newWalletFilename = newWalletFilename + "." + MultiBitModel.WALLET_FILE_EXTENSION;
+             newWalletFilename = newWalletFilename + "." + BitcoinModel.WALLET_FILE_EXTENSION;
         }
 
         File newWalletFile = new File(newWalletFilename);
@@ -150,36 +155,36 @@ public class CreateWalletSubmitAction extends AbstractAction {
         try {
             // If file exists, load the existing wallet.
             if (newWalletFile.exists()) {
-                PerWalletModelData perWalletModelData = controller.getFileHandler().loadFromFile(newWalletFile);
+                WalletData perWalletModelData = this.bitcoinController.getFileHandler().loadFromFile(newWalletFile);
                 if (perWalletModelData != null) {
                     // Use the existing wallet.
-                    controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
-                    controller.getModel().setActiveWalletByFilename(newWalletFilename);
-                    controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
+                    this.bitcoinController.addWalletFromFilename(newWalletFile.getAbsolutePath());
+                    this.bitcoinController.getModel().setActiveWalletByFilename(newWalletFilename);
+                    controller.getModel().setUserPreference(BitcoinModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
                     controller.fireRecreateAllViews(true);
                     controller.fireDataChangedUpdateNow();
                 }
             } else {
                 // Create a new wallet - protobuf.2 initially for backwards compatibility.
-                Wallet newWallet = new Wallet(controller.getModel().getNetworkParameters());
+                Wallet newWallet = new Wallet(this.bitcoinController.getModel().getNetworkParameters());
 
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);
-                PerWalletModelData perWalletModelData = new PerWalletModelData();
-                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, MultiBitWalletVersion.PROTOBUF));
+                WalletData perWalletModelData = new WalletData();
+                perWalletModelData.setWalletInfo(new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF));
                 perWalletModelData.setWallet(newWallet);
                 perWalletModelData.setWalletFilename(newWalletFilename);
                 perWalletModelData.setWalletDescription(controller.getLocaliser().getString(
                         "createNewWalletSubmitAction.defaultDescription"));
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+                this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
                 // Start using the new file as the wallet.
-                controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
-                controller.getModel().setActiveWalletByFilename(newWalletFilename);
-                controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
+                this.bitcoinController.addWalletFromFilename(newWalletFile.getAbsolutePath());
+                this.bitcoinController.getModel().setActiveWalletByFilename(newWalletFilename);
+                controller.getModel().setUserPreference(BitcoinModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
 
                 // Save the user properties to disk.
-                FileHandler.writeUserPreferences(controller);
+                FileHandler.writeUserPreferences(this.bitcoinController);
                 log.debug("User preferences with new wallet written successfully");
 
                 controller.fireRecreateAllViews(true);
@@ -212,11 +217,11 @@ public class CreateWalletSubmitAction extends AbstractAction {
         }
         
         if (theWalletWasNotOpenedSuccessfully) {
-            PerWalletModelData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(newWalletFilename);
+            WalletData loopData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(newWalletFilename);
             if (loopData != null) {
                 // Clear the backup wallet filename - this prevents it being automatically overwritten.
                 if (loopData.getWalletInfo() != null) {
-                    loopData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                    loopData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, "");
                 }
             }
         }

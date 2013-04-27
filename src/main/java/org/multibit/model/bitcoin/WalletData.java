@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.model;
+package org.multibit.model.bitcoin;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,11 +28,11 @@ import com.google.bitcoin.core.Wallet;
  * @author jim
  * 
  */
-public class PerWalletModelData {
+public class WalletData {
 
     private Wallet wallet;
     private String walletFilename;
-    private WalletInfo walletInfo;
+    private WalletInfoData walletInfo;
     private List<WalletTableData> walletTableDataList;
     
     /**
@@ -47,13 +47,13 @@ public class PerWalletModelData {
     private String walletInfoBackupFilename;
 
     /**
-     * The files that store the PerWalletModelData have been changed by some
+     * The files that store the WalletData have been changed by some
      * other process i.e. NOT this copy of MultiBit.
      */
     private transient boolean filesHaveBeenChangedByAnotherProcess;
 
     /**
-     * The PerWalletModelData has changed since last been written to disk.
+     * The WalletData has changed since last been written to disk.
      */
     private transient boolean isDirty;
     
@@ -87,7 +87,7 @@ public class PerWalletModelData {
     private transient SingleWalletPanelDownloadListener singleWalletDownloadListener;
 
     
-    public PerWalletModelData() {
+    public WalletData() {
         isDirty = false;
     }
 
@@ -107,11 +107,11 @@ public class PerWalletModelData {
         this.walletFilename = walletFilename;
     }
 
-    public WalletInfo getWalletInfo() {
+    public WalletInfoData getWalletInfo() {
         return walletInfo;
     }
 
-    public void setWalletInfo(WalletInfo walletInfo) {
+    public void setWalletInfo(WalletInfoData walletInfo) {
         this.walletInfo = walletInfo;
         if (walletInfo != null && wallet != null) {
             if (wallet.getVersion() == null) {
@@ -130,7 +130,7 @@ public class PerWalletModelData {
 
     public String getWalletDescription() {
         if (walletInfo != null) {
-            return walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+            return walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
         } else {
             return "";
         }
@@ -141,9 +141,9 @@ public class PerWalletModelData {
             if (walletDescription == null) {
                 walletDescription = "";
             }
-            String currentWalletDescription = walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+            String currentWalletDescription = walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
             if (!walletDescription.equals(currentWalletDescription)) {
-                walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, walletDescription);
+                walletInfo.put(WalletInfoData.DESCRIPTION_PROPERTY, walletDescription);
                 if (wallet != null) {
                     wallet.setDescription(walletDescription);
                 }
