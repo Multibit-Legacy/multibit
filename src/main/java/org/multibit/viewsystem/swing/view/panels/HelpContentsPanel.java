@@ -45,7 +45,19 @@ import org.slf4j.LoggerFactory;
 public class HelpContentsPanel extends JPanel implements Viewable {
     private static final Logger log = LoggerFactory.getLogger(HelpContentsPanel.class);
 
-    public static final String HELP_BASE_URL = "http://www.multibit.org/v0.5/";
+    // Version 0.4.x - live
+    public static final String HELP_BASE_URL = "http://www.multibit.org/";
+    
+    // Version 0.5.x - live
+    //public static final String HELP_BASE_URL = "http://www.multibit.org/v0.5/";
+    
+    
+    // Version 0.4.x - test
+    //public static final String HELP_BASE_URL = "http://test.multibit.org/";
+
+    // Version 0.5.x - test
+    //public static final String HELP_BASE_URL = "http://test.multibit.org/v0.5/";
+    //public static final String HELP_BASE_URL = "http://188.138.113.201/";
     
     public static final String HELP_AVAILABLE_TO_SPEND_URL = "help_availableToSpend.html";
     public static final String HELP_CONTENTS_URL = "help_contents.html";
