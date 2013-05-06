@@ -36,6 +36,7 @@ The Maven pom.xml is updated to reflect the snapshot version (e.g. 1.2.3-SNAPSHO
 Once the release has been tested and is ready to go live, 
 the final act is to update the pom.xml to remove the SNAPSHOT suffix and merge it into master. 
 The master branch is then tagged with the release number.
+Tags are in the format "v1.2.3" to distinguish them from branch names.
 
 
 Maven build targets
