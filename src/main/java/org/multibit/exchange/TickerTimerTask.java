@@ -347,7 +347,7 @@ public class TickerTimerTask extends TimerTask {
             Exchange exchangeToReturn;
             if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortname)) {
                 ExchangeSpecification exchangeSpecification = new ExchangeSpecification(exchangeClassname);
-                exchangeSpecification.setUri("http://openexchangerates.org");
+                exchangeSpecification.setPlainTextUri("http://openexchangerates.org");
                 exchangeSpecification
                         .setApiKey(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE));
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeSpecification);
