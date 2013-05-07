@@ -1,0 +1,12 @@
+#NOTE: This is an internal implementation file, its format can be changed without prior notice.
+#Sun Apr 28 15:47:03 EST 2013
+https\://oss.sonatype.org/content/repositories/snapshots/.error=
+http\://nexus.bitcoinj.org/content/repositories/snapshots/.error=Could not transfer artifact com.google.guava\:guava-base\:jar\:r03 from/to bitcoinj-snapshot (http\://nexus.bitcoinj.org/content/repositories/snapshots)\: TransferFailedException
+https\://oss.sonatype.org/content/groups/public/.lastUpdated=1363583228434
+http\://repo.maven.apache.org/maven2/.lastUpdated=1367128023605
+http\://mvn-adamgent.googlecode.com/svn/maven/release/.lastUpdated=1367128020159
+https\://oss.sonatype.org/content/repositories/snapshots/.lastUpdated=1367127818010
+http\://nexus.bitcoinj.org/content/repositories/releases/.error=
+default-http\://nexus.bitcoinj.org/content/repositories/snapshots/.lastUpdated=1367128017849
+http\://nexus.bitcoinj.org/content/repositories/releases/.lastUpdated=1367127950196
+http\://mvn-adamgent.googlecode.com/svn/maven/release/.error=
