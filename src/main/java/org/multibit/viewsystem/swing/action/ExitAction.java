@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
@@ -79,6 +80,13 @@ public class ExitAction extends AbstractAction {
             }
         }
         log.debug("exit 2");
+        
+        // Stop the peer group so that blocks are notified to wallets correctly.
+        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
+            log.debug("Closing Bitcoin network connection...");
+            controller.getMultiBitService().getPeerGroup().stopAndWait();
+            log.debug("PeerGroup is now stopped.");
+        }
 
         // Save all the wallets and put their filenames in the user preferences.
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
@@ -123,22 +131,6 @@ public class ExitAction extends AbstractAction {
             mainFrame.setVisible(false);
         }
         log.debug("exit 8");
-
-        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
-            log.debug("Closing Bitcoin network connection...");
-            @SuppressWarnings("rawtypes")
-            SwingWorker worker = new SwingWorker() {
-                @Override
-                protected Object doInBackground() throws Exception {
-                    log.debug("exit background-a");
-                    controller.getMultiBitService().getPeerGroup().stop();
-                    log.debug("exit background-b");
-                    return null; // return not used
-                }
-            };
-            worker.execute();
-        }
-        log.debug("exit 9");
 
         if (mainFrame != null) {
             mainFrame.dispose();
