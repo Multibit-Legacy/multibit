@@ -3,3 +3,4 @@ MultiBit release notes.
 Version 0.5.10
 Bug fixes:
 + Fixed issue 121 - MtGox ticker information not showing.
++ Fixed issue 125 - overzealous syncing of wallet(s).
