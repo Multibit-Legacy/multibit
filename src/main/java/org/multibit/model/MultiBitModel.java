@@ -132,6 +132,9 @@ public class MultiBitModel {
     // Minimum fee.
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
 
+    // Maximum fee.
+    public static final BigInteger SEND_MAXIMUM_FEE = new BigInteger("100000000"); // 1 BTC.
+    
     public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
     public static final String SEND_ERROR_MESSAGE = "sendErrorMessage";
 

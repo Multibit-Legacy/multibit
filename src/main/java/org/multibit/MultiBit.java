@@ -18,6 +18,7 @@ package org.multibit;
 import java.awt.Cursor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -34,6 +35,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
@@ -95,7 +97,7 @@ public class MultiBit {
 
         // Enclosing try to enable graceful closure for unexpected errors.
         try {
-            // Set any bespoke system properties
+            // Set any bespoke system properties.
             try {
                 // Fix for Windows / Java 7 / VPN bug.
                 System.setProperty("java.net.preferIPv4Stack", "true");
@@ -107,10 +109,10 @@ public class MultiBit {
 
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
 
-            // load up the user preferences
+            // Load up the user preferences.
             Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
-
-            // create the controller
+            
+            // Create the controller.
             controller = new MultiBitController(applicationDataDirectoryLocator);
 
             log.info("Configuring native event handling");
@@ -127,7 +129,7 @@ public class MultiBit {
                 rawURI = args[0];
             }
             if (!ApplicationInstanceManager.registerInstance(rawURI)) {
-                // instance already running.
+                // Instance already running.
                 log.debug("Another instance of MultiBit is already running.  Exiting.");
                 System.exit(0);
             }
@@ -178,7 +180,7 @@ public class MultiBit {
             // Initialise currency converter.
             CurrencyConverter.INSTANCE.initialise(finalController);
             
-            // Initialise repla manager.
+            // Initialise replay manager.
             ReplayManager.INSTANCE.initialise(controller);
             
             log.debug("Setting look and feel");
@@ -210,6 +212,35 @@ public class MultiBit {
             FontSizer.INSTANCE.initialise(controller);
             CurrencyConverter.INSTANCE.initialise(finalController);
             
+            // Check the fee is between the lower and upper bounds - set to default fee if not.
+            String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+            boolean setToDefaultFee = false;
+
+            if (sendFeeString == null || sendFeeString == "") {
+                setToDefaultFee = true;
+            } else {
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
+
+                if (converterResult.isBtcMoneyValid()) {
+                    // Check that the fee is at least the minimum fee and
+                    // smaller than the maximum fee.
+                    BigInteger feeAsBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
+                    if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MINIMUM_FEE) < 0) {
+                        setToDefaultFee = true;
+                    } else {
+                        if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MAXIMUM_FEE) >= 0) {
+                            setToDefaultFee = true;
+                        }
+                    }
+                }
+            }
+
+            if (setToDefaultFee) {
+               sendFeeString = controller.getLocaliser()
+                        .bitcoinValueToStringNotLocalised(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+               controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, sendFeeString);
+            }
+
             // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface with initial view : " + controller.getCurrentView());
             swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());

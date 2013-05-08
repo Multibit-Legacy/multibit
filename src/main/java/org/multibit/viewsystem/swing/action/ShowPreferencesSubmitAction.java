@@ -127,8 +127,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                             updateStatusText = controller.getLocaliser().getString(
                                     "showPreferencesPanel.feeCannotBeSmallerThanMinimumFee");
                         } else {
-                            // Fee is ok.
-                            controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, newSendFee);
+                            if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MAXIMUM_FEE) >= 0) {
+                                feeValidationError = true;
+                                updateStatusText = controller.getLocaliser().getString(
+                                        "showPreferencesPanel.feeCannotBeGreaterThanMaximumFee");
+                            } else {
+                                // Fee is ok.
+                                controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, newSendFee);
+                            }
                         }
                     } catch (NumberFormatException nfe) {
                         // Recycle the old fee and set status message.

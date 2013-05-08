@@ -34,6 +34,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -56,6 +58,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -238,7 +241,23 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
 
         if (converterResult.isBtcMoneyValid()) {
-            sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+            // Check that the fee is at least the minimum fee and smaller than the maximum fee.
+            BigInteger feeAsBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
+            if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MINIMUM_FEE) < 0) {
+                // Set the fee to the default fee.
+                sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(
+                        Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(MultiBitModel.SEND_FEE_DEFAULT)));
+
+            } else {
+                if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MAXIMUM_FEE) >= 0) {
+                    // Set the fee to the default fee.
+                    sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(
+                            Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(MultiBitModel.SEND_FEE_DEFAULT)));
+                } else {
+                    // Fee is ok.
+                    sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+                }
+            }
         } else {
             // BTC did not parse - just use the original text
             sendFeeStringLocalised = sendFeeString;
