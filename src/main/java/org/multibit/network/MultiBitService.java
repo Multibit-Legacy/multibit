@@ -521,7 +521,8 @@ public class MultiBitService {
         if (dateToReplayFrom != null) {
             blockStore = createBlockStore(dateToReplayFrom, true, true);
         } else {
-            blockStore = createBlockStore(MultiBitService.genesisBlockCreationDate, true, true);
+            Date oneSecondAfterGenesis = new Date(MultiBitService.genesisBlockCreationDate.getTime() + 1000);
+            blockStore = createBlockStore(oneSecondAfterGenesis, true, true);
         }
         log.debug("Blockstore is '" + blockStore + "'");
 

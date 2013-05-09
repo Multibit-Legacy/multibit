@@ -12,7 +12,6 @@
       <useProjectArtifact>false></useProjectArtifact>
       <scope>runtime</scope>
       <excludes>
-        <exclude>org.codehaus.jackson:*</exclude>
         <exclude>org.codehaus.izpack:*</exclude>
       </excludes>
     </dependencySet>
