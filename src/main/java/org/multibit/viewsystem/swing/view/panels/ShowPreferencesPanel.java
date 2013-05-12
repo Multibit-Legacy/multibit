@@ -34,6 +34,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -56,14 +58,23 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.multibit.controller.MultiBitController;
+import org.joda.money.Money;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.ExchangeData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.DisplayHint;
@@ -81,8 +92,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The show preferences view.
@@ -113,8 +122,10 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int API_CODE_FIELD_HEIGHT = 30;
     private static final int API_CODE_FIELD_WIDTH = 200;
 
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    private final ExchangeController exchangeController;
     
-    private MultiBitController controller;
     private MultiBitFrame mainFrame;
 
     SortedSet<LanguageData> languageDataSet;
@@ -196,14 +207,15 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
-    public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ShowPreferencesPanel(BitcoinController bitcoinController, ExchangeController exchangeController, MultiBitFrame mainFrame) {
         log.debug("Construct a new ShowPreferencesPanel");
-        this.controller = controller;
+        this.exchangeController = exchangeController;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
-        this.controller = controller;
 
         localisedSystemLookAndFeelName = controller.getLocaliser().getString("showPreferencesPanel.systemLookAndFeel");
-        originalOERApiCode = controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE);
+        originalOERApiCode = controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE);
 
         initUI();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -219,18 +231,18 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             return;
         }
         
-        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
+        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
 
         originalShowBitcoinConvertedToFiat = !Boolean.FALSE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
+                controller.getModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
         showBitcoinConvertedToFiat.setSelected(originalShowBitcoinConvertedToFiat);
 
-        String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
             sendFeeString = controller.getLocaliser()
-                    .bitcoinValueToStringNotLocalised(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+                    .bitcoinValueToStringNotLocalised(BitcoinModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
 
@@ -238,15 +250,31 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
 
         if (converterResult.isBtcMoneyValid()) {
-            sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+            // Check that the fee is at least the minimum fee and smaller than the maximum fee.
+            BigInteger feeAsBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
+            if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
+                // Set the fee to the default fee.
+                sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(
+                        Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(BitcoinModel.SEND_FEE_DEFAULT)));
+
+            } else {
+                if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
+                    // Set the fee to the default fee.
+                    sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(
+                            Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(BitcoinModel.SEND_FEE_DEFAULT)));
+                } else {
+                    // Fee is ok.
+                    sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+                }
+            }
         } else {
             // BTC did not parse - just use the original text
             sendFeeStringLocalised = sendFeeString;
         }
         feeTextField.setText(sendFeeStringLocalised);
 
-        String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        String useUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+        String showDialogString = controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG);
+        String useUriString = controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_USE_URI);
 
         if (!(Boolean.FALSE.toString().equalsIgnoreCase(showDialogString))) {
             // missing showDialog or it is set to true
@@ -261,14 +289,14 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             }
         }
 
-        String fontNameString = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
+        String fontNameString = controller.getModel().getUserPreference(CoreModel.FONT_NAME);
         if (fontNameString == null || "".equals(fontNameString)) {
             fontNameString = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
         }
         originalFontName = fontNameString;
 
         int fontStyle = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_STYLE;
-        String fontStyleString = controller.getModel().getUserPreference(MultiBitModel.FONT_STYLE);
+        String fontStyleString = controller.getModel().getUserPreference(CoreModel.FONT_STYLE);
         if (fontStyleString != null && !"".equals(fontStyleString)) {
             try {
                 fontStyle = Integer.parseInt(fontStyleString);
@@ -279,7 +307,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         originalFontStyle = "" + fontStyle;
 
         int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        String fontSizeString = controller.getModel().getUserPreference(CoreModel.FONT_SIZE);
         if (fontSizeString != null && !"".equals(fontSizeString)) {
             try {
                 fontSize = Integer.parseInt(fontSizeString);
@@ -291,14 +319,14 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
         setSelectedFont(new Font(fontNameString, fontStyle, fontSize));
 
-        String canUndoPreferencesChanges = controller.getModel().getUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES);
+        String canUndoPreferencesChanges = controller.getModel().getUserPreference(CoreModel.CAN_UNDO_PREFERENCES_CHANGES);
         if (Boolean.TRUE.toString().equals(canUndoPreferencesChanges)) {
             undoChangesButton.setEnabled(true);
-            String previousUndoChangesText = controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
+            String previousUndoChangesText = controller.getModel().getUserPreference(CoreModel.PREVIOUS_UNDO_CHANGES_TEXT);
             if (previousUndoChangesText != null && !"".equals(previousUndoChangesText)) {
                 undoChangesButton.setText(previousUndoChangesText);
             }
-            String previousFontName = controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_NAME);
+            String previousFontName = controller.getModel().getUserPreference(CoreModel.PREVIOUS_FONT_NAME);
 
             if (previousFontName != null && !"".equals(previousFontName)) {
                 undoChangesButton.setFont(new Font(previousFontName, FontSizer.INSTANCE.getAdjustedDefaultFont().getStyle(),
@@ -308,7 +336,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             undoChangesButton.setEnabled(false);
         }
         
-        originalOERApiCode = controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE);
+        originalOERApiCode = controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE);
         oerApiCodeTextField.setText(originalOERApiCode);
 
         invalidate();
@@ -398,8 +426,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
-        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
 
@@ -516,8 +544,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         languageComboBox.setRenderer(renderer);
 
         // get the languageCode value stored in the model
-        String userLanguageCode = controller.getModel().getUserPreference(MultiBitModel.USER_LANGUAGE_CODE);
-        if (userLanguageCode == null || MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
+        String userLanguageCode = controller.getModel().getUserPreference(CoreModel.USER_LANGUAGE_CODE);
+        if (userLanguageCode == null || CoreModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
             useDefaultLocale.setSelected(true);
             languageComboBox.setEnabled(false);
         } else {
@@ -604,10 +632,10 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         feeLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip")));
         MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
 
-        String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            sendFeeString = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
 
@@ -794,7 +822,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.anchor = GridBagConstraints.LINE_END;
         appearancePanel.add(lookAndFeelLabel, constraints);
 
-        originalLookAndFeel = controller.getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL);
+        originalLookAndFeel = controller.getModel().getUserPreference(CoreModel.LOOK_AND_FEEL);
         LookAndFeelInfo[] lookAndFeels = UIManager.getInstalledLookAndFeels();
 
         lookAndFeelComboBox = new JComboBox();
@@ -809,7 +837,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         }
 
         if (originalLookAndFeel == null || originalLookAndFeel.equals("")
-                || MultiBitModel.SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
+                || CoreModel.SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
             lookAndFeelComboBox.setSelectedItem(localisedSystemLookAndFeelName);
         }
 
@@ -847,13 +875,13 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     private JPanel createTickerPanel(int stentWidth) {
         // load up the original values
-        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
-        originalExchange1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
-        originalCurrency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW));
+        originalExchange1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
+        originalCurrency1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
         originalShowSecondRow = Boolean.TRUE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
-        originalExchange2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
-        originalCurrency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
+                controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
+        originalExchange2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
+        originalCurrency2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
 
         MultiBitTitledPanel tickerPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showPreferencesPanel.ticker.title2"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -924,7 +952,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         showAsk.setOpaque(false);
         showAsk.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        String tickerColumnsToShow = controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
+        String tickerColumnsToShow = controller.getModel().getUserPreference(ExchangeModel.TICKER_COLUMNS_TO_SHOW);
         if (tickerColumnsToShow == null || tickerColumnsToShow.equals("")) {
             tickerColumnsToShow = TickerTableModel.DEFAULT_COLUMNS_TO_SHOW;
         }
@@ -1436,7 +1464,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             public void focusLost(FocusEvent arg0) {
                 String apiCode = oerApiCodeTextField.getText();
                 if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0)
-                        && !apiCode.equals(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE))) {
+                        && !apiCode.equals(controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE))) {
                     // New API code.
                     // Check its length
                     if (!(apiCode.trim().length() == LENGTH_OF_OPEN_EXCHANGE_RATE_APP_ID)
@@ -1457,7 +1485,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String apiCode = oerApiCodeTextField.getText();
-                if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE))) {
+                if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE))) {
                     // New API code.
                     // Check its length
                     if (!(apiCode.trim().length() == LENGTH_OF_OPEN_EXCHANGE_RATE_APP_ID)
@@ -1523,12 +1551,12 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     
     private void updateApiCode() {
         String apiCode = oerApiCodeTextField.getText();
-        if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE))) {
+        if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE))) {
             // New API code.
             apiCode = WhitespaceTrimmer.trim(apiCode);
             oerApiCodeTextField.setText(apiCode);
             
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE, apiCode);
+            controller.getModel().setUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE, apiCode);
             if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals((String)exchangeComboBox1.getSelectedItem())) {
                 if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
                     TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
@@ -1644,7 +1672,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this,
+        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(this.bitcoinController, this.exchangeController, this,
                 ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE), mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
@@ -1920,7 +1948,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     @Override
     public String getNewUserLanguageCode() {
         if (useDefaultLocale.isSelected()) {
-            return MultiBitModel.USER_LANGUAGE_IS_DEFAULT;
+            return CoreModel.USER_LANGUAGE_IS_DEFAULT;
         } else {
             Integer selectedLanguageIndex = (Integer) languageComboBox.getSelectedItem();
             if (selectedLanguageIndex != null) {
@@ -2128,7 +2156,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     public String getNewLookAndFeel() {
         String lookAndFeel = (String) lookAndFeelComboBox.getSelectedItem();
         if (localisedSystemLookAndFeelName.equals(lookAndFeel)) {
-            lookAndFeel = MultiBitModel.SYSTEM_LOOK_AND_FEEL;
+            lookAndFeel = CoreModel.SYSTEM_LOOK_AND_FEEL;
         }
         return lookAndFeel;
     }

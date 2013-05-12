@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multibit</artifactId>
-    <version>0.5.9</version>
+    <version>develop-SNAPSHOT</version>
     <name>MultiBit</name>
     <description>A Java Swing client for Bitcoin</description>
     <url>https://multibit.org</url>
@@ -603,12 +603,6 @@
             <artifactId>xchange-campbx</artifactId>
             <version>${xchange.version}</version>
         </dependency>
-        <!-- XChange BitcoinCharts support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-bitcoincharts</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.xeiam.xchart</groupId>
             <artifactId>xchart</artifactId>
@@ -696,7 +690,7 @@
         <bitcoinj.version>0.8-MB-ALICE-SNAPSHOT</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
-        <xchange.version>1.5.0</xchange.version>
+        <xchange.version>1.6.0</xchange.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>

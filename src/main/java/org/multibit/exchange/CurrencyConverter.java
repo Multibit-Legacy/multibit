@@ -11,8 +11,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.swing.SwingUtilities;
+import org.multibit.controller.Controller;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.IllegalCurrencyException;
@@ -20,18 +25,15 @@ import org.joda.money.Money;
 import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.ExchangeData;
-import org.multibit.model.MultiBitModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 public enum CurrencyConverter {
     INSTANCE;
    
     private static final Logger log = LoggerFactory.getLogger(CurrencyConverter.class);
 
-    private MultiBitController controller;
+    private Controller controller;
     
     private Collection<CurrencyConverterListener> listeners;
     
@@ -81,10 +83,10 @@ public enum CurrencyConverter {
      */
     private Map<String, String> currencyCodeToDescriptionMap;
 
-    public void initialise(MultiBitController controller) {
+    public void initialise(Controller controller) {
         // Initialise conversion currency.
-        String currencyCode = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
-        String exchange = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+        String currencyCode = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
+        String exchange = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
         String newCurrencyCode = currencyCode;
         if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(exchange)) {
             // Use only the last three characters - the currency code.
@@ -95,7 +97,7 @@ public enum CurrencyConverter {
         initialise(controller, newCurrencyCode);
     }
     
-    public void initialise(MultiBitController controller, String currencyCode) {
+    public void initialise(Controller controller, String currencyCode) {
        this.controller = controller;
        
        try {
@@ -614,7 +616,7 @@ public enum CurrencyConverter {
     }
 
     public boolean isShowingFiat() {
-        return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
+        return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
     }
     
     public CurrencyUnit getCurrencyUnit() {

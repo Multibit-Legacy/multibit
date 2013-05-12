@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.model;
+package org.multibit.model.exchange;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.joda.money.BigMoney;
 
-import com.xeiam.xchange.bitcoincharts.BitcoinChartsExchange;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.btce.BTCEExchange;
 import com.xeiam.xchange.campbx.CampBXExchange;
@@ -45,8 +44,10 @@ public class ExchangeData {
     public static final String BITSTAMP_EXCHANGE_NAME = "Bitstamp";
     public static final String BITCOIN_CENTRAL_EXCHANGE_NAME = "BitcoinCentral";
     public static final String CAMPBX_EXCHANGE_NAME = "CampBX";
+    public static final String BITFLOOR_EXCHANGE_NAME = "Bitfloor";
+    public static final String BITCOIN_24_EXCHANGE_NAME = "Bitcoin-24";
 
-    public static final String DEFAULT_EXCHANGE = MT_GOX_EXCHANGE_NAME;
+    public static final String DEFAULT_EXCHANGE = CAMPBX_EXCHANGE_NAME;
     
     public static final String DEFAULT_CURRENCY = "USD";
     
@@ -126,9 +127,10 @@ public class ExchangeData {
     }
     
     public static String[] getAvailableExchanges() {
-//        return new String[] { MT_GOX_EXCHANGE_NAME, BITCOIN_CENTRAL_EXCHANGE_NAME, BITCOIN_CHARTS_EXCHANGE_NAME, BITSTAMP_EXCHANGE_NAME, BTCE_EXCHANGE_NAME,  
-//                CAMPBX_EXCHANGE_NAME, OPEN_EXCHANGE_RATES_EXCHANGE_NAME, VIRTEX_EXCHANGE_NAME};
         return new String[] { MT_GOX_EXCHANGE_NAME,
+            //BITCOIN_24_EXCHANGE_NAME,
+            //BITCOIN_CENTRAL_EXCHANGE_NAME,
+            //BITFLOOR_EXCHANGE_NAME,
             BITSTAMP_EXCHANGE_NAME,
             BTCE_EXCHANGE_NAME,
             CAMPBX_EXCHANGE_NAME,
@@ -156,20 +158,24 @@ public class ExchangeData {
     public static String convertExchangeShortNameToClassname(String shortExchangeName) {
         if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName)) {
             return "com.xeiam.xchange.mtgox.v1.MtGoxExchange";
-        } else if (BITCOIN_CHARTS_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-            return  BitcoinChartsExchange.class.getName();
+        //} else if (BITCOIN_CHARTS_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+        //    return  BitcoinChartsExchange.class.getName();
         } else if (VIRTEX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  VirtExExchange.class.getName();
         } else if (BTCE_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  BTCEExchange.class.getName();
         } else if (OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  OERExchange.class.getName();
-//        } else if (BITCOIN_CENTRAL_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-//            return  BitcoinCentralExchange.class.getName();
+        //} else if (BITCOIN_CENTRAL_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+        //    return  BitcoinCentralExchange.class.getName();
         } else if (CAMPBX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  CampBXExchange.class.getName();
-        }else if (BITSTAMP_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+        } else if (BITSTAMP_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  BitstampExchange.class.getName();
+       // } else if (BITFLOOR_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+       //     return  BitfloorExchange.class.getName();
+       // } else if (BITCOIN_24_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+       //     return  Bitcoin24Exchange.class.getName();
         } else {
             // Unidentified exchange.
             return null;

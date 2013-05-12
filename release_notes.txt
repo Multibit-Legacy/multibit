@@ -1,6 +1,8 @@
 MultiBit release notes.
 
-Version 0.5.9 (Encrypted wallets release)
-+ Version number removed from Mac app name.
-+ Fixed bug on opening wallet that is already open
-+ Fixed ticker restart bug
+Version 0.5.10
+Bug fixes:
++ Fixed issue 117 - fee was too high.
++ Fixed issue 121 - MtGox ticker information not showing.
++ Fixed issue 125 - overzealous syncing of wallet(s).
+

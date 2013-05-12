@@ -19,18 +19,22 @@ import java.awt.Cursor;
 import java.net.URL;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 public class ActivatedHyperlinkListener implements HyperlinkListener {
 
     private static final String MULTIBIT_HOST_NAME = "www.multibit.org";
-    private static final String MULTIBIT_HOST_NAME2 = "188.138.113.201";
+    private static final String MULTIBIT_HOST_NAME2 = "test.multibit.org";
+    private static final String MULTIBIT_HOST_NAME3 = "188.138.113.201";
+    private static final String MULTIBIT_HOST_NAME4 = "localhost";
     
     private static final String HTTP_PROTOCOL = "http";
     private static final String HTTPS_PROTOCOL = "https";
@@ -90,12 +94,19 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
             Runnable runner = new Runnable() {
                 @Override
                 public void run() {
-                    if ((HTTP_PROTOCOL.equals(url.getProtocol()) || HTTPS_PROTOCOL.equals(url.getProtocol())) && (MULTIBIT_HOST_NAME.equals(url.getHost()) || MULTIBIT_HOST_NAME2.equals(url.getHost()))) {
+                    if ((HTTP_PROTOCOL.equals(url.getProtocol()) || HTTPS_PROTOCOL.equals(url.getProtocol())) && 
+                            (MULTIBIT_HOST_NAME.equals(url.getHost()) || MULTIBIT_HOST_NAME2.equals(url.getHost()) 
+                                    || MULTIBIT_HOST_NAME3.equals(url.getHost()) || MULTIBIT_HOST_NAME4.equals(url.getHost()))) {
                         browser.visit(url.toString(), false);
                     } else {
-                        JOptionPane.showMessageDialog(mainFrame, "The help contents can only show HTTP content from "
-                                + MULTIBIT_HOST_NAME + " and " + MULTIBIT_HOST_NAME + "\nPlease use your main browser to view the URL:\n" + url.toString(),
-                                "Cannot follow link", JOptionPane.INFORMATION_MESSAGE);
+                        StringBuffer stringBuffer = new StringBuffer();
+                        stringBuffer.append("The help contents can only show HTTP content from "
+                                + MULTIBIT_HOST_NAME + ", " + MULTIBIT_HOST_NAME2 + " and "+ MULTIBIT_HOST_NAME4 + ".\nPlease use your main browser to view the URL:\n\n" + url.toString());
+                        JTextArea textArea = new JTextArea(stringBuffer.toString());
+                        textArea.setEditable(false);
+                        textArea.setOpaque(false);
+                        JOptionPane.showMessageDialog(mainFrame, textArea,
+                                "Cannot follow link", JOptionPane.INFORMATION_MESSAGE, ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE));
 
                     }
                 }

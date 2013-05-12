@@ -16,29 +16,30 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.util.EnumMap;
-import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
-import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.MessagesPanel;
-import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
-import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
-import org.multibit.viewsystem.swing.view.panels.HelpAboutPanel;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
-import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
-import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
-import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
-import org.multibit.viewsystem.swing.view.panels.ChartsPanel;
-import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
+import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ChartsPanel;
+import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpAboutPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.MessagesPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
 
 /**
  * a factory class that lazy loads views
@@ -49,11 +50,16 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 public class ViewFactory {
     private Map<View, Viewable> viewMap;
 
-    MultiBitController controller;
-    MultiBitFrame mainFrame;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    private final ExchangeController exchangeController;
+    
+    private final MultiBitFrame mainFrame;
 
-    public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ViewFactory(BitcoinController bitcoinController, ExchangeController exchangeController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.exchangeController = exchangeController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         initialise();
     }
@@ -92,7 +98,7 @@ public class ViewFactory {
         }
 
         case TRANSACTIONS_VIEW: {
-            viewToReturn = new ShowTransactionsPanel(controller, mainFrame);
+            viewToReturn = new ShowTransactionsPanel(this.bitcoinController, mainFrame);
             break;
         }
 
@@ -107,37 +113,37 @@ public class ViewFactory {
         }
                
         case RECEIVE_BITCOIN_VIEW: {
-            viewToReturn = new ReceiveBitcoinPanel(controller, mainFrame);
+            viewToReturn = new ReceiveBitcoinPanel(this.bitcoinController, mainFrame);
             break;
         }
         
         case SEND_BITCOIN_VIEW: {
-            viewToReturn = new SendBitcoinPanel(controller, mainFrame);
+            viewToReturn = new SendBitcoinPanel(this.bitcoinController, mainFrame);
             break;
         }
         
         case PREFERENCES_VIEW: {
-            viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
+            viewToReturn = new ShowPreferencesPanel(this.bitcoinController, this.exchangeController, mainFrame);
             break;
         }
 
         case RESET_TRANSACTIONS_VIEW: {
-            viewToReturn = new ResetTransactionsPanel(controller, mainFrame);
+            viewToReturn = new ResetTransactionsPanel(this.bitcoinController, mainFrame);
             break;
         }
 
         case SHOW_OPEN_URI_DIALOG_VIEW: {
-            viewToReturn = new ShowOpenUriDialog(controller, mainFrame);
+            viewToReturn = new ShowOpenUriDialog(this.bitcoinController, mainFrame);
             break;
         }
 
         case SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ImportPrivateKeysPanel(controller, mainFrame);
+            viewToReturn = new ImportPrivateKeysPanel(this.bitcoinController, mainFrame);
             break;
         }
 
         case SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ExportPrivateKeysPanel(controller, mainFrame);
+            viewToReturn = new ExportPrivateKeysPanel(this.bitcoinController, mainFrame);
             break;
         }
 
@@ -147,22 +153,22 @@ public class ViewFactory {
         }
         
         case ADD_PASSWORD_VIEW: {
-            viewToReturn = new AddPasswordPanel(controller, mainFrame);
+            viewToReturn = new AddPasswordPanel(this.bitcoinController, mainFrame);
             break;
         }
         
         case CHANGE_PASSWORD_VIEW: {
-            viewToReturn = new ChangePasswordPanel(controller, mainFrame);
+            viewToReturn = new ChangePasswordPanel(this.bitcoinController, mainFrame);
             break;
         }
         
         case REMOVE_PASSWORD_VIEW: {
-            viewToReturn = new RemovePasswordPanel(controller, mainFrame);
+            viewToReturn = new RemovePasswordPanel(this.bitcoinController, mainFrame);
             break;
         }
 
         case CHARTS_VIEW: {
-            viewToReturn = new ChartsPanel(controller, mainFrame);
+            viewToReturn = new ChartsPanel(this.bitcoinController, mainFrame);
             break;
         }
 

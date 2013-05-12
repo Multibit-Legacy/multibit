@@ -17,8 +17,6 @@ package org.multibit.exchange;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Map;
 
@@ -26,22 +24,23 @@ import junit.framework.TestCase;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
-import org.joda.money.format.MoneyFormatter;
 import org.junit.Test;
+import org.multibit.CreateControllers;
 import org.multibit.Localiser;
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.exchange.ExchangeModel;
 
 public class CurrencyConverterTest extends TestCase {
     @Test
     public void testBasic() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        assertNotNull(model);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final BitcoinController controller = controllers.bitcoinController;
 
         // set the default currency to USD
-        controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, "USD");
+        controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, "USD");
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
         assertNotNull(converter);
@@ -53,7 +52,7 @@ public class CurrencyConverterTest extends TestCase {
         assertEquals("Wrong default currency.1", CurrencyUnit.of("USD"), converter.getCurrencyUnit());
         
         // Initialise to CAD.
-        controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, "CAD");
+        controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, "CAD");
         converter.initialise(controller);
         // Default currency should be CAD
         assertEquals("Wrong default currency.2", CurrencyUnit.of("CAD"), converter.getCurrencyUnit());
@@ -67,10 +66,10 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test
     public void testConvert() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);   
-
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final BitcoinController controller = controllers.bitcoinController;
+        
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
         // Initialise - will pick up currency of interest.
@@ -90,9 +89,9 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testFormatter() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -109,13 +108,9 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringEnglish() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new Localiser(Locale.ENGLISH);
-        controller.setLocaliser(localiser);
-        
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.ENGLISH));
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -140,13 +135,9 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringGerman() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new Localiser(Locale.GERMAN);
-        controller.setLocaliser(localiser);
-        
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.GERMAN));
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -172,13 +163,9 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringFrench() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new Localiser(Locale.FRENCH);
-        controller.setLocaliser(localiser);
-        
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.FRENCH));
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
@@ -208,9 +195,9 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testAllCurrencies() throws Exception {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.FRENCH));
+        final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
         BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);

@@ -21,10 +21,11 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.model.bitcoin.WalletAddressBookData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
@@ -35,16 +36,21 @@ public class PasteAddressAction extends AbstractAction {
 
     private static final long serialVersionUID = 114352235465057705L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private SendBitcoinPanel sendBitcoinPanel;
 
     /**
      * Creates a new {@link PasteAddressAction}.
      */
-    public PasteAddressAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel, ImageIcon icon) {
+    public PasteAddressAction(BitcoinController bitcoinController, SendBitcoinPanel sendBitcoinPanel, ImageIcon icon) {
         super("", icon);
         // super(controller.getLocaliser().getString("pasteAddressAction.text"));
-        this.controller = controller;
+        
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
+        
         this.sendBitcoinPanel = sendBitcoinPanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -58,14 +64,14 @@ public class PasteAddressAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
+        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             TextTransfer textTransfer = new TextTransfer();
             String stringToPaste = textTransfer.getClipboardContents();
@@ -74,12 +80,12 @@ public class PasteAddressAction extends AbstractAction {
             // TODO parse string - if bitcoin URI then fill out other fields
 
             String label = sendBitcoinPanel.getLabelTextArea().getText();
-            AddressBookData addressBookData = new AddressBookData(label, stringToPaste);
+            WalletAddressBookData addressBookData = new WalletAddressBookData(label, stringToPaste);
             sendBitcoinPanel.setAddressBookDataByRow(addressBookData);
 
             // put it in the user preferences - will then get loaded when view
             // form loads
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, stringToPaste);
+            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, stringToPaste);
 
             // forward back to the view currently being displayed
             controller.displayView(controller.getCurrentView());
