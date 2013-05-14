@@ -21,7 +21,7 @@ import java.awt.FontMetrics;
 
 import javax.swing.JTextField;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 
 public class MultiBitTextField extends JTextField {
 
@@ -30,11 +30,11 @@ public class MultiBitTextField extends JTextField {
     private static final int HEIGHT_DELTA = 4;
     private static final int WIDTH_DELTA = 4;
 
-    public MultiBitTextField(String text, int width, MultiBitController controller) {
+    public MultiBitTextField(String text, int width, Controller controller) {
         this(text, width, controller, HEIGHT_DELTA);
     }
 
-    public MultiBitTextField(String text, int width, MultiBitController controller, int heightDelta) {
+    public MultiBitTextField(String text, int width, Controller controller, int heightDelta) {
         super(text, width);
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         setFont(font);

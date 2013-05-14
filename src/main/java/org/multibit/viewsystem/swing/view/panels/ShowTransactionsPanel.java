@@ -65,12 +65,13 @@ import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
 
 import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletTableData;
+import org.multibit.model.bitcoin.WalletTableData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -83,6 +84,7 @@ import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.ShowTransactionDetailsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +97,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private MultiBitFrame mainFrame;
 
     private JTable table;
@@ -141,8 +145,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private static UpdateTransactionsTimerTask updateTransactionsTimerTask;
     
-    public ShowTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+    public ShowTransactionsPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
 
         updateTransactionsTimerTask = new UpdateTransactionsTimerTask(controller, this, mainFrame);
@@ -172,7 +177,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
 
-        walletTableModel = new WalletTableModel(controller);
+        walletTableModel = new WalletTableModel(this.bitcoinController);
         table = new JTable(walletTableModel);
         table.setOpaque(false);
         table.setBorder(BorderFactory.createEmptyBorder());
@@ -347,8 +352,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         scrollPane.setOpaque(true);
         scrollPane.getViewport().setOpaque(true);
     }
@@ -356,7 +361,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     @Override
     public void displayView(DisplayHint displayHint) {
         //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
-        if (controller.getModel().getActiveWallet() == null) {
+        if (this.bitcoinController.getModel().getActiveWallet() == null) {
             return;
         }
         justifyColumnHeaders();
@@ -477,11 +482,11 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 break;
             }
             case BUILDING: {
-                if (controller.getMultiBitService().getChain() == null) {
+                if (bitcoinController.getMultiBitService().getChain() == null) {
                     primaryLabel.setText("?");
                     primaryLabel.setIcon(null);
                 } else {
-                    int numberOfBlocksEmbedded = controller.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
+                    int numberOfBlocksEmbedded = bitcoinController.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
                     if (transaction != null && transaction.isCoinBase()) {
                         // Coinbase tx mature slower than regular blocks
                         numberOfBlocksEmbedded = numberOfBlocksEmbedded / 20;
@@ -1023,7 +1028,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         JMenuItem showTransactionsDetailsMenuItem;
 
         public TransactionPopUp(WalletTableData rowTableData) {
-            Action showTransactionDetailsAction = new ShowTransactionDetailsAction(controller, mainFrame, rowTableData);
+            Action showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, rowTableData);
             showTransactionsDetailsMenuItem = new JMenuItem(showTransactionDetailsAction);
             showTransactionsDetailsMenuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 

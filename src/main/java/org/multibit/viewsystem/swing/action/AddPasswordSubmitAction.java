@@ -27,10 +27,11 @@ import javax.swing.SwingUtilities;
 
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.slf4j.Logger;
@@ -51,6 +52,8 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
 
     private static final long serialVersionUID = 1923492460598757765L;
 
+    
+
     private AddPasswordPanel addPasswordPanel;
 
     private JPasswordField password1;
@@ -62,16 +65,17 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
     /**
      * Creates a new {@link AddPasswordSubmitAction}.
      */
-    public AddPasswordSubmitAction(MultiBitController controller, AddPasswordPanel addPasswordPanel,
+    public AddPasswordSubmitAction(BitcoinController bitcoinController, AddPasswordPanel addPasswordPanel,
             ImageIcon icon, JPasswordField password1, JPasswordField password2) {
-        super(controller, "addPasswordSubmitAction.text", "addPasswordSubmitAction.tooltip", "addPasswordSubmitAction.mnemonicKey", icon);
+        super(bitcoinController, "addPasswordSubmitAction.text", "addPasswordSubmitAction.tooltip", "addPasswordSubmitAction.mnemonicKey", icon);
+        
         this.addPasswordPanel = addPasswordPanel;
         this.password1 = password1;
         this.password2 = password2;
         
         // This action is a WalletBusyListener.
-        controller.registerWalletBusyListener(this);
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        this.bitcoinController.registerWalletBusyListener(this);
+        walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -101,33 +105,33 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
             }
         }
        
-        Wallet wallet = controller.getModel().getActiveWallet();
+        Wallet wallet = this.bitcoinController.getModel().getActiveWallet();
         if (wallet != null) {
-            if (controller.getModel().getActiveWalletWalletInfo() != null) {
+            if (this.bitcoinController.getModel().getActiveWalletWalletInfo() != null) {
                 // Only an unencrypted protobuf wallet can have a password added to it.
-                if (controller.getModel().getActiveWalletWalletInfo().getWalletVersion() != MultiBitWalletVersion.PROTOBUF) {
-                    addPasswordPanel.setMessage1(controller.getLocaliser().getString(
+                if (this.bitcoinController.getModel().getActiveWalletWalletInfo().getWalletVersion() != MultiBitWalletVersion.PROTOBUF) {
+                    addPasswordPanel.setMessage1(this.bitcoinController.getLocaliser().getString(
                             "addPasswordPanel.addPasswordFailed", new String[]{"Wallet is not protobuf.2"}));
                     return;
                 }
             }
 
-            PerWalletModelData perWalletModelData = null;
+            WalletData perWalletModelData = null;
             try {
                 // Double check wallet is not busy then declare that the active
                 // wallet is busy with the task
-                perWalletModelData = controller.getModel().getActivePerWalletModelData();
+                perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
 
                 if (!perWalletModelData.isBusy()) {
                     perWalletModelData.setBusy(true);
                     perWalletModelData.setBusyTaskKey("addPasswordSubmitAction.text");
 
-                    controller.fireWalletBusyChange(true);
+                    super.bitcoinController.fireWalletBusyChange(true);
 
                     KeyCrypter keyCrypterToUse;
                     if (wallet.getKeyCrypter() == null) {
                         byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
-                        controller.getMultiBitService().getSecureRandom().nextBytes(salt);
+                        super.bitcoinController.getMultiBitService().getSecureRandom().nextBytes(salt);
                         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
                         ScryptParameters scryptParameters = scryptParametersBuilder.build();
                         keyCrypterToUse = new KeyCrypterScrypt(scryptParameters);
@@ -136,10 +140,10 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                     }
 
                     wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(CharBuffer.wrap(passwordToUse)));
-                    controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
-                    controller.getModel().getActivePerWalletModelData().setDirty(true);
-                    FileHandler fileHandler = new FileHandler(controller);
-                    fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
+                    this.bitcoinController.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                    this.bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
+                    FileHandler fileHandler = new FileHandler(super.bitcoinController);
+                    fileHandler.savePerWalletModelData(this.bitcoinController.getModel().getActivePerWalletModelData(), true);
 
                     privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(passwordToUse));
 
@@ -158,7 +162,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                 // Declare that wallet is no longer busy with the task.
                 perWalletModelData.setBusyTaskKey(null);
                 perWalletModelData.setBusy(false);
-                controller.fireWalletBusyChange(false);                   
+                super.bitcoinController.fireWalletBusyChange(false);                   
             }
         }
         controller.fireDataChangedUpdateNow();
@@ -184,14 +188,14 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
+            putValue(SHORT_DESCRIPTION, this.bitcoinController.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    new Object[]{this.bitcoinController.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("addPasswordSubmitAction.text"));
+            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                putValue(SHORT_DESCRIPTION, this.bitcoinController.getLocaliser().getString("addPasswordSubmitAction.text"));
             }
         }
     }

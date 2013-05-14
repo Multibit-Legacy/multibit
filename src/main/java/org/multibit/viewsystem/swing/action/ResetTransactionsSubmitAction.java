@@ -25,11 +25,12 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.SwingWorker;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;
@@ -61,9 +62,9 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public ResetTransactionsSubmitAction(MultiBitController controller, MultiBitFrame mainFrame, Icon icon,
+    public ResetTransactionsSubmitAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, Icon icon,
             ResetTransactionsDataProvider resetTransactionsDataProvider) {
-        super(controller, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
+        super(bitcoinController, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
                 "resetTransactionsSubmitAction.mnemonicKey", icon);
         this.mainFrame = mainFrame;
         this.resetTransactionsDataProvider = resetTransactionsDataProvider;
@@ -87,7 +88,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
         Date resetDate = resetTransactionsDataProvider.getResetDate();
 
-        PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData activePerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
         log.debug("RT Ping 3");
 
         Date actualResetDate = null;
@@ -132,10 +133,10 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
         // Save the wallet without the transactions.
         try {
-            controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
+            super.bitcoinController.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
             log.debug("RT Ping 10");
 
-            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+            super.bitcoinController.getModel().createWalletData(super.bitcoinController, super.bitcoinController.getModel().getActiveWalletFilename());
             log.debug("RT Ping 11");
 
             controller.fireRecreateAllViews(false);
@@ -149,14 +150,14 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
 
         if (!perWalletModelData.isBusy()) {
             perWalletModelData.setBusy(true);
             perWalletModelData.setBusyTaskKey("resetTransactionsSubmitAction.text");
             perWalletModelData.setBusyTaskVerbKey("resetTransactionsSubmitAction.verb");
 
-            controller.fireWalletBusyChange(true);
+            super.bitcoinController.fireWalletBusyChange(true);
 
             resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate, activePerWalletModelData.getWalletFilename());
             log.debug("RT Ping 14");
@@ -177,8 +178,8 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                 Boolean successMeasure = Boolean.FALSE;
 
                 log.debug("Starting replay from date = " + resetDate);
-                List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
-                perWalletModelDataList.add(controller.getModel().getActivePerWalletModelData());
+                List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
+                perWalletModelDataList.add(bitcoinController.getModel().getActivePerWalletModelData());
 
                 // Initialise the message in the SingleWalletPanel.
                 if (mainFrame != null) {

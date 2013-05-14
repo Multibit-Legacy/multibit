@@ -29,10 +29,11 @@ import javax.swing.SwingUtilities;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -62,7 +63,8 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
     private MultiBitFrame mainFrame;
     private MultiBitDialog sendBitcoinConfirmDialog;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private MultiBitLabel sendAddressText;
     private MultiBitLabel sendLabelText;
@@ -101,9 +103,10 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
     /**
      * Creates a new {@link SendBitcoinConfirmPanel}.
      */
-    public SendBitcoinConfirmPanel(MultiBitController controller, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog) {
+    public SendBitcoinConfirmPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog) {
         super();
-        this.controller = controller;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
         this.sendBitcoinConfirmDialog = sendBitcoinConfirmDialog;
         
@@ -114,7 +117,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         cancelButton.requestFocusInWindow();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
-        controller.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
     }
 
     /**
@@ -137,15 +140,15 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                 + ExportPrivateKeysPanel.STENT_DELTA;
 
         // Get the data out of the wallet preferences.
-        sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
+        sendAddress = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
+        sendLabel = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
+        String sendAmount = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
 
         String sendAmountLocalised = CurrencyConverter.INSTANCE.prettyPrint(sendAmount);
 
-        String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        String fee = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
         if (fee == null || fee == "") {
-            fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            fee = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
         }
 
         String sendFeeLocalised = CurrencyConverter.INSTANCE.prettyPrint(fee);
@@ -429,8 +432,8 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler5, constraints);
 
-        if (controller.getModel().getActiveWallet() != null) {
-            if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+        if (this.bitcoinController.getModel().getActiveWallet() != null) {
+            if (this.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                 // Need wallet password.
                 walletPasswordField.setEnabled(true);
                 walletPasswordPromptLabel.setEnabled(true);
@@ -458,7 +461,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
+        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, this.bitcoinController, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 
@@ -510,16 +513,15 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         boolean enableSend = false;
         String message = " ";
 
-        MultiBitModel model = controller.getModel();
-        if (model != null) {
-            String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+        if (this.controller.getModel() != null) {
+            String singleNodeConnection = this.controller.getModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
             boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
             
-            String peers = model.getUserPreference(MultiBitModel.PEERS);
+            String peers = this.controller.getModel().getUserPreference(BitcoinModel.PEERS);
             boolean singlePeerOverride = peers != null && peers.split(",").length == 1;
 
             if (thisPanel.sendBitcoinNowAction != null) {
-                if (!singleNodeConnectionOverride && !singlePeerOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                if (!singleNodeConnectionOverride && !singlePeerOverride && this.bitcoinController.getModel().getNumberOfConnectedPeers() < BitcoinModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                      // Disable send button
                     enableSend = false;
                     message = controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline");
@@ -528,10 +530,10 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                     enableSend = true;
                     message = " ";
                 }
-                if (model.getActivePerWalletModelData().isBusy()) {
+                if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
                     enableSend = false;
                     message = controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                            new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())});
+                            new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())});
                 }
                 thisPanel.sendBitcoinNowAction.setEnabled(enableSend);
             }
@@ -588,24 +590,24 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
             @Override
             public void run() {
                 if (thisPanel != null && thisPanel.isVisible()) {
-                    MultiBitModel model = MultiBit.getController().getModel();
-                    if (model != null) {
-                        String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+                    final BitcoinController bitcoinController = MultiBit.getBitcoinController();
+                    if (bitcoinController != null) {
+                        String singleNodeConnection = bitcoinController.getModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
                         boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
                         
-                        String peers = model.getUserPreference(MultiBitModel.PEERS);
+                        String peers = bitcoinController.getModel().getUserPreference(BitcoinModel.PEERS);
                         boolean singlePeerOverride = peers != null && peers.split(",").length == 1;
 
                         boolean enableSend = false;
                         if (thisPanel.sendBitcoinNowAction != null) {
-                            if (!singleNodeConnectionOverride && !singlePeerOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                            if (!singleNodeConnectionOverride && !singlePeerOverride && bitcoinController.getModel().getNumberOfConnectedPeers() < BitcoinModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                                 // Disable send button
                                 enableSend = false;
                             } else {
                                 // Enable send button
                                 enableSend = true;
                             }
-                            if (model.getActivePerWalletModelData().isBusy()) {
+                            if (bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
                                 enableSend = false;
                             }
                             thisPanel.sendBitcoinNowAction.setEnabled(enableSend);

@@ -23,10 +23,13 @@ import java.util.TimerTask;
 
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.ExchangeData;
-import org.multibit.model.MultiBitModel;
+
+import org.multibit.controller.Controller;
+import org.multibit.controller.exchange.ExchangeController;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +55,8 @@ public class TickerTimerTask extends TimerTask {
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
-    private final MultiBitController controller;
+    private final Controller controller;
+    private final ExchangeController exchangeController;
     private final MultiBitFrame mainFrame;
 
     // Is this the first row in the ticker (=true) or the second row (=false).
@@ -67,21 +71,22 @@ public class TickerTimerTask extends TimerTask {
     /**
      * Constructs the TickerTimerTask.
      */
-    public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame, boolean isFirstExchange) {
-        this.controller = controller;
+    public TickerTimerTask(ExchangeController exchangeController, MultiBitFrame mainFrame, boolean isFirstExchange) {
+        this.exchangeController = exchangeController;
+        this.controller = this.exchangeController;
         this.mainFrame = mainFrame;
         this.isFirstExchange = isFirstExchange;
 
         if (isFirstExchange) {
-            currency = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+            currency = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
             if (currency == null || currency.length() == 0) {
                 currency = ExchangeData.DEFAULT_CURRENCY;
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, currency);
+                controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, currency);
             }
-            shortExchangeName = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+            shortExchangeName = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
         } else {
-            currency = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
-            shortExchangeName = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
+            currency = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
+            shortExchangeName = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
         }
     }
 
@@ -93,7 +98,7 @@ public class TickerTimerTask extends TimerTask {
     public void run() {
         // If this is the second row and is not showing, do not do anything.
         if (!isFirstExchange && !Boolean.TRUE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW))) {
+                controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW))) {
             return;
         }
         
@@ -120,9 +125,9 @@ public class TickerTimerTask extends TimerTask {
                     // Only get data from server if ticker is being shown if
                     // currency conversion is switched on.
                     // (This is to minimise the load on the remote servers).
-                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))
+                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW))
                             || !Boolean.FALSE.toString().equals(
-                                    controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
+                                    controller.getModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
                         // Get symbol ticker if it is one of the
                         // currencies we are interested in.
                         // (This is to save hitting the server for every
@@ -243,9 +248,9 @@ public class TickerTimerTask extends TimerTask {
                                 }
                             }
 
-                            controller.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last);
-                            controller.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid);
-                            controller.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask);
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last);
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid);
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask);
                             log.debug("Exchange = " + shortExchangeName);
 
                             // Put the exchange rate into the currency converter.
@@ -349,16 +354,16 @@ public class TickerTimerTask extends TimerTask {
                 ExchangeSpecification exchangeSpecification = new ExchangeSpecification(exchangeClassname);
                 exchangeSpecification.setPlainTextUri("http://openexchangerates.org");
                 exchangeSpecification
-                        .setApiKey(controller.getModel().getUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE));
+                        .setApiKey(controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE));
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeSpecification);
             } else {
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeClassname);
             }
             
-            if (controller.getModel().getExchangeData(shortExchangeName) == null) {
+            if (this.exchangeController.getModel().getExchangeData(shortExchangeName) == null) {
                 ExchangeData exchangeData = new ExchangeData();
                 exchangeData.setShortExchangeName(shortExchangeName);
-                controller.getModel().getShortExchangeNameToExchangeMap().put(exchangeShortname, exchangeData);
+                this.exchangeController.getModel().getShortExchangeNameToExchangeMap().put(exchangeShortname, exchangeData);
             }
 
             return exchangeToReturn;

@@ -17,7 +17,6 @@ package org.multibit.functionaltests;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -25,10 +24,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
-import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.CreateControllers;
+
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
@@ -48,7 +47,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
     private static File multiBitDirectory;
 
-    private static MultiBitController controller;
+    private static BitcoinController controller;
 
     private static SimpleViewSystem simpleViewSystem;
 
@@ -65,15 +64,9 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             // set the application data directory to be the one we just created
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-            // create the controller
-            controller = new MultiBitController(applicationDataDirectoryLocator);
-
-            assertNotNull("Controller is null", controller);
-            MultiBit.setController(controller);
-
-            // create the model - gets hooked up to controller automatically
-            @SuppressWarnings("unused")
-            MultiBitModel model = new MultiBitModel(controller);
+            // Create MultiBit controller.
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+            controller = controllers.bitcoinController;
 
             log.debug("Creating Bitcoin service");
             // create the MultiBitService that connects to the bitcoin network
@@ -82,7 +75,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
             // add the simple view system (no Swing)
             simpleViewSystem = new SimpleViewSystem();
-            controller.registerViewSystem(simpleViewSystem);
+            controllers.coreController.registerViewSystem(simpleViewSystem);
 
             // MultiBit runtime is now setup and running
         }
@@ -98,7 +91,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             String test1WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest1.wallet";
             String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest2.wallet";
 
-            // initially there is a blank PerWalletModelData
+            // initially there is a blank WalletData
             assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
             // create test1 wallet

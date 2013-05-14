@@ -23,10 +23,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
@@ -50,15 +51,15 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
     /**
      * Creates a new {@link RemovePasswordSubmitAction}.
      */
-    public RemovePasswordSubmitAction(MultiBitController controller, RemovePasswordPanel removePasswordPanel,
+    public RemovePasswordSubmitAction(BitcoinController bitcoinController, RemovePasswordPanel removePasswordPanel,
             ImageIcon icon, JPasswordField password1, MultiBitFrame mainFrame) {
-        super(controller, "removePasswordSubmitAction.text", "removePasswordSubmitAction.tooltip", "removePasswordSubmitAction.mnemonicKey", icon);
+        super(bitcoinController, "removePasswordSubmitAction.text", "removePasswordSubmitAction.tooltip", "removePasswordSubmitAction.mnemonicKey", icon);
         this.removePasswordPanel = removePasswordPanel;
         this.password1 = password1;
         
         // This action is a WalletBusyListener.
-        controller.registerWalletBusyListener(this);
-        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        super.bitcoinController.registerWalletBusyListener(this);
+        walletBusyChange(super.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -78,27 +79,27 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
             return;
         }
        
-        if (controller.getModel().getActiveWallet() != null) {
-            Wallet wallet = controller.getModel().getActiveWallet();
+        if (super.bitcoinController.getModel().getActiveWallet() != null) {
+            Wallet wallet = super.bitcoinController.getModel().getActiveWallet();
             if (wallet != null) {
 
-                    PerWalletModelData perWalletModelData = null;
+                    WalletData perWalletModelData = null;
                     try {
                         // Double check wallet is not busy then declare that the active
                         // wallet is busy with the task
-                        perWalletModelData = controller.getModel().getActivePerWalletModelData();
+                        perWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
 
                         if (!perWalletModelData.isBusy()) {
                             perWalletModelData.setBusy(true);
                             perWalletModelData.setBusyTaskKey("removePasswordSubmitAction.text");
 
-                            controller.fireWalletBusyChange(true);
+                            super.bitcoinController.fireWalletBusyChange(true);
 
                             wallet.decrypt(wallet.getKeyCrypter().deriveKey(CharBuffer.wrap(passwordToUse)));
-                            controller.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
-                            controller.getModel().getActivePerWalletModelData().setDirty(true);
-                            FileHandler fileHandler = new FileHandler(controller);
-                            fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
+                            super.bitcoinController.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF);
+                            super.bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
+                            FileHandler fileHandler = new FileHandler(super.bitcoinController);
+                            fileHandler.savePerWalletModelData( super.bitcoinController.getModel().getActivePerWalletModelData(), true);
                         }
                     } catch (KeyCrypterException kce) {
                         removePasswordPanel.setMessage1(controller.getLocaliser()
@@ -108,7 +109,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                         // Declare that wallet is no longer busy with the task.
                         perWalletModelData.setBusyTaskKey(null);
                         perWalletModelData.setBusy(false);
-                        controller.fireWalletBusyChange(false);                   
+                        super.bitcoinController.fireWalletBusyChange(false);                   
                     }
             }
         }
@@ -128,13 +129,13 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
         // Update the enable status of the action to match the wallet busy status.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (super.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
             putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
+                    new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
         } else {
             // Enable unless wallet has been modified by another process.
-            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("removePasswordSubmitAction.text"));
             }
         }

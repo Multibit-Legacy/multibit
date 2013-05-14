@@ -37,6 +37,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Timer;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -58,22 +59,26 @@ import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.text.DefaultEditorKit;
 
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-import org.joda.money.Money;
 import org.multibit.Localiser;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.core.CoreController;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.core.StatusEnum;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.ReplayManager;
 import org.multibit.platform.GenericApplication;
+import org.multibit.platform.listener.GenericQuitEventListener;
+import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -81,9 +86,9 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.action.CloseWalletAction;
+import org.multibit.viewsystem.swing.action.AbstractExitAction;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
-import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
@@ -101,15 +106,22 @@ import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
+
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.joda.money.Money;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -140,8 +152,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static final long serialVersionUID = 7621813615342923041L;
 
-    private MultiBitController controller;
-    private MultiBitModel model;
+    private final Controller controller;
+    private final CoreController coreController;
+    private final BitcoinController bitcoinController;
+    private final ExchangeController exchangeController;
+    
     private Localiser localiser;
 
     private String helpContext;
@@ -176,8 +191,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     private WalletListPanel walletsView;
 
-    private MultiBitFrame thisFrame;
-
     private JSplitPane splitPane;
 
     private static final int TOOLTIP_DISMISSAL_DELAY = 12000; // millisecs
@@ -186,6 +199,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Provide the Application reference during construction
      */
     private final GenericApplication application;
+
+    private final GenericQuitResponse multiBitFrameQuitResponse = new GenericQuitResponse() {
+        @Override
+        public void cancelQuit() {
+            log.debug("Quit Cancled");
+        }
+
+        @Override
+        public void performQuit() {
+            log.debug("Preformed Quit");
+        }
+    };
+    
+    final private GenericQuitEventListener quitEventListener;
 
     /**
      * the tabbed pane containing the views
@@ -230,11 +257,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static FireDataChangedTimerTask fireDataChangedTimerTask;
 
     @SuppressWarnings("deprecation")
-    public MultiBitFrame(MultiBitController controller, GenericApplication application, View initialView) {
-        this.controller = controller;
-        this.model = controller.getModel();
+    public MultiBitFrame(CoreController coreController, BitcoinController bitcoinController, ExchangeController exchangeController, GenericApplication application, View initialView) {
+        this.coreController = coreController;
+        this.bitcoinController = bitcoinController;
+        this.exchangeController = exchangeController;
+        this.controller = this.coreController;
+        
+        this.quitEventListener = this.coreController;
+        
         this.localiser = controller.getLocaliser();
-        this.thisFrame = this;
         this.application = application;
         
         // Remap to command v and C on a Mac
@@ -254,23 +285,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         String titleText = localiser.getString("multiBitFrame.title");
-        if (controller.getModel().getActiveWallet() != null) {
-            titleText = titleText + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletDescription()
-                    + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+        if (this.bitcoinController.getModel().getActiveWallet() != null) {
+            titleText = titleText + SEPARATOR + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription()
+                    + SEPARATOR + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletFilename();
         }
         setTitle(titleText);
 
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
-        final MultiBitController finalController = controller;
-
         // TODO Examine how this fits in with the controller onQuit() event
+        // Cam: I've moved this to the quit event.
+        
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent arg0) {
-                org.multibit.viewsystem.swing.action.ExitAction exitAction = new org.multibit.viewsystem.swing.action.ExitAction(
-                        finalController, thisFrame);
-                exitAction.actionPerformed(null);
+                quitEventListener.onQuitEvent(null, multiBitFrameQuitResponse);
             }
         });
 
@@ -278,23 +307,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         sizeAndCenter();
 
-        viewFactory = new ViewFactory(controller, this);
+        viewFactory = new ViewFactory(this.bitcoinController, this.exchangeController, this);
 
         initUI(initialView);
 
-        controller.registerWalletBusyListener(this);
+        this.bitcoinController.registerWalletBusyListener(this);
 
          // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        fileChangeTimer.schedule(new FileChangeTimerTask(this.bitcoinController), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
 
          // Initialise the tickers.
         tickerTimer1 = new Timer();
-        tickerTimerTask1 = new TickerTimerTask(controller, this, true);
+        tickerTimerTask1 = new TickerTimerTask(this.exchangeController, this, true);
         tickerTimer1.schedule(tickerTimerTask1, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
         
         tickerTimer2 = new Timer();
-        tickerTimerTask2 = new TickerTimerTask(controller, this, false);
+        tickerTimerTask2 = new TickerTimerTask(this.exchangeController, this, false);
         tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
         // Initialise status bar.
@@ -388,7 +417,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         contentPane.add(headerPanel, constraints);
 
         // Create the wallet list panel.
-        walletsView = new WalletListPanel(controller, this);
+        walletsView = new WalletListPanel(this.bitcoinController, this);
 
         // Create the tabbedpane that holds the views.
         viewTabbedPane = new MultiBitTabbedPane(controller);
@@ -454,7 +483,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Cannot get the RTL wallets drawing nicely so switch off adjustment.
         splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
         
-        statusBar = new StatusBar(controller, this);
+        statusBar = new StatusBar(this.bitcoinController, this);
         statusBar.updateOnlineStatusText(online);
         MessageManager.INSTANCE.addMessageListener(statusBar);
 
@@ -670,7 +699,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(filler3, constraints);
 
         // Add ticker panel.
-        tickerTablePanel = new TickerTablePanel(this, controller);
+        tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 9;
         constraints.gridy = 0;
@@ -753,7 +782,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuBar.add(helpMenu);
 
         // Create new wallet action.
-        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller,
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.bitcoinController,
                 ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), this);
         JMenuItem menuItem = new JMenuItem(createNewWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -761,14 +790,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // Open wallet action.
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller,
+        OpenWalletAction openWalletAction = new OpenWalletAction(this.bitcoinController,
                 ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE), this);
         menuItem = new JMenuItem(openWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
-        CloseWalletAction closeWalletAction = new CloseWalletAction(controller,
+        CloseWalletAction closeWalletAction = new CloseWalletAction(this.bitcoinController,
                 ImageLoader.createImageIcon(ImageLoader.CLOSE_WALLET_ICON_FILE), this);
         menuItem = new JMenuItem(closeWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -778,9 +807,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.addSeparator();
         
         // See if user has enabled the delete wallet action
-        String showDeleteWalletString = controller.getModel().getUserPreference(MultiBitModel.SHOW_DELETE_WALLET);
+        String showDeleteWalletString = this.bitcoinController.getModel().getUserPreference(BitcoinModel.SHOW_DELETE_WALLET);
         if (Boolean.TRUE.toString().equalsIgnoreCase(showDeleteWalletString)) {
-            DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller,
+            DeleteWalletAction deleteWalletAction = new DeleteWalletAction(this.bitcoinController,
                     ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
             menuItem = new JMenuItem(deleteWalletAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -791,7 +820,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
         
         // Add password action.
-        addPasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
+        addPasswordAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
                 "addPasswordAction.tooltip", "addPasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
         menuItem = new JMenuItem(addPasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -799,7 +828,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // Change password action.
-        changePasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
+        changePasswordAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
                 "changePasswordAction.tooltip", "changePasswordAction.mnemonic", View.CHANGE_PASSWORD_VIEW);
         menuItem = new JMenuItem(changePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -807,7 +836,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // Remove password action.
-        removePasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
+        removePasswordAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
                 "removePasswordAction.tooltip", "removePasswordAction.mnemonic", View.REMOVE_PASSWORD_VIEW);
         menuItem = new JMenuItem(removePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -818,8 +847,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (application != null && !application.isMac()) {
             // Non Macs have an Exit Menu item.
             fileMenu.addSeparator();
-
-            menuItem = new JMenuItem(new ExitAction(controller, this));
+            {
+                AbstractAction exitAction = new AbstractExitAction(this.controller) {
+                    
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        quitEventListener.onQuitEvent(null, multiBitFrameQuitResponse);
+                    }
+                };
+                
+                menuItem = new JMenuItem(exitAction);
+            }
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             menuItem.setComponentOrientation(componentOrientation);
             fileMenu.add(menuItem);
@@ -933,7 +971,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.addSeparator();
 
         // show ticker
-        String viewTicker = controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW);
+        String viewTicker = controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW);
         boolean isTickerVisible = !Boolean.FALSE.toString().equals(viewTicker);
 
         String tickerKey;
@@ -951,6 +989,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (tickerTablePanel != null) {
             tickerTablePanel.setVisible(isTickerVisible);
         }
+        
+        final MultiBitFrame thisFrame = this;
 
         showTicker.addActionListener(new ActionListener() {
             @Override
@@ -958,11 +998,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 if (tickerTablePanel != null) {
                     if (tickerTablePanel.isVisible()) {
                         tickerTablePanel.setVisible(false);
-                        controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.FALSE.toString());
+                        controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.FALSE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
                     } else {
                         tickerTablePanel.setVisible(true);
-                        controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.TRUE.toString());
+                        controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.TRUE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
                         // Cancel any existing timer.
                         if (tickerTimer1 != null) {
@@ -973,14 +1013,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         }
                         // Start ticker timer.
                         tickerTimer1 = new Timer();
-                        tickerTimer1.schedule(new TickerTimerTask(controller, thisFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                        tickerTimer1.schedule(new TickerTimerTask(exchangeController, thisFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
                         
                         boolean showSecondRow = Boolean.TRUE.toString().equals(
-                                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                                controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
                         
                         if (showSecondRow) {
                             tickerTimer2 = new Timer();
-                            tickerTimer2.schedule(new TickerTimerTask(controller, thisFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                            tickerTimer2.schedule(new TickerTimerTask(exchangeController, thisFrame, false), TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
                         }
                     }
                 }
@@ -990,7 +1030,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.add(showTicker);
 
         // Import private keys.
-        showImportPrivateKeysAction = new MultiBitWalletBusyAction(controller, ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE,
+        showImportPrivateKeysAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE,
                 "showImportPrivateKeysAction.text", "showImportPrivateKeysAction.tooltip", "showImportPrivateKeysAction.mnemonic",
                 View.SHOW_IMPORT_PRIVATE_KEYS_VIEW);
         menuItem = new JMenuItem(showImportPrivateKeysAction);
@@ -999,7 +1039,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         toolsMenu.add(menuItem);
 
         // Export private keys.
-        showExportPrivateKeysAction = new MultiBitWalletBusyAction(controller, ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE,
+        showExportPrivateKeysAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE,
                 "showExportPrivateKeysAction.text", "showExportPrivateKeysAction.tooltip", "showExportPrivateKeysAction.mnemonic",
                 View.SHOW_EXPORT_PRIVATE_KEYS_VIEW);
         menuItem = new JMenuItem(showExportPrivateKeysAction);
@@ -1009,7 +1049,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         toolsMenu.addSeparator();
 
-        resetTransactionsAction = new MultiBitWalletBusyAction(controller, ImageLoader.RESET_TRANSACTIONS_ICON_FILE,
+        resetTransactionsAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.RESET_TRANSACTIONS_ICON_FILE,
                 "resetTransactionsAction.text", "resetTransactionsAction.tooltip", "resetTransactionsAction.mnemonic",
                 View.RESET_TRANSACTIONS_VIEW);
         resetTransactionsAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("resetTransactionsAction.tooltip")));
@@ -1052,17 +1092,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         if (initUI) {
             // Remember and replay task and remove any listeners.
-            List<PerWalletModelData> replayPerWalletModelDataList = null;
+            List<WalletData> replayPerWalletModelDataList = null;
             if (ReplayManager.INSTANCE.getCurrentReplayTask() != null) {
                 replayPerWalletModelDataList = ReplayManager.INSTANCE.getCurrentReplayTask().getPerWalletModelDataToReplay();
             }
             ReplayManager.INSTANCE.removeDownloadListeners(replayPerWalletModelDataList);
             
             // Remove the WalletBusyListeners.
-            controller.logNumberOfWalletBusyListeners();
-            controller.clearWalletBusyListeners();
+            this.bitcoinController.logNumberOfWalletBusyListeners();
+            this.bitcoinController.clearWalletBusyListeners();
             
-            thisFrame.localiser = controller.getLocaliser();
+            this.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
             viewFactory.initialise();
             contentPane.removeAll();
@@ -1118,7 +1158,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         }
         
-        controller.logNumberOfWalletBusyListeners();
+        this.bitcoinController.logNumberOfWalletBusyListeners();
     }
 
     /**
@@ -1198,7 +1238,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         nextViewFinal.displayView(DisplayHint.COMPLETE_REDRAW);
 
         //log.debug("viewTabbedPane " + System.identityHashCode(viewTabbedPane) + " finally has " + viewTabbedPane.getTabCount() + " tabs.");
-        thisFrame.setCursor(Cursor.getDefaultCursor());
+        this.setCursor(Cursor.getDefaultCursor());
     }
 
     /**
@@ -1252,28 +1292,28 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
     
     private void updateMenuItemsOnWalletChange() {
-        showImportPrivateKeysAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
-        showExportPrivateKeysAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
-        resetTransactionsAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
+        showImportPrivateKeysAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
+        showExportPrivateKeysAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
+        resetTransactionsAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
 
-        if (controller.getModel().getActiveWallet() == null) {
+        if (this.bitcoinController.getModel().getActiveWallet() == null) {
             // Cannot do anything password related.
             addPasswordAction.setEnabled(false);
             changePasswordAction.setEnabled(false);
             removePasswordAction.setEnabled(false);
         } else {
-            if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
                 addPasswordAction.setEnabled(false);
                 changePasswordAction.setEnabled(false);
                 removePasswordAction.setEnabled(false);
             } else {
-                if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+                if (this.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                     addPasswordAction.setEnabled(false);
                     changePasswordAction.setEnabled(true);
                     removePasswordAction.setEnabled(true);
                 } else {
-                    if (controller.getModel().getActiveWalletWalletInfo() == null ||
-                            controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == MultiBitWalletVersion.SERIALIZED) {
+                    if (this.bitcoinController.getModel().getActiveWalletWalletInfo() == null ||
+                            this.bitcoinController.getModel().getActiveWalletWalletInfo().getWalletVersion() == MultiBitWalletVersion.SERIALIZED) {
                         addPasswordAction.setEnabled(false);
                     } else {
                         addPasswordAction.setEnabled(true);
@@ -1284,9 +1324,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         }
         
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             String walletIsBusyText = HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                    new Object[]{controller.getLocaliser().getString(controller.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
+                    new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
             showImportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             showExportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             resetTransactionsAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
@@ -1347,9 +1387,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
-    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
-        if (controller.getModel().getActiveWalletFilename() != null
-                && controller.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
+    public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData) {
+        if (this.bitcoinController.getModel().getActiveWalletFilename() != null
+                && this.bitcoinController.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
             Message message = new Message(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
                     + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2")), true);
             MessageManager.INSTANCE.addMessage(message);
@@ -1421,8 +1461,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void updateHeader(final String syncMessage, final double syncPercent) {
-        final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
-        final boolean isBusy = controller.getModel().getActivePerWalletModelData().isBusy();
+        final boolean filesHaveBeenChangeByAnotherProcess = this.bitcoinController.getModel().getActivePerWalletModelData() != null && this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
+        final boolean isBusy = this.bitcoinController.getModel().getActivePerWalletModelData().isBusy();
         if (EventQueue.isDispatchThread()) {
             updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, null, null, isBusy, syncMessage, syncPercent);
         } else {
@@ -1435,10 +1475,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
     
     public void updateHeader() {
-        final BigInteger finalEstimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
-        final BigInteger finalAvailableToSpend = model.getActiveWalletAvailableBalance();
-        final boolean filesHaveBeenChangeByAnotherProcess = controller.getModel().getActivePerWalletModelData() != null && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
-        final boolean isBusy = controller.getModel().getActivePerWalletModelData().isBusy();
+        final BigInteger finalEstimatedBalance = this.bitcoinController.getModel().getActiveWalletEstimatedBalance();
+        final BigInteger finalAvailableToSpend = this.bitcoinController.getModel().getActiveWalletAvailableBalance();
+        final boolean filesHaveBeenChangeByAnotherProcess = this.bitcoinController.getModel().getActivePerWalletModelData() != null && this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
+        final boolean isBusy = this.bitcoinController.getModel().getActivePerWalletModelData().isBusy();
         
         if (EventQueue.isDispatchThread()) {
             updateHeaderOnSwingThread(filesHaveBeenChangeByAnotherProcess, finalEstimatedBalance, finalAvailableToSpend, isBusy, null, -1);
@@ -1531,9 +1571,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
 
             String titleText = localiser.getString("multiBitFrame.title");
-            if (controller.getModel().getActiveWallet() != null) {
-                titleText = titleText + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletDescription()
-                        + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+            if (this.bitcoinController.getModel().getActiveWallet() != null) {
+                titleText = titleText + SEPARATOR + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription()
+                        + SEPARATOR + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletFilename();
             }
             setTitle(titleText);
         }
@@ -1579,8 +1619,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     @Deprecated
     public void handleQuit(ApplicationEvent event) {
-        ExitAction exitAction = new ExitAction(controller, this);
-        exitAction.actionPerformed(null);
+        throw new UnsupportedOperationException("Deprecated.");
     }
 
     @Override

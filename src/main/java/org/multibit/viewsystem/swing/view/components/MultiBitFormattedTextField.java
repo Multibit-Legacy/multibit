@@ -22,7 +22,7 @@ import java.text.DecimalFormat;
 
 import javax.swing.JFormattedTextField;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 
 public class MultiBitFormattedTextField extends JFormattedTextField {
 
@@ -31,7 +31,7 @@ public class MultiBitFormattedTextField extends JFormattedTextField {
     private static final int HEIGHT_DELTA = 4;
     private static final int WIDTH_DELTA = 4;
     
-    public MultiBitFormattedTextField(String text, int width, MultiBitController controller, DecimalFormat format) {
+    public MultiBitFormattedTextField(String text, int width, Controller controller, DecimalFormat format) {
         super(format);
         
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();

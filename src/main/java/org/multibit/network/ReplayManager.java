@@ -28,10 +28,10 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.UUID;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.PerWalletModelData;
+import org.multibit.model.bitcoin.WalletData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +39,7 @@ import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.store.BlockStoreException;
+
 
 /**
  * ReplayManager is responsible for updating Wallets that are not updated to
@@ -64,11 +65,11 @@ public enum ReplayManager {
     private static final int REPLAY_MANAGER_DELAY_TIME = 0; // ms
     private static final int REPLAY_MANAGER_REPEAT_TIME = 333; // ms
     
-    private MultiBitController controller;
+    private BitcoinController controller;
 
     final private Queue<ReplayTask> replayTaskQueue = new LinkedList<ReplayTask>();
 
-    public void initialise(MultiBitController controller) {
+    public void initialise(BitcoinController controller) {
         this.controller = controller;
         replayManagerTimerTask = new ReplayManagerTimerTask(controller, replayTaskQueue);
         replayManagerTimer = new Timer();
@@ -88,9 +89,9 @@ public enum ReplayManager {
         }
 
         // Mark the wallets as busy and set the replay task uuid into the model
-        List<PerWalletModelData> perWalletModelDataList = replayTask.getPerWalletModelDataToReplay();
+        List<WalletData> perWalletModelDataList = replayTask.getPerWalletModelDataToReplay();
         if (perWalletModelDataList != null) {
-            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+            for (WalletData perWalletModelData : perWalletModelDataList) {
                 perWalletModelData.setBusy(true);
                 perWalletModelData.setBusyTaskKey("multiBitDownloadListener.downloadingText");
                 perWalletModelData.setBusyTaskVerbKey("multiBitDownloadListener.downloadingTextShort");
@@ -158,11 +159,11 @@ public enum ReplayManager {
         log.debug("Blockchain download started.");
     }
     
-    public void addDownloadListeners(List<PerWalletModelData> perWalletModelDataList) {
+    public void addDownloadListeners(List<WalletData> perWalletModelDataList) {
         PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
         if (peerGroup instanceof MultiBitPeerGroup) {
             if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                for (WalletData perWalletModelData : perWalletModelDataList) {
                     if (perWalletModelData.getSingleWalletDownloadListener() != null) {
                         ((MultiBitPeerGroup) peerGroup).getMultiBitDownloadListener().addSingleWalletPanelDownloadListener(
                                 perWalletModelData.getSingleWalletDownloadListener());
@@ -172,11 +173,11 @@ public enum ReplayManager {
         }
     }
 
-    public void removeDownloadListeners(List<PerWalletModelData> perWalletModelDataList) {
+    public void removeDownloadListeners(List<WalletData> perWalletModelDataList) {
         PeerGroup peerGroup = controller.getMultiBitService().getPeerGroup();
         if (peerGroup instanceof MultiBitPeerGroup) {
             if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                for (WalletData perWalletModelData : perWalletModelDataList) {
                     if (perWalletModelData.getSingleWalletDownloadListener() != null) {
                         ((MultiBitPeerGroup) peerGroup).getMultiBitDownloadListener().removeDownloadListener(
                                 perWalletModelData.getSingleWalletDownloadListener());
@@ -234,7 +235,7 @@ public enum ReplayManager {
             String waitingText = "singleWalletPanel.waiting.text";
             String waitingVerb = "singleWalletPanel.waiting.verb";
             
-            for (PerWalletModelData perWalletModelData : replayTask.getPerWalletModelDataToReplay()) {
+            for (WalletData perWalletModelData : replayTask.getPerWalletModelDataToReplay()) {
                 if (perWalletModelData != null) {
                     perWalletModelData.setBusy(true);
                     perWalletModelData.setBusyTaskVerbKey(waitingVerb);
@@ -275,9 +276,9 @@ public enum ReplayManager {
         try {
             if (currentTask != null) {
                 // This task is complete. Inform the UI.
-                List<PerWalletModelData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
+                List<WalletData> perWalletModelDataList = currentTask.getPerWalletModelDataToReplay();
                 if (perWalletModelDataList != null) {
-                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    for (WalletData perWalletModelData : perWalletModelDataList) {
                         perWalletModelData.setBusyTaskVerbKey(null);
                         perWalletModelData.setBusyTaskKey(null);
                         perWalletModelData.setBusy(false);
@@ -312,15 +313,15 @@ public enum ReplayManager {
      * @return the waiting ReplayTask or null if there is not one.
      */
     @SuppressWarnings("unchecked")
-    public ReplayTask getWaitingReplayTask(PerWalletModelData perWalletModelData) {
+    public ReplayTask getWaitingReplayTask(WalletData perWalletModelData) {
         synchronized (replayTaskQueue) {
             if (replayTaskQueue.isEmpty()) {
                 return null;
             } else {
                 for (ReplayTask replayTask : (List<ReplayTask>)replayTaskQueue) {
-                    List<PerWalletModelData> list = replayTask.getPerWalletModelDataToReplay();
+                    List<WalletData> list = replayTask.getPerWalletModelDataToReplay();
                     if (list != null) {
-                        for (PerWalletModelData item : list) {
+                        for (WalletData item : list) {
                             if (perWalletModelData.getWalletFilename().equals(item.getWalletFilename())) {
                                 return replayTask;
                             }

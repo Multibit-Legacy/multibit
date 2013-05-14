@@ -48,7 +48,7 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
@@ -121,13 +121,13 @@ public class JFontChooser extends JComponent {
     private JPanel samplePanel = null;
     private JTextField sampleText = null;
 
-    private MultiBitController controller;
+    private Controller controller;
     private FontMetrics fontMetrics;
 
     /**
      * Constructs a <code>JFontChooser</code> object.
      **/
-    public JFontChooser(MultiBitController controller) {
+    public JFontChooser(Controller controller) {
         this.controller = controller;
         this.fontSizeStrings = DEFAULT_FONT_SIZE_STRINGS;
 
