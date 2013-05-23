@@ -47,7 +47,7 @@ public class ExchangeData {
     public static final String BITFLOOR_EXCHANGE_NAME = "Bitfloor";
     public static final String BITCOIN_24_EXCHANGE_NAME = "Bitcoin-24";
 
-    public static final String DEFAULT_EXCHANGE = CAMPBX_EXCHANGE_NAME;
+    public static final String DEFAULT_EXCHANGE = MT_GOX_EXCHANGE_NAME;
     
     public static final String DEFAULT_CURRENCY = "USD";
     

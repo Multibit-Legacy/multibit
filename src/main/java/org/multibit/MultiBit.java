@@ -48,6 +48,7 @@ import org.multibit.network.AlertManager;
 import org.multibit.network.MultiBitCheckpointManager;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.CoreModel;
+import org.multibit.model.exchange.ConnectHttps;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.network.ReplayManager;
@@ -217,10 +218,13 @@ public class MultiBit {
                 exchangeController.setModel(exchangeModel);
             }
 
+            // Trust all HTTPS certificates.
+            ConnectHttps.trustAllCerts();
+            
             // Initialise currency converter.
             CurrencyConverter.INSTANCE.initialise(finalController);
             
-            // Initialise repla manager.
+            // Initialise replay manager.
             ReplayManager.INSTANCE.initialise(bitcoinController);
             
             log.debug("Setting look and feel");
