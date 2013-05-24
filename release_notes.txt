@@ -2,6 +2,7 @@ MultiBit release notes.
 
 Version 0.5.10
 Bug fixes:
++ Fixed issue 116 - could not import blockchain.info backups.
 + Fixed issue 117 - fee was too high.
 + Fixed issue 121 - MtGox ticker information not showing.
 + Fixed issue 125 - overzealous syncing of wallet(s).
