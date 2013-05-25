@@ -22,7 +22,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,11 +30,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SimpleTimeZone;
-import java.util.Stack;
 
 import javax.swing.SwingWorker;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -45,8 +44,8 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
-import org.multibit.model.core.StatusEnum;
 import org.multibit.model.bitcoin.WalletInfoData;
+import org.multibit.model.core.StatusEnum;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.ReplayableBlockStore;
 import org.multibit.store.WalletVersionException;
@@ -56,7 +55,6 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.MultiBitBlockChain;
@@ -64,7 +62,6 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
@@ -267,7 +264,24 @@ public class MultiBitService {
         if (!checkpointsFile.exists()) {
             this.bitcoinController.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
         }
-
+        
+        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+        String installedCheckpointsFilename = applicationDataDirectoryLocator.getInstallationDirectory() + File.separator + MultiBitService.getFilePrefix()  + MultiBitService.CHECKPOINTS_SUFFIX;
+        log.debug("Installed checkpoints file = '" + installedCheckpointsFilename + "'.");
+        
+        File installedCheckpointsFile = new File(installedCheckpointsFilename);
+        long sizeOfUserDataCheckpointsFile = 0;
+        if (checkpointsFile.exists()) {
+            sizeOfUserDataCheckpointsFile = checkpointsFile.length();
+        }
+        if (installedCheckpointsFile.exists() && installedCheckpointsFile.length() > sizeOfUserDataCheckpointsFile) {
+            // The installed checkpoints file is longer (more checkpoints) so use that.
+            checkpointsFilename = installedCheckpointsFilename;
+            checkpointsFile = installedCheckpointsFile;
+            log.debug("Using installed checkpoints file as it is longer than user data checkpoints - " + installedCheckpointsFile.length() + " bytes versus " + sizeOfUserDataCheckpointsFile + " bytes.");
+        } else {
+            log.debug("Using user data checkpoints file as it is longer/same size as installed checkpoints - " + sizeOfUserDataCheckpointsFile + " bytes versus " + installedCheckpointsFile.length() + " bytes.");
+        }
         
         if (!spvBlockStore.exists() && (isReplay || !bobsBlockStore.exists())) {
             // If there is no SPVBlockStore and no ReplayableBlockStore create an SPVBlockStore and use it.
