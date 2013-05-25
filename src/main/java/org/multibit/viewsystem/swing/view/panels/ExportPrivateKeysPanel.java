@@ -33,6 +33,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Locale;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -86,6 +87,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
     private MultiBitLabel walletDescriptionLabel;
 
+    private String chooseFilenameButtonText;
     private JFileChooser fileChooser;
 
     private MultiBitLabel outputFilenameLabel;
@@ -495,8 +497,21 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         constraints.anchor = GridBagConstraints.LINE_END;
         outputFilenamePanel.add(filler0, constraints);
  
-        MultiBitButton chooseOutputFilenameButton = new MultiBitButton(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.filename.text"));
+        chooseFilenameButtonText = "";
+        String chooseFilenameButtonText1 = controller.getLocaliser().getString("showExportPrivateKeysPanel.filename.text");
+        String chooseFilenameButtonText2 = controller.getLocaliser().getString("showExportPrivateKeysPanel.filename.text.2");
+        // If the second term is localised, use that, otherwise the first.
+        if (controller.getLocaliser().getLocale().equals(Locale.ENGLISH)) {
+            chooseFilenameButtonText = chooseFilenameButtonText2;
+        } else {
+            if (!"Export to ...".equals(chooseFilenameButtonText2)) {
+                chooseFilenameButtonText = chooseFilenameButtonText2;
+            } else {
+                chooseFilenameButtonText = chooseFilenameButtonText1;
+            }
+        }
+
+        MultiBitButton chooseOutputFilenameButton = new MultiBitButton(chooseFilenameButtonText);
         chooseOutputFilenameButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         chooseOutputFilenameButton.addActionListener(new ActionListener() {
@@ -845,7 +860,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
         fileChooser = new JFileChooser();
         fileChooser.setLocale(controller.getLocaliser().getLocale());
-        fileChooser.setDialogTitle(controller.getLocaliser().getString("showExportPrivateKeysPanel.filename.text"));
+        fileChooser.setDialogTitle(chooseFilenameButtonText);
         adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
         if (adjustedFont != null) {
             setFileChooserFont(new Container[] {fileChooser});

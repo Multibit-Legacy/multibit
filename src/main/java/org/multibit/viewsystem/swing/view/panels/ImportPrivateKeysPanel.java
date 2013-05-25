@@ -36,6 +36,8 @@ import java.nio.CharBuffer;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
+
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -97,6 +99,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
     private MultiBitButton chooseFilenameButton;
 
+    private String chooseFilenameButtonText;
     private JFileChooser fileChooser;
 
     private MultiBitLabel outputFilenameLabel;
@@ -476,7 +479,20 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(MultiBitTitledPanel.createStent(stentWidth, ExportPrivateKeysPanel.STENT_HEIGHT), constraints);
 
-        chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
+        chooseFilenameButtonText = "";
+        String chooseFilenameButtonText1 = controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text");
+        String chooseFilenameButtonText2 = controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text.2");
+        // If the second term is localised, use that, otherwise the first.
+        if (controller.getLocaliser().getLocale().equals(Locale.ENGLISH)) {
+            chooseFilenameButtonText = chooseFilenameButtonText2;
+        } else {
+            if (!"Import from ...".equals(chooseFilenameButtonText2)) {
+                chooseFilenameButtonText = chooseFilenameButtonText2;
+            } else {
+                chooseFilenameButtonText = chooseFilenameButtonText1;
+            }
+        }
+        chooseFilenameButton = new MultiBitButton(chooseFilenameButtonText);
         chooseFilenameButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.tooltip")));
         chooseFilenameButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -835,7 +851,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
         fileChooser = new JFileChooser();
         fileChooser.setLocale(controller.getLocaliser().getLocale());
-        fileChooser.setDialogTitle(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
+        fileChooser.setDialogTitle(chooseFilenameButtonText);
         adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
         if (adjustedFont != null) {
             setFileChooserFont(new Container[] {fileChooser});
