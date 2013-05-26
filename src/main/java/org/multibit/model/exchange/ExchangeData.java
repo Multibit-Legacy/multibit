@@ -157,7 +157,7 @@ public class ExchangeData {
      */
     public static String convertExchangeShortNameToClassname(String shortExchangeName) {
         if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName)) {
-            return "com.xeiam.xchange.mtgox.v1.MtGoxExchange";
+            return "com.xeiam.xchange.mtgox.v2.MtGoxExchange";
         //} else if (BITCOIN_CHARTS_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
         //    return  BitcoinChartsExchange.class.getName();
         } else if (VIRTEX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
