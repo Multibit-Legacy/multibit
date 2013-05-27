@@ -89,18 +89,22 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
             // Set the application data directory to be the one we just created.
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
-
+            log.debug("applicationDataDirectoryLocator = " + applicationDataDirectoryLocator);
+            
             // Create MultiBit controller.
-            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
             MultiBitService multiBitService = new MultiBitService(controllers.bitcoinController);
+            log.debug("multiBitService = " + multiBitService);
+
             controllers.bitcoinController.setMultiBitService(multiBitService);
 
             // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
             controllers.coreController.registerViewSystem(simpleViewSystem);
+            log.debug("simpleViewSystem = " + simpleViewSystem);
             
             ReplayManager.INSTANCE.initialise(controllers.bitcoinController);
 
@@ -148,12 +152,10 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             ReplayTask replayTask = new ReplayTask(perWalletModelDataList, formatter.parse(START_OF_REPLAY_PERIOD), ReplayTask.UNKNOWN_START_HEIGHT);
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
-            // Wait for blockchain replay to download more than the required amount.
-            log.debug("Waiting for blockchain replay to download more than " + NUMBER_OF_BLOCKS_TO_REPLAY + " blocks. . . ");
-            while (simpleViewSystem.getNumberOfBlocksDownloaded() < NUMBER_OF_BLOCKS_TO_REPLAY) {
-                Thread.sleep(1000);
-                log.debug("Blocks downloaded =  " + simpleViewSystem.getNumberOfBlocksDownloaded());
-            }
+            // Run for a minute.
+            log.debug("Twiddling thumbs for a minute ...");
+            Thread.sleep(60000);
+            log.debug("... one minute later.");
 
             // Check new balance on wallet - estimated balance should be at least the
             // expected (may have later tx too)..
@@ -203,7 +205,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
     }
 
     /**
-     * Create a working, portable runtime of MultiBit in a temporary directory
+     * Create a working, portable runtime of MultiBit in a temporary directory.
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
@@ -213,16 +215,20 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
         System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
 
-        // create an empty multibit.properties
+        // Create an empty multibit.properties.
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
-        // copy in the blockchain stored in git - this is in
-        // source/main/resources/
+        // Copy in the blockchain stored in git - this is in source/main/resources/.
         File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
         FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
         multibitBlockchain.deleteOnExit();
+
+        // Copy in the checkpoints stored in git - this is in source/main/resources/.
+        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
+        FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
+        multibitCheckpoints.deleteOnExit();
 
         return multiBitDirectory;
     }

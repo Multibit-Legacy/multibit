@@ -29,17 +29,13 @@ import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
 import org.multibit.CreateControllers;
-import org.multibit.MultiBit;
-import org.multibit.controller.Controller;
-import org.multibit.controller.core.CoreController;
-import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.MultiBitService;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
+import org.multibit.viewsystem.swing.action.ActionTestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +75,7 @@ public class GenesisBlockReplayTest extends TestCase {
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
             // Create MultiBit controller.
-            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
@@ -103,21 +99,20 @@ public class GenesisBlockReplayTest extends TestCase {
             }
             log.debug("Now online.");
 
+            // Create a new  wallet and put it in the model as the active wallet.
+            ActionTestUtils.createNewActiveWallet(controllers.bitcoinController, "testReplayFromGenesisBlock", false,
+                    null);
+
             log.debug("Replaying blockchain from genesis block");
-            //multiBitService.replayBlockChain(null);
             List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
             perWalletModelDataList.add(controllers.bitcoinController.getModel().getActivePerWalletModelData());
             ReplayTask replayTask = new ReplayTask(perWalletModelDataList, null, 0);
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
-            //assertEquals(BLOCKSIZE_BEFORE_REPLAY, multiBitService.getBlockStore().getFile().length());            
-
-            // Wait for blockchain replay to download more than the required amount.
-            log.debug("Waiting for blockchain replay to download more than " + NUMBER_OF_BLOCKS_TO_REPLAY + " blocks. . . ");
-            while (simpleViewSystem.getNumberOfBlocksDownloaded() < NUMBER_OF_BLOCKS_TO_REPLAY) {
-                Thread.sleep(1000);
-                log.debug("Blocks downloaded =  " + simpleViewSystem.getNumberOfBlocksDownloaded());
-            }
+            // Run for a minute.
+            log.debug("Twiddling thumbs for a minute ...");
+            Thread.sleep(60000);
+            log.debug("... one minute later.");
 
             // Check the blockstore has added the downloaded blocks.
             assertNotNull("No multiBitService after replay", multiBitService);
@@ -158,6 +153,12 @@ public class GenesisBlockReplayTest extends TestCase {
         File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
         FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
         multibitBlockchain.deleteOnExit();
+        
+        // Copy in the checkpoints stored in git - this is in source/main/resources/.
+        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
+        FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
+        multibitCheckpoints.deleteOnExit();
+
 
         return multiBitDirectory;
     }

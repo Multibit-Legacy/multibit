@@ -39,7 +39,7 @@ import com.xeiam.xchange.ExchangeSpecification;
 import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
-import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
+import com.xeiam.xchange.service.polling.PollingMarketDataService;
 
 /**
  * TimerTask to poll currency exchanges for ticker data process

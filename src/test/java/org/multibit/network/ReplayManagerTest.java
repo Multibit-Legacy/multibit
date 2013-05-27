@@ -37,6 +37,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
+import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +82,21 @@ public class ReplayManagerTest extends TestCase {
         // Create the MultiBitService that connects to the bitcoin network.
         MultiBitService multiBitService = new MultiBitService(controller);
         controller.setMultiBitService(multiBitService);
+        
+        // Add the simple view system (no Swing).
+        SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
+        controllers.coreController.registerViewSystem(simpleViewSystem);
+
+        log.debug("Waiting for peer connection. . . ");
+        while (!simpleViewSystem.isOnline()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        log.debug("Now online.");
+
     }
 
     @Test
@@ -128,6 +144,11 @@ public class ReplayManagerTest extends TestCase {
             
             ReplayTask replayTask = new ReplayTask(perWalletModelDataList, formatter.parse(START_OF_REPLAY_PERIOD), ReplayTask.UNKNOWN_START_HEIGHT);
             replayManager.offerReplayTask(replayTask);
+            
+            // Run for a minute.
+            log.debug("Twiddling thumbs for a minute ...");
+            Thread.sleep(60000);
+            log.debug("... one minute later.");
 
             // Check new balance on wallet - estimated balance should be at least the expected (may have later tx too)..
             log.debug("Replay wallet estimated balance is:\n" + replayWallet.getBalance(BalanceType.ESTIMATED).toString());

@@ -147,21 +147,9 @@ public class MultiBitService {
 
     /**
      * 
-     * @param controller
-     *            MutliBitController
+     * @param bitcoinController BitcoinController
      */
     public MultiBitService(BitcoinController bitcoinController) {
-        this(bitcoinController.getModel().getUserPreference(BitcoinModel.WALLET_FILENAME), bitcoinController);
-    }
-
-    /**
-     * 
-     * @param walletFilename
-     *            filename of current wallet
-     * @param controller
-     *            MutliBitController
-     */
-    public MultiBitService(String walletFilename, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
 

@@ -65,7 +65,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
             // Create MultiBit controller.
-            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
             controller = controllers.bitcoinController;
 
             log.debug("Creating Bitcoin service");
@@ -78,6 +78,13 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             controllers.coreController.registerViewSystem(simpleViewSystem);
 
             // MultiBit runtime is now setup and running
+            // Wait a little while to get two connections.
+            try {
+                Thread.sleep(8000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -97,29 +104,29 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             // create test1 wallet
             CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, null);
             createNewWalletAction.createNewWallet(test1WalletPath);
-            Thread.sleep(1000);
+            Thread.sleep(4000);
             assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
             // create test2 wallet
             createNewWalletAction.createNewWallet(test2WalletPath);
-            Thread.sleep(1000);
+            Thread.sleep(4000);
             assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
 
             // delete the test1wallet
             DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null);
             deleteWalletSubmitAction.deleteWallet(test1WalletPath);
-            Thread.sleep(1000);
+            Thread.sleep(4000);
             assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
             // delete the test2wallet - a default one should then be created
             deleteWalletSubmitAction.deleteWallet(test2WalletPath);
-            Thread.sleep(1000);
+            Thread.sleep(4000);
             assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
         }
     }
 
     /**
-     * create a working, portable runtime of MultiBit in a temporary directory
+     * Create a working, portable runtime of MultiBit in a temporary directory.
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
@@ -129,16 +136,20 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
         System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
 
-        // create an empty multibit.properties
+        // Create an empty multibit.properties.
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
-        // copy in the blockchain stored in git - this is in
-        // source/main/resources/
+        // Copy in the blockchain stored in git - this is in source/main/resources/.
         File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
         FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
         multibitBlockchain.deleteOnExit();
+
+        // Copy in the checkpoints stored in git - this is in source/main/resources/.
+        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
+        FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
+        multibitCheckpoints.deleteOnExit();
 
         return multiBitDirectory;
     }
