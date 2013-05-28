@@ -40,7 +40,7 @@ import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
 import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.PreferencesPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.panels.SignMessagePanel;
 import org.multibit.viewsystem.swing.view.panels.VerifyMessagePanel;
@@ -182,7 +182,7 @@ public class ViewFactory {
             }
 
             case PREFERENCES_VIEW: {
-                viewToReturn = new ShowPreferencesPanel(this.mainFrame, this.bitcoinController, this.exchangeController);
+                viewToReturn = new PreferencesPanel(this.mainFrame, this.bitcoinController, this.exchangeController);
                 break;
             }
 

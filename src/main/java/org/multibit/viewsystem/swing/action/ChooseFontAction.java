@@ -24,7 +24,7 @@ import javax.swing.ImageIcon;
 
 import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.PreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.JFontChooser;
 
 /**
@@ -35,12 +35,12 @@ public class ChooseFontAction extends AbstractAction {
     private static final long serialVersionUID = 114359435465057705L;
 
     private Controller controller;
-    private ShowPreferencesPanel showPreferencesPanel;
+    private PreferencesPanel showPreferencesPanel;
 
     /**
      * Creates a new {@link ChooseFontAction}.
      */
-    public ChooseFontAction(Controller controller, ShowPreferencesPanel showPreferencesPanel, ImageIcon icon) {
+    public ChooseFontAction(Controller controller, PreferencesPanel showPreferencesPanel, ImageIcon icon) {
         super(controller.getLocaliser().getString("fontChooser.text"), icon);
         this.controller = controller;
         this.showPreferencesPanel = showPreferencesPanel;

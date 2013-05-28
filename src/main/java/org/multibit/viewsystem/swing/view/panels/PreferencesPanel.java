@@ -96,8 +96,8 @@ import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 /**
  * The show preferences view.
  */
-public class ShowPreferencesPanel extends JPanel implements Viewable, PreferencesDataProvider {
-    private static final Logger log = LoggerFactory.getLogger(ShowPreferencesPanel.class);
+public class PreferencesPanel extends JPanel implements Viewable, PreferencesDataProvider {
+    private static final Logger log = LoggerFactory.getLogger(PreferencesPanel.class);
 
     public static String UNPARSEABLE_FEE = "UNPARSEABLE_FEE";
     
@@ -207,7 +207,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
-    public ShowPreferencesPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController, ExchangeController exchangeController) {
+    public PreferencesPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController, ExchangeController exchangeController) {
         log.debug("Construct a new ShowPreferencesPanel");
         this.exchangeController = exchangeController;
         this.bitcoinController = bitcoinController;
@@ -1925,7 +1925,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                     converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
         } else {
             // Return UNPARSEABLE for the action to deal with it.
-            return ShowPreferencesPanel.UNPARSEABLE_FEE + " " + feeTextField.getText();
+            return PreferencesPanel.UNPARSEABLE_FEE + " " + feeTextField.getText();
         }
     }
     
