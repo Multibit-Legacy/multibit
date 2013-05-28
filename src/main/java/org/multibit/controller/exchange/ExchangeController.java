@@ -29,7 +29,7 @@ import org.multibit.controller.AbstractEventHandler;
 import org.multibit.controller.core.CoreController;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.exchange.ExchangeModel;
-import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.core.actions.ExitAction;
 
 /**
  *

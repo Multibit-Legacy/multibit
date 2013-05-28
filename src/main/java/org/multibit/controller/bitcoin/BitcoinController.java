@@ -47,7 +47,7 @@ import org.multibit.platform.listener.GenericQuitEventListener;
 import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.core.actions.ExitAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

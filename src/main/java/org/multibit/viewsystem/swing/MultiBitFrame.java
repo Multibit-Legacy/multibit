@@ -15,6 +15,9 @@
  */
 package org.multibit.viewsystem.swing;
 
+import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.core.FireDataChangedTimerTask;
+import org.multibit.viewsystem.swing.bitcoin.WalletChangeTimerTask;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -85,27 +88,27 @@ import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.Viewable;
-import org.multibit.viewsystem.swing.action.CloseWalletAction;
-import org.multibit.viewsystem.swing.action.AbstractExitAction;
-import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletAction;
-import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.action.MnemonicUtil;
-import org.multibit.viewsystem.swing.action.MultiBitAction;
-import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.view.ViewFactory;
-import org.multibit.viewsystem.swing.view.components.BlinkLabel;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
-import org.multibit.viewsystem.swing.view.panels.TransactionsPanel;
-import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
-import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
-import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
+import org.multibit.viewsystem.swing.bitcoin.actions.CloseWalletAction;
+import org.multibit.viewsystem.swing.core.actions.AbstractExitAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.CreateWalletSubmitAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.DeleteWalletAction;
+import org.multibit.viewsystem.swing.core.HelpContextAction;
+import org.multibit.viewsystem.swing.core.MnemonicUtil;
+import org.multibit.viewsystem.swing.core.actions.MultiBitAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.MultiBitWalletBusyAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.OpenWalletAction;
+import org.multibit.viewsystem.swing.core.ViewFactory;
+import org.multibit.viewsystem.swing.core.components.BlinkLabel;
+import org.multibit.viewsystem.swing.core.components.FontSizer;
+import org.multibit.viewsystem.swing.core.components.HelpButton;
+import org.multibit.viewsystem.swing.core.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.core.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.bitcoin.panels.SendBitcoinConfirmPanel;
+import org.multibit.viewsystem.swing.bitcoin.panels.TransactionsPanel;
+import org.multibit.viewsystem.swing.exchange.TickerTablePanel;
+import org.multibit.viewsystem.swing.bitcoin.walletlist.SingleWalletPanel;
+import org.multibit.viewsystem.swing.bitcoin.walletlist.WalletListPanel;
 
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -318,7 +321,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
          // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(this.bitcoinController), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        fileChangeTimer.schedule(new WalletChangeTimerTask(this.bitcoinController), WalletChangeTimerTask.INITIAL_DELAY, WalletChangeTimerTask.DEFAULT_REPEAT_RATE);
 
          // Initialise the tickers.
         tickerTimer1 = new Timer();
