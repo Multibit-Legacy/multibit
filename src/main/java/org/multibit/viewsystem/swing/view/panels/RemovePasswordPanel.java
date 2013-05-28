@@ -80,7 +80,7 @@ public class RemovePasswordPanel extends JPanel implements Viewable, WalletBusyL
     /**
      * Creates a new {@link RemovePasswordPanel}.
      */
-    public RemovePasswordPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public RemovePasswordPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;

@@ -120,7 +120,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     /**
      * Creates a new {@link ExportPrivateKeysPanel}.
      */
-    public ExportPrivateKeysPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ExportPrivateKeysPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;

@@ -74,7 +74,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     private MultiBitButton sendButton;
     private SendBitcoinConfirmAction sendBitcoinConfirmAction;
 
-    public SendBitcoinPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public SendBitcoinPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         super(mainFrame, bitcoinController);
         checkDeleteSendingEnabled();
     }

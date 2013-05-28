@@ -46,7 +46,7 @@ public class HelpAboutPanel extends JPanel implements Viewable {
   /**
      * Creates a new {@link HelpAboutPanel}.
      */
-    public HelpAboutPanel(Controller controller, MultiBitFrame mainFrame) {        
+    public HelpAboutPanel(MultiBitFrame mainFrame, Controller controller) {        
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         this.controller = controller;
 

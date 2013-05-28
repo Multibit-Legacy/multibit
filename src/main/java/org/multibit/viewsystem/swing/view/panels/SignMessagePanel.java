@@ -93,7 +93,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
     /**
      * Creates a new {@link SignMessagePanel}.
      */
-    public SignMessagePanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public SignMessagePanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;

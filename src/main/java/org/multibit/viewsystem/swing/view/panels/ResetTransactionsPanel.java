@@ -101,7 +101,7 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     /**
      * Creates a new {@link ResetTransactionsPanel}.
      */
-    public ResetTransactionsPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ResetTransactionsPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;

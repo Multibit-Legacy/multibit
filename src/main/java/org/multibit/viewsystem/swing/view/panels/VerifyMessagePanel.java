@@ -87,7 +87,7 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
     /**
      * Creates a new {@link VerifyMessagePanel}.
      */
-    public VerifyMessagePanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public VerifyMessagePanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;

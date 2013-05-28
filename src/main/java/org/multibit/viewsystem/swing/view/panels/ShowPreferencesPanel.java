@@ -207,7 +207,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
-    public ShowPreferencesPanel(BitcoinController bitcoinController, ExchangeController exchangeController, MultiBitFrame mainFrame) {
+    public ShowPreferencesPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController, ExchangeController exchangeController) {
         log.debug("Construct a new ShowPreferencesPanel");
         this.exchangeController = exchangeController;
         this.bitcoinController = bitcoinController;

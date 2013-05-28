@@ -77,7 +77,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
     /**
      * Creates a new {@link ShowOpenUriDialog}.
      */
-    public ShowOpenUriDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ShowOpenUriDialog(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         super(mainFrame, bitcoinController.getLocaliser().getString("showOpenUriView.title"));
         
         this.bitcoinController = bitcoinController;
