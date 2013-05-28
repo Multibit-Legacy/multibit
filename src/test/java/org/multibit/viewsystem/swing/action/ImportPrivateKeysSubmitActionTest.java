@@ -57,7 +57,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ImportPrivateKeysPanel importPanel = new ImportPrivateKeysPanel(controller, null);
+        ImportPrivateKeysPanel importPanel = new ImportPrivateKeysPanel(null, controller);
         ImportPrivateKeysSubmitAction importAction = importPanel.getImportPrivateKeysSubmitAction();
         
         // Switch off blockchain replay after key import.
@@ -106,7 +106,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ImportPrivateKeysPanel importPanel = new ImportPrivateKeysPanel(controller, null);
+        ImportPrivateKeysPanel importPanel = new ImportPrivateKeysPanel(null, controller);
         ImportPrivateKeysSubmitAction importAction = importPanel.getImportPrivateKeysSubmitAction();
         
         // Switch off blockchain replay after key import.
@@ -164,7 +164,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ImportPrivateKeysPanel importPanel = new ImportPrivateKeysPanel(controller, null);
+        ImportPrivateKeysPanel importPanel = new ImportPrivateKeysPanel(null, controller);
         ImportPrivateKeysSubmitAction importAction = importPanel.getImportPrivateKeysSubmitAction();
         
         // Switch off blockchain replay after key import.
@@ -228,7 +228,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ImportPrivateKeysPanel importPanel = new ImportPrivateKeysPanel(controller, null);
+        ImportPrivateKeysPanel importPanel = new ImportPrivateKeysPanel(null, controller);
         ImportPrivateKeysSubmitAction importAction = importPanel.getImportPrivateKeysSubmitAction();
         
         // Switch off blockchain replay after key import.
@@ -297,7 +297,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
         // Create a new ImportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ImportPrivateKeysPanel importPrivateKeysPanel = new ImportPrivateKeysPanel(controller, null);
+        ImportPrivateKeysPanel importPrivateKeysPanel = new ImportPrivateKeysPanel(null, controller);
         ImportPrivateKeysSubmitAction importPrivateKeysSubmitAction = importPrivateKeysPanel.getImportPrivateKeysSubmitAction();
 
         assertNotNull("importPrivateKeysSubmitAction was not created successfully", importPrivateKeysSubmitAction);

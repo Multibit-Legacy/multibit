@@ -59,7 +59,7 @@ public class WelcomePanel extends JPanel implements Viewable {
     /**
      * Creates a new {@link WelcomePanel}.
      */
-    public WelcomePanel(Controller controller, MultiBitFrame mainFrame) {
+    public WelcomePanel(MultiBitFrame mainFrame, Controller controller) {
         this.controller = controller;
 
         setLayout(new BorderLayout());

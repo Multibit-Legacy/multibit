@@ -93,7 +93,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
   /**
    * Creates a new {@link ChartsPanel}.
    */
-    public ChartsPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ChartsPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
     this.bitcoinController = bitcoinController;
     this.controller = this.bitcoinController;
 

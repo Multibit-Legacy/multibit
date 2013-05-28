@@ -91,7 +91,7 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
     /**
      * Creates a new {@link AddPasswordPanel}.
      */
-    public AddPasswordPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public AddPasswordPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;

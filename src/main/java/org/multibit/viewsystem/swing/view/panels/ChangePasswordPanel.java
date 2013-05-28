@@ -93,7 +93,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
     /**
      * Creates a new {@link ChangePasswordPanel}.
      */
-    public ChangePasswordPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ChangePasswordPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         

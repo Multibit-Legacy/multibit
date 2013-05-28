@@ -40,7 +40,7 @@ public class CreateNewReceivingAddressActionTest extends TestCase {
         // Create a new CreateNewReceivingAddressAction to test.
         ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
-        ReceiveBitcoinPanel receiveBitcoinPanel = new ReceiveBitcoinPanel(controller, null);
+        ReceiveBitcoinPanel receiveBitcoinPanel = new ReceiveBitcoinPanel(null, controller);
         CreateNewReceivingAddressAction createNewReceivingAddressAction = receiveBitcoinPanel.getCreateNewReceivingAddressAction();
 
         assertNotNull("createNewReceivingAddressAction was not created successfully", createNewReceivingAddressAction);

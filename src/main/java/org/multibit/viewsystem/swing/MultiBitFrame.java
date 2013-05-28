@@ -307,7 +307,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         sizeAndCenter();
 
-        viewFactory = new ViewFactory(this.bitcoinController, this.exchangeController, this);
+        viewFactory = new ViewFactory(this, this.bitcoinController, this.exchangeController);
 
         initUI(initialView);
 

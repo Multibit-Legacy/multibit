@@ -145,7 +145,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private static UpdateTransactionsTimerTask updateTransactionsTimerTask;
     
-    public ShowTransactionsPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ShowTransactionsPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;

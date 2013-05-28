@@ -82,7 +82,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
 
     boolean firstTimeLoaded = false;
 
-    public HelpContentsPanel(Controller controller, MultiBitFrame mainFrame) {
+    public HelpContentsPanel(MultiBitFrame mainFrame, Controller controller) {
         this.controller = controller;
         this.mainFrame = mainFrame;
         helpContext = mainFrame.getHelpContext();

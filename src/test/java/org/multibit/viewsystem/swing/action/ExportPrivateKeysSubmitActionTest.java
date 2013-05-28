@@ -69,7 +69,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         
         // Create a new ExportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ExportPrivateKeysPanel exportPanel = new ExportPrivateKeysPanel(controller, null);
+        ExportPrivateKeysPanel exportPanel = new ExportPrivateKeysPanel(null, controller);
         ExportPrivateKeysSubmitAction exportAction = exportPanel.getExportPrivateKeySubmitAction();
  
         assertNotNull("exportAction was not created successfully", exportAction);
@@ -187,7 +187,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
 
         // Create a new ExportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ExportPrivateKeysPanel exportPanel = new ExportPrivateKeysPanel(controller, null);
+        ExportPrivateKeysPanel exportPanel = new ExportPrivateKeysPanel(null, controller);
         ExportPrivateKeysSubmitAction exportAction = exportPanel.getExportPrivateKeySubmitAction();
 
         assertNotNull("exportAction was not created successfully", exportAction);
@@ -308,7 +308,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
 
         // Create a new ExportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ExportPrivateKeysPanel exportPrivateKeysPanel = new ExportPrivateKeysPanel(controller, null);
+        ExportPrivateKeysPanel exportPrivateKeysPanel = new ExportPrivateKeysPanel(null, controller);
         ExportPrivateKeysSubmitAction exportPrivateKeysSubmitAction = exportPrivateKeysPanel.getExportPrivateKeySubmitAction();
 
         assertNotNull("exportPrivateKeysSubmitAction was not created successfully", exportPrivateKeysSubmitAction);

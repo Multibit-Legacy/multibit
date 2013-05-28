@@ -75,7 +75,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
 
     private CreateNewReceivingAddressAction createNewReceivingAddressAction;
 
-    public ReceiveBitcoinPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ReceiveBitcoinPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         super(mainFrame, bitcoinController);
     }
     

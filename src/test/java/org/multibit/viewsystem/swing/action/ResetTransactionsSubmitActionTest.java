@@ -40,7 +40,7 @@ public class ResetTransactionsSubmitActionTest extends TestCase {
 
         // Create a new ResetTransactionsSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        ResetTransactionsPanel resetTransactionsPanel = new ResetTransactionsPanel(controller, null);
+        ResetTransactionsPanel resetTransactionsPanel = new ResetTransactionsPanel(null, controller);
         ResetTransactionsSubmitAction resetTransactionsSubmitAction = resetTransactionsPanel.getResetTransactionsSubmitAction();
 
         assertNotNull("resetTransactionsSubmitAction was not created successfully", resetTransactionsSubmitAction);

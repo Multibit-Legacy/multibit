@@ -56,7 +56,7 @@ public class MessagesPanel extends JPanel implements Viewable, MessageListener {
   /**
      * Creates a new {@link MessagesPanel}.
      */
-    public MessagesPanel(Controller controller, MultiBitFrame mainFrame) {        
+    public MessagesPanel(MultiBitFrame mainFrame, Controller controller) {        
          setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         this.controller = controller;
        

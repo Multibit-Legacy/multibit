@@ -44,7 +44,7 @@ public class DeleteSendingAddressActionTest extends TestCase {
 
         ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
-        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(controller, null);
+        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
         DeleteSendingAddressSubmitAction deleteSubmitAction = new DeleteSendingAddressSubmitAction(controller, sendBitcoinPanel, null);
 
         assertNotNull("deleteSubmitAction was not created successfully", deleteSubmitAction);

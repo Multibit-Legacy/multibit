@@ -40,7 +40,7 @@ public class SendBitcoinConfirmActionTest extends TestCase {
         // Create a new SendBitcoinConfirmAction to test.
         ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
-        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(controller, null);
+        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
         SendBitcoinConfirmAction sendBitcoinConfirmAction = sendBitcoinPanel.getSendBitcoinConfirmAction();
 
         assertNotNull("sendBitcoinConfirmAction was not created successfully", sendBitcoinConfirmAction);

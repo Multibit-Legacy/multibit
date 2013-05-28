@@ -22,6 +22,9 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.viewsystem.View;
+import static org.multibit.viewsystem.View.MESSAGES_VIEW;
+import static org.multibit.viewsystem.View.PREFERENCES_VIEW;
+import static org.multibit.viewsystem.View.TRANSACTIONS_VIEW;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
@@ -56,11 +59,11 @@ public class ViewFactory {
     
     private final MultiBitFrame mainFrame;
 
-    public ViewFactory(BitcoinController bitcoinController, ExchangeController exchangeController, MultiBitFrame mainFrame) {
+    public ViewFactory(MultiBitFrame mainFrame, BitcoinController bitcoinController, ExchangeController exchangeController) {
+        this.mainFrame = mainFrame;
         this.bitcoinController = bitcoinController;
         this.exchangeController = exchangeController;
         this.controller = this.bitcoinController;
-        this.mainFrame = mainFrame;
         initialise();
     }
     
@@ -93,82 +96,82 @@ public class ViewFactory {
         }
 
         case WELCOME_VIEW: {
-            viewToReturn = new WelcomePanel(controller, mainFrame);
-            break;
-        }
-
-        case TRANSACTIONS_VIEW: {
-            viewToReturn = new ShowTransactionsPanel(this.bitcoinController, mainFrame);
+            viewToReturn = new WelcomePanel(this.mainFrame, this.controller);
             break;
         }
 
         case HELP_ABOUT_VIEW: {
-            viewToReturn = new HelpAboutPanel(controller, mainFrame);
+            viewToReturn = new HelpAboutPanel(this.mainFrame, this.controller);
             break;
         }
 
         case HELP_CONTENTS_VIEW: {
-            viewToReturn = new HelpContentsPanel(controller, mainFrame);
+            viewToReturn = new HelpContentsPanel(this.mainFrame, this.controller);
+            break;
+        }
+            
+        case MESSAGES_VIEW: {
+            viewToReturn = new MessagesPanel(this.mainFrame, this.controller);
+            break;
+        }
+            
+        case TRANSACTIONS_VIEW: {
+            viewToReturn = new ShowTransactionsPanel(this.mainFrame, this.bitcoinController);
             break;
         }
                
         case RECEIVE_BITCOIN_VIEW: {
-            viewToReturn = new ReceiveBitcoinPanel(this.bitcoinController, mainFrame);
+            viewToReturn = new ReceiveBitcoinPanel(this.mainFrame, this.bitcoinController);
             break;
         }
         
         case SEND_BITCOIN_VIEW: {
-            viewToReturn = new SendBitcoinPanel(this.bitcoinController, mainFrame);
-            break;
-        }
-        
-        case PREFERENCES_VIEW: {
-            viewToReturn = new ShowPreferencesPanel(this.bitcoinController, this.exchangeController, mainFrame);
+            viewToReturn = new SendBitcoinPanel(this.mainFrame, this.bitcoinController);
             break;
         }
 
         case RESET_TRANSACTIONS_VIEW: {
-            viewToReturn = new ResetTransactionsPanel(this.bitcoinController, mainFrame);
+            viewToReturn = new ResetTransactionsPanel(this.mainFrame, this.bitcoinController);
             break;
         }
 
         case SHOW_OPEN_URI_DIALOG_VIEW: {
-            viewToReturn = new ShowOpenUriDialog(this.bitcoinController, mainFrame);
+            viewToReturn = new ShowOpenUriDialog(this.mainFrame, this.bitcoinController);
             break;
         }
 
         case SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ImportPrivateKeysPanel(this.bitcoinController, mainFrame);
+            viewToReturn = new ImportPrivateKeysPanel(this.mainFrame, this.bitcoinController);
             break;
         }
 
         case SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
-            viewToReturn = new ExportPrivateKeysPanel(this.bitcoinController, mainFrame);
-            break;
-        }
-
-        case MESSAGES_VIEW: {
-            viewToReturn = new MessagesPanel(controller, mainFrame);
+            viewToReturn = new ExportPrivateKeysPanel(this.mainFrame, this.bitcoinController);
             break;
         }
         
         case ADD_PASSWORD_VIEW: {
-            viewToReturn = new AddPasswordPanel(this.bitcoinController, mainFrame);
+            viewToReturn = new AddPasswordPanel(this.mainFrame, this.bitcoinController);
             break;
         }
         
         case CHANGE_PASSWORD_VIEW: {
-            viewToReturn = new ChangePasswordPanel(this.bitcoinController, mainFrame);
+            viewToReturn = new ChangePasswordPanel(this.mainFrame, this.bitcoinController);
             break;
         }
         
         case REMOVE_PASSWORD_VIEW: {
-            viewToReturn = new RemovePasswordPanel(this.bitcoinController, mainFrame);
+            viewToReturn = new RemovePasswordPanel(this.mainFrame, this.bitcoinController);
             break;
         }
 
         case CHARTS_VIEW: {
-            viewToReturn = new ChartsPanel(this.bitcoinController, mainFrame);
+            viewToReturn = new ChartsPanel(this.mainFrame, this.bitcoinController);
+            break;
+        }
+            
+        case PREFERENCES_VIEW: {
+            viewToReturn = new ShowPreferencesPanel(this.mainFrame, this.bitcoinController, this.exchangeController);
             break;
         }
 

@@ -136,7 +136,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
      */
-    public ImportPrivateKeysPanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ImportPrivateKeysPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
