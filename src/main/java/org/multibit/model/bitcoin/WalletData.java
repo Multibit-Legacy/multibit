@@ -18,7 +18,7 @@ package org.multibit.model.bitcoin;
 import java.util.List;
 import java.util.UUID;
 
-import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
+import org.multibit.viewsystem.swing.bitcoin.walletlist.SingleWalletPanelDownloadListener;
 
 import com.google.bitcoin.core.Wallet;
 

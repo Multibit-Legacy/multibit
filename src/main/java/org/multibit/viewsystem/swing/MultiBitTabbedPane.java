@@ -27,8 +27,8 @@ import org.multibit.controller.Controller;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.Viewable;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.core.components.FontSizer;
+import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

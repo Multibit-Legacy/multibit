@@ -24,7 +24,7 @@
 package org.multibit.controller;
 
 import java.net.URI;
-import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.core.actions.ExitAction;
 
 /**
  *

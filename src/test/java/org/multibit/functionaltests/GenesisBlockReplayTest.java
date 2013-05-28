@@ -35,7 +35,7 @@ import org.multibit.network.MultiBitService;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
-import org.multibit.viewsystem.swing.action.ActionTestUtils;
+import org.multibit.actions.ActionTestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

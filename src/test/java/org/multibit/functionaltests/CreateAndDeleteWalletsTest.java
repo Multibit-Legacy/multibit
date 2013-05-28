@@ -30,8 +30,8 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
-import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.CreateWalletSubmitAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.DeleteWalletSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

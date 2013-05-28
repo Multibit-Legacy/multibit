@@ -4,7 +4,7 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import java.util.List;
 
 import org.multibit.model.core.StatusEnum;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
+import org.multibit.viewsystem.swing.bitcoin.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
