@@ -97,7 +97,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         shapeSquareIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_SQUARE_ICON_FILE);
         shapeHeptagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_PENTAGON_ICON_FILE);
         shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
-        progress0Icon = ImageLoader.createImageIcon(ShowTransactionsPanel.PROGRESS_0_ICON_FILE);
+        progress0Icon = ImageLoader.createImageIcon(TransactionsPanel.PROGRESS_0_ICON_FILE);
     }
 
     /**

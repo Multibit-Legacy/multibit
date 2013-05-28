@@ -102,7 +102,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.TransactionsPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
@@ -1352,7 +1352,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void blockDownloaded() {
         // Update transaction screen in case status icons have changed.
         if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
-            ShowTransactionsPanel.updateTransactions();
+            TransactionsPanel.updateTransactions();
         }
     }
 
@@ -1378,7 +1378,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-            ShowTransactionsPanel.updateTransactions(); 
+            TransactionsPanel.updateTransactions(); 
         } else if (controller.getCurrentView() == View.SEND_BITCOIN_VIEW) {
             final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
             final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();

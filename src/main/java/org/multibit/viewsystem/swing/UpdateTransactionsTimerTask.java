@@ -6,18 +6,18 @@ import javax.swing.SwingUtilities;
 import org.multibit.controller.Controller;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
-import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.TransactionsPanel;
 
 public class UpdateTransactionsTimerTask extends TimerTask {
     private Controller controller;
-    private ShowTransactionsPanel transactionsPanel;
+    private TransactionsPanel transactionsPanel;
     private MultiBitFrame mainFrame;
 
     private boolean updateTransactions = false;
     private boolean isCurrentlyUpdating = false;
 
 
-    public UpdateTransactionsTimerTask(Controller controller, final ShowTransactionsPanel transactionsPanel,
+    public UpdateTransactionsTimerTask(Controller controller, final TransactionsPanel transactionsPanel,
             MultiBitFrame mainFrame) {
         this.controller = controller;
         this.transactionsPanel = transactionsPanel;

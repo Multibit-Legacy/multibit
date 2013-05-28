@@ -41,7 +41,7 @@ import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
 import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.panels.PreferencesPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.TransactionsPanel;
 import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
 
 /**
@@ -116,7 +116,7 @@ public class ViewFactory {
         }
             
         case TRANSACTIONS_VIEW: {
-            viewToReturn = new ShowTransactionsPanel(this.mainFrame, this.bitcoinController);
+            viewToReturn = new TransactionsPanel(this.mainFrame, this.bitcoinController);
             break;
         }
                

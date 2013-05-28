@@ -92,10 +92,10 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
-public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
+public class TransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
 
-    private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
+    private static final Logger log = LoggerFactory.getLogger(TransactionsPanel.class);
 
     private final Controller controller;
     private final BitcoinController bitcoinController;
@@ -145,7 +145,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private static UpdateTransactionsTimerTask updateTransactionsTimerTask;
     
-    public ShowTransactionsPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
+    public TransactionsPanel(MultiBitFrame mainFrame, BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
@@ -1101,6 +1101,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     @Override
     public void updatedExchangeRate(ExchangeRate exchangeRate) {
-        ShowTransactionsPanel.updateTransactions();
+        TransactionsPanel.updateTransactions();
     }
 }
