@@ -48,7 +48,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.PreferencesPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
@@ -119,8 +119,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 }
 
                 if (!feeValidationError) {
-                    if (newSendFee.startsWith(ShowPreferencesPanel.UNPARSEABLE_FEE)) {
-                        String newSendFeeTrimmed = newSendFee.substring(ShowPreferencesPanel.UNPARSEABLE_FEE.length() + 1);
+                    if (newSendFee.startsWith(PreferencesPanel.UNPARSEABLE_FEE)) {
+                        String newSendFeeTrimmed = newSendFee.substring(PreferencesPanel.UNPARSEABLE_FEE.length() + 1);
                         // Recycle the old fee and set status message.
                         controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                         feeValidationError = true;
