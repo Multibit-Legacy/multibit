@@ -1,5 +1,10 @@
 MultiBit release notes.
 
+22 Apr 2013 Version 0.5.9 (Encrypted wallets release)
++ Version number removed from Mac app name.
++ Updated help files.
++ Fixed bug on opening wallet that is already open.
++ Fixed ticker restart bug.
 
 Version 0.5.9beta
 Features:

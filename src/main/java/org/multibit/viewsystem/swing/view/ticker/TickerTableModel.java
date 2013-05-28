@@ -17,9 +17,11 @@ package org.multibit.viewsystem.swing.view.ticker;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.ExchangeData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.controller.Controller;
+import org.multibit.controller.exchange.ExchangeController;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.exchange.ExchangeModel;
 
 /**
  * Table model for ticker.
@@ -51,12 +53,8 @@ public class TickerTableModel extends AbstractTableModel {
     private String exchange2;
     private String currency2;
 
-    /**
-     * the MultiBit model
-     */
-    private MultiBitModel multiBitModel;
-
-    private MultiBitController controller;
+    private final Controller controller;
+    private final ExchangeController exchangeController;
 
     private boolean showCurrency;
     private boolean showLastPrice;
@@ -68,11 +66,11 @@ public class TickerTableModel extends AbstractTableModel {
     private String[] tempColumns = new String[MAX_NUMBER_OF_COLUMNS];
     private int numberOfColumns;
 
-    public TickerTableModel(MultiBitController controller) {
-        this.multiBitModel = controller.getModel();
-        this.controller = controller;
+    public TickerTableModel(ExchangeController exchangeController) {
+        this.exchangeController = exchangeController;
+        this.controller = this.exchangeController;
 
-        String tickerColumnsToShow = controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
+        String tickerColumnsToShow = controller.getModel().getUserPreference(ExchangeModel.TICKER_COLUMNS_TO_SHOW);
 
         if (tickerColumnsToShow == null || tickerColumnsToShow.equals("")) {
             tickerColumnsToShow = DEFAULT_COLUMNS_TO_SHOW;
@@ -111,24 +109,24 @@ public class TickerTableModel extends AbstractTableModel {
         }
 
         showSecondRow = Boolean.TRUE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
 
-        exchange1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+        exchange1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
         if (exchange1 == null || "".equals(exchange1) || "null".equals(exchange1)) {
             exchange1 = ExchangeData.DEFAULT_EXCHANGE;
         }
 
-        currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        currency1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
         if (currency1 == null || "".equals(currency1) || "null".equals(currency1)) {
             currency1 = ExchangeData.DEFAULT_CURRENCY;
         }
 
-        exchange2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
+        exchange2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
         if (exchange2 == null || "".equals(exchange2) || "null".equals(exchange2)) {
             exchange2 = ExchangeData.DEFAULT_EXCHANGE;
         }
 
-        currency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
+        currency2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
         if (currency2 == null || "".equals(currency2) || "null".equals(currency2)) {
             currency2 = ExchangeData.DEFAULT_CURRENCY;
         }
@@ -165,11 +163,11 @@ public class TickerTableModel extends AbstractTableModel {
         if (row == 0) {
             exchange = exchange1;
             currency = currency1;
-            exchangeData = multiBitModel.getExchangeData(exchange1);
+            exchangeData = this.exchangeController.getModel().getExchangeData(exchange1);
         } else {
             exchange = exchange2;
             currency = currency2;
-            exchangeData = multiBitModel.getExchangeData(exchange2);;
+            exchangeData = this.exchangeController.getModel().getExchangeData(exchange2);;
         }
 
         String variable = columnVariables[column];

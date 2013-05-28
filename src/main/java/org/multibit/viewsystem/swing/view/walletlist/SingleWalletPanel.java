@@ -44,11 +44,12 @@ import javax.swing.border.Border;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.network.MultiBitDownloadListener;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
@@ -65,6 +66,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
+import org.multibit.controller.bitcoin.BitcoinController;
+
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, WalletBusyListener {
 
@@ -75,7 +78,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 5);
     private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(5, 5);
 
-    private PerWalletModelData perWalletModelData;
+    private WalletData perWalletModelData;
 
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
     private static final int COLOR_DELTA = 24;
@@ -93,7 +96,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private BlinkLabel amountLabelBTC;
     private BlinkLabel amountLabelFiat;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    
     private MultiBitFrame mainFrame;
 
     private int normalHeight;
@@ -126,11 +131,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     
     private double lastSyncPercent;
           
-    public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
+    public SingleWalletPanel(WalletData perWalletModelData, final BitcoinController bitcoinController, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
-        this.controller = controller;
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
-        perWalletModelData.setSingleWalletDownloadListener(new SingleWalletPanelDownloadListener(controller, this));
+        perWalletModelData.setSingleWalletDownloadListener(new SingleWalletPanelDownloadListener(this.bitcoinController, this));
   
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         fontMetrics = getFontMetrics(font);
@@ -477,7 +483,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         hourglassLabel.setVisible(isBusy);
         
         // Update the tooltip.
-        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
             if (perWalletModelData != null) {
                 String toolTipText = HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
@@ -552,7 +558,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         requestFocusInWindow();
     }
 
-    public PerWalletModelData getPerWalletModelData() {
+    public WalletData getPerWalletModelData() {
         return perWalletModelData;
     }
 
@@ -585,10 +591,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             perWalletModelData.setWalletDescription(text);
 
             String titleText = controller.getLocaliser().getString("multiBitFrame.title");
-            if (controller.getModel().getActiveWallet() != null) {
+            if (this.bitcoinController.getModel().getActiveWallet() != null) {
                 titleText = titleText + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
-                        + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+                        + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
+                        + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletFilename();
             }
             mainFrame.setTitle(titleText);
         }
@@ -681,7 +687,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             amountLabelBTC.setBlinkEnabled(true);
             amountLabelFiat.setBlinkEnabled(true);
 
-            if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
+            if (perWalletModelData.getWalletFilename().equals(this.bitcoinController.getModel().getActiveWalletFilename())) {
                 mainFrame.updateHeader(message, syncPercent);
             }
         }             

@@ -16,6 +16,7 @@
 package org.multibit;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.multibit.file.FileHandler;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ public class ApplicationDataDirectoryLocator {
     }
     
     /**
-     * get the directory for the user's application data
+     * Get the directory for the user's application data.
      * 
      * This is worked out as follows:
      * 
@@ -103,6 +104,18 @@ public class ApplicationDataDirectoryLocator {
         }
 
         return applicationDataDirectory;
+    }
+    
+    /**
+     * Get the installation directory.
+     * This is the directory into which MultiBit was installed.
+     * @throws IOException 
+     * 
+     * @TODO when running locally it is possible that the working directory directory and installation directory are different. Fix.
+     */
+    public String getInstallationDirectory() throws IOException {
+        File installationDirectory = new File("");
+        return installationDirectory.getCanonicalPath();
     }
 }
 

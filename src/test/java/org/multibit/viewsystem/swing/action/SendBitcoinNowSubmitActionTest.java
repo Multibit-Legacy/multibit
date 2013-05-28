@@ -15,40 +15,96 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.io.File;
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
-import org.multibit.controller.MultiBitController;
+import org.multibit.CreateControllers;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.FileHandler;
+import org.multibit.functionaltests.GenesisBlockReplayTest;
+import org.multibit.network.MultiBitService;
+import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SendBitcoinNowSubmitActionTest extends TestCase {
+
     private static final String EXPECTED_ENTER_THE_WALLET_PASSWORD = "Enter the wallet password";
-
     private static final String EXPECTED_TEST_SEND_FAILED_ERROR = " test - send failed";
-
     private static final String EXPECTED_SEND_FAILED = "The send of your bitcoin failed.";
-
     private static final String EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY = "Your bitcoin were sent successfully.";
-
     private static final String EXPECTED_SENDING_BITCOIN = "Sending bitcoin...";
-
     public static final CharSequence TEST_PASSWORD1 = "my hovercraft has eels";
     public static final CharSequence WALLET_PASSWORD = "testing testing 123";
-
     private static final int DELAY_TO_COMPLETE_OPERATION = 12000; // milliseconds
     private static final int DELAY_TO_UPDATE_MESSAGES = 4000; // milliseconds
+    
+    private File multiBitDirectory;
 
+    private static final Logger log = LoggerFactory.getLogger(SendBitcoinNowSubmitActionTest.class);
+
+    private BitcoinController controller;
+
+    @Before
+    @Override
+    public void setUp() throws IOException {
+        // Get the system property runFunctionalTest to see if the functional
+        // tests need running.
+        String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
+        if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
+
+            multiBitDirectory = createMultiBitRuntime();
+
+            // set the application data directory to be the one we just created
+            ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
+
+            // Create MultiBit controller.
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
+            controller = controllers.bitcoinController;
+
+            log.debug("Creating Bitcoin service");
+            // create the MultiBitService that connects to the bitcoin network
+            MultiBitService multiBitService = new MultiBitService(controller);
+            controller.setMultiBitService(multiBitService);
+
+            // Add the simple view system (no Swing).
+            SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
+            controllers.coreController.registerViewSystem(simpleViewSystem);
+
+            // MultiBit runtime is now setup and running
+            // Wait for a peer connection.
+            log.debug("Waiting for peer connection. . . ");
+            while (!simpleViewSystem.isOnline()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            log.debug("Now online.");
+
+            // Wait a little longer to get a second connection.
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Test
     public void testSendBitcoinWithNonEncryptedWallet() throws Exception {
         // Get the system property runFunctionalTest to see if the functional
         // tests need running.
         String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
         if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
-
-            // Create MultiBit controller
-            MultiBitController controller = ActionTestUtils.createController();
 
             // Create a new unencrypted wallet and put it in the model as the
             // active wallet.
@@ -69,10 +125,10 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
             sendBitcoinNowAction.actionPerformed(null);
             assertTrue(
                     "Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1()
-                            + "'",
+                    + "'",
                     "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
-                            || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
-                            || EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));
+                    || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
+                    || EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));
             assertEquals("Wrong message - expecting sending on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
 
             // Wait a while and the message should be that it has completed the
@@ -93,10 +149,10 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
             Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
             assertTrue(
                     "Wrong message - expecting sending/sent on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1()
-                            + "'",
+                    + "'",
                     "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
-                            || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
-                            || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
+                    || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
+                    || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
             assertEquals("Wrong message - expecting sending on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR,
                     sendBitcoinConfirmPanel.getMessageText2());
 
@@ -117,9 +173,6 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
         // tests need running.
         String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
         if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
-
-            // Create MultiBit controller
-            MultiBitController controller = ActionTestUtils.createController();
 
             // Create a new encrypted wallet and put it in the model as the
             // active wallet.
@@ -149,7 +202,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
             assertTrue(
                     "Wrong message - expecting no wallet password on messageText1, was '"
-                            + sendBitcoinConfirmPanel.getMessageText1() + "'",
+                    + sendBitcoinConfirmPanel.getMessageText1() + "'",
                     EXPECTED_ENTER_THE_WALLET_PASSWORD.equals(sendBitcoinConfirmPanel.getMessageText1()));
 
             // Set the wallet password.
@@ -159,10 +212,10 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
             sendBitcoinNowAction.actionPerformed(null);
             assertTrue(
                     "Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1()
-                            + "'",
+                    + "'",
                     "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
-                            || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
-                            || EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));
+                    || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
+                    || EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));
             assertEquals("Wrong message - expecting sending on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
 
             // Wait a while and the message should be that it has completed the
@@ -186,7 +239,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
             assertTrue(
                     "Wrong message - expecting no wallet password on messageText1, was '"
-                            + sendBitcoinConfirmPanel.getMessageText1() + "'",
+                    + sendBitcoinConfirmPanel.getMessageText1() + "'",
                     EXPECTED_ENTER_THE_WALLET_PASSWORD.equals(sendBitcoinConfirmPanel.getMessageText1()));
 
             // Set the wallet password.
@@ -196,16 +249,16 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
             sendBitcoinNowAction.actionPerformed(null);
             assertTrue(
                     "Wrong message - expecting sending/failed on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1()
-                            + "'",
+                    + "'",
                     "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
-                            || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
-                            || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
+                    || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
+                    || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
             assertTrue(
                     "Wrong message - expecting blank/errormessage on messageText2 was '"
-                            + sendBitcoinConfirmPanel.getMessageText2() + "'",
+                    + sendBitcoinConfirmPanel.getMessageText2() + "'",
                     "".equals(sendBitcoinConfirmPanel.getMessageText2().trim())
-                            || EXPECTED_TEST_SEND_FAILED_ERROR.equals(sendBitcoinConfirmPanel.getMessageText2())
-                            || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
+                    || EXPECTED_TEST_SEND_FAILED_ERROR.equals(sendBitcoinConfirmPanel.getMessageText2())
+                    || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
 
             // Wait a while and the message should be that it has failed the
             // send.
@@ -216,5 +269,35 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
             assertEquals("Wrong message - expecting success on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR,
                     sendBitcoinConfirmPanel.getMessageText2());
         }
+    }
+    
+    /**
+     * Create a working, portable runtime of MultiBit in a temporary directory.
+     * 
+     * @return the temporary directory the multibit runtime has been created in
+     */
+    private File createMultiBitRuntime() throws IOException {
+        File multiBitDirectory = FileHandler.createTempDirectory("multibit");
+        String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
+
+        System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
+
+        // Create an empty multibit.properties.
+        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
+        multibitProperties.createNewFile();
+        multibitProperties.deleteOnExit();
+
+        // Copy in the blockchain stored in git - this is in source/main/resources/.
+        File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
+        FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
+        multibitBlockchain.deleteOnExit();
+        
+        // Copy in the checkpoints stored in git - this is in source/main/resources/.
+        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
+        FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
+        multibitCheckpoints.deleteOnExit();
+
+
+        return multiBitDirectory;
     }
 }

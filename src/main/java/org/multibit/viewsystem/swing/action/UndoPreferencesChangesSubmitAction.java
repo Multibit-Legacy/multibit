@@ -17,14 +17,14 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-
 import javax.swing.AbstractAction;
+
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
+import org.multibit.controller.Controller;
+import org.multibit.model.core.CoreModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -38,12 +38,12 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492412423457765L;
 
-    private MultiBitController controller;
+    private Controller controller;
 
     /**
      * Creates a new {@link UndoPreferencesChangesSubmitAction}.
      */
-    public UndoPreferencesChangesSubmitAction(MultiBitController controller, ImageIcon icon) {
+    public UndoPreferencesChangesSubmitAction(Controller controller, ImageIcon icon) {
         super(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"), icon);
         this.controller = controller;
 
@@ -57,15 +57,15 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        String previousFontName = (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_NAME);
-        String previousFontStyle = (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE);
+        String previousFontName = (String) controller.getModel().getUserPreference(CoreModel.PREVIOUS_FONT_NAME);
+        String previousFontStyle = (String) controller.getModel().getUserPreference(CoreModel.PREVIOUS_FONT_STYLE);
         int previousFontStyleAsInt = 0;
         try {
             previousFontStyleAsInt = Integer.parseInt(previousFontStyle);
         } catch (NumberFormatException nfe) {
             // just use 0 = plain
         }
-        String previousFontSize = (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE);
+        String previousFontSize = (String) controller.getModel().getUserPreference(CoreModel.PREVIOUS_FONT_SIZE);
         int previousFontSizeAsInt = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
         try {
             previousFontSizeAsInt = Integer.parseInt(previousFontSize);
@@ -73,12 +73,12 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
             // just use default
         }
 
-        controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE,
-                (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE));
-        controller.getModel().setUserPreference(MultiBitModel.FONT_NAME, previousFontName);
-        controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE, previousFontStyle);
-        controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE, previousFontSize);
-        controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "false");
+        controller.getModel().setUserPreference(CoreModel.USER_LANGUAGE_CODE,
+                (String) controller.getModel().getUserPreference(CoreModel.PREVIOUS_USER_LANGUAGE_CODE));
+        controller.getModel().setUserPreference(CoreModel.FONT_NAME, previousFontName);
+        controller.getModel().setUserPreference(CoreModel.FONT_STYLE, previousFontStyle);
+        controller.getModel().setUserPreference(CoreModel.FONT_SIZE, previousFontSize);
+        controller.getModel().setUserPreference(CoreModel.CAN_UNDO_PREFERENCES_CHANGES, "false");
 
         // return to the same view but fire data structure change to reset
         // everything

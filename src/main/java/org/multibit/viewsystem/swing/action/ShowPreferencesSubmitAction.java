@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -30,13 +31,18 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.joda.money.CurrencyUnit;
-import org.multibit.controller.MultiBitController;
+
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.ExchangeData;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -54,17 +60,24 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
+    private final ExchangeController exchangeController;
+    
     private PreferencesDataProvider dataProvider;
     private MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(MultiBitController controller, PreferencesDataProvider dataProvider, Icon icon,
+    public ShowPreferencesSubmitAction(BitcoinController bitcoinController, ExchangeController exchangeController, PreferencesDataProvider dataProvider, Icon icon,
             MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
-        this.controller = controller;
+        super(bitcoinController.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
+        
+        this.bitcoinController = bitcoinController;
+        this.exchangeController = exchangeController;
+        this.controller = this.bitcoinController;
+        
         this.dataProvider = dataProvider;
         this.mainFrame = mainFrame;
 
@@ -90,17 +103,17 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String updateStatusText = "";
 
             if (dataProvider != null) {
-                controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT,
+                controller.getModel().setUserPreference(CoreModel.PREVIOUS_UNDO_CHANGES_TEXT,
                         dataProvider.getPreviousUndoChangesText());
 
                 String previousSendFee = dataProvider.getPreviousSendFee();
                 String newSendFee = dataProvider.getNewSendFee();
-                controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_SEND_FEE, previousSendFee);
+                controller.getModel().setUserPreference(BitcoinModel.PREVIOUS_SEND_FEE, previousSendFee);
 
                 // Check fee is set.
                 if (newSendFee == null || "".equals(newSendFee)) {
                     // Fee must be set validation error.
-                    controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                    controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                     feeValidationError = true;
                     updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.aFeeMustBeSet");
                 }
@@ -109,7 +122,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                     if (newSendFee.startsWith(ShowPreferencesPanel.UNPARSEABLE_FEE)) {
                         String newSendFeeTrimmed = newSendFee.substring(ShowPreferencesPanel.UNPARSEABLE_FEE.length() + 1);
                         // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                         feeValidationError = true;
                         updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
                                 new Object[] { newSendFeeTrimmed });
@@ -122,23 +135,29 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                         BigInteger feeAsBigInteger = Utils.toNanoCoins(newSendFee);
 
                         // Check fee is at least the minimum fee.
-                        if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MINIMUM_FEE) < 0) {
+                        if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
                             feeValidationError = true;
                             updateStatusText = controller.getLocaliser().getString(
                                     "showPreferencesPanel.feeCannotBeSmallerThanMinimumFee");
                         } else {
-                            // Fee is ok.
-                            controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, newSendFee);
+                            if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
+                                feeValidationError = true;
+                                updateStatusText = controller.getLocaliser().getString(
+                                        "showPreferencesPanel.feeCannotBeGreaterThanMaximumFee");
+                            } else {
+                                // Fee is ok.
+                                controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, newSendFee);
+                            }
                         }
                     } catch (NumberFormatException nfe) {
                         // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                         feeValidationError = true;
                         updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
                                 new Object[] { newSendFee });
                     } catch (ArithmeticException ae) {
                         // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
                         feeValidationError = true;
                         updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
                                 new Object[] { newSendFee });
@@ -148,24 +167,24 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
             String previousLanguageCode = dataProvider.getPreviousUserLanguageCode();
             String newLanguageCode = dataProvider.getNewUserLanguageCode();
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE, previousLanguageCode);
+            controller.getModel().setUserPreference(CoreModel.PREVIOUS_USER_LANGUAGE_CODE, previousLanguageCode);
 
             if (previousLanguageCode != null && !previousLanguageCode.equals(newLanguageCode)) {
                 // New language to set on model.
-                controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE, newLanguageCode);
+                controller.getModel().setUserPreference(CoreModel.USER_LANGUAGE_CODE, newLanguageCode);
                 wantToFireDataStructureChanged = true;
             }
 
             // Open URI - use dialog.
             String openUriDialog = dataProvider.getOpenUriDialog();
             if (openUriDialog != null) {
-                controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, openUriDialog);
+                controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, openUriDialog);
             }
 
             // Open URI - use URI.
             String openUriUseUri = dataProvider.getOpenUriUseUri();
             if (openUriUseUri != null) {
-                controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, openUriUseUri);
+                controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_USE_URI, openUriUseUri);
             }
 
             // Font data.
@@ -173,10 +192,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousFontName = dataProvider.getPreviousFontName();
             String newFontName = dataProvider.getNewFontName();
 
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_NAME, previousFontName);
+            controller.getModel().setUserPreference(CoreModel.PREVIOUS_FONT_NAME, previousFontName);
 
             if (newFontName != null) {
-                controller.getModel().setUserPreference(MultiBitModel.FONT_NAME, newFontName);
+                controller.getModel().setUserPreference(CoreModel.FONT_NAME, newFontName);
 
                 if (!newFontName.equals(previousFontName)) {
                     fontHasChanged = true;
@@ -186,10 +205,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousFontStyle = dataProvider.getPreviousFontStyle();
             String newFontStyle = dataProvider.getNewFontStyle();
 
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE, previousFontStyle);
+            controller.getModel().setUserPreference(CoreModel.PREVIOUS_FONT_STYLE, previousFontStyle);
 
             if (newFontStyle != null) {
-                controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE, newFontStyle);
+                controller.getModel().setUserPreference(CoreModel.FONT_STYLE, newFontStyle);
 
                 if (!newFontStyle.equals(previousFontStyle)) {
                     fontHasChanged = true;
@@ -199,10 +218,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousFontSize = dataProvider.getPreviousFontSize();
             String newFontSize = dataProvider.getNewFontSize();
 
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, previousFontSize);
+            controller.getModel().setUserPreference(CoreModel.PREVIOUS_FONT_SIZE, previousFontSize);
 
             if (newFontSize != null) {
-                controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE, newFontSize);
+                controller.getModel().setUserPreference(CoreModel.FONT_SIZE, newFontSize);
 
                 if (!newFontSize.equals(previousFontSize)) {
                     fontHasChanged = true;
@@ -214,11 +233,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousLookAndFeel = dataProvider.getPreviousLookAndFeel();
             String newLookAndFeel = dataProvider.getNewLookAndFeel();
 
-            controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, previousLookAndFeel);
+            controller.getModel().setUserPreference(CoreModel.LOOK_AND_FEEL, previousLookAndFeel);
 
             if (newLookAndFeel != null
                     && (!newLookAndFeel.equals(previousLookAndFeel) && !newLookAndFeel.equals(UIManager.getLookAndFeel().getName()))) {
-                controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, newLookAndFeel);
+                controller.getModel().setUserPreference(CoreModel.LOOK_AND_FEEL, newLookAndFeel);
 
                 lookAndFeelHasChanged = true;
             }
@@ -261,8 +280,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 restartTickerTimer = true;
             } 
 
-            controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, new Boolean(showTicker).toString());
-            controller.getModel().setUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
+            controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, new Boolean(showTicker).toString());
+            controller.getModel().setUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
                     new Boolean(showBitcoinConvertedToFiat).toString());
 
             String columnsToShow = "";
@@ -284,15 +303,15 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 // this is to stop the default columns appearing.
                 columnsToShow = TickerTableModel.TICKER_COLUMN_NONE;
             }
-            controller.getModel().setUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW, columnsToShow);
+            controller.getModel().setUserPreference(ExchangeModel.TICKER_COLUMNS_TO_SHOW, columnsToShow);
 
             String previousExchange1 = dataProvider.getPreviousExchange1();
             String newExchange1 = dataProvider.getNewExchange1();
             if (newExchange1 != null && !newExchange1.equals(previousExchange1)) {
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
+                controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
                 ExchangeData newExchangeData = new ExchangeData();
                 newExchangeData.setShortExchangeName(newExchange1);
-                controller.getModel().getShortExchangeNameToExchangeMap().put(newExchange1, newExchangeData);
+                this.exchangeController.getModel().getShortExchangeNameToExchangeMap().put(newExchange1, newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -300,7 +319,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousCurrency1 = dataProvider.getPreviousCurrency1();
             String newCurrency1 = dataProvider.getNewCurrency1();
             if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
+                controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
                 String newCurrencyCode = newCurrency1;
                 if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(newExchange1)) {
                     // Use only the last three characters - the currency code.
@@ -321,7 +340,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String newShowSecondRow = new Boolean(dataProvider.getNewShowSecondRow()).toString();
             if (newShowSecondRow != null && !newShowSecondRow.equals(previousShowSecondRow)) {
                 // New show second row is set on model.
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW, newShowSecondRow);
+                controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW, newShowSecondRow);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -329,10 +348,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousExchange2 = dataProvider.getPreviousExchange2();
             String newExchange2 = dataProvider.getNewExchange2();
             if (newExchange2 != null && !newExchange2.equals(previousExchange2)) {
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
+                controller.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
                 ExchangeData newExchangeData = new ExchangeData();
                 newExchangeData.setShortExchangeName(newExchange2);
-                controller.getModel().getShortExchangeNameToExchangeMap().put(newExchange2, newExchangeData);
+                this.exchangeController.getModel().getShortExchangeNameToExchangeMap().put(newExchange2, newExchangeData);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -340,7 +359,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousCurrency2 = dataProvider.getPreviousCurrency2();
             String newCurrency2 = dataProvider.getNewCurrency2();
             if (newCurrency2 != null && !newCurrency2.equals(previousCurrency2)) {
-                controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
+                controller.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
             }
@@ -351,11 +370,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
 
-                controller.getModel().setUserPreference(MultiBitModel.OPEN_EXCHANGE_RATES_API_CODE, newOerApiCode);
+                controller.getModel().setUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE, newOerApiCode);
             }
 
             // Can undo.
-            controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
+            controller.getModel().setUserPreference(CoreModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
 
             if (restartTickerTimer) {
                 // Reinitialise the currency converter.
@@ -371,22 +390,22 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 Timer tickerTimer1 = new Timer();
                 mainFrame.setTickerTimer1(tickerTimer1);
                 
-                TickerTimerTask tickerTimerTask1 = new TickerTimerTask(controller, mainFrame, true);
-                tickerTimerTask1.createExchangeObjects(controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE));
+                TickerTimerTask tickerTimerTask1 = new TickerTimerTask(this.exchangeController, mainFrame, true);
+                tickerTimerTask1.createExchangeObjects(controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE));
                 mainFrame.setTickerTimerTask1(tickerTimerTask1);
 
                 tickerTimer1.schedule(tickerTimerTask1, 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
                 
                 boolean showSecondRow = Boolean.TRUE.toString().equals(
-                        controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+                        controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
                 
                 if (showSecondRow) {
                     Timer tickerTimer2 = new Timer();
                     mainFrame.setTickerTimer2(tickerTimer2);
 
-                    TickerTimerTask tickerTimerTask2 = new TickerTimerTask(controller, mainFrame, false);
+                    TickerTimerTask tickerTimerTask2 = new TickerTimerTask(this.exchangeController, mainFrame, false);
                     tickerTimerTask2.createExchangeObjects(controller.getModel().getUserPreference(
-                            MultiBitModel.TICKER_SECOND_ROW_EXCHANGE));
+                            ExchangeModel.TICKER_SECOND_ROW_EXCHANGE));
                     mainFrame.setTickerTimerTask2(tickerTimerTask2);
 
                     tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
@@ -399,7 +418,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
             if (lookAndFeelHasChanged) {
                 try {
-                    if (MultiBitModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
+                    if (CoreModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     } else {
                         for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -431,14 +450,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 HelpContentsPanel.clearBrowser();
 
                 // Switch off blinks.
-                controller.getModel().setBlinkEnabled(false);
+                this.bitcoinController.getModel().setBlinkEnabled(false);
 
                 try {
                     controller.fireDataStructureChanged();
                     SwingUtilities.updateComponentTreeUI(mainFrame);
                 } finally {
                     // Switch blinks back on.
-                    controller.getModel().setBlinkEnabled(true);
+                    this.bitcoinController.getModel().setBlinkEnabled(true);
                 }            
             }
 

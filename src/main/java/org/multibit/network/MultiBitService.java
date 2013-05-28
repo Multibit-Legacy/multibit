@@ -22,7 +22,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,21 +30,22 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SimpleTimeZone;
-import java.util.Stack;
 
 import javax.swing.SwingWorker;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.StatusEnum;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletInfoData;
+import org.multibit.model.core.StatusEnum;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.ReplayableBlockStore;
 import org.multibit.store.WalletVersionException;
@@ -55,7 +55,6 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.CheckpointManager;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.MultiBitBlockChain;
@@ -63,7 +62,6 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
@@ -75,6 +73,7 @@ import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.SPVBlockStore;
+
 
 /**
  * <p>
@@ -121,7 +120,8 @@ public class MultiBitService {
 
     private BlockStore blockStore;
 
-    private MultiBitController controller;
+    private final Controller controller;
+    private final BitcoinController bitcoinController;
 
     private final NetworkParameters networkParameters;
 
@@ -147,22 +147,11 @@ public class MultiBitService {
 
     /**
      * 
-     * @param controller
-     *            MutliBitController
+     * @param bitcoinController BitcoinController
      */
-    public MultiBitService(MultiBitController controller) {
-        this(controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
-    }
-
-    /**
-     * 
-     * @param walletFilename
-     *            filename of current wallet
-     * @param controller
-     *            MutliBitController
-     */
-    public MultiBitService(String walletFilename, MultiBitController controller) {
-        this.controller = controller;
+    public MultiBitService(BitcoinController bitcoinController) {
+        this.bitcoinController = bitcoinController;
+        this.controller = this.bitcoinController;
 
         if (controller == null) {
             throw new IllegalStateException("controller cannot be null");
@@ -176,11 +165,11 @@ public class MultiBitService {
             throw new IllegalStateException("controller.getApplicationDataDirectoryLocator() cannot be null");
         }
 
-        if (controller.getFileHandler() == null) {
+        if (this.bitcoinController.getFileHandler() == null) {
             throw new IllegalStateException("controller.getFileHandler() cannot be null");
         }
 
-        networkParameters = controller.getModel().getNetworkParameters();
+        networkParameters = this.bitcoinController.getModel().getNetworkParameters();
         log.debug("Network parameters = " + networkParameters);
 
         try {
@@ -261,9 +250,26 @@ public class MultiBitService {
         // Ensure there is a checkpoints file.
         File checkpointsFile = new File(checkpointsFilename);
         if (!checkpointsFile.exists()) {
-            controller.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
+            this.bitcoinController.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
         }
-
+        
+        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+        String installedCheckpointsFilename = applicationDataDirectoryLocator.getInstallationDirectory() + File.separator + MultiBitService.getFilePrefix()  + MultiBitService.CHECKPOINTS_SUFFIX;
+        log.debug("Installed checkpoints file = '" + installedCheckpointsFilename + "'.");
+        
+        File installedCheckpointsFile = new File(installedCheckpointsFilename);
+        long sizeOfUserDataCheckpointsFile = 0;
+        if (checkpointsFile.exists()) {
+            sizeOfUserDataCheckpointsFile = checkpointsFile.length();
+        }
+        if (installedCheckpointsFile.exists() && installedCheckpointsFile.length() > sizeOfUserDataCheckpointsFile) {
+            // The installed checkpoints file is longer (more checkpoints) so use that.
+            checkpointsFilename = installedCheckpointsFilename;
+            checkpointsFile = installedCheckpointsFile;
+            log.debug("Using installed checkpoints file as it is longer than user data checkpoints - " + installedCheckpointsFile.length() + " bytes versus " + sizeOfUserDataCheckpointsFile + " bytes.");
+        } else {
+            log.debug("Using user data checkpoints file as it is longer/same size as installed checkpoints - " + sizeOfUserDataCheckpointsFile + " bytes versus " + installedCheckpointsFile.length() + " bytes.");
+        }
         
         if (!spvBlockStore.exists() && (isReplay || !bobsBlockStore.exists())) {
             // If there is no SPVBlockStore and no ReplayableBlockStore create an SPVBlockStore and use it.
@@ -308,13 +314,13 @@ public class MultiBitService {
     }
 
     public void createNewPeerGroup() {
-        peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
+        peerGroup = new MultiBitPeerGroup(this.bitcoinController, networkParameters, blockChain);
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
         boolean peersSpecified = false;
-        String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
-        String peers = controller.getModel().getUserPreference(MultiBitModel.PEERS);
+        String singleNodeConnection = controller.getModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
+        String peers = controller.getModel().getUserPreference(BitcoinModel.PEERS);
         if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
             try {
                 peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection.trim())));
@@ -344,25 +350,25 @@ public class MultiBitService {
 
         if (!peersSpecified) {
             // Use DNS for production, IRC for test.
-            if (TESTNET3_GENESIS_HASH.equals(controller.getModel().getNetworkParameters().genesisBlock.getHashAsString())) {
+            if (TESTNET3_GENESIS_HASH.equals(this.bitcoinController.getModel().getNetworkParameters().genesisBlock.getHashAsString())) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
-            } else if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())) {
+            } else if (NetworkParameters.testNet().equals(this.bitcoinController.getModel().getNetworkParameters())) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
                 peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
             }
         }
         // Add the controller as a PeerEventListener.
-        peerGroup.addEventListener(controller.getPeerEventListener());
+        peerGroup.addEventListener(this.bitcoinController.getPeerEventListener());
 
         // Add all existing wallets to the PeerGroup.
         if (controller != null && controller.getModel() != null) {
-            List<PerWalletModelData> perWalletDataModels = controller.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletDataModels = this.bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletDataModels != null) {
-                Iterator<PerWalletModelData> iterator = perWalletDataModels.iterator();
+                Iterator<WalletData> iterator = perWalletDataModels.iterator();
                 if (iterator != null) {
                     while(iterator.hasNext()) {
-                        PerWalletModelData perWalletModelData = iterator.next();
+                        WalletData perWalletModelData = iterator.next();
                         if (perWalletModelData != null && perWalletModelData.getWallet() != null) {
                             peerGroup.addWallet(perWalletModelData.getWallet());
                         }
@@ -373,12 +379,11 @@ public class MultiBitService {
     }
 
     public static String getFilePrefix() {
-        MultiBitController controller = MultiBit.getController();
-        MultiBitModel model = controller.getModel();
+        BitcoinController bitcoinController = MultiBit.getBitcoinController();
         // testnet3
-        if (TESTNET3_GENESIS_HASH.equals(model.getNetworkParameters().genesisBlock.getHashAsString())) {
+        if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().genesisBlock.getHashAsString())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET3_PREFIX;
-        } else if (NetworkParameters.testNet().equals(model.getNetworkParameters())) {
+        } else if (NetworkParameters.testNet().equals(bitcoinController.getModel().getNetworkParameters())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET_PREFIX;
         } else {
             return MULTIBIT_PREFIX;
@@ -391,8 +396,8 @@ public class MultiBitService {
      * @param walletFilename
      * @return perWalletModelData
      */
-    public PerWalletModelData addWalletFromFilename(String walletFilename) throws IOException {
-        PerWalletModelData perWalletModelDataToReturn = null;
+    public WalletData addWalletFromFilename(String walletFilename) throws IOException {
+        WalletData perWalletModelDataToReturn = null;
 
         File walletFile = null;
         boolean walletFileIsADirectory = false;
@@ -404,7 +409,7 @@ public class MultiBitService {
                 walletFileIsADirectory = true;
             } else {
 
-                perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
+                perWalletModelDataToReturn = this.bitcoinController.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
                 }
@@ -425,7 +430,7 @@ public class MultiBitService {
 
             if (walletFile.exists()) {
                 // Wallet file exists with default name.
-                perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
+                perWalletModelDataToReturn = this.bitcoinController.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
                 }
@@ -437,10 +442,10 @@ public class MultiBitService {
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
-                perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
+                perWalletModelDataToReturn = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet, walletFile.getAbsolutePath());
 
                 // Create a wallet info.
-                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), MultiBitWalletVersion.PROTOBUF);
+                WalletInfoData walletInfo = new WalletInfoData(walletFile.getAbsolutePath(), MultiBitWalletVersion.PROTOBUF);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // Set a default description.
@@ -448,7 +453,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn.setWalletDescription(defaultDescription);
 
                 try {
-                    controller.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
+                    this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
 
                     newWalletCreated = true;
                 } catch (WalletSaveException wse) {
@@ -467,10 +472,10 @@ public class MultiBitService {
             ArrayList<ECKey> keys = wallet.keychain;
             if (keys != null) {
                 if (!newWalletCreated) {
-                    perWalletModelDataToReturn = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
+                    perWalletModelDataToReturn = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                 }
                 if (perWalletModelDataToReturn != null) {
-                    WalletInfo walletInfo = perWalletModelDataToReturn.getWalletInfo();
+                    WalletInfoData walletInfo = perWalletModelDataToReturn.getWalletInfo();
                     if (walletInfo != null) {
                         for (ECKey key : keys) {
                             if (key != null) {
@@ -521,18 +526,19 @@ public class MultiBitService {
         if (dateToReplayFrom != null) {
             blockStore = createBlockStore(dateToReplayFrom, true, true);
         } else {
-            blockStore = createBlockStore(MultiBitService.genesisBlockCreationDate, true, true);
+            Date oneSecondAfterGenesis = new Date(MultiBitService.genesisBlockCreationDate.getTime() + 1000);
+            blockStore = createBlockStore(oneSecondAfterGenesis, true, true);
         }
         log.debug("Blockstore is '" + blockStore + "'");
 
         log.debug("Creating blockchain ...");
-        blockChain = new MultiBitBlockChain(controller.getModel().getNetworkParameters(), blockStore);
+        blockChain = new MultiBitBlockChain(this.bitcoinController.getModel().getNetworkParameters(), blockStore);
         log.debug("Created blockchain '" + blockChain + "'");
 
         // Hook up the wallets to the new blockchain.
         if (blockChain != null) {
-            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 blockChain.addWallet(loopPerWalletModelData.getWallet());
             }
         }  
@@ -570,7 +576,7 @@ public class MultiBitService {
      * @throws EncrypterDecrypterException
      */
 
-    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee,
+    public Transaction sendCoins(WalletData perWalletModelData, String sendAddressString, String amount, BigInteger fee,
             CharSequence password) throws java.io.IOException, AddressFormatException, KeyCrypterException {
         // Send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
@@ -595,7 +601,7 @@ public class MultiBitService {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
 
             try {
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+                this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             } catch (WalletSaveException wse) {
                 log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
@@ -606,10 +612,10 @@ public class MultiBitService {
 
             try {
                 // Notify other wallets of the send (it might be a send to or from them).
-                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
 
                 if (perWalletModelDataList != null) {
-                    for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                    for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                         if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
                             Wallet loopWallet = loopPerWalletModelData.getWallet();
                             if (loopWallet.isPendingTransactionRelevant(sendTransaction)) {

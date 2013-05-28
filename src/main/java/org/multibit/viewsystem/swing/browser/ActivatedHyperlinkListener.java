@@ -34,6 +34,7 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
     private static final String MULTIBIT_HOST_NAME = "www.multibit.org";
     private static final String MULTIBIT_HOST_NAME2 = "test.multibit.org";
     private static final String MULTIBIT_HOST_NAME3 = "188.138.113.201";
+    private static final String MULTIBIT_HOST_NAME4 = "localhost";
     
     private static final String HTTP_PROTOCOL = "http";
     private static final String HTTPS_PROTOCOL = "https";
@@ -94,12 +95,13 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
                 @Override
                 public void run() {
                     if ((HTTP_PROTOCOL.equals(url.getProtocol()) || HTTPS_PROTOCOL.equals(url.getProtocol())) && 
-                            (MULTIBIT_HOST_NAME.equals(url.getHost()) || MULTIBIT_HOST_NAME2.equals(url.getHost()) || MULTIBIT_HOST_NAME3.equals(url.getHost()))) {
+                            (MULTIBIT_HOST_NAME.equals(url.getHost()) || MULTIBIT_HOST_NAME2.equals(url.getHost()) 
+                                    || MULTIBIT_HOST_NAME3.equals(url.getHost()) || MULTIBIT_HOST_NAME4.equals(url.getHost()))) {
                         browser.visit(url.toString(), false);
                     } else {
                         StringBuffer stringBuffer = new StringBuffer();
                         stringBuffer.append("The help contents can only show HTTP content from "
-                                + MULTIBIT_HOST_NAME + " and " + MULTIBIT_HOST_NAME2 + "\nPlease use your main browser to view the URL:\n\n" + url.toString());
+                                + MULTIBIT_HOST_NAME + ", " + MULTIBIT_HOST_NAME2 + " and "+ MULTIBIT_HOST_NAME4 + ".\nPlease use your main browser to view the URL:\n\n" + url.toString());
                         JTextArea textArea = new JTextArea(stringBuffer.toString());
                         textArea.setEditable(false);
                         textArea.setOpaque(false);

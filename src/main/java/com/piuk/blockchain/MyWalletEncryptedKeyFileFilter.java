@@ -17,7 +17,7 @@ package com.piuk.blockchain;
 
 import java.io.File;
 
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.bitcoin.BitcoinModel;
 
 public class MyWalletEncryptedKeyFileFilter extends javax.swing.filechooser.FileFilter {
 
@@ -25,14 +25,14 @@ public class MyWalletEncryptedKeyFileFilter extends javax.swing.filechooser.File
     
     @Override
     public boolean accept(File file) {
-        return (file.getName().toLowerCase().endsWith(MultiBitModel.BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX));
+        return (file.getName().toLowerCase().endsWith(BitcoinModel.BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX));
     }
 
     @Override
     public String getDescription() {
         String multiBitText = "";
         
-        multiBitText += "Blockchain.info " + " (*." + MultiBitModel.BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX + ")";
+        multiBitText += "Blockchain.info " + " (*." + BitcoinModel.BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX + ")";
 
          return multiBitText;
     }

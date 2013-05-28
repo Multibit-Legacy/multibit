@@ -31,13 +31,13 @@ import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
 import org.multibit.Localiser;
-import org.multibit.MultiBit;
-import org.multibit.controller.MultiBitController;
+import org.multibit.CreateControllers;
+import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
+import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +47,12 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
 
+
+
 public class ReplayManagerTest extends TestCase {
     private static final Logger log = LoggerFactory.getLogger(ReplayManagerTest.class);
 
-    private MultiBitController controller;
+    private BitcoinController controller;
     private Localiser localiser;
     private File multiBitDirectory;
 
@@ -72,21 +74,29 @@ public class ReplayManagerTest extends TestCase {
         // Set the application data directory to be the one we just created.
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-        // Create the controller.
-        controller = new MultiBitController(applicationDataDirectoryLocator);
-        MultiBit.setController(controller);
-
-        // Create the model - gets hooked up to controller automatically.
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        controller.setModel(model);
-
-        controller.setLocaliser(new Localiser());
-
+        // Create MultiBit controller
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
+        controller = controllers.bitcoinController;
+        
         log.debug("Creating Bitcoin service");
         // Create the MultiBitService that connects to the bitcoin network.
         MultiBitService multiBitService = new MultiBitService(controller);
         controller.setMultiBitService(multiBitService);
+        
+        // Add the simple view system (no Swing).
+        SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
+        controllers.coreController.registerViewSystem(simpleViewSystem);
+
+        log.debug("Waiting for peer connection. . . ");
+        while (!simpleViewSystem.isOnline()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        log.debug("Now online.");
+
     }
 
     @Test
@@ -117,8 +127,8 @@ public class ReplayManagerTest extends TestCase {
             log.debug("replayPrivateKey getCreationTimeSeconds = " + replayKey.getCreationTimeSeconds());
             
             replayWallet.addKey(replayKey);
-            PerWalletModelData perWalletModelData = new PerWalletModelData();
-            perWalletModelData.setWalletInfo(new WalletInfo(replayWalletPath, MultiBitWalletVersion.PROTOBUF));
+            WalletData perWalletModelData = new WalletData();
+            perWalletModelData.setWalletInfo(new WalletInfoData(replayWalletPath, MultiBitWalletVersion.PROTOBUF));
             perWalletModelData.setWallet(replayWallet);
             perWalletModelData.setWalletFilename(replayWalletPath);
             perWalletModelData.setWalletDescription("testReplayManagerSyncSingleWallet test");
@@ -129,11 +139,16 @@ public class ReplayManagerTest extends TestCase {
 
             log.debug("Replaying blockchain");    
             // Create a ReplayTask to replay the replay wallet from the START_OF_REPLAY_PERIOD.
-            List<PerWalletModelData> perWalletModelDataList = new ArrayList<PerWalletModelData>();
+            List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
             perWalletModelDataList.add(perWalletModelData);
             
             ReplayTask replayTask = new ReplayTask(perWalletModelDataList, formatter.parse(START_OF_REPLAY_PERIOD), ReplayTask.UNKNOWN_START_HEIGHT);
             replayManager.offerReplayTask(replayTask);
+            
+            // Run for a minute.
+            log.debug("Twiddling thumbs for a minute ...");
+            Thread.sleep(60000);
+            log.debug("... one minute later.");
 
             // Check new balance on wallet - estimated balance should be at least the expected (may have later tx too)..
             log.debug("Replay wallet estimated balance is:\n" + replayWallet.getBalance(BalanceType.ESTIMATED).toString());
