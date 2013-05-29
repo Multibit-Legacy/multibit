@@ -36,7 +36,7 @@ import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
  * This {@link Action} undoes the last language and font changes made to the
  * preferences panel
  */
-public class UndoPreferencesChangesSubmitAction extends AbstractAction {
+public class PreferencesUndoChangesSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492412423457765L;
 
@@ -45,7 +45,7 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
     /**
      * Creates a new {@link UndoPreferencesChangesSubmitAction}.
      */
-    public UndoPreferencesChangesSubmitAction(Controller controller, ImageIcon icon) {
+    public PreferencesUndoChangesSubmitAction(Controller controller, ImageIcon icon) {
         super(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"), icon);
         this.controller = controller;
 

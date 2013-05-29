@@ -1671,12 +1671,12 @@ public class PreferencesPanel extends JPanel implements Viewable, PreferencesDat
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(this.bitcoinController, this.exchangeController, this,
+        PreferencesSubmitAction submitAction = new PreferencesSubmitAction(this.bitcoinController, this.exchangeController, this,
                 ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE), mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
-        UndoPreferencesChangesSubmitAction undoChangesAction = new UndoPreferencesChangesSubmitAction(controller,
+        PreferencesUndoChangesSubmitAction undoChangesAction = new PreferencesUndoChangesSubmitAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.UNDO_ICON_FILE));
         undoChangesButton = new MultiBitButton(undoChangesAction, controller);
 
