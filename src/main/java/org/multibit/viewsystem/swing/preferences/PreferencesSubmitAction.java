@@ -58,7 +58,7 @@ import org.multibit.viewsystem.swing.core.MnemonicUtil;
 /**
  * This {@link Action} applies changes to the preferences panel.
  */
-public class ShowPreferencesSubmitAction extends AbstractAction {
+public class PreferencesSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
 
@@ -72,7 +72,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(BitcoinController bitcoinController, ExchangeController exchangeController, PreferencesDataProvider dataProvider, Icon icon,
+    public PreferencesSubmitAction(BitcoinController bitcoinController, ExchangeController exchangeController, PreferencesDataProvider dataProvider, Icon icon,
             MultiBitFrame mainFrame) {
         super(bitcoinController.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
         
