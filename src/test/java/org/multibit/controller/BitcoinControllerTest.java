@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.multibit.CreateControllers;
 import org.multibit.CreateControllers.Controllers;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.viewsystem.swing.action.ActionTestUtils;
+import org.multibit.actions.ActionTestUtils;
 
 public class BitcoinControllerTest extends TestCase {     
     public static final int MAXIMUM_BUSY_TIME = 5000;
