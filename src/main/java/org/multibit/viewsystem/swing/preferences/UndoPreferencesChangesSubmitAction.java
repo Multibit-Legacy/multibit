@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.core;
+package org.multibit.viewsystem.swing.preferences;
 
 import org.multibit.viewsystem.swing.core.MnemonicUtil;
 import java.awt.Font;
@@ -27,6 +27,8 @@ import javax.swing.UIManager;
 import org.multibit.controller.Controller;
 import org.multibit.model.core.CoreModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.core.MnemonicUtil;
 import org.multibit.viewsystem.swing.core.components.FontSizer;
 import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
 

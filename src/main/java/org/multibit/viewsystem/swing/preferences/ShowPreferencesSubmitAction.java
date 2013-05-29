@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.core;
+package org.multibit.viewsystem.swing.preferences;
 
 
 import org.multibit.viewsystem.swing.core.MnemonicUtil;
@@ -48,10 +48,12 @@ import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.core.components.FontSizer;
 import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.core.panels.PreferencesPanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
 import org.multibit.viewsystem.swing.exchange.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
+import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.core.MnemonicUtil;
 
 /**
  * This {@link Action} applies changes to the preferences panel.

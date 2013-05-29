@@ -25,7 +25,7 @@ import javax.swing.ImageIcon;
 
 import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.core.panels.PreferencesPanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
 import org.multibit.viewsystem.swing.core.components.JFontChooser;
 
 /**

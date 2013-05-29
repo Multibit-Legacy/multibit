@@ -40,7 +40,7 @@ import org.multibit.viewsystem.swing.bitcoin.panels.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.bitcoin.panels.RemovePasswordPanel;
 import org.multibit.viewsystem.swing.bitcoin.panels.ResetTransactionsPanel;
 import org.multibit.viewsystem.swing.bitcoin.panels.SendBitcoinPanel;
-import org.multibit.viewsystem.swing.core.panels.PreferencesPanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
 import org.multibit.viewsystem.swing.bitcoin.panels.TransactionsPanel;
 import org.multibit.viewsystem.swing.core.panels.WelcomePanel;
 

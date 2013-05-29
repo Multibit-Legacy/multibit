@@ -81,7 +81,7 @@ import org.multibit.message.MessageListener;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.viewsystem.swing.core.actions.MultiBitAction;
 import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.core.panels.PreferencesPanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
 import org.multibit.viewsystem.swing.core.components.BlinkLabel;
 import org.multibit.viewsystem.swing.core.components.FontSizer;
 import org.multibit.viewsystem.swing.core.components.MultiBitButton;
