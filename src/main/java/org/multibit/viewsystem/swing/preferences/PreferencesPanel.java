@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.core.panels;
+package org.multibit.viewsystem.swing.preferences;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -84,13 +84,12 @@ import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.core.ChooseFontAction;
-import org.multibit.viewsystem.swing.core.ShowPreferencesSubmitAction;
-import org.multibit.viewsystem.swing.core.UndoPreferencesChangesSubmitAction;
 import org.multibit.viewsystem.swing.core.components.FontSizer;
 import org.multibit.viewsystem.swing.core.components.MultiBitButton;
 import org.multibit.viewsystem.swing.core.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.core.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.core.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.exchange.TickerTableModel;
 
 /**
