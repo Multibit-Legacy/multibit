@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.security.SignatureException;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -26,6 +27,12 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.VerifyMessagePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.WrongNetworkException;
 
 /**
  * This {@link Action} verifies a signed message.
@@ -62,6 +69,57 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
         if (abort()) {
             return;
         }
+        
+        if (verifyMessagePanel == null) {
+            return;
+        }
+        
+        String addressText = null;
+        if (verifyMessagePanel.getAddressField() != null) {
+            addressText = verifyMessagePanel.getAddressField().getText();
+        }
+        
+        String messageText = null;
+        if (verifyMessagePanel.getMessageTextArea() != null) {
+            messageText = verifyMessagePanel.getMessageTextArea().getText();
+        }
+        
+        String signatureText = null;
+        if (verifyMessagePanel.getSignatureField() != null) {
+            signatureText = verifyMessagePanel.getSignatureField().getText();
+        }
+        
+        log.debug("addressText = '" + addressText + "'");
+        log.debug("messageText = '" + messageText + "'");
+        log.debug("signaureText = '" + signatureText + "'");
+        
+        try {
+            Address expectedAddress = new Address(NetworkParameters.prodNet(), addressText);
+            ECKey key = ECKey.signedMessageToKey(messageText, signatureText);
+            Address gotAddress = key.toAddress(NetworkParameters.prodNet());
+            if (expectedAddress != null && expectedAddress.equals(gotAddress)) {
+                log.debug("The message was signed by the specified address");
+                verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.success"));
+                verifyMessagePanel.setMessageText2(" "); 
+            } else {
+                log.debug("The message was NOT signed by the specified address"); 
+                verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.failure"));
+                verifyMessagePanel.setMessageText2(" "); 
+            }
+        } catch (WrongNetworkException e) {
+            logError(e);
+        } catch (AddressFormatException e) {
+            logError(e);
+        } catch (SignatureException e) {
+            logError(e);
+        }
+    }
+    
+    private void logError(Exception e) {
+        e.printStackTrace();
+        verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.error"));
+        verifyMessagePanel.setMessageText2(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", 
+                new String[] {e.getClass().getCanonicalName() + " " + e.getMessage()}));
     }
 
     @Override

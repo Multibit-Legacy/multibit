@@ -456,9 +456,7 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
         if (DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED == displayHint) {
             return;
         }
-        walletFilenameLabel.setText(this.bitcoinController.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription());
-        
+       
         walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         
         messageLabel1.setText(" ");
@@ -517,9 +515,6 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
         return View.VERIFY_MESSAGE_VIEW;
     }
     
-    // Used in testing.
-
- 
     public VerifyMessageSubmitAction getVerifyMessageSubmitAction() {
         return verifyMessageSubmitAction;
     }
@@ -539,5 +534,17 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
 //                importPrivateKeysSubmitAction.setEnabled(true);
 //            }
 //        }
+    }
+
+    public MultiBitTextArea getMessageTextArea() {
+        return messageTextArea;
+    }
+
+    public MultiBitTextField getAddressField() {
+        return addressField;
+    }
+
+    public MultiBitTextField getSignatureField() {
+        return signatureField;
     }
 }
