@@ -49,7 +49,9 @@ public enum View {
     ADD_PASSWORD_VIEW,
     CHANGE_PASSWORD_VIEW,
     REMOVE_PASSWORD_VIEW,
-    CHARTS_VIEW;
+    CHARTS_VIEW,
+    VERIFY_MESSAGE_VIEW,
+    SIGN_MESSAGE_VIEW;
 
     public static final EnumSet<View> OBSOLETE = EnumSet.of(
             SEND_BITCOIN_CONFIRM_VIEW,
@@ -101,6 +103,8 @@ public enum View {
             case 20 : return CHANGE_PASSWORD_VIEW;
             case 21 : return REMOVE_PASSWORD_VIEW;
             case 22 : return CHARTS_VIEW;
+            case 23 : return SIGN_MESSAGE_VIEW;
+            case 24 : return VERIFY_MESSAGE_VIEW;
                 
             case 3 : case 8 : case 9 : case 10 : case 12 :
                 return TRANSACTIONS_VIEW;
@@ -140,6 +144,8 @@ public enum View {
             case CHANGE_PASSWORD_VIEW : return 20;
             case REMOVE_PASSWORD_VIEW : return 21;
             case CHARTS_VIEW : return 22;
+            case SIGN_MESSAGE_VIEW : return 23;
+            case VERIFY_MESSAGE_VIEW : return 24;
 
             default : return 0;
         }
