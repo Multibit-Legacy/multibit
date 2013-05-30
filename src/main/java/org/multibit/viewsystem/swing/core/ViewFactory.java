@@ -15,12 +15,13 @@
  */
 package org.multibit.viewsystem.swing.core;
 
-import org.multibit.viewsystem.swing.bitcoin.panels.SignMessagePanel;
-import org.multibit.viewsystem.swing.bitcoin.panels.VerifyMessagePanel;
 import java.util.EnumMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.core.CoreController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
@@ -38,9 +39,19 @@ import org.multibit.viewsystem.swing.bitcoin.panels.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.bitcoin.panels.RemovePasswordPanel;
 import org.multibit.viewsystem.swing.bitcoin.panels.ResetTransactionsPanel;
 import org.multibit.viewsystem.swing.bitcoin.panels.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.bitcoin.panels.SignMessagePanel;
+import org.multibit.viewsystem.swing.bitcoin.panels.VerifyMessagePanel;
 import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
 import org.multibit.viewsystem.swing.bitcoin.panels.TransactionsPanel;
 import org.multibit.viewsystem.swing.core.panels.WelcomePanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesAction;
+import org.multibit.viewsystem.swing.preferences.PreferencesModule;
+import org.multibit.viewsystem.swing.preferences.actions.BitcoinPreferencesAction;
+import org.multibit.viewsystem.swing.preferences.actions.CorePreferencesAction;
+import org.multibit.viewsystem.swing.preferences.actions.ExchangePreferencesAction;
+import org.multibit.viewsystem.swing.preferences.modules.BitcoinPreferencesModule;
+import org.multibit.viewsystem.swing.preferences.modules.CorePreferencesModule;
+import org.multibit.viewsystem.swing.preferences.modules.ExchangePreferencesModule;
 
 /**
  * a factory class that lazy loads views
@@ -52,15 +63,17 @@ public class ViewFactory {
 
     private Map<View, Viewable> viewMap;
     private final Controller controller;
+    private final CoreController coreController;
     private final BitcoinController bitcoinController;
     private final ExchangeController exchangeController;
     private final MultiBitFrame mainFrame;
 
-    public ViewFactory(MultiBitFrame mainFrame, BitcoinController bitcoinController, ExchangeController exchangeController) {
+    public ViewFactory(MultiBitFrame mainFrame, CoreController coreController, BitcoinController bitcoinController, ExchangeController exchangeController) {
         this.mainFrame = mainFrame;
+        this.coreController = coreController;
         this.bitcoinController = bitcoinController;
         this.exchangeController = exchangeController;
-        this.controller = this.bitcoinController;
+        this.controller = this.coreController;
         initialise();
     }
 
@@ -178,7 +191,25 @@ public class ViewFactory {
             }
 
             case PREFERENCES_VIEW: {
-                viewToReturn = new PreferencesPanel(this.mainFrame, this.bitcoinController, this.exchangeController);
+                CorePreferencesModule corePreferencesModule = new CorePreferencesModule(this.coreController);
+                BitcoinPreferencesModule bitcoinPreferencesModule = new BitcoinPreferencesModule(this.bitcoinController);
+                ExchangePreferencesModule exchangePreferencesModule = new ExchangePreferencesModule(this.exchangeController);
+
+                Set<PreferencesModule> preferencesModules = new LinkedHashSet<PreferencesModule>();
+                {
+                    preferencesModules.add(corePreferencesModule);
+                    preferencesModules.add(bitcoinPreferencesModule);
+                    preferencesModules.add(exchangePreferencesModule);
+                }
+
+                Set<PreferencesAction> preferencesActions = new LinkedHashSet<PreferencesAction>();
+                {
+                    preferencesActions.add(new CorePreferencesAction(corePreferencesModule, this.coreController));
+                    preferencesActions.add(new BitcoinPreferencesAction(bitcoinPreferencesModule, this.bitcoinController));
+                    preferencesActions.add(new ExchangePreferencesAction(exchangePreferencesModule, this.exchangeController));
+                }
+
+                viewToReturn = new PreferencesPanel(this.mainFrame, this.controller, preferencesModules, preferencesActions);
                 break;
             }
 

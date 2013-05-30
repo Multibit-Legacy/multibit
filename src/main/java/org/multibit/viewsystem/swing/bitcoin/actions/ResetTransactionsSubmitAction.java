@@ -34,7 +34,7 @@ import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;
-import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
+import org.multibit.viewsystem.dataproviders.bitcoin.ResetTransactionsDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.bitcoin.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.bitcoin.walletlist.SingleWalletPanelDownloadListener;

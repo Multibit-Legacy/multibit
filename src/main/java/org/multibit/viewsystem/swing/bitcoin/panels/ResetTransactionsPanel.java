@@ -54,7 +54,7 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
-import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
+import org.multibit.viewsystem.dataproviders.bitcoin.ResetTransactionsDataProvider;
 import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.core.HelpContextAction;

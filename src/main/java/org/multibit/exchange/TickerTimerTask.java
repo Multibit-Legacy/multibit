@@ -391,4 +391,10 @@ public class TickerTimerTask extends TimerTask {
     public boolean isFirstExchange() {
         return isFirstExchange;
     }
+    
+    // tempory hack solution
+    public MultiBitFrame getMultiBitFrame()
+    {
+        return this.mainFrame;
+    }
 }

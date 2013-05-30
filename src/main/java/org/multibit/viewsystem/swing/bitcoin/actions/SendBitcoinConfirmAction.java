@@ -22,7 +22,7 @@ import javax.swing.Action;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
+import org.multibit.viewsystem.dataproviders.bitcoin.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.bitcoin.Validator;
 import org.multibit.viewsystem.swing.bitcoin.dialogs.SendBitcoinConfirmDialog;

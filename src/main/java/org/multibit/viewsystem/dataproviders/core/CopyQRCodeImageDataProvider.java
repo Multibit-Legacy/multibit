@@ -1,6 +1,7 @@
-package org.multibit.viewsystem.dataproviders;
+package org.multibit.viewsystem.dataproviders.core;
 
 import javax.swing.JLabel;
+import org.multibit.viewsystem.dataproviders.DataProvider;
 
 /**
  * DataProvider for copy QR code image action

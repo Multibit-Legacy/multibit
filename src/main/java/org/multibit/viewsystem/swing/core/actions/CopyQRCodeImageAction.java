@@ -26,7 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
 import org.multibit.controller.Controller;
-import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
+import org.multibit.viewsystem.dataproviders.core.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
 
 /**

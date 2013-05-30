@@ -1,4 +1,6 @@
-package org.multibit.viewsystem.dataproviders;
+package org.multibit.viewsystem.dataproviders.bitcoin;
+
+import org.multibit.viewsystem.dataproviders.DataProvider;
 
 
 /**
