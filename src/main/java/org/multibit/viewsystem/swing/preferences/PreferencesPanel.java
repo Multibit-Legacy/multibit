@@ -20,6 +20,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
@@ -67,6 +68,7 @@ public class PreferencesPanel extends JPanel implements Viewable {
     private final Set<PreferencesAction> preferencesActions;
     private Boolean hasInitialized = false;
     public final RedrawCallback redrawCallback = new RedrawCallback();
+    public final GetFontMetricsCallback getFontMetricsCallback = new GetFontMetricsCallback();
     private MultiBitButton undoChangesButton;
     private static final int STENT_DELTA = 0;
 
@@ -80,6 +82,7 @@ public class PreferencesPanel extends JPanel implements Viewable {
         this.preferencesModules = preferencesModules;
         this.preferencesActions = preferencesActions;
 
+        Setup();
         initUI();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
@@ -128,6 +131,15 @@ public class PreferencesPanel extends JPanel implements Viewable {
     public void navigateAwayFromView() {
     }
 
+    private void Setup(){
+        
+        for (PreferencesModule preferencesModule : this.preferencesModules) {
+            preferencesModule.Setup(this.redrawCallback, this.getFontMetricsCallback);
+        }
+        
+        
+    }
+    
     private void initUI() {
         if (this.hasInitialized == true) {
             return;
@@ -285,6 +297,13 @@ public class PreferencesPanel extends JPanel implements Viewable {
             invalidate();
             validate();
             repaint();
+        }
+    }
+    
+    public class GetFontMetricsCallback {
+        public FontMetrics get(Font font)
+        {
+            return getFontMetrics(font);
         }
     }
 

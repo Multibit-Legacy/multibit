@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,6 +57,8 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule<BitcoinC
 
     private final BitcoinPreferencesPanels bitcoinPreferencesPanels = new BitcoinPreferencesPanels();
     
+    private Set<JPanel> jPanels = null;
+    
     public static String UNPARSEABLE_FEE = "UNPARSEABLE_FEE";
     
     public BitcoinPreferencesModule(BitcoinController bitcoinController) {
@@ -64,7 +67,16 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule<BitcoinC
 
     @Override
     public Set<JPanel> Init() throws SetupNotCalledException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!super.setupHasBeenCalled) {
+            throw new SetupNotCalledException("Core Init()");
+        }
+          if (jPanels != null) {
+            return jPanels;
+        } else {
+            jPanels = new LinkedHashSet<JPanel>();
+            jPanels.add(this.bitcoinPreferencesPanels.createFeePanel());
+            return jPanels;
+        }
     }
 
     @Override
@@ -105,16 +117,6 @@ public class BitcoinPreferencesModule extends AbstractPreferencesModule<BitcoinC
         }
         this.bitcoinPreferencesPanels.feeTextField.setText(sendFeeStringLocalised);
     
-    }
-
-    @Override
-    public void Submit() throws SetupNotCalledException, ValidationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void Undo() throws SetupNotCalledException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

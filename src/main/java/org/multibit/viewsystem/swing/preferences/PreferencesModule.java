@@ -26,6 +26,7 @@ package org.multibit.viewsystem.swing.preferences;
 import java.awt.FontMetrics;
 import java.util.Set;
 import javax.swing.JPanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesPanel.GetFontMetricsCallback;
 import org.multibit.viewsystem.swing.preferences.PreferencesPanel.RedrawCallback;
 
 /**
@@ -34,16 +35,11 @@ import org.multibit.viewsystem.swing.preferences.PreferencesPanel.RedrawCallback
  */
 public interface PreferencesModule {
     
-    void Setup(RedrawCallback redrawCallback, FontMetrics fontMetrics);
+    void Setup(RedrawCallback redrawCallback, GetFontMetricsCallback fontMetricsCallback);
     
     Set<JPanel> Init() throws SetupNotCalledException;
     
     void Update() throws SetupNotCalledException;
-
-    void Submit() throws SetupNotCalledException, ValidationException;
-
-    void Undo() throws SetupNotCalledException;
-
     
     class SetupNotCalledException extends Exception{
         public SetupNotCalledException(String message) {

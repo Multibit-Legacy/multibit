@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.core;
 
 import java.util.EnumMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -188,14 +189,14 @@ public class ViewFactory {
                 BitcoinPreferencesModule bitcoinPreferencesModule = new BitcoinPreferencesModule(this.bitcoinController);
                 ExchangePreferencesModule exchangePreferencesModule = new ExchangePreferencesModule(this.exchangeController);
 
-                Set<PreferencesModule> preferencesModules = new TreeSet<PreferencesModule>();
+                Set<PreferencesModule> preferencesModules = new LinkedHashSet<PreferencesModule>();
                 {
                     preferencesModules.add(corePreferencesModule);
                     preferencesModules.add(bitcoinPreferencesModule);
                     preferencesModules.add(exchangePreferencesModule);
                 }
 
-                Set<PreferencesAction> preferencesActions = new TreeSet<PreferencesAction>();
+                Set<PreferencesAction> preferencesActions = new LinkedHashSet<PreferencesAction>();
                 {
                     preferencesActions.add(new CorePreferencesAction(corePreferencesModule, this.coreController));
                     preferencesActions.add(new BitcoinPreferencesAction(bitcoinPreferencesModule, this.bitcoinController));

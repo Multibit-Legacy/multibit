@@ -39,7 +39,7 @@ public abstract class AbstractPreferencesModule<C extends Controller> implements
     final protected C controller;
     
     protected PreferencesPanel.RedrawCallback redrawCallback;
-    protected FontMetrics fontMetrics;
+    protected PreferencesPanel.GetFontMetricsCallback fontMetricsCallback;
     protected Boolean setupHasBeenCalled = false;
     
     
@@ -49,9 +49,9 @@ public abstract class AbstractPreferencesModule<C extends Controller> implements
     }
     
     @Override
-    public void Setup(PreferencesPanel.RedrawCallback redrawCallback, FontMetrics fontMetrics){
+    public void Setup(PreferencesPanel.RedrawCallback redrawCallback, PreferencesPanel.GetFontMetricsCallback fontMetricsCallback){
         this.redrawCallback = redrawCallback;
-        this.fontMetrics = fontMetrics;
+        this.fontMetricsCallback = fontMetricsCallback;
         
         this.setupHasBeenCalled = true;
     }
