@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.core;
 
+import java.awt.Component;
 import org.multibit.viewsystem.swing.core.MnemonicUtil;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -24,9 +25,11 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.Controller;
+import org.multibit.viewsystem.dataproviders.core.CorePreferencesDataProvider;
 import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
 import org.multibit.viewsystem.swing.core.components.JFontChooser;
+import org.multibit.viewsystem.swing.preferences.modules.CorePreferencesModule;
 
 /**
  * This {@link Action} represents the choose font action.
@@ -35,17 +38,20 @@ public class ChooseFontAction extends AbstractAction {
 
     private static final long serialVersionUID = 114359435465057705L;
 
-    private Controller controller;
-    private PreferencesPanel showPreferencesPanel;
+    private final Controller controller;
+    private final Component parentComponent;
+    private CorePreferencesModule corePreferencesModule;
 
     /**
      * Creates a new {@link ChooseFontAction}.
      */
-    public ChooseFontAction(Controller controller, PreferencesPanel showPreferencesPanel, ImageIcon icon) {
+    public ChooseFontAction(Controller controller, Component parentComponent, CorePreferencesModule corePreferencesModule, ImageIcon icon) {
         super(controller.getLocaliser().getString("fontChooser.text"), icon);
         this.controller = controller;
-        this.showPreferencesPanel = showPreferencesPanel;
-
+        this.parentComponent = parentComponent;
+        this.corePreferencesModule = corePreferencesModule;
+        
+        
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("fontChooser.tooltip")));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("fontChooser.mnemonicKey"));
@@ -57,11 +63,11 @@ public class ChooseFontAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         JFontChooser fontChooser = new JFontChooser(controller);
-        fontChooser.setSelectedFont(showPreferencesPanel.getSelectedFont());
-        int result = fontChooser.showDialog(showPreferencesPanel);
+        fontChooser.setSelectedFont(corePreferencesModule.getSelectedFont());
+        int result = fontChooser.showDialog(parentComponent);
         Font font = fontChooser.getSelectedFont();
         if (result == JFontChooser.OK_OPTION) {
-             showPreferencesPanel.setSelectedFont(font);
+             corePreferencesModule.setSelectedFont(font);
         }
     }
 }

@@ -1,6 +1,7 @@
-package org.multibit.viewsystem.dataproviders;
+package org.multibit.viewsystem.dataproviders.bitcoin;
 
 import java.util.Date;
+import org.multibit.viewsystem.dataproviders.DataProvider;
 
 /**
  * DataProvider for Reset blockchain and transactions action

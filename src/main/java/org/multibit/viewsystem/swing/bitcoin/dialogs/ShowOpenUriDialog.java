@@ -38,7 +38,7 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
-import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
+import org.multibit.viewsystem.dataproviders.bitcoin.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.bitcoin.actions.ShowOpenUriCancelAction;
 import org.multibit.viewsystem.swing.bitcoin.actions.ShowOpenUriSubmitAction;

@@ -229,11 +229,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private Timer fileChangeTimer;
 
-    private Timer tickerTimer1;
-    private Timer tickerTimer2;
-    private TickerTimerTask tickerTimerTask1;
-    private TickerTimerTask tickerTimerTask2;
-
     private JPanel headerPanel;
 
     private TickerTablePanel tickerTablePanel;
@@ -310,7 +305,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         sizeAndCenter();
 
-        viewFactory = new ViewFactory(this, this.bitcoinController, this.exchangeController);
+        viewFactory = new ViewFactory(this, this.coreController, this.bitcoinController, this.exchangeController);
 
         initUI(initialView);
 
@@ -319,16 +314,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
          // Initialise the file change timer.
         fileChangeTimer = new Timer();
         fileChangeTimer.schedule(new WalletChangeTimerTask(this.bitcoinController), WalletChangeTimerTask.INITIAL_DELAY, WalletChangeTimerTask.DEFAULT_REPEAT_RATE);
-
-         // Initialise the tickers.
-        tickerTimer1 = new Timer();
-        tickerTimerTask1 = new TickerTimerTask(this.exchangeController, this, true);
-        tickerTimer1.schedule(tickerTimerTask1, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
         
-        tickerTimer2 = new Timer();
-        tickerTimerTask2 = new TickerTimerTask(this.exchangeController, this, false);
-        tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
-
+        // Initialise the tickers.
+        {
+            Timer tickerTimer = new Timer();
+            TickerTimerTask tickerTimerTask = new TickerTimerTask(this.exchangeController, this, true);
+            tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
+            this.exchangeController.getModel().setTickerTimer1(tickerTimer);
+            this.exchangeController.getModel().setTickerTimerTask1(tickerTimerTask);
+        }
+        {
+            Timer tickerTimer = new Timer();
+            TickerTimerTask tickerTimerTask = new TickerTimerTask(this.exchangeController, this, true);
+            tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+            this.exchangeController.getModel().setTickerTimer2(tickerTimer);
+            this.exchangeController.getModel().setTickerTimerTask2(tickerTimerTask);
+        }
+        
         // Initialise status bar.
         statusBar.initialise();
 
@@ -1004,6 +1006,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.FALSE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
                     } else {
+                        Timer tickerTimer1 = exchangeController.getModel().getTickerTimer1();
+                        Timer tickerTimer2 = exchangeController.getModel().getTickerTimer2();
+                        
                         tickerTablePanel.setVisible(true);
                         controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.TRUE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
@@ -1711,36 +1716,5 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void updatedExchangeRate(ExchangeRate exchangeRate) {
         updateHeader();
-    }
-
-    public Timer getTickerTimer1() {
-        return tickerTimer1;
-    }
-
-    public void setTickerTimer1(Timer tickerTimer1) {
-        this.tickerTimer1 = tickerTimer1;
-    }
-    
-    public Timer getTickerTimer2() {
-        return tickerTimer2;
-    }
-
-    public void setTickerTimer2(Timer tickerTimer2) {
-        this.tickerTimer2 = tickerTimer2;
-    }
-    
-    public TickerTimerTask getTickerTimerTask1() {
-        return tickerTimerTask1;
-    }
-    public TickerTimerTask getTickerTimerTask2() {
-        return tickerTimerTask2;
-    }
-
-    public void setTickerTimerTask1(TickerTimerTask tickerTimerTask1) {
-        this.tickerTimerTask1 = tickerTimerTask1;
-    }
-
-    public void setTickerTimerTask2(TickerTimerTask tickerTimerTask2) {
-        this.tickerTimerTask2 = tickerTimerTask2;
     }
 }

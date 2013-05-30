@@ -27,6 +27,7 @@ import java.net.URI;
 import org.multibit.controller.AbstractController;
 import org.multibit.controller.AbstractEventHandler;
 import org.multibit.controller.core.CoreController;
+import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.core.actions.ExitAction;

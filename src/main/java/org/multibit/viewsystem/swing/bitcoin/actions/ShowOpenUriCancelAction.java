@@ -23,7 +23,7 @@ import javax.swing.Action;
 import org.multibit.controller.Controller;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.viewsystem.View;
-import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
+import org.multibit.viewsystem.dataproviders.bitcoin.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.core.MnemonicUtil;
 import org.multibit.viewsystem.swing.bitcoin.dialogs.ShowOpenUriDialog;
 
