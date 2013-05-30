@@ -16,7 +16,9 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.nio.CharBuffer;
 import java.security.SignatureException;
+import java.util.Iterator;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -28,11 +30,13 @@ import org.multibit.viewsystem.swing.view.panels.SignMessagePanel;
 import org.multibit.viewsystem.swing.view.panels.VerifyMessagePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WrongNetworkException;
 
 /**
@@ -85,35 +89,56 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
             messageText = signMessagePanel.getMessageTextArea().getText();
         }
         
-        String signatureText = null;
-        if (signMessagePanel.getSignatureTextArea() != null) {
-            signatureText = signMessagePanel.getSignatureTextArea().getText();
-        }
+
+        
+        CharSequence walletPassword = null;
+        if (signMessagePanel.getWalletPasswordField() != null) {
+            walletPassword = CharBuffer.wrap(signMessagePanel.getWalletPasswordField().getPassword());
+        }        
         
         log.debug("addressText = '" + addressText + "'");
         log.debug("messageText = '" + messageText + "'");
-        log.debug("signaureText = '" + signatureText + "'");
         
         try {
-            Address expectedAddress = new Address(NetworkParameters.prodNet(), addressText);
-            ECKey key = ECKey.signedMessageToKey(messageText, signatureText);
-            Address gotAddress = key.toAddress(NetworkParameters.prodNet());
-            if (expectedAddress != null && expectedAddress.equals(gotAddress)) {
-                log.debug("The message was signed by the specified address");
-                signMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.success"));
-                signMessagePanel.setMessageText2(" "); 
-            } else {
-                log.debug("The message was NOT signed by the specified address"); 
-                signMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.failure"));
-                signMessagePanel.setMessageText2(" "); 
+            Address signingAddress = new Address(bitcoinController.getModel().getNetworkParameters(), addressText);
+            
+            // Find the ECKey corresponding to the signing address.
+            Wallet activeWallet = bitcoinController.getModel().getActiveWallet();
+            Iterable<ECKey> keychain = activeWallet.getKeys();
+            Iterator<ECKey> iterator = keychain.iterator();
+            ECKey signingKey = null;
+            while (iterator.hasNext()) {
+                ECKey ecKey = iterator.next();
+                if (ecKey.toAddress(bitcoinController.getModel().getNetworkParameters()).equals(signingAddress)) {
+                    signingKey = ecKey;
+                    break;
+                }
             }
+            if (signingKey == null) {
+                // No signing key found.
+                // TODO notify user - FAIL.
+            } else {
+                KeyParameter aesKey = null;
+                if (signingKey.isEncrypted()) {
+                    aesKey = signingKey.getKeyCrypter().deriveKey(walletPassword);
+                    signingKey = signingKey.decrypt(signingKey.getKeyCrypter(), aesKey);
+                }
+
+                String signatureBase64 = signingKey.signMessage(messageText, aesKey);
+                if (signMessagePanel.getSignatureTextArea() != null) {
+                    signMessagePanel.getSignatureTextArea().setText(signatureBase64);
+                    // TODO Notify user - SUCCESS.
+                }        
+            }
+
+                //signMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.success"));
+                //signMessagePanel.setMessageText2(" "); 
+
         } catch (WrongNetworkException e) {
             logError(e);
         } catch (AddressFormatException e) {
             logError(e);
-        } catch (SignatureException e) {
-            logError(e);
-        }
+        } 
     }
     
     private void logError(Exception e) {

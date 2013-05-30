@@ -689,4 +689,8 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
     public MultiBitTextArea getSignatureTextArea() {
         return signatureTextArea;
     }
+
+    public JPasswordField getWalletPasswordField() {
+        return walletPasswordField;
+    }
 }

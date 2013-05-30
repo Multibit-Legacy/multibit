@@ -94,9 +94,9 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
         log.debug("signaureText = '" + signatureText + "'");
         
         try {
-            Address expectedAddress = new Address(NetworkParameters.prodNet(), addressText);
+            Address expectedAddress = new Address(bitcoinController.getModel().getNetworkParameters(), addressText);
             ECKey key = ECKey.signedMessageToKey(messageText, signatureText);
-            Address gotAddress = key.toAddress(NetworkParameters.prodNet());
+            Address gotAddress = key.toAddress(bitcoinController.getModel().getNetworkParameters());
             if (expectedAddress != null && expectedAddress.equals(gotAddress)) {
                 log.debug("The message was signed by the specified address");
                 verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.success"));
