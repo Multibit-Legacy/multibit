@@ -28,6 +28,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -67,6 +68,9 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
 
     private MultiBitLabel messageLabel1;
     private MultiBitLabel messageLabel2;
+
+    private JPasswordField walletPasswordField;
+    private MultiBitLabel walletPasswordPromptLabel;
 
     private MultiBitTextArea addressTextArea;
     private MultiBitLabel addressLabel;
@@ -108,8 +112,8 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         mainPanel.setOpaque(false);
         mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        String[] keys = new String[] { "sendBitcoinPanel.addressLabel",
-                "signMessagePanel.message.text", "signMessagePanel.signature.text" };
+        String[] keys = new String[] { "showExportPrivateKeysPanel.walletPasswordPrompt", "sendBitcoinPanel.addressLabel",
+                "verifyMessagePanel.message.text", "verifyMessagePanel.signature.text" };
 
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this)
                 + ExportPrivateKeysPanel.STENT_DELTA;
@@ -139,6 +143,46 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 2;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel walletPanel = createWalletPanel(stentWidth);
+        mainPanel.add(walletPanel, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        mainPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel messagePanel = createMessagePanel(stentWidth);
+        mainPanel.add(messagePanel, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        mainPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 6;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -154,7 +198,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 7;
         constraints.gridwidth = 3;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -169,7 +213,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 8;
         constraints.gridwidth = 3;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -199,7 +243,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 9;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -211,7 +255,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 10;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 100;
@@ -237,10 +281,106 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("verifyMessagePanel.instructions.text1"), 3, instructionsPanel);
+                controller.getLocaliser().getString("signMessagePanel.instructions.text1"), 3, instructionsPanel);
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("verifyMessagePanel.instructions.text2"), 4, instructionsPanel);
+                controller.getLocaliser().getString("signMessagePanel.instructions.text2"), 4, instructionsPanel);
+
+        return instructionsPanel;
+    }
+    
+    private JPanel createWalletPanel(int stentWidth) {
+        MultiBitTitledPanel inputWalletPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+                "showExportPrivateKeysPanel.walletPasswordPrompt"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("signMessagePanel.wallet.text"), 3, inputWalletPanel);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        inputWalletPanel.add(MultiBitTitledPanel.createStent(stentWidth, (int) (ExportPrivateKeysPanel.STENT_HEIGHT * 0.5)), constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 5;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        inputWalletPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+        
+        JPanel filler3 = new JPanel();
+        filler3.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 7;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        inputWalletPanel.add(filler3, constraints);
+
+        walletPasswordPromptLabel = new MultiBitLabel(controller.getLocaliser().getString("showExportPrivateKeysPanel.walletPasswordPrompt"));
+        walletPasswordPromptLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 8;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        inputWalletPanel.add(walletPasswordPromptLabel, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 8;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        inputWalletPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
+                constraints);
+
+        walletPasswordField = new JPasswordField(24);
+        walletPasswordField.setMinimumSize(new Dimension(200, 20));
+        walletPasswordField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 8;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        inputWalletPanel.add(walletPasswordField, constraints);
+
+        JPanel filler4 = new JPanel();
+        filler4.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 9;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        inputWalletPanel.add(filler4, constraints);
+
+        return inputWalletPanel;
+    }
+
+    private JPanel createMessagePanel(int stentWidth) {
+        MultiBitTitledPanel messagePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+                "signMessagePanel.message.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("signMessagePanel.instructions.text3"), 3, messagePanel);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
@@ -249,7 +389,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        instructionsPanel.add(MultiBitTitledPanel.createStent(stentWidth, ExportPrivateKeysPanel.STENT_HEIGHT), constraints);
+        messagePanel.add(MultiBitTitledPanel.createStent(stentWidth, ExportPrivateKeysPanel.STENT_HEIGHT), constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -258,7 +398,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        instructionsPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+        messagePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         JPanel filler3 = new JPanel();
         filler3.setOpaque(false);
@@ -269,7 +409,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        instructionsPanel.add(filler3, constraints);
+        messagePanel.add(filler3, constraints);
 
         addressLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         addressLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -280,7 +420,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        instructionsPanel.add(addressLabel, constraints);
+        messagePanel.add(addressLabel, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -289,7 +429,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        instructionsPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
+        messagePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
                 constraints);
 
         //addressTextArea = new MultiBitTextField("", 30, controller);
@@ -308,7 +448,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        instructionsPanel.add(addressTextArea, constraints);
+        messagePanel.add(addressTextArea, constraints);
 
         JPanel filler4 = new JPanel();
         filler4.setOpaque(false);
@@ -319,7 +459,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        instructionsPanel.add(filler4, constraints);
+        messagePanel.add(filler4, constraints);
 
         JTextField secondTextField = new JTextField();
         messageTextArea = new MultiBitTextArea("", AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + 1, 20, controller);
@@ -361,7 +501,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        instructionsPanel.add(messageLabel, constraints);
+        messagePanel.add(messageLabel, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -370,7 +510,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        instructionsPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
+        messagePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
                 constraints);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -380,7 +520,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        instructionsPanel.add(messageScrollPane, constraints);
+        messagePanel.add(messageScrollPane, constraints);
 
         JPanel filler5 = new JPanel();
         filler5.setOpaque(false);
@@ -391,7 +531,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        instructionsPanel.add(filler5, constraints);
+        messagePanel.add(filler5, constraints);
 
         signatureLabel = new MultiBitLabel(controller.getLocaliser().getString("verifyMessagePanel.signature.text"));
         signatureLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -402,7 +542,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        instructionsPanel.add(signatureLabel, constraints);
+        messagePanel.add(signatureLabel, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -411,7 +551,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        instructionsPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
+        messagePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
                 constraints);
 
         JTextField anotherTextField = new JTextField();
@@ -429,10 +569,11 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        instructionsPanel.add(signatureTextArea, constraints);
+        messagePanel.add(signatureTextArea, constraints);
 
-        return instructionsPanel;
+        return messagePanel;
     }
+ 
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
