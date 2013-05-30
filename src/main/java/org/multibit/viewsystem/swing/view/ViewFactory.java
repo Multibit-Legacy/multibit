@@ -39,6 +39,7 @@ import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.SignMessagePanel;
 import org.multibit.viewsystem.swing.view.panels.VerifyMessagePanel;
 import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
 
@@ -135,6 +136,11 @@ public class ViewFactory {
 
         case SHOW_OPEN_URI_DIALOG_VIEW: {
             viewToReturn = new ShowOpenUriDialog(this.bitcoinController, mainFrame);
+            break;
+        }
+
+        case SIGN_MESSAGE_VIEW: {
+            viewToReturn = new SignMessagePanel(this.bitcoinController, mainFrame);
             break;
         }
 

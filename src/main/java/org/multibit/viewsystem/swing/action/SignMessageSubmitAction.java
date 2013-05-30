@@ -24,6 +24,7 @@ import javax.swing.ImageIcon;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.panels.SignMessagePanel;
 import org.multibit.viewsystem.swing.view.panels.VerifyMessagePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,25 +36,25 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.WrongNetworkException;
 
 /**
- * This {@link Action} verifies a signed message.
+ * This {@link Action} signs a message
  */
-public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
+public class SignMessageSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
 
     private static final Logger log = LoggerFactory.getLogger(ImportPrivateKeysSubmitAction.class);
 
     private static final long serialVersionUID = 1923333087598757765L;
 
     private MultiBitFrame mainFrame;
-    private VerifyMessagePanel verifyMessagePanel;
+    private SignMessagePanel signMessagePanel;
     
     /**
-     * Creates a new {@link VerifyMessageSubmitAction}.
+     * Creates a new {@link SignMessageSubmitAction}.
      */
-    public VerifyMessageSubmitAction(BitcoinController bitcoinController, MultiBitFrame mainFrame,
-            VerifyMessagePanel verifyMessagePanel, ImageIcon icon) {
-        super(bitcoinController, "verifyMessageAction.text", "verifyMessageAction.tooltip", "verifyMessageAction.mnemonicKey", icon);
+    public SignMessageSubmitAction(BitcoinController bitcoinController, MultiBitFrame mainFrame,
+            SignMessagePanel signMessagePanel, ImageIcon icon) {
+        super(bitcoinController, "signMessageAction.text", "signMessageAction.tooltip", "signMessageAction.mnemonicKey", icon);
         this.mainFrame = mainFrame;
-        this.verifyMessagePanel = verifyMessagePanel;
+        this.signMessagePanel = signMessagePanel;
 
         // This action is a WalletBusyListener.
         super.bitcoinController.registerWalletBusyListener(this);
@@ -70,23 +71,23 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
             return;
         }
         
-        if (verifyMessagePanel == null) {
+        if (signMessagePanel == null) {
             return;
         }
         
         String addressText = null;
-        if (verifyMessagePanel.getAddressTextArea() != null) {
-            addressText = verifyMessagePanel.getAddressTextArea().getText();
+        if (signMessagePanel.getAddressTextArea() != null) {
+            addressText = signMessagePanel.getAddressTextArea().getText();
         }
         
         String messageText = null;
-        if (verifyMessagePanel.getMessageTextArea() != null) {
-            messageText = verifyMessagePanel.getMessageTextArea().getText();
+        if (signMessagePanel.getMessageTextArea() != null) {
+            messageText = signMessagePanel.getMessageTextArea().getText();
         }
         
         String signatureText = null;
-        if (verifyMessagePanel.getSignatureTextArea() != null) {
-            signatureText = verifyMessagePanel.getSignatureTextArea().getText();
+        if (signMessagePanel.getSignatureTextArea() != null) {
+            signatureText = signMessagePanel.getSignatureTextArea().getText();
         }
         
         log.debug("addressText = '" + addressText + "'");
@@ -99,12 +100,12 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
             Address gotAddress = key.toAddress(NetworkParameters.prodNet());
             if (expectedAddress != null && expectedAddress.equals(gotAddress)) {
                 log.debug("The message was signed by the specified address");
-                verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.success"));
-                verifyMessagePanel.setMessageText2(" "); 
+                signMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.success"));
+                signMessagePanel.setMessageText2(" "); 
             } else {
                 log.debug("The message was NOT signed by the specified address"); 
-                verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.failure"));
-                verifyMessagePanel.setMessageText2(" "); 
+                signMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.failure"));
+                signMessagePanel.setMessageText2(" "); 
             }
         } catch (WrongNetworkException e) {
             logError(e);
@@ -117,8 +118,8 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
     
     private void logError(Exception e) {
         e.printStackTrace();
-        verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.error"));
-        verifyMessagePanel.setMessageText2(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", 
+        signMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.error"));
+        signMessagePanel.setMessageText2(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", 
                 new String[] {e.getClass().getCanonicalName() + " " + e.getMessage()}));
     }
 
@@ -139,7 +140,7 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
         } else {
             // Enable unless wallet has been modified by another process.
             if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("verifyMessageAction.tooltip"));
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("signMessageAction.tooltip"));
                 setEnabled(true);
             }
         }

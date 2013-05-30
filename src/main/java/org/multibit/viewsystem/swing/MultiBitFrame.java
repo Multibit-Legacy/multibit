@@ -239,6 +239,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitWalletBusyAction changePasswordAction;
     private MultiBitWalletBusyAction removePasswordAction;
     
+    private MultiBitWalletBusyAction signMessageAction;
     private MultiBitWalletBusyAction verifyMessageAction;
     
     private MultiBitWalletBusyAction showImportPrivateKeysAction;
@@ -1031,6 +1032,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         viewMenu.add(showTicker);
         
+        // Sign message.
+        signMessageAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.MESSAGE_SIGN_ICON_FILE, "signMessageAction.text",
+                "signMessageAction.tooltip", "signMessageAction.mnemonic", View.SIGN_MESSAGE_VIEW);
+        menuItem = new JMenuItem(signMessageAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        toolsMenu.add(menuItem);
+
         // Verify message.
         verifyMessageAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.MESSAGE_VERIFY_ICON_FILE, "verifyMessageAction.text",
                 "verifyMessageAction.tooltip", "verifyMessageAction.mnemonic", View.VERIFY_MESSAGE_VIEW);
@@ -1304,6 +1313,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
     
     private void updateMenuItemsOnWalletChange() {
+        signMessageAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         verifyMessageAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         showImportPrivateKeysAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         showExportPrivateKeysAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
@@ -1340,6 +1350,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             String walletIsBusyText = HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
                     new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
+            signMessageAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             verifyMessageAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             showImportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             showExportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
@@ -1349,6 +1360,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             removePasswordAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
 
         } else {
+            signMessageAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("signMessageAction.tooltip")));
             verifyMessageAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("verifyMessageAction.tooltip")));
             showImportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("showImportPrivateKeysAction.tooltip")));
             showExportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip")));

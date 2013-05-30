@@ -45,6 +45,7 @@ import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
+import org.multibit.viewsystem.swing.action.SignMessageSubmitAction;
 import org.multibit.viewsystem.swing.action.VerifyMessageSubmitAction;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
@@ -53,9 +54,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
- * View for verifying messages.
+ * View for signing messages.
  */
-public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyListener {
+public class SignMessagePanel extends JPanel implements Viewable, WalletBusyListener {
 
     private static final long serialVersionUID = 444992294329957705L;
 
@@ -76,15 +77,15 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
     private MultiBitTextArea signatureTextArea;
     private MultiBitLabel signatureLabel;
     
-    private VerifyMessageSubmitAction verifyMessageSubmitAction;
+    private SignMessageSubmitAction signMessageSubmitAction;
     
     private static final int FIELD_WIDTH = 360;
     private static final int FIELD_HEIGHT = 30;
 
     /**
-     * Creates a new {@link VerifyMessagePanel}.
+     * Creates a new {@link SignMessagePanel}.
      */
-    public VerifyMessagePanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public SignMessagePanel(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
@@ -108,7 +109,7 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
         mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         String[] keys = new String[] { "sendBitcoinPanel.addressLabel",
-                "verifyMessagePanel.message.text", "verifyMessagePanel.signature.text" };
+                "signMessagePanel.message.text", "signMessagePanel.signature.text" };
 
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this)
                 + ExportPrivateKeysPanel.STENT_DELTA;
@@ -441,9 +442,9 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
         buttonPanel.setLayout(flowLayout);
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        verifyMessageSubmitAction = new VerifyMessageSubmitAction(this.bitcoinController, mainFrame, this,
-                ImageLoader.createImageIcon(ImageLoader.MESSAGE_VERIFY_ICON_FILE));
-        MultiBitButton submitButton = new MultiBitButton(verifyMessageSubmitAction, controller);
+        signMessageSubmitAction = new SignMessageSubmitAction(this.bitcoinController, mainFrame, this,
+                ImageLoader.createImageIcon(ImageLoader.MESSAGE_SIGN_ICON_FILE));
+        MultiBitButton submitButton = new MultiBitButton(signMessageSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         buttonPanel.add(submitButton);
 
@@ -497,26 +498,26 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
 
     @Override
     public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.MESSAGE_VERIFY_ICON_FILE);
+        return ImageLoader.createImageIcon(ImageLoader.MESSAGE_SIGN_ICON_FILE);
     }
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("verifyMessageAction.text");
+        return controller.getLocaliser().getString("signMessageAction.text");
     }
 
     @Override
     public String getViewTooltip() {
-        return controller.getLocaliser().getString("verifyMessageAction.tooltip");
+        return controller.getLocaliser().getString("signMessageAction.tooltip");
     }
 
     @Override
     public View getViewId() {
-        return View.VERIFY_MESSAGE_VIEW;
+        return View.SIGN_MESSAGE_VIEW;
     }
     
-    public VerifyMessageSubmitAction getVerifyMessageSubmitAction() {
-        return verifyMessageSubmitAction;
+    public SignMessageSubmitAction getSignMessageSubmitAction() {
+        return signMessageSubmitAction;
     }
 
     @Override
@@ -524,14 +525,14 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
         // Update the enable status of the action to match the wallet busy status.
         if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            verifyMessageSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+            signMessageSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
                     new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
-            verifyMessageSubmitAction.setEnabled(false);           
+            signMessageSubmitAction.setEnabled(false);           
         } else {
             // Enable unless wallet has been modified by another process.
             if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                verifyMessageSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("verifyMessageAction.tooltip")));
-                verifyMessageSubmitAction.setEnabled(true);
+                signMessageSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("signMessageAction.tooltip")));
+                signMessageSubmitAction.setEnabled(true);
             }
         }
     }
