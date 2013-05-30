@@ -26,6 +26,7 @@ package org.multibit.viewsystem.swing.preferences.modules;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -73,15 +75,25 @@ public class ExchangePreferencesModule extends AbstractPreferencesModule<Exchang
 
     private static final Logger log = LoggerFactory.getLogger(ExchangePreferencesModule.class);
     private final ExchangePreferencesPanels exchangePreferencesPanels = new ExchangePreferencesPanels();
-
+    
+    private Set<JPanel> jPanels = null;
+    
     public ExchangePreferencesModule(ExchangeController exchangeController) {
         super(exchangeController);
     }
 
     @Override
-    public Set<JPanel> Init() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public Set<JPanel> Init() throws SetupNotCalledException  {
+       if (!super.setupHasBeenCalled) {
+            throw new SetupNotCalledException("Core Init()");
+        }
+          if (jPanels != null) {
+            return jPanels;
+        } else {
+            jPanels = new LinkedHashSet<JPanel>();
+            jPanels.add(this.exchangePreferencesPanels.createTickerPanel());
+            return jPanels;
+        }    }
 
     @Override
     public void Update() {
@@ -95,16 +107,6 @@ public class ExchangePreferencesModule extends AbstractPreferencesModule<Exchang
 
         this.exchangePreferencesPanels.originalOERApiCode = controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE);
         this.exchangePreferencesPanels.oerApiCodeTextField.setText(this.exchangePreferencesPanels.originalOERApiCode);
-    }
-
-    @Override
-    public void Submit() throws ValidationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void Undo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -293,7 +295,7 @@ public class ExchangePreferencesModule extends AbstractPreferencesModule<Exchang
             originalOERApiCode = controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE);
         }
 
-        private JPanel createTickerPanel(int stentWidth) {
+        private JPanel createTickerPanel() {
             // load up the original values
             originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW));
             originalExchange1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
@@ -511,6 +513,7 @@ public class ExchangePreferencesModule extends AbstractPreferencesModule<Exchang
             exchangeComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             exchangeComboBox1.setOpaque(false);
 
+            FontMetrics fontMetrics = fontMetricsCallback.get(FontSizer.INSTANCE.getAdjustedDefaultFont());
             int textWidth = Math.max(fontMetrics.stringWidth(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME), fontMetrics.stringWidth("USD"))
                     + COMBO_WIDTH_DELTA;
             Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight()
@@ -524,7 +527,7 @@ public class ExchangePreferencesModule extends AbstractPreferencesModule<Exchang
             constraints.weighty = 0.3;
             constraints.gridwidth = 2;
             constraints.anchor = GridBagConstraints.LINE_START;
-            JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
+            JPanel stent = MultiBitTitledPanel.createStent(100);
             tickerPanel.add(stent, constraints);
 
             constraints.fill = GridBagConstraints.NONE;

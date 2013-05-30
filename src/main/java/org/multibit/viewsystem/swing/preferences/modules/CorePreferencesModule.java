@@ -23,13 +23,18 @@
  */
 package org.multibit.viewsystem.swing.preferences.modules;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -46,7 +51,6 @@ import javax.swing.UIManager;
 import org.multibit.controller.core.CoreController;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.core.CoreModel;
-import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.dataproviders.core.CorePreferencesDataProvider;
 import org.multibit.viewsystem.swing.core.ChooseFontAction;
 import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
@@ -65,14 +69,9 @@ import org.slf4j.LoggerFactory;
 public class CorePreferencesModule extends AbstractPreferencesModule<CoreController> implements CorePreferencesDataProvider {
 
     private static final Logger log = LoggerFactory.getLogger(CorePreferencesModule.class);
-    
     private final CorePreferencesModule corePreferencesModule = this;
     private final CorePreferencesPanels corePreferencesPanels = new CorePreferencesPanels();
-    private Set<JPanel> corePanels = null;
-    private Font selectedFont;
-    private String originalFontName;
-    private String originalFontStyle;
-    private String originalFontSize;
+    private Set<JPanel> jPanels = null;
 
     public CorePreferencesModule(CoreController coreController) {
         super(coreController);
@@ -84,14 +83,14 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
             throw new SetupNotCalledException("Core Init()");
         }
 
-        if (corePanels != null) {
-            return corePanels;
+        if (jPanels != null) {
+            return jPanels;
         } else {
-            corePanels = new TreeSet<JPanel>();
-            corePanels.add(this.corePreferencesPanels.createAppearancePanel());
-            corePanels.add(this.corePreferencesPanels.createBrowserIntegrationPanel());
-            corePanels.add(this.corePreferencesPanels.createLanguagePanel());
-            return corePanels;
+            jPanels = new LinkedHashSet<JPanel>();
+            jPanels.add(this.corePreferencesPanels.createAppearancePanel());
+            jPanels.add(this.corePreferencesPanels.createBrowserIntegrationPanel());
+            jPanels.add(this.corePreferencesPanels.createLanguagePanel());
+            return jPanels;
         }
     }
 
@@ -119,7 +118,7 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
         if (fontNameString == null || "".equals(fontNameString)) {
             fontNameString = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
         }
-        originalFontName = fontNameString;
+        this.corePreferencesPanels.originalFontName = fontNameString;
 
         int fontStyle = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_STYLE;
         String fontStyleString = controller.getModel().getUserPreference(CoreModel.FONT_STYLE);
@@ -130,7 +129,7 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
                 // Use default.
             }
         }
-        originalFontStyle = "" + fontStyle;
+        this.corePreferencesPanels.originalFontStyle = "" + fontStyle;
 
         int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
         String fontSizeString = controller.getModel().getUserPreference(CoreModel.FONT_SIZE);
@@ -141,21 +140,11 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
                 // Use default.
             }
         }
-        originalFontSize = "" + fontSize;
+        this.corePreferencesPanels.originalFontSize = "" + fontSize;
 
         setSelectedFont(new Font(fontNameString, fontStyle, fontSize));
 
 
-    }
-
-    @Override
-    public void Submit() throws ValidationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void Undo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -204,37 +193,37 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
 
     @Override
     public String getPreviousFontName() {
-        return originalFontName;
+        return this.corePreferencesPanels.originalFontName;
     }
 
     @Override
     public String getNewFontName() {
-        return selectedFont.getFamily();
+        return this.corePreferencesPanels.selectedFont.getFamily();
     }
 
     @Override
     public String getPreviousFontStyle() {
-        return originalFontStyle;
+        return this.corePreferencesPanels.originalFontStyle;
     }
 
     @Override
     public String getNewFontStyle() {
-        return "" + selectedFont.getStyle();
+        return "" + this.corePreferencesPanels.selectedFont.getStyle();
     }
 
     @Override
     public String getPreviousFontSize() {
-        return originalFontSize;
+        return this.corePreferencesPanels.originalFontSize;
     }
 
     @Override
     public String getNewFontSize() {
-        return "" + selectedFont.getSize();
+        return "" + this.corePreferencesPanels.selectedFont.getSize();
     }
 
     @Override
     public Font getSelectedFont() {
-        return selectedFont;
+        return this.corePreferencesPanels.selectedFont;
     }
 
     public void setSelectedFont(Font selectedFont) {
@@ -278,8 +267,13 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
         private JRadioButton fillAutomatically;
         private JRadioButton askEveryTime;
         
+        private Font selectedFont;
+        private String originalFontName;
+        private String originalFontStyle;
+        private String originalFontSize;
+
         private CorePreferencesPanels() {
-        localisedSystemLookAndFeelName = controller.getLocaliser().getString("showPreferencesPanel.systemLookAndFeel");
+            localisedSystemLookAndFeelName = controller.getLocaliser().getString("showPreferencesPanel.systemLookAndFeel");
         }
 
         private JPanel createLanguagePanel() {
@@ -365,7 +359,7 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
                 LanguageData languageData = new LanguageData();
                 languageData.languageCode = languageCode;
                 languageData.language = language;
-                languageData.image = ImageLoader.createImageIcon(languageCode);
+                languageData.image = createImageIcon(languageCode);
                 languageData.image.setDescription(language);
                 languageDataSet.add(languageData);
             }
@@ -381,6 +375,7 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
             languageComboBox.setOpaque(false);
             LanguageComboBoxRenderer renderer = new LanguageComboBoxRenderer();
 
+            FontMetrics fontMetrics = fontMetricsCallback.get(FontSizer.INSTANCE.getAdjustedDefaultFont());
             Dimension preferredSize = new Dimension(fontMetrics.stringWidth(A_LONG_LANGUAGE_NAME) + LANGUAGE_COMBO_WIDTH_DELTA
                     + LANGUAGE_CODE_IMAGE_WIDTH, fontMetrics.getHeight() + COMBO_HEIGHT_DELTA);
             renderer.setPreferredSize(preferredSize);
@@ -584,6 +579,7 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
             lookAndFeelComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             lookAndFeelComboBox.setOpaque(false);
 
+            FontMetrics fontMetrics = fontMetricsCallback.get(FontSizer.INSTANCE.getAdjustedDefaultFont());
             int textWidth = Math.max(fontMetrics.stringWidth("CDE/Motif"), fontMetrics.stringWidth("Windows classic"));
 //            Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight()
 //                    + EXCHANGE_COMBO_HEIGHT_DELTA);
@@ -673,6 +669,9 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
 
         public void setSelectedFont(Font selectedFont) {
 
+            //log.debug("setSelectedFont called");
+            this.selectedFont = selectedFont;
+
             fontNameTextLabel.setText(selectedFont.getFamily());
             fontSizeTextLabel.setText("" + selectedFont.getSize());
             setFontStyleText(selectedFont.getStyle());
@@ -714,6 +713,19 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
                     languageComboBox.setEnabled(true);
                 }
             }
+        }
+
+        private ImageIcon createImageIcon(String text) {
+            Font font = new Font("Dialog", Font.PLAIN, LANGUAGE_CODE_IMAGE_HEIGHT - 2 * LANGUAGE_CODE_VERTICAL_INSET);
+
+            BufferedImage bimg = new BufferedImage(LANGUAGE_CODE_IMAGE_WIDTH, LANGUAGE_CODE_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = bimg.createGraphics();
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(font);
+            g2.drawString(text, LANGUAGE_CODE_VERTICAL_INSET + 1, LANGUAGE_CODE_IMAGE_HEIGHT - 2 * LANGUAGE_CODE_VERTICAL_INSET);
+
+            return new ImageIcon(bimg);
         }
 
         class LanguageComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
