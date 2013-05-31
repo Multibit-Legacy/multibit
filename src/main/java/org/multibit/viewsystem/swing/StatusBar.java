@@ -33,6 +33,7 @@ package org.multibit.viewsystem.swing;
  * limitations under the License.
  */
 
+import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -78,13 +79,13 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
 import org.multibit.model.core.StatusEnum;
-import org.multibit.viewsystem.swing.action.MultiBitAction;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
-import org.multibit.viewsystem.swing.view.components.BlinkLabel;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.core.actions.MultiBitAction;
+import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.preferences.PreferencesPanel;
+import org.multibit.viewsystem.swing.core.components.BlinkLabel;
+import org.multibit.viewsystem.swing.core.components.FontSizer;
+import org.multibit.viewsystem.swing.core.components.MultiBitButton;
+import org.multibit.viewsystem.swing.core.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

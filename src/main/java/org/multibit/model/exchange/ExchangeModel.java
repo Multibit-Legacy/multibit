@@ -25,6 +25,8 @@ package org.multibit.model.exchange;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.AbstractModel;
 import org.multibit.model.ModelEnum;
 import org.multibit.model.core.CoreModel;
@@ -53,6 +55,10 @@ public class ExchangeModel extends AbstractModel<CoreModel> {
     public static final String SHOW_BTC_IN_WALLET_PANEL = "showBTCinWalletPanel";               // boolean
     public static final String OPEN_EXCHANGE_RATES_API_CODE = "openExchangeRatesApiCode";
     
+    private Timer tickerTimer1;
+    private Timer tickerTimer2;
+    private TickerTimerTask tickerTimerTask1 = null;
+    private TickerTimerTask tickerTimerTask2 = null;
     
     private Map<String, ExchangeData> shortExchangeNameToExchangeMap;
     
@@ -69,7 +75,6 @@ public class ExchangeModel extends AbstractModel<CoreModel> {
         shortExchangeNameToExchangeMap = new HashMap<String, ExchangeData>();
         shortExchangeNameToExchangeMap.put(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, exchangeData1);
         shortExchangeNameToExchangeMap.put(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, exchangeData2);
-        
     }
     
     @Override
@@ -83,6 +88,46 @@ public class ExchangeModel extends AbstractModel<CoreModel> {
     
     public Map<String, ExchangeData> getShortExchangeNameToExchangeMap() {
         return shortExchangeNameToExchangeMap;
+    }
+    
+    public Timer getTickerTimer1()
+    {
+        return this.tickerTimer1;
+    }
+    
+    public void setTickerTimer1(Timer tickerTimer)
+    {
+        this.tickerTimer1 = tickerTimer;
+    }
+    
+    public Timer getTickerTimer2()
+    {
+        return this.tickerTimer2;
+    }
+    
+    public void setTickerTimer2(Timer tickerTimer)
+    {
+        this.tickerTimer2 = tickerTimer;
+    }
+    
+    public TickerTimerTask getTickerTimerTask1()
+    {
+        return this.tickerTimerTask1;
+    }
+    
+    public void setTickerTimerTask1(TickerTimerTask tickerTimerTask)
+    {
+        this.tickerTimerTask1 = tickerTimerTask;
+    }
+    
+    public TickerTimerTask getTickerTimerTask2()
+    {
+        return this.tickerTimerTask2;
+    }
+    
+    public void setTickerTimerTask2(TickerTimerTask tickerTimerTask)
+    {
+        this.tickerTimerTask2 = tickerTimerTask;
     }
     
 }

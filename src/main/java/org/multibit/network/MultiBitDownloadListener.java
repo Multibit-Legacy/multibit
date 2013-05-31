@@ -25,7 +25,7 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
+import org.multibit.viewsystem.swing.bitcoin.walletlist.SingleWalletPanelDownloadListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

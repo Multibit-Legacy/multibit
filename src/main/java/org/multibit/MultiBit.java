@@ -60,10 +60,10 @@ import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.core.actions.ExitAction;
+import org.multibit.viewsystem.swing.core.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

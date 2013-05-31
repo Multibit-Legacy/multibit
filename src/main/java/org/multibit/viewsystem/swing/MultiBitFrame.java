@@ -15,6 +15,9 @@
  */
 package org.multibit.viewsystem.swing;
 
+import org.multibit.viewsystem.swing.core.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.core.FireDataChangedTimerTask;
+import org.multibit.viewsystem.swing.bitcoin.WalletChangeTimerTask;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -85,27 +88,27 @@ import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.Viewable;
-import org.multibit.viewsystem.swing.action.CloseWalletAction;
-import org.multibit.viewsystem.swing.action.AbstractExitAction;
-import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletAction;
-import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.action.MnemonicUtil;
-import org.multibit.viewsystem.swing.action.MultiBitAction;
-import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.view.ViewFactory;
-import org.multibit.viewsystem.swing.view.components.BlinkLabel;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
-import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
-import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
-import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
+import org.multibit.viewsystem.swing.bitcoin.actions.CloseWalletAction;
+import org.multibit.viewsystem.swing.core.actions.AbstractExitAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.CreateWalletSubmitAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.DeleteWalletAction;
+import org.multibit.viewsystem.swing.core.HelpContextAction;
+import org.multibit.viewsystem.swing.core.MnemonicUtil;
+import org.multibit.viewsystem.swing.core.actions.MultiBitAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.MultiBitWalletBusyAction;
+import org.multibit.viewsystem.swing.bitcoin.actions.OpenWalletAction;
+import org.multibit.viewsystem.swing.core.ViewFactory;
+import org.multibit.viewsystem.swing.core.components.BlinkLabel;
+import org.multibit.viewsystem.swing.core.components.FontSizer;
+import org.multibit.viewsystem.swing.core.components.HelpButton;
+import org.multibit.viewsystem.swing.core.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.core.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.core.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.bitcoin.panels.SendBitcoinConfirmPanel;
+import org.multibit.viewsystem.swing.bitcoin.panels.TransactionsPanel;
+import org.multibit.viewsystem.swing.exchange.TickerTablePanel;
+import org.multibit.viewsystem.swing.bitcoin.walletlist.SingleWalletPanel;
+import org.multibit.viewsystem.swing.bitcoin.walletlist.WalletListPanel;
 
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -226,11 +229,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private Timer fileChangeTimer;
 
-    private Timer tickerTimer1;
-    private Timer tickerTimer2;
-    private TickerTimerTask tickerTimerTask1;
-    private TickerTimerTask tickerTimerTask2;
-
     private JPanel headerPanel;
 
     private TickerTablePanel tickerTablePanel;
@@ -307,7 +305,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         sizeAndCenter();
 
-        viewFactory = new ViewFactory(this.bitcoinController, this.exchangeController, this);
+        viewFactory = new ViewFactory(this, this.coreController, this.bitcoinController, this.exchangeController);
 
         initUI(initialView);
 
@@ -315,17 +313,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
          // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(this.bitcoinController), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
-
-         // Initialise the tickers.
-        tickerTimer1 = new Timer();
-        tickerTimerTask1 = new TickerTimerTask(this.exchangeController, this, true);
-        tickerTimer1.schedule(tickerTimerTask1, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        fileChangeTimer.schedule(new WalletChangeTimerTask(this.bitcoinController), WalletChangeTimerTask.INITIAL_DELAY, WalletChangeTimerTask.DEFAULT_REPEAT_RATE);
         
-        tickerTimer2 = new Timer();
-        tickerTimerTask2 = new TickerTimerTask(this.exchangeController, this, false);
-        tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
-
+        // Initialise the tickers.
+        {
+            Timer tickerTimer = new Timer();
+            TickerTimerTask tickerTimerTask = new TickerTimerTask(this.exchangeController, this, true);
+            tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
+            this.exchangeController.getModel().setTickerTimer1(tickerTimer);
+            this.exchangeController.getModel().setTickerTimerTask1(tickerTimerTask);
+        }
+        {
+            Timer tickerTimer = new Timer();
+            TickerTimerTask tickerTimerTask = new TickerTimerTask(this.exchangeController, this, true);
+            tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+            this.exchangeController.getModel().setTickerTimer2(tickerTimer);
+            this.exchangeController.getModel().setTickerTimerTask2(tickerTimerTask);
+        }
+        
         // Initialise status bar.
         statusBar.initialise();
 
@@ -1001,6 +1006,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.FALSE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
                     } else {
+                        Timer tickerTimer1 = exchangeController.getModel().getTickerTimer1();
+                        Timer tickerTimer2 = exchangeController.getModel().getTickerTimer2();
+                        
                         tickerTablePanel.setVisible(true);
                         controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.TRUE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
@@ -1352,7 +1360,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void blockDownloaded() {
         // Update transaction screen in case status icons have changed.
         if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
-            ShowTransactionsPanel.updateTransactions();
+            TransactionsPanel.updateTransactions();
         }
     }
 
@@ -1378,7 +1386,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-            ShowTransactionsPanel.updateTransactions(); 
+            TransactionsPanel.updateTransactions(); 
         } else if (controller.getCurrentView() == View.SEND_BITCOIN_VIEW) {
             final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
             final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
@@ -1708,36 +1716,5 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void updatedExchangeRate(ExchangeRate exchangeRate) {
         updateHeader();
-    }
-
-    public Timer getTickerTimer1() {
-        return tickerTimer1;
-    }
-
-    public void setTickerTimer1(Timer tickerTimer1) {
-        this.tickerTimer1 = tickerTimer1;
-    }
-    
-    public Timer getTickerTimer2() {
-        return tickerTimer2;
-    }
-
-    public void setTickerTimer2(Timer tickerTimer2) {
-        this.tickerTimer2 = tickerTimer2;
-    }
-    
-    public TickerTimerTask getTickerTimerTask1() {
-        return tickerTimerTask1;
-    }
-    public TickerTimerTask getTickerTimerTask2() {
-        return tickerTimerTask2;
-    }
-
-    public void setTickerTimerTask1(TickerTimerTask tickerTimerTask1) {
-        this.tickerTimerTask1 = tickerTimerTask1;
-    }
-
-    public void setTickerTimerTask2(TickerTimerTask tickerTimerTask2) {
-        this.tickerTimerTask2 = tickerTimerTask2;
     }
 }
