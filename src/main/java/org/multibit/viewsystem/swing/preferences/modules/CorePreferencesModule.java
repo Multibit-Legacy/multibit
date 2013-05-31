@@ -581,10 +581,7 @@ public class CorePreferencesModule extends AbstractPreferencesModule<CoreControl
 
             FontMetrics fontMetrics = fontMetricsCallback.get(FontSizer.INSTANCE.getAdjustedDefaultFont());
             int textWidth = Math.max(fontMetrics.stringWidth("CDE/Motif"), fontMetrics.stringWidth("Windows classic"));
-//            Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight()
-//                    + EXCHANGE_COMBO_HEIGHT_DELTA);
-
-            Dimension preferredSize = new Dimension(textWidth + 100, fontMetrics.getHeight() + 100);
+            Dimension preferredSize = new Dimension(textWidth + 100, fontMetrics.getHeight() + 10);
 
             lookAndFeelComboBox.setPreferredSize(preferredSize);
 

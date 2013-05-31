@@ -32,10 +32,12 @@ import static javax.swing.Action.SHORT_DESCRIPTION;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,15 +133,15 @@ public class PreferencesPanel extends JPanel implements Viewable {
     public void navigateAwayFromView() {
     }
 
-    private void Setup(){
-        
+    private void Setup() {
+
         for (PreferencesModule preferencesModule : this.preferencesModules) {
             preferencesModule.Setup(this.redrawCallback, this.getFontMetricsCallback);
         }
-        
-        
+
+
     }
-    
+
     private void initUI() {
         if (this.hasInitialized == true) {
             return;
@@ -230,8 +232,7 @@ public class PreferencesPanel extends JPanel implements Viewable {
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
-        PreferencesUndoChangesSubmitAction undoChangesAction = new PreferencesUndoChangesSubmitAction(controller,
-                ImageLoader.createImageIcon(ImageLoader.UNDO_ICON_FILE));
+        PreferencesUndoChangesSubmitAction undoChangesAction = new PreferencesUndoChangesSubmitAction(ImageLoader.createImageIcon(ImageLoader.UNDO_ICON_FILE));
         undoChangesButton = new MultiBitButton(undoChangesAction, controller);
 
         buttonPanel.add(undoChangesButton);
@@ -299,10 +300,10 @@ public class PreferencesPanel extends JPanel implements Viewable {
             repaint();
         }
     }
-    
+
     public class GetFontMetricsCallback {
-        public FontMetrics get(Font font)
-        {
+
+        public FontMetrics get(Font font) {
             return getFontMetrics(font);
         }
     }
@@ -327,18 +328,18 @@ public class PreferencesPanel extends JPanel implements Viewable {
                 if (mainFrame != null) {
                     mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 }
-                
+
                 Boolean needToUpdate = false;
-                
-                
-                for (PreferencesAction preferencesAction : preferencesActions)
-                {
+
+
+                for (PreferencesAction preferencesAction : preferencesActions) {
                     Boolean result = preferencesAction.Submit();
-                    if (result) needToUpdate = true;
+                    if (result) {
+                        needToUpdate = true;
+                    }
                 }
-                
-                if (needToUpdate)
-                {
+
+                if (needToUpdate) {
                     ColorAndFontConstants.init();
                     FontSizer.INSTANCE.initialise(controller);
                     HelpContentsPanel.clearBrowser();
@@ -359,6 +360,57 @@ public class PreferencesPanel extends JPanel implements Viewable {
                     mainFrame.setCursor(Cursor.getDefaultCursor());
                 }
             }
+        }
+    }
+
+    private class PreferencesUndoChangesSubmitAction extends AbstractAction {
+
+        /**
+         * Creates a new {@link UndoPreferencesChangesSubmitAction}.
+         */
+        public PreferencesUndoChangesSubmitAction(ImageIcon icon) {
+            super(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"), icon);
+
+            MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
+            putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.tooltip")));
+            putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("undoPreferencesChangesSubmitAction.mnemonicKey"));
+        }
+
+        /**
+         * Get the previous language and font changes and undo them
+         */
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            String previousFontName = (String) controller.getModel().getUserPreference(CoreModel.PREVIOUS_FONT_NAME);
+            String previousFontStyle = (String) controller.getModel().getUserPreference(CoreModel.PREVIOUS_FONT_STYLE);
+            int previousFontStyleAsInt = 0;
+            try {
+                previousFontStyleAsInt = Integer.parseInt(previousFontStyle);
+            } catch (NumberFormatException nfe) {
+                // just use 0 = plain
+            }
+            String previousFontSize = (String) controller.getModel().getUserPreference(CoreModel.PREVIOUS_FONT_SIZE);
+            int previousFontSizeAsInt = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
+            try {
+                previousFontSizeAsInt = Integer.parseInt(previousFontSize);
+            } catch (NumberFormatException nfe) {
+                // just use default
+            }
+
+            controller.getModel().setUserPreference(CoreModel.USER_LANGUAGE_CODE,
+                    (String) controller.getModel().getUserPreference(CoreModel.PREVIOUS_USER_LANGUAGE_CODE));
+            controller.getModel().setUserPreference(CoreModel.FONT_NAME, previousFontName);
+            controller.getModel().setUserPreference(CoreModel.FONT_STYLE, previousFontStyle);
+            controller.getModel().setUserPreference(CoreModel.FONT_SIZE, previousFontSize);
+            controller.getModel().setUserPreference(CoreModel.CAN_UNDO_PREFERENCES_CHANGES, "false");
+
+            // return to the same view but fire data structure change to reset
+            // everything
+            FontSizer.INSTANCE.initialise(controller);
+            UIManager.put("ToolTip.font", new Font(previousFontName, previousFontStyleAsInt, previousFontSizeAsInt));
+
+            controller.fireDataStructureChanged();
+            controller.displayView(View.PREFERENCES_VIEW);
         }
     }
 }
