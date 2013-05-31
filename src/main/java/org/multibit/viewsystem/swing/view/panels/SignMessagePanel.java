@@ -228,11 +228,11 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_IMPORTING_PRIVATE_KEYS_URL);
+                    HelpContentsPanel.HELP_SIGN_AND_VERIFY_MESSAGE_URL);
         } else {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_IMPORTING_PRIVATE_KEYS_URL);
+                    HelpContentsPanel.HELP_SIGN_AND_VERIFY_MESSAGE_URL);
         }   
                HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
@@ -280,9 +280,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
 
     private JPanel createInstructionsPanel(int stentWidth) {
         MultiBitTitledPanel instructionsPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "verifyMessagePanel.instructions.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        GridBagConstraints constraints = new GridBagConstraints();
+                "resetTransactionsPanel.explainTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
                 controller.getLocaliser().getString("signMessagePanel.instructions.text1"), 3, instructionsPanel);

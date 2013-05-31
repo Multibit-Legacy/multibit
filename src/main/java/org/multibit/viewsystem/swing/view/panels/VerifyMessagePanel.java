@@ -182,11 +182,11 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_IMPORTING_PRIVATE_KEYS_URL);
+                    HelpContentsPanel.HELP_SIGN_AND_VERIFY_MESSAGE_URL);
         } else {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_IMPORTING_PRIVATE_KEYS_URL);
+                    HelpContentsPanel.HELP_SIGN_AND_VERIFY_MESSAGE_URL);
         }   
                HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");

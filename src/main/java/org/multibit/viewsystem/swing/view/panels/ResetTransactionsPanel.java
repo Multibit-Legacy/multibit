@@ -343,30 +343,6 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(filler3, constraints);
 
-        String explainText2 = controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2");
-        MultiBitTextArea explainTextArea2 = new MultiBitTextArea(explainText2, 2, 40, controller);
-        explainTextArea2.setOpaque(true);
-        explainTextArea2.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        explainTextArea2.setWrapStyleWord(true);
-        explainTextArea2.setLineWrap(true);
-        explainTextArea2.setEditable(false);
-
-        int height2 = WelcomePanel.calculateHeight(explainText2);
-
-        Dimension preferredSize2 = new Dimension(preferredWidth, height2 * fontHeight);
-        explainTextArea2.setMinimumSize(preferredSize2);
-        explainTextArea2.setPreferredSize(preferredSize2);
-        explainTextArea2.setMaximumSize(preferredSize2);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 8;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        explainPanel.add(explainTextArea2, constraints);
-
         return explainPanel;
     }
 
