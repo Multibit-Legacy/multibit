@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -35,6 +37,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletBusyListener;
@@ -47,7 +50,6 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.SignMessageSubmitAction;
-import org.multibit.viewsystem.swing.action.VerifyMessageSubmitAction;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -69,6 +71,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
     private MultiBitLabel messageLabel1;
     private MultiBitLabel messageLabel2;
 
+    private MultiBitLabel walletTextLabel;
     private JPasswordField walletPasswordField;
     private MultiBitLabel walletPasswordPromptLabel;
 
@@ -82,6 +85,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
     private MultiBitLabel signatureLabel;
     
     private SignMessageSubmitAction signMessageSubmitAction;
+    private MultiBitButton clearAllButton;
     
     private static final int FIELD_WIDTH = 360;
     private static final int FIELD_HEIGHT = 30;
@@ -295,7 +299,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+        walletTextLabel = MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
                 controller.getLocaliser().getString("signMessagePanel.wallet.text"), 3, inputWalletPanel);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -561,6 +565,7 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         signatureTextArea.setPreferredSize(new Dimension(FIELD_WIDTH, FIELD_HEIGHT * 2));
         signatureTextArea.setMaximumSize(new Dimension(FIELD_WIDTH, FIELD_HEIGHT * 2));
         signatureTextArea.setLineWrap(true);
+        signatureTextArea.setEditable(false);
         signatureTextArea.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 3;
@@ -588,6 +593,22 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
         MultiBitButton submitButton = new MultiBitButton(signMessageSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         buttonPanel.add(submitButton);
+        
+        clearAllButton = new MultiBitButton(controller.getLocaliser().getString("signMessagePanel.clearAll.text"));
+        clearAllButton.setToolTipText(controller.getLocaliser().getString("signMessagePanel.clearAll.tooltip"));
+        clearAllButton.setIcon(ImageLoader.createImageIcon(ImageLoader.DELETE_ICON_FILE));
+        clearAllButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                walletPasswordField.setText("");
+                addressTextArea.setText("");
+                messageTextArea.setText("");
+                signatureTextArea.setText("");
+                messageLabel1.setText(" ");
+                messageLabel2.setText(" ");
+            }
+        }); 
+        clearAllButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        buttonPanel.add(clearAllButton);
 
         return buttonPanel;
     }
@@ -599,6 +620,12 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
             return;
         }
        
+        boolean walletPasswordRequired = false;
+        if (this.bitcoinController.getModel().getActiveWallet() != null && this.bitcoinController.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+            walletPasswordRequired = true;
+        }
+        enableWalletPassword(walletPasswordRequired);
+
         walletBusyChange(this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         
         messageLabel1.setText(" ");
@@ -676,6 +703,13 @@ public class SignMessagePanel extends JPanel implements Viewable, WalletBusyList
                 signMessageSubmitAction.setEnabled(true);
             }
         }
+    }
+    
+    private void enableWalletPassword(boolean enableWalletPassword) {
+        // Enable/ disable the wallet password fields.
+        walletPasswordField.setEnabled(enableWalletPassword);
+        walletPasswordPromptLabel.setEnabled(enableWalletPassword);
+        walletTextLabel.setEnabled(enableWalletPassword);
     }
 
     public MultiBitTextArea getMessageTextArea() {

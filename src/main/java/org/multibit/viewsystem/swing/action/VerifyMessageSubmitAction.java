@@ -93,6 +93,24 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
         log.debug("messageText = '" + messageText + "'");
         log.debug("signaureText = '" + signatureText + "'");
         
+        if (addressText == null || "".equals(addressText.trim())) {
+            verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.noAddress"));
+            verifyMessagePanel.setMessageText2(" ");  
+            return;
+        }
+        
+        if (messageText == null || "".equals(messageText.trim())) {
+            verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.noMessage"));
+            verifyMessagePanel.setMessageText2(" ");  
+            return;
+        }
+        
+        if (signatureText == null || "".equals(signatureText.trim())) {
+            verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.noSignature"));
+            verifyMessagePanel.setMessageText2(" ");  
+            return;
+        }
+        
         try {
             Address expectedAddress = new Address(bitcoinController.getModel().getNetworkParameters(), addressText);
             ECKey key = ECKey.signedMessageToKey(messageText, signatureText);

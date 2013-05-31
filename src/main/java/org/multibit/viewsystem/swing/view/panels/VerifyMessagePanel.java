@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -77,6 +79,7 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
     private MultiBitLabel signatureLabel;
     
     private VerifyMessageSubmitAction verifyMessageSubmitAction;
+    private MultiBitButton clearAllButton;
     
     private static final int FIELD_WIDTH = 360;
     private static final int FIELD_HEIGHT = 30;
@@ -446,6 +449,21 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
         MultiBitButton submitButton = new MultiBitButton(verifyMessageSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         buttonPanel.add(submitButton);
+        
+        clearAllButton = new MultiBitButton(controller.getLocaliser().getString("signMessagePanel.clearAll.text"));
+        clearAllButton.setToolTipText(controller.getLocaliser().getString("signMessagePanel.clearAll.tooltip"));
+        clearAllButton.setIcon(ImageLoader.createImageIcon(ImageLoader.DELETE_ICON_FILE));
+        clearAllButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                addressTextArea.setText("");
+                messageTextArea.setText("");
+                signatureTextArea.setText("");
+                messageLabel1.setText(" ");
+                messageLabel2.setText(" ");
+            }
+        }); 
+        clearAllButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        buttonPanel.add(clearAllButton);
 
         return buttonPanel;
     }

@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 import java.nio.CharBuffer;
-import java.security.SignatureException;
 import java.util.Iterator;
 
 import javax.swing.Action;
@@ -27,7 +26,6 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.SignMessagePanel;
-import org.multibit.viewsystem.swing.view.panels.VerifyMessagePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -35,9 +33,9 @@ import org.spongycastle.crypto.params.KeyParameter;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WrongNetworkException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} signs a message
@@ -70,7 +68,6 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-
         if (abort()) {
             return;
         }
@@ -94,11 +91,40 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
         CharSequence walletPassword = null;
         if (signMessagePanel.getWalletPasswordField() != null) {
             walletPassword = CharBuffer.wrap(signMessagePanel.getWalletPasswordField().getPassword());
-        }        
+
+            if (bitcoinController.getModel().getActiveWallet().isEncrypted()) {
+                if (walletPassword.length() == 0) {
+                    signMessagePanel.setMessageText1(controller.getLocaliser().getString(
+                            "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                    signMessagePanel.setMessageText2(" ");
+                    return;
+                }
+
+                if (!bitcoinController.getModel().getActiveWallet().checkPassword(walletPassword)) {
+                    // The password supplied is incorrect.
+                    signMessagePanel.setMessageText1(controller.getLocaliser().getString(
+                            "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                    signMessagePanel.setMessageText2(" ");
+                    return;
+                }
+            }
+        }      
         
         log.debug("addressText = '" + addressText + "'");
         log.debug("messageText = '" + messageText + "'");
         
+        if (addressText == null || "".equals(addressText.trim())) {
+            signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.noAddress"));
+            signMessagePanel.setMessageText2(" ");  
+            return;
+        }
+        
+        if (messageText == null || "".equals(messageText.trim())) {
+            signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.noMessage"));
+            signMessagePanel.setMessageText2(" ");  
+            return;
+        }
+
         try {
             Address signingAddress = new Address(bitcoinController.getModel().getNetworkParameters(), addressText);
             
@@ -116,7 +142,8 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
             }
             if (signingKey == null) {
                 // No signing key found.
-                // TODO notify user - FAIL.
+                signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.noSigningKey", new String[]{addressText}));
+                signMessagePanel.setMessageText2(" "); 
             } else {
                 KeyParameter aesKey = null;
                 if (signingKey.isEncrypted()) {
@@ -127,13 +154,13 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
                 String signatureBase64 = signingKey.signMessage(messageText, aesKey);
                 if (signMessagePanel.getSignatureTextArea() != null) {
                     signMessagePanel.getSignatureTextArea().setText(signatureBase64);
-                    // TODO Notify user - SUCCESS.
+                    signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.success"));
+                    signMessagePanel.setMessageText2(" "); 
+
                 }        
             }
-
-                //signMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.success"));
-                //signMessagePanel.setMessageText2(" "); 
-
+        } catch (KeyCrypterException e) {
+            logError(e);
         } catch (WrongNetworkException e) {
             logError(e);
         } catch (AddressFormatException e) {
@@ -143,7 +170,7 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
     
     private void logError(Exception e) {
         e.printStackTrace();
-        signMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.error"));
+        signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.error"));
         signMessagePanel.setMessageText2(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", 
                 new String[] {e.getClass().getCanonicalName() + " " + e.getMessage()}));
     }

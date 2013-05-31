@@ -126,11 +126,6 @@ public class BitcoinController extends AbstractController<CoreController> implem
     public void setModel(BitcoinModel model) {
         this.model = model;
     }
-    
-
-    
-
-
 
     /**
      * Register a new WalletBusyListener.
@@ -192,7 +187,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
      * Method called by downloadListener whenever a block is downloaded.
      */
     public void fireBlockDownloaded() {
-        // log.debug("Fire blockdownloaded");
+        log.debug("Fire blockdownloaded");
         for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.blockDownloaded();
         }
@@ -202,7 +197,13 @@ public class BitcoinController extends AbstractController<CoreController> implem
             List<WalletData> perWalletModelDataList = getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
                 for (WalletData loopPerWalletModelData : perWalletModelDataList) {
-                    loopPerWalletModelData.setDirty(true);
+                    if (loopPerWalletModelData.getWalletInfo() != null) {
+                        synchronized(loopPerWalletModelData.getWalletInfo()) {
+                            loopPerWalletModelData.setDirty(true);
+                        }
+                    } else {
+                        loopPerWalletModelData.setDirty(true);                        
+                    }
                 }
             }
         }

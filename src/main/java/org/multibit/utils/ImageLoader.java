@@ -35,6 +35,7 @@ public class ImageLoader {
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String CROSS_ICON_FILE = "/images/cross.png";
+    public static final String DELETE_ICON_FILE = "/images/delete.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
     public static final String DELETE_ADDRESS_ICON_FILE = "/images/book_open_delete.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
