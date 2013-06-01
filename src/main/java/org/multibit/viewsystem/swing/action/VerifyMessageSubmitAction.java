@@ -65,11 +65,6 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-
-        if (abort()) {
-            return;
-        }
-        
         if (verifyMessagePanel == null) {
             return;
         }
@@ -91,7 +86,7 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
         
         log.debug("addressText = '" + addressText + "'");
         log.debug("messageText = '" + messageText + "'");
-        log.debug("signaureText = '" + signatureText + "'");
+        log.debug("signatureText = '" + signatureText + "'");
         
         if (addressText == null || "".equals(addressText.trim())) {
             verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.noAddress"));

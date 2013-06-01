@@ -1,5 +1,10 @@
 MultiBit release notes.
 
+Version 0.5.11
+Changes
++ Implemented issue 96 - Sign and Verify message.
+
+
 27 May 2013 - Version 0.5.10
 Changes:
 + Fixed issue 116 - could not import blockchain.info backups.
