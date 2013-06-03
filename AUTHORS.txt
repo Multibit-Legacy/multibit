@@ -10,17 +10,23 @@ Tim Molter
 Internationalisation:
 ---------------------
 3phase              - Greek
+allbiznessman       - Arabic
 alpaycan            - Turkish
 anod1               - French
+aneurysm11          - Hindi
 AnonX               - Norwegian
 Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
+balkaneze           - Russian
 Baltar              - Polish
 Beetle              - Russian
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
 blackarrow          - Hindi
+btcinfo_nl          - Dutch
 btctalk             - Persian
+CoinCrazy           - Tamil
+coprolog            - Italian
 corentingc          - French
 corn3               - Portuguese
 CD1                 - Dutch
@@ -28,18 +34,26 @@ D4CH                - Danish
 dagrauna            - Portuguese
 damnek              - Dutch
 darpho              - Spanish
+davux               - Spanish
+deathstar84         - Finnish
+derma               - Chinese Simplified
 dr-nix              - Dutch
 druhy               - Slovak, Czech, French, German
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
 eqawasmi            - Arabic
+elyajouriomar       - French
+engee               - Hungarian
+evanjs              - Japanese
 Ermo                - Italian
+fengjian197         - Simplified Chinese
 fengp3301           - Simplified Chinese
 ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
 ftechx              - Arabic
 gaasje              - Dutch
+gap                 - Romanian
 gilgilgil           - Hebrew
 gongjianhui         - Simplified Chinese
 grouver             - Dutch
@@ -47,6 +61,7 @@ GSBank              - French
 guillo.92199        - French
 gulaschkanone       - German
 guy46               - Portuguese
+happysnower1981     - Simplified Chinese
 haritosh            - Hindi
 hey                 - Dutch
 Hiera               - Polish
@@ -54,52 +69,80 @@ HostFat             - Italian
 ildubbioso          - Italian
 Ipaboo              - Greek
 lzsaver             - Russian
+Jaff                - Romanian
 Jan-steenbergen     - Dutch
 Jardo               - Slovak
+jazzy               - Chinese Simplified
+jedioneira          - Greek
 JeppeJ              - Swedish
 JeromeS             - Arabic
 jesusangel          - Spanish
 jmsanto123          - Tamil
+jocose              - Russian
+joewinkler          - German
+jrnr601             - Dutch
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
 Kayleigh            - Portuguese
 Kishor Kumar        - Hindi
 knight22            - French
+krieg_king          - Spanish
 Kupsi               - Norwegian
 kyuupichan          - Japanese
+laowuzhao           - Chinese Simplified
+Layonee             - Dutch
 litecoin            - Portuguese
 lophie              - Arabic 
 majdom              - Polish
 mazi                - Slovenian
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
+mbe                 - Arabic
 MBH                 - Arabic
 Memory Dealers      - Japanese
+michabailey         - Hebrew
 mnm                 - Arabic
 mohammad_rafigh     - Persian
 moole               - Czech
+MrM                 - Slovenian
 mrmx                - Spanish
 mrvision            - Spanish
 muyuu               - Japanese
 nsnia               - Croatian
+nnuuij11111         - Chinese Simplified
 nuntius.marii       - Dutch
+Oshikavadia         - Hindi
 okahira             - Chinese Simplified
+p96590              - Chinese Simplified
 pallikarva          - Finnish
+pasteur             - French
+petereberle         - German
 pginvest            - Portuguese
 Piotr Waskiewicz    - Polish
+propeng             - Arabic
+ptmgd               - Slovak
 R2D221              - Esperanto
+rastabiz            - Russian
 raymccarthy         - Swedish
 rbreban             - Spanish
 robsned             - Hindi
+Rodrigochota        - Turkish, Spanish
 ronimo              - French
+rriky92             - Italian
+saivann             - French
 samer               - Arabic
 sasha               - Russian
 scorpion9979        - Arabic
 SeNiels             - Dutch
 shelart             - Russian
+soli                - Chinese Simplified
+Southnet            - Russian
 spiccioli           - Italian
+ss692558521         - Chinese Simplified
 stlucifer           - Hindi
 stuk88              - Hebrew
+subash              - Tamil
+sunfly6195000       - Chinese Simplified
 SunMan              - Hindi
 techmix             - Persian
 Technomage          - Finnish
@@ -108,6 +151,9 @@ tengo               - Russian
 tesla               - Russian
 thaven              - Dutch
 themagic            - Arabic
+thomasleveil        - French
+Timshan             - Chinese Simplified
+topfoolish          - Chinese Simplified
 tosR                - Slovak
 tpantlik            - Czech
 viboracecata        - Chinese Simplified
@@ -115,6 +161,7 @@ welyoe              - Bahasa Indonesia
 will8lee            - Korean
 Wissam Idrissi      - Arabic
 Wim1441             - Dutch
+xdarktemplar89      - Italian
 XeF6                - Turkish
 Yui_K               - Spanish
 ziomik              - Italian

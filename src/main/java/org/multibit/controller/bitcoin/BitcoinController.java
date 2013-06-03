@@ -15,7 +15,6 @@
  */
 package org.multibit.controller.bitcoin;
 
-import org.multibit.controller.core.CoreController;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -24,31 +23,20 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
-import org.multibit.ApplicationDataDirectoryLocator;
+import org.multibit.controller.AbstractController;
+import org.multibit.controller.AbstractEventHandler;
+import org.multibit.controller.core.CoreController;
 import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
-import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.MultiBitService;
-import org.multibit.platform.listener.GenericAboutEvent;
-import org.multibit.platform.listener.GenericAboutEventListener;
-import org.multibit.platform.listener.GenericOpenURIEvent;
-import org.multibit.platform.listener.GenericOpenURIEventListener;
-import org.multibit.platform.listener.GenericPreferencesEvent;
-import org.multibit.platform.listener.GenericPreferencesEventListener;
-import org.multibit.platform.listener.GenericQuitEvent;
-import org.multibit.platform.listener.GenericQuitEventListener;
-import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +47,6 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
-import org.multibit.controller.AbstractController;
-import org.multibit.controller.AbstractEventHandler;
 
 /**
  * The MVC controller for MultiBit.
@@ -126,11 +112,6 @@ public class BitcoinController extends AbstractController<CoreController> implem
     public void setModel(BitcoinModel model) {
         this.model = model;
     }
-    
-
-    
-
-
 
     /**
      * Register a new WalletBusyListener.
@@ -192,7 +173,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
      * Method called by downloadListener whenever a block is downloaded.
      */
     public void fireBlockDownloaded() {
-        // log.debug("Fire blockdownloaded");
+        //log.debug("Fire blockdownloaded");
         for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.blockDownloaded();
         }
@@ -202,7 +183,13 @@ public class BitcoinController extends AbstractController<CoreController> implem
             List<WalletData> perWalletModelDataList = getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
                 for (WalletData loopPerWalletModelData : perWalletModelDataList) {
-                    loopPerWalletModelData.setDirty(true);
+                    if (loopPerWalletModelData.getWalletInfo() != null) {
+                        synchronized(loopPerWalletModelData.getWalletInfo()) {
+                            loopPerWalletModelData.setDirty(true);
+                        }
+                    } else {
+                        loopPerWalletModelData.setDirty(true);                        
+                    }
                 }
             }
         }

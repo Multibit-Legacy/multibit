@@ -35,6 +35,7 @@ public class ImageLoader {
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String CROSS_ICON_FILE = "/images/cross.png";
+    public static final String DELETE_ICON_FILE = "/images/delete.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
     public static final String DELETE_ADDRESS_ICON_FILE = "/images/book_open_delete.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
@@ -47,6 +48,8 @@ public class ImageLoader {
     public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
     public static final String LOCK_ICON_FILE = "/images/lock.png";
     public static final String MESSAGES_ICON_FILE = "/images/comment.png";
+    public static final String MESSAGE_SIGN_ICON_FILE = "/images/messageSign.png";
+    public static final String MESSAGE_VERIFY_ICON_FILE = "/images/messageVerify.png";
     public static final String MONEY_ICON_FILE = "/images/money.png";
     public static final String MULTIBIT_128_ICON_FILE = "/images/multibit128.png";
     public static final String MULTIBIT_ICON_FILE = "/images/multibit.png";

@@ -556,31 +556,31 @@ public class FileHandler {
                 String walletInfoFileSize = "" + walletInfoFile.length();
                 String walletInfoFileLastModified = "" + walletInfoFile.lastModified();
 
+                log.debug("Previous wallet file size was '" + walletInfo.getProperty(BitcoinModel.WALLET_FILE_SIZE)
+                        + "'. It is now '" + walletFileSize + "'");
                 if (!walletFileSize.equals(walletInfo.getProperty(BitcoinModel.WALLET_FILE_SIZE))) {
                     haveFilesChanged = true;
-                    log.debug("Previous wallet file size was '" + walletInfo.getProperty(BitcoinModel.WALLET_FILE_SIZE)
-                            + "'. It is now '" + walletFileSize + "'");
                 }
 
+                log.debug("Previous wallet file modification date was '"
+                        + walletInfo.getProperty(BitcoinModel.WALLET_FILE_LAST_MODIFIED) + "'. It is now '"
+                        + walletFileLastModified + "'");
                 if (!walletFileLastModified.equals(walletInfo.getProperty(BitcoinModel.WALLET_FILE_LAST_MODIFIED))) {
                     haveFilesChanged = true;
-                    log.debug("Previous wallet file modification date was '"
-                            + walletInfo.getProperty(BitcoinModel.WALLET_FILE_LAST_MODIFIED) + "'. It is now '"
-                            + walletFileLastModified + "'");
                 }
 
+                log.debug("Previous wallet info file size was '" + walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_SIZE)
+                        + "'. It is now '" + walletInfoFileSize + "'");
                 if (!walletInfoFileSize.equals(walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_SIZE))) {
                     haveFilesChanged = true;
-                    log.debug("Previous wallet info file size was '" + walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_SIZE)
-                            + "'. It is now '" + walletInfoFileSize + "'");
                 }
 
+                log.debug("Previous wallet info file modification date was '"
+                        + walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED) + "'. It is now '"
+                        + walletInfoFileLastModified + "'");
                 if (!walletInfoFileLastModified.equals(walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
                     haveFilesChanged = true;
-                    log.debug("Previous wallet info file modification date was '"
-                            + walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED) + "'. It is now '"
-                            + walletInfoFileLastModified + "'");
-                }
+                 }
 
                 if (haveFilesChanged) {
                     log.debug("Result of check of whether files have changed for wallet filename "
