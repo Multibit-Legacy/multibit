@@ -16,3 +16,5 @@
 /swatch.png
 .project
 .idea/.name
+*.repositories
+maven-metadata-local.xml

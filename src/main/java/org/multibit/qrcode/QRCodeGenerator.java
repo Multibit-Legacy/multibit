@@ -162,8 +162,7 @@ public class QRCodeGenerator {
         if (contents == null || contents.length() == 0) {
             throw new IllegalArgumentException("Found empty contents");
         }
-
-        Encoder.encode(contents, ErrorCorrectionLevel.L, null, code);
+        this.code = Encoder.encode(contents, ErrorCorrectionLevel.L);
         return renderResult(code, QR_CODE_ELEMENT_MULTIPLE);
     }
 

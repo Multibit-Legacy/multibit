@@ -106,9 +106,8 @@ public class KeyCrypterOpenSSL {
         try {
             openSSLSaltedBytes = OPENSSL_SALTED_TEXT.getBytes(STRING_ENCODING);
 
-            openSSLMagicText = Base64.encodeBase64String(
-                    KeyCrypterOpenSSL.OPENSSL_SALTED_TEXT.getBytes(KeyCrypterOpenSSL.STRING_ENCODING)).substring(0,
-                    KeyCrypterOpenSSL.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
+            openSSLMagicText = new String(Base64.encodeBase64Chunked(KeyCrypterOpenSSL.OPENSSL_SALTED_TEXT.getBytes(KeyCrypterOpenSSL.STRING_ENCODING)),"UTF-8")
+                    .substring(0,KeyCrypterOpenSSL.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
 
         } catch (UnsupportedEncodingException e) {
             log.error("Could not construct EncrypterDecrypter", e.getMessage());
@@ -163,7 +162,7 @@ public class KeyCrypterOpenSSL {
             // OpenSSL prefixes the salt bytes + encryptedBytes with Salted___ and then base64 encodes it
             byte[] encryptedBytesPlusSaltedText = concat(openSSLSaltedBytes, encryptedBytes);
             
-            return Base64.encodeBase64String(encryptedBytesPlusSaltedText);
+            return new String(Base64.encodeBase64Chunked(encryptedBytesPlusSaltedText),"UTF-8");
         } catch (Exception e) {
             throw new KeyCrypterException("Could not encrypt string '" + plainText + "'", e);
         }
