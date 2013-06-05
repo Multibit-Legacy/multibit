@@ -1,6 +1,10 @@
 MultiBit release notes.
 
-Version 0.5.11
+Version 0.5.12
+Changes:
++ Fixed issue 155 - version.txt retrieval error on Java 7
+
+03 Jun 2013 - Version 0.5.11
 Changes
 + Implemented issue 96 - Sign and Verify message.
 
