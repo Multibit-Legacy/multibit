@@ -132,6 +132,9 @@ public class MultiBit {
             try {
                 // Fix for Windows / Java 7 / VPN bug.
                 System.setProperty("java.net.preferIPv4Stack", "true");
+                
+                // Fix for version.txt not visible for Java 7 
+                System.setProperty ("jsse.enableSNIExtension", "false");                
             } catch (SecurityException se) {
                 log.error(se.getClass().getName() + " " + se.getMessage());
             }
