@@ -187,7 +187,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
      * Method called by downloadListener whenever a block is downloaded.
      */
     public void fireBlockDownloaded() {
-        log.debug("Fire blockdownloaded");
+        //log.debug("Fire blockdownloaded");
         for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.blockDownloaded();
         }

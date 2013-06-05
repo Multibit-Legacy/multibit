@@ -236,6 +236,14 @@ public class FileHandler {
             return;
         }
 
+        // Log the stack trace of the call.
+        Exception exception = new IllegalStateException();
+        log.debug("Saving wallet '" + perWalletModelData.getWalletFilename() + "' from stack:");
+        if (exception != null && exception.getStackTrace() != null) {
+            for (int i = 0; i < exception.getStackTrace().length; i++) {
+                log.debug("    " + exception.getStackTrace()[i].getFileName() + " - " + exception.getStackTrace()[i].getMethodName() + ";" + exception.getStackTrace()[i].getLineNumber());    
+            }
+        }
         File walletFile = new File(perWalletModelData.getWalletFilename());
 
         WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
@@ -578,9 +586,9 @@ public class FileHandler {
                 log.debug("Previous wallet info file modification date was '"
                         + walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED) + "'. It is now '"
                         + walletInfoFileLastModified + "'");
-                if (!walletInfoFileLastModified.equals(walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
-                    haveFilesChanged = true;
-                 }
+//                if (!walletInfoFileLastModified.equals(walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
+//                    haveFilesChanged = true;
+//                 }
 
                 if (haveFilesChanged) {
                     log.debug("Result of check of whether files have changed for wallet filename "
