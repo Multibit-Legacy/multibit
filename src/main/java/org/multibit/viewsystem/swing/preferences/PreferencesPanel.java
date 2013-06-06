@@ -343,16 +343,18 @@ public class PreferencesPanel extends JPanel implements Viewable {
                     ColorAndFontConstants.init();
                     FontSizer.INSTANCE.initialise(controller);
                     HelpContentsPanel.clearBrowser();
+                    
+                    undoChangesButton.setText(controller.getModel().getUserPreference(CoreModel.PREVIOUS_UNDO_CHANGES_TEXT));
 
                     // Switch off blinks.
-                    //bitcoinController.getModel().setBlinkEnabled(false);
+                    controller.getModel().setBlinkEnabled(false);
 
                     try {
                         controller.fireDataStructureChanged();
                         SwingUtilities.updateComponentTreeUI(mainFrame);
                     } finally {
                         // Switch blinks back on.
-                        //bitcoinController.getModel().setBlinkEnabled(true);
+                        controller.getModel().setBlinkEnabled(true);
                     }
                 }
             } finally {

@@ -66,4 +66,14 @@ public abstract class AbstractModel<M extends BaseModel<M>> implements Model {
         this.baseModel.setCurrentView(view);
     }
     
+    @Override
+    public final Boolean isBlinkEnabled() {
+        return this.baseModel.isBlinkEnabled();
+    }
+    
+    @Override
+    public void setBlinkEnabled(final Boolean blinkEnabled){
+        this.baseModel.setBlinkEnabled(blinkEnabled);
+    }
+    
 }

@@ -52,6 +52,11 @@ public abstract class BaseModel<M extends BaseModel<M>> implements Model {
      * The currently displayed view. One of the View constants.
      */
     private View currentView = null;
+    
+    /**
+     * Used to enable/ disable blinking of the SingleWalletPanels when language changes etc.
+     */
+    private Boolean blinkEnabled = true;
 
     protected BaseModel(Properties userPreferences) {
 
@@ -159,5 +164,15 @@ public abstract class BaseModel<M extends BaseModel<M>> implements Model {
     public final void setCurrentView(View view) {
         this.currentView = view;
         this.setUserPreference(BaseModel.SELECTED_VIEW_ENUM, view.name());
+    }
+    
+    @Override
+    public final Boolean isBlinkEnabled() {
+        return this.blinkEnabled;
+    }
+    
+    @Override
+    public void setBlinkEnabled(final Boolean blinkEnabled){
+        this.blinkEnabled = blinkEnabled;
     }
 }

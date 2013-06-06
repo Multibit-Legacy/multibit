@@ -41,4 +41,7 @@ public interface Model {
     
     View getCurrentView();
     void setCurrentView(View view);
+    
+    Boolean isBlinkEnabled();
+    void setBlinkEnabled(final Boolean blinkEnabled);
 }
