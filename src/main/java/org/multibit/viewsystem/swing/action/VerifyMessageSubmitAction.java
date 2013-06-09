@@ -137,24 +137,5 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
 
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
-        // Update the enable status of the action to match the wallet busy
-        // status.
-        if (super.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
-            // Wallet is busy with another operation that may change the private
-            // keys - Action is disabled.
-            putValue(
-                    SHORT_DESCRIPTION,
-                    controller.getLocaliser().getString(
-                            "multiBitSubmitAction.walletIsBusy",
-                            new Object[] { controller.getLocaliser().getString(
-                                    this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey()) }));
-            setEnabled(false);
-        } else {
-            // Enable unless wallet has been modified by another process.
-            if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("verifyMessageAction.tooltip"));
-                setEnabled(true);
-            }
-        }
     }
 }

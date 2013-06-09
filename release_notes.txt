@@ -3,6 +3,8 @@ MultiBit release notes.
 Version 0.5.12
 Changes:
 + Fixed issue 155 - version.txt retrieval error on Java 7
++ Fixed issue 156 - Verify message available when wallet is syncing
+
 
 03 Jun 2013 - Version 0.5.11
 Changes
