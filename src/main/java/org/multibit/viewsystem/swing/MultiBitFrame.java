@@ -1042,12 +1042,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Verify message.
         MultiBitAction verifyMessageAction = new MultiBitAction(this.bitcoinController, ImageLoader.MESSAGE_VERIFY_ICON_FILE, "verifyMessageAction.text",
                 "verifyMessageAction.tooltip", "verifyMessageAction.mnemonic", View.VERIFY_MESSAGE_VIEW);
-        menuItem = new JMenuItem(showWelcomeAction);
-        showWelcomeAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("welcomePanel.title")));
-
-        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        menuItem.setComponentOrientation(componentOrientation);
-        helpMenu.add(menuItem);
 
         menuItem = new JMenuItem(verifyMessageAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());

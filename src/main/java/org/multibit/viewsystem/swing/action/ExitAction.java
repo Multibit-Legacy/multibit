@@ -97,34 +97,35 @@ public class ExitAction extends AbstractExitAction {
         }
 
         if (null != this.bitcoinController) {
-        // Save all the wallets and put their filenames in the user preferences.
+            // Save all the wallets and put their filenames in the user preferences.
             List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
-        if (perWalletModelDataList != null) {
-            for (WalletData loopPerWalletModelData : perWalletModelDataList) {
-                try {
-                    log.debug("exit 3a");
-                        this.bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
-                    log.debug("exit 3b");
-                } catch (WalletSaveException wse) {
-                    log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
-                    MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-                    
-                    // Save to backup.
+            if (perWalletModelDataList != null) {
+                for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     try {
-                        log.debug("exit 4a");
+                        log.debug("exit 3a");
+                        this.bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
+                        log.debug("exit 3b");
+                    } catch (WalletSaveException wse) {
+                        log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                        MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+
+                        // Save to backup.
+                        try {
+                            log.debug("exit 4a");
                             this.bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
-                        log.debug("exit 4b");
-                    } catch (WalletSaveException wse2) {
-                        log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
-                        MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " " + wse2.getMessage()));
+                            log.debug("exit 4b");
+                        } catch (WalletSaveException wse2) {
+                            log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
+                            MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " "
+                                    + wse2.getMessage()));
+                        }
+                    } catch (WalletVersionException wve) {
+                        log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
+                        MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
                     }
-                } catch (WalletVersionException wve) {
-                    log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
-                    MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
                 }
             }
-        }
-        log.debug("exit 5");
+            log.debug("exit 5");
         }
 
         if (null != this.bitcoinController) {
