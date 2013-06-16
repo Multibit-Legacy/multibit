@@ -74,7 +74,7 @@ public class ExitAction extends AbstractExitAction {
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
-        log.debug("exit 1");
+        // log.debug("exit 1");
         if (mainFrame != null) {
             if (EventQueue.isDispatchThread()) {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -87,7 +87,7 @@ public class ExitAction extends AbstractExitAction {
                 });
             }
         }
-        log.debug("exit 2");
+        // log.debug("exit 2");
         
         // Stop the peer group so that blocks are notified to wallets correctly.
         if (this.bitcoinController.getMultiBitService() != null && this.bitcoinController.getMultiBitService().getPeerGroup() != null) {
@@ -102,18 +102,18 @@ public class ExitAction extends AbstractExitAction {
             if (perWalletModelDataList != null) {
                 for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     try {
-                        log.debug("exit 3a");
+                        // log.debug("exit 3a");
                         this.bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
-                        log.debug("exit 3b");
+                        // log.debug("exit 3b");
                     } catch (WalletSaveException wse) {
                         log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                         MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
 
                         // Save to backup.
                         try {
-                            log.debug("exit 4a");
+                            // log.debug("exit 4a");
                             this.bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
-                            log.debug("exit 4b");
+                            // log.debug("exit 4b");
                         } catch (WalletSaveException wse2) {
                             log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
                             MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " "
@@ -125,32 +125,32 @@ public class ExitAction extends AbstractExitAction {
                     }
                 }
             }
-            log.debug("exit 5");
+            // log.debug("exit 5");
         }
 
         if (null != this.bitcoinController) {
             // Write the user properties.
             log.debug("Saving user preferences ...");
             FileHandler.writeUserPreferences(this.bitcoinController);
-            log.debug("exit 6");
+            // log.debug("exit 6");
         }
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
-        log.debug("exit 7");
+        // log.debug("exit 7");
 
         // Get rid of main display.
         if (mainFrame != null) {
             mainFrame.setVisible(false);
         }
-        log.debug("exit 8");
+        // log.debug("exit 8");
 
         if (mainFrame != null) {
             mainFrame.dispose();
         }
-        log.debug("exit 10");
+        // log.debug("exit 10");
 
         System.exit(0);
-        log.debug("exit 11");
+        // log.debug("exit 11");
     }
 }
