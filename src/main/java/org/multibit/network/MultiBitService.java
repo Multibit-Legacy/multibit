@@ -350,7 +350,7 @@ public class MultiBitService {
 
         if (!peersSpecified) {
             // Use DNS for production, IRC for test.
-            if (TESTNET3_GENESIS_HASH.equals(this.bitcoinController.getModel().getNetworkParameters().genesisBlock.getHashAsString())) {
+            if (TESTNET3_GENESIS_HASH.equals(this.bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
             } else if (NetworkParameters.testNet().equals(this.bitcoinController.getModel().getNetworkParameters())) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
@@ -381,7 +381,7 @@ public class MultiBitService {
     public static String getFilePrefix() {
         BitcoinController bitcoinController = MultiBit.getBitcoinController();
         // testnet3
-        if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().genesisBlock.getHashAsString())) {
+        if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET3_PREFIX;
         } else if (NetworkParameters.testNet().equals(bitcoinController.getModel().getNetworkParameters())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET_PREFIX;
@@ -440,7 +440,7 @@ public class MultiBitService {
                 // Create a brand new wallet - by default unencrypted.
                 wallet = new Wallet(networkParameters);
                 ECKey newKey = new ECKey();
-                wallet.keychain.add(newKey);
+                wallet.addKey(newKey);
 
                 perWalletModelDataToReturn = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet, walletFile.getAbsolutePath());
 
@@ -469,7 +469,7 @@ public class MultiBitService {
         if (wallet != null) {
             // Add the keys for this wallet to the address book as receiving
             // addresses.
-            ArrayList<ECKey> keys = wallet.keychain;
+            List<ECKey> keys = wallet.getKeychain();
             if (keys != null) {
                 if (!newWalletCreated) {
                     perWalletModelDataToReturn = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
@@ -498,9 +498,11 @@ public class MultiBitService {
             // Add wallet to peergroup.
             if (peerGroup != null) {
                 peerGroup.addWallet(wallet);
+                peerGroup.addEventListener(bitcoinController.getPeerEventListener());
             } else {
                 log.error("Could not add wallet '" + walletFilename + "' to the peerGroup as the peerGroup is null. This is bad. ");
             }
+            
         }
 
         return perWalletModelDataToReturn;
@@ -589,16 +591,22 @@ public class MultiBitService {
         SendRequest request = SendRequest.to(sendAddress, Utils.toNanoCoins(amount));
         request.aesKey = aesKey;
         request.fee = fee;
-        Wallet.SendResult sendResult = perWalletModelData.getWallet().sendCoins(peerGroup, request);
+        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup.getDownloadPeer(), request);
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
-        Transaction sendTransaction = sendResult.tx;
 
         assert sendTransaction != null;
         // We should never try to send more
         // coins than we have!
         // throw an exception if sendTransaction is null - no money.
         if (sendTransaction != null) {
-            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
+            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString() + ", identityHashcode = " + System.identityHashCode(sendTransaction));
+            
+            if (sendTransaction.getConfidence() != null) {
+                log.debug("Added bitcoinController " + System.identityHashCode(this.bitcoinController) + " as listener to tx = " + sendTransaction.getHashAsString());
+                sendTransaction.getConfidence().addEventListener(this.bitcoinController);
+            } else {
+                log.debug("Cannot add bitcoinController as listener to tx = " + sendTransaction.getHashAsString() + " no transactionConfidence");
+            }
 
             try {
                 this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);

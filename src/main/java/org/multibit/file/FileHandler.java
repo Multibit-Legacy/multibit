@@ -237,13 +237,13 @@ public class FileHandler {
         }
 
         // Log the stack trace of the call.
-        Exception exception = new IllegalStateException();
-        log.debug("Saving wallet '" + perWalletModelData.getWalletFilename() + "' from stack:");
-        if (exception != null && exception.getStackTrace() != null) {
-            for (int i = 0; i < exception.getStackTrace().length; i++) {
-                log.debug("    " + exception.getStackTrace()[i].getFileName() + " - " + exception.getStackTrace()[i].getMethodName() + ";" + exception.getStackTrace()[i].getLineNumber());    
-            }
-        }
+//        Exception exception = new IllegalStateException();
+//        log.debug("Saving wallet '" + perWalletModelData.getWalletFilename() + "' from stack:");
+//        if (exception != null && exception.getStackTrace() != null) {
+//            for (int i = 0; i < exception.getStackTrace().length; i++) {
+//                log.debug("    " + exception.getStackTrace()[i].getFileName() + " - " + exception.getStackTrace()[i].getMethodName() + ";" + exception.getStackTrace()[i].getLineNumber());    
+//            }
+//        }
         File walletFile = new File(perWalletModelData.getWalletFilename());
 
         WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
@@ -400,8 +400,7 @@ public class FileHandler {
 
                         // Save as a Wallet message with a mandatory extension
                         // to prevent loading by older versions of multibit.
-                        walletProtobufSerializer
-                                .writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
+                        walletProtobufSerializer.writeWallet(perWalletModelData.getWallet(), fileOutputStream);
                     } else {
                         throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
                                 + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString()

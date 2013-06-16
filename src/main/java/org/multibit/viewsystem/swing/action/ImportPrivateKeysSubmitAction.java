@@ -224,7 +224,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
                 if (bitcoinj != null && bitcoinj.getKeychain() != null) {
                     log.debug("Found " + bitcoinj.getKeychainSize() + " keys to import.2");
-                    for (ECKey key : bitcoinj.keychain) {
+                    for (ECKey key : bitcoinj.getKeychain()) {
                         privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
                     }
                 } else {
@@ -298,7 +298,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
                     try {
                         if (walletToAddKeysTo != null) {
-                            synchronized (walletToAddKeysTo.keychain) {
+                            synchronized (walletToAddKeysTo.getKeychain()) {
                                 // Work out what the unencrypted private keys are.
                                 KeyCrypter walletKeyCrypter = walletToAddKeysTo.getKeyCrypter();
                                 KeyParameter aesKey = null;
@@ -308,7 +308,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                                     }
                                     aesKey = walletKeyCrypter.deriveKey(CharBuffer.wrap(walletPassword));
                                 }
-                                for (ECKey ecKey : walletToAddKeysTo.keychain) {
+                                for (ECKey ecKey : walletToAddKeysTo.getKeychain()) {
                                     if (keyEncryptionRequired) {
                                         if (ecKey.getEncryptedPrivateKey() == null
                                                 || ecKey.getEncryptedPrivateKey().getEncryptedBytes() == null

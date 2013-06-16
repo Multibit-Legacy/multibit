@@ -457,7 +457,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
             return walletData;
         }
         
-        Set<Transaction> transactions = perWalletModelData.getWallet().getTransactions(false, false);
+        Set<Transaction> transactions = perWalletModelData.getWallet().getTransactions(false);
 
         if (transactions != null) {
             for (Transaction loopTransaction : transactions) {
@@ -522,7 +522,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
         }
 
         if (!(perWalletModelData == null)) {
-            ArrayList<ECKey> keyChain = perWalletModelData.getWallet().keychain;
+            List<ECKey> keyChain = perWalletModelData.getWallet().getKeychain();
             if (keyChain != null) {
                 NetworkParameters networkParameters = getNetworkParameters();
                 if (networkParameters != null) {
@@ -611,7 +611,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
             try {
                 // See if the address is a known sending address.
                 if (theirOutput != null) {
-                    String addressString = theirOutput.getScriptPubKey().getToAddress().toString();
+                    String addressString = theirOutput.getScriptPubKey().getToAddress(getNetworkParameters()).toString();
                     String label = null;
                     if (perWalletModelData.getWalletInfo() != null) {
                         label = perWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);

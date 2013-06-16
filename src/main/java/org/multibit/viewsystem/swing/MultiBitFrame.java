@@ -1405,7 +1405,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             ShowTransactionsPanel.updateTransactions(); 
         } else if (controller.getCurrentView() == View.SEND_BITCOIN_VIEW) {
             final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
+            log.debug("numberOfPeers = " + numberOfPeers);
             final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
+            log.debug((transaction != null && transaction.getConfidence() != null) ? transaction.getConfidence().toString() : "No transaction confidence for tx");
             SendBitcoinConfirmPanel.updatePanelDueToTransactionConfidenceChange(transactionHash, numberOfPeers); 
         }
     }

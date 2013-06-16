@@ -557,7 +557,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             try {
                 // see if the address is a known sending address
                 if (theirOutput != null) {
-                    String addressString = theirOutput.getScriptPubKey().getToAddress().toString();
+                    String addressString = theirOutput.getScriptPubKey().getToAddress(wallet.getNetworkParameters()).toString();
                     String label = null;
                     if (perWalletModelData.getWalletInfo() != null) {
                         label = perWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);
@@ -626,11 +626,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             case DEAD:
                 builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.dead"));
                 break;
-            case NOT_IN_BEST_CHAIN:
-                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.sideChain"));
-                break;
-            case NOT_SEEN_IN_CHAIN:
-                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.notSeenInChain"));
+            case PENDING:
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.pending"));
                 break;
             case BUILDING:
                 builder.append(MultiBit.getController().getLocaliser()

@@ -67,7 +67,7 @@ public class MultiBitBlockChainTest {
         resetBlockStore();
         chain = new BlockChain(unitTestParams, wallet, blockStore);
 
-        coinbaseTo = wallet.keychain.get(0).toAddress(unitTestParams);
+        coinbaseTo = wallet.getKeychain().get(0).toAddress(unitTestParams);
 
     }
 
@@ -99,7 +99,7 @@ public class MultiBitBlockChainTest {
         // Quick check that we can actually receive coins.
         Transaction tx1 = createFakeTx(unitTestParams,
                                        Utils.toNanoCoins(1, 0),
-                                       wallet.keychain.get(0).toAddress(unitTestParams));
+                                       wallet.getKeychain().get(0).toAddress(unitTestParams));
         Block b1 = createFakeBlock(unitTestParams, blockStore, tx1).block;
         chain.add(b1);
         assertTrue(wallet.getBalance().compareTo(BigInteger.ZERO) > 0);
@@ -111,7 +111,7 @@ public class MultiBitBlockChainTest {
         // there isn't any such tx present (as an optimization).
         Transaction tx1 = createFakeTx(unitTestParams,
                                        Utils.toNanoCoins(1, 0),
-                                       wallet.keychain.get(0).toAddress(unitTestParams));
+                                       wallet.getKeychain().get(0).toAddress(unitTestParams));
         Block b1 = createFakeBlock(unitTestParams, blockStore, tx1).block;
         chain.add(b1);
         resetBlockStore();
@@ -154,23 +154,23 @@ public class MultiBitBlockChainTest {
         // Add a bunch of blocks in a loop until we reach a difficulty transition point. The unit test params have an
         // artificially shortened period.
         Block prev = unitTestParams.genesisBlock;
-        Block.fakeClock = System.currentTimeMillis() / 1000;
+        Utils.setMockClock(System.currentTimeMillis()/1000);
         for (int i = 0; i < unitTestParams.interval - 1; i++) {
-            Block newBlock = prev.createNextBlock(coinbaseTo, Block.fakeClock);
+            Block newBlock = prev.createNextBlock(coinbaseTo, Utils.now().getTime()/1000);
             assertTrue(chain.add(newBlock));
             prev = newBlock;
             // The fake chain should seem to be "fast" for the purposes of difficulty calculations.
-            Block.fakeClock += 2;
+            Utils.rollMockClock(2);
         }
         // Now add another block that has no difficulty adjustment, it should be rejected.
         try {
-            chain.add(prev.createNextBlock(coinbaseTo, Block.fakeClock));
+            chain.add(prev.createNextBlock(coinbaseTo, Utils.now().getTime()/1000));
             fail();
         } catch (VerificationException e) {
         }
         // Create a new block with the right difficulty target given our blistering speed relative to the huge amount
         // of time it's supposed to take (set in the unit test network parameters).
-        Block b = prev.createNextBlock(coinbaseTo, Block.fakeClock);
+        Block b = prev.createNextBlock(coinbaseTo, Utils.now().getTime()/1000);
         b.setDifficultyTarget(0x201fFFFFL);
         b.solve();
         assertTrue(chain.add(b));
@@ -269,7 +269,7 @@ public class MultiBitBlockChainTest {
         Address addressToSendTo = receiveKey.toAddress(unitTestParams);
 
         // Create a block, sending the coinbase to the coinbaseTo address (which is in the wallet).
-        Block b1 = unitTestParams.genesisBlock.createNextBlockWithCoinbase(wallet.keychain.get(0).getPubKey());
+        Block b1 = unitTestParams.genesisBlock.createNextBlockWithCoinbase(wallet.getKeychain().get(0).getPubKey());
         chain.add(b1);
 
         // Check a transaction has been received.

@@ -42,7 +42,7 @@ public class ReplayableBlockStoreTest {
         
         // Check the first block in a new store is the genesis block.
         StoredBlock genesis = store.getChainHead();
-        assertEquals(networkParameters.genesisBlock, genesis.getHeader());
+        assertEquals(networkParameters.getGenesisBlock(), genesis.getHeader());
 
         // Build a new block.
         StoredBlock block1 = genesis.build(genesis.getHeader().createNextBlock(toAddress1).cloneAsHeader());
@@ -94,7 +94,7 @@ public class ReplayableBlockStoreTest {
         
         // Check the first block in a new store is the genesis block.
         StoredBlock genesis = store.getChainHead();
-        assertEquals(networkParameters.genesisBlock, genesis.getHeader());
+        assertEquals(networkParameters.getGenesisBlock(), genesis.getHeader());
 
         // Build a new block.
         StoredBlock block1 = genesis.build(genesis.getHeader().createNextBlock(toAddress1).cloneAsHeader());

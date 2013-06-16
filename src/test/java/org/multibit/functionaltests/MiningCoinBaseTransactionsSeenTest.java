@@ -120,7 +120,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // Add in the mining key that has the coinbase transactions.
             DumpedPrivateKey miningPrivateKey = new DumpedPrivateKey(NetworkParameters.prodNet(), MINING_PRIVATE_KEY);
 
-            miningWallet.keychain.add(miningPrivateKey.getKey());
+            miningWallet.addKey(miningPrivateKey.getKey());
             WalletData perWalletModelData = new WalletData();
             perWalletModelData.setWalletInfo(new WalletInfoData(miningWalletPath, MultiBitWalletVersion.PROTOBUF));
             perWalletModelData.setWallet(miningWallet);
@@ -169,7 +169,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // See if the first transaction is a coinbase.
             miningWallet = controllers.bitcoinController.getModel().getActiveWallet();
             
-            Set<Transaction> transactions = miningWallet.getTransactions(true, true);
+            Set<Transaction> transactions = miningWallet.getTransactions(true);
             assertTrue("Transactions are missing", !(transactions == null || transactions.isEmpty()));
             Transaction transaction = transactions.iterator().next();
             assertNotNull("First transaction is null", transaction);
@@ -187,7 +187,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             Wallet rebornMiningWallet = rebornPerWalletModelData.getWallet();
             
             // See if the first transaction in the reborn wallet is a coinbase.
-            Set<Transaction> rebornTransactions = rebornMiningWallet.getTransactions(true, true);
+            Set<Transaction> rebornTransactions = rebornMiningWallet.getTransactions(true);
             assertTrue("No reborn transactions", ! (rebornTransactions == null || rebornTransactions.isEmpty()));
             Transaction rebornTransaction = rebornTransactions.iterator().next();
             assertNotNull("No reborn first transaction", rebornTransaction);

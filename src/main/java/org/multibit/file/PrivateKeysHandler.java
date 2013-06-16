@@ -276,7 +276,7 @@ public class PrivateKeysHandler {
                 }
             }
 
-            Set<Transaction> allTransactions = wallet.getTransactions(true, true);
+            Set<Transaction> allTransactions = wallet.getTransactions(true);
             if (keychain != null) {
                 HashMap<ECKey, Date> keyToEarliestUsageDateMap = new HashMap<ECKey, Date>();
 

@@ -91,7 +91,7 @@ public class MultiBitDownloadListener extends DownloadListener {
             // we are done downloading
             doneDownload();
         } else {
-            log.debug("Download - blocksSoFar = " + blocksSoFar);
+            //log.debug("Download - blocksSoFar = " + blocksSoFar);
             synchronized (lockObject) {
                 String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort",
                         new Object[] { new Integer(blocksSoFar) })
@@ -110,8 +110,8 @@ public class MultiBitDownloadListener extends DownloadListener {
                         double denominator = Math.max(blocksToDownloadAtStart, ReplayManager.INSTANCE.getActualLastChainHeight() - currentReplayTask.getStartHeight());
                         pct = (int)(100 * ( 1.0 - (double)blocksSoFar/denominator));
                     }
-                    log.debug("blocksSoFar = " + blocksSoFar + ", actualLastChainHeight = " + ReplayManager.INSTANCE.getActualLastChainHeight() +
-                            ", startHeight = " + currentReplayTask.getStartHeight() + ", percent = " + pct);
+                    //log.debug("blocksSoFar = " + blocksSoFar + ", actualLastChainHeight = " + ReplayManager.INSTANCE.getActualLastChainHeight() +
+                    //        ", startHeight = " + currentReplayTask.getStartHeight() + ", percent = " + pct);
                 }
                 
                 // When busy occasionally the localiser fails to localise.

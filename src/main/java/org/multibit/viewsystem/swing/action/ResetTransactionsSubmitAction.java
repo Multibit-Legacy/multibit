@@ -98,7 +98,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             log.debug("RT Ping 4");
 
             Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
-            Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
+            Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true);
             if (allTransactions != null) {
                 for (Transaction transaction : allTransactions) {
                     if (transaction != null) {

@@ -20,6 +20,7 @@ import static com.google.bitcoin.core.Utils.toNanoCoins;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -180,7 +181,7 @@ public class WalletTest {
         if (testEncryption) {
             // Try to create a send with a fee but no password (this should fail).
             try {
-                wallet.completeTx(req);
+                wallet.completeTx(req, true);
                 fail("No exception was thrown trying to sign an encrypted key with no password supplied.");
             } catch (KeyCrypterException kce) {
                 assertEquals("This ECKey is encrypted but no decryption key has been supplied.", kce.getMessage());
@@ -194,7 +195,7 @@ public class WalletTest {
             req.fee = toNanoCoins(0, 1);
 
             try {
-                wallet.completeTx(req);
+                wallet.completeTx(req, true);
                 fail("No exception was thrown trying to sign an encrypted key with the wrong password supplied.");
             } catch (KeyCrypterException kce) {
                 assertEquals("Could not decrypt bytes", kce.getMessage());
@@ -210,13 +211,13 @@ public class WalletTest {
         }
 
         // Complete the transaction successfully.
-        wallet.completeTx(req);
+        wallet.completeTx(req, true);
 
         Transaction t2 = req.tx;
         assertEquals("Wrong number of UNSPENT.3", 1, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
         assertEquals("Wrong number of ALL.3", 1, wallet.getPoolSize(WalletTransaction.Pool.ALL));
         assertEquals(TransactionConfidence.Source.SELF, t2.getConfidence().getSource());
-        assertEquals(wallet.getChangeAddress(), t2.getOutput(1).getScriptPubKey().getToAddress());
+        assertEquals(wallet.getChangeAddress(), t2.getOutput(1).getScriptPubKey().getToAddress(wallet.getNetworkParameters()));
 
         // Do some basic sanity checks.
         basicSanityChecks(wallet, t2, toAddress, destination);
@@ -246,11 +247,11 @@ public class WalletTest {
 
     private void basicSanityChecks(Wallet wallet, Transaction t, Address fromAddress, Address destination) throws ScriptException {
         assertEquals("Wrong number of tx inputs", 1, t.getInputs().size());
-        assertEquals(fromAddress, t.getInputs().get(0).getScriptSig().getFromAddress());
-        assertEquals(t.getConfidence().getConfidenceType(), TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
+        assertEquals(fromAddress, t.getInputs().get(0).getScriptSig().getFromAddress(wallet.getNetworkParameters()));
+        assertEquals(t.getConfidence().getConfidenceType(), TransactionConfidence.ConfidenceType.PENDING);
         assertEquals("Wrong number of tx outputs",2, t.getOutputs().size());
-        assertEquals(destination, t.getOutputs().get(0).getScriptPubKey().getToAddress());
-        assertEquals(wallet.getChangeAddress(), t.getOutputs().get(1).getScriptPubKey().getToAddress());
+        assertEquals(destination, t.getOutputs().get(0).getScriptPubKey().getToAddress(wallet.getNetworkParameters()));
+        assertEquals(wallet.getChangeAddress(), t.getOutputs().get(1).getScriptPubKey().getToAddress(wallet.getNetworkParameters()));
         assertEquals(toNanoCoins(0, 49), t.getOutputs().get(1).getValue());
         // Check the script runs and signatures verify.
         t.getInputs().get(0).verify();
@@ -281,9 +282,9 @@ public class WalletTest {
         Wallet.SendRequest req = Wallet.SendRequest.to(new ECKey().toAddress(params), toNanoCoins(0, 48));
         req.aesKey = aesKey;
         Address a = req.changeAddress = new ECKey().toAddress(params);
-        wallet.completeTx(req);
+        wallet.completeTx(req, true);
         Transaction t3 = req.tx;
-        assertEquals(a, t3.getOutput(1).getScriptPubKey().getToAddress());
+        assertEquals(a, t3.getOutput(1).getScriptPubKey().getToAddress(wallet.getNetworkParameters()));
         assertNotNull(t3);
         wallet.commitTx(t3);
         assertTrue(wallet.isConsistent());
@@ -297,8 +298,8 @@ public class WalletTest {
 
     @Test
     public void sideChain() throws Exception {
-        // The wallet receives a coin on the main chain, then on a side chain.
-        // Only main chain counts towards balance.
+        // The wallet receives a coin on the main chain, then on a side chain. Balance is equal to both added together
+        // as we assume the side chain tx is pending and will be included shortly.
         BigInteger v1 = Utils.toNanoCoins(1, 0);
         sendMoneyToWallet(v1, AbstractBlockChain.NewBlockType.BEST_CHAIN);
         assertEquals(v1, wallet.getBalance());
@@ -307,10 +308,9 @@ public class WalletTest {
 
         BigInteger v2 = toNanoCoins(0, 50);
         sendMoneyToWallet(v2, AbstractBlockChain.NewBlockType.SIDE_CHAIN);
-        assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.INACTIVE));
         assertEquals(2, wallet.getPoolSize(WalletTransaction.Pool.ALL));
-
         assertEquals(v1, wallet.getBalance());
+        assertEquals(v1.add(v2), wallet.getBalance(Wallet.BalanceType.ESTIMATED));
     }
 
     @Test
@@ -609,7 +609,7 @@ public class WalletTest {
                 flags[1] = true;
             }
         });
-        assertEquals(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN, notifiedTx[0].getConfidence().getConfidenceType());
+        assertEquals(TransactionConfidence.ConfidenceType.PENDING, notifiedTx[0].getConfidence().getConfidenceType());
         final Transaction t1Copy = new Transaction(params, t1.bitcoinSerialize());
         com.google.bitcoin.core.CoreTestUtils.BlockPair fakeBlock = CoreTestUtils.createFakeBlock(params, blockStore, t1Copy);
         wallet.receiveFromBlock(t1Copy, fakeBlock.storedBlock, BlockChain.NewBlockType.BEST_CHAIN);
@@ -1064,7 +1064,7 @@ public class WalletTest {
             tx.addOutput(v, new Address(params, bits));
         }
         Wallet.SendRequest req = Wallet.SendRequest.forTx(tx);
-        assertFalse(wallet.completeTx(req));
+        assertNull(wallet.completeTx(req, true));
     }
 
     // There is a test for spending a coinbase transaction as it matures in BlockChainTest#coinbaseTransactionAvailability

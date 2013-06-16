@@ -506,7 +506,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 }
                 break;
             }
-            case NOT_SEEN_IN_CHAIN: {
+            case PENDING: {
                 primaryLabel.setIcon(getConfidenceIcon(confidence));
                 primaryLabel.setText("");
                 
@@ -520,22 +520,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                         doubleIcon = false;
                     }
                 }
-                break;
-            }
-            case NOT_IN_BEST_CHAIN: {
-                primaryLabel.setIcon(getConfidenceIcon(confidence));
-                primaryLabel.setText("");
-                primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(getUnconfirmedConfidenceToolTip(transaction)));
-                
-                if (transaction != null) {
-                    if (transaction.getLockTime() > 0) {
-                        extraLabel.setIcon(smallExclamationMarkIcon);
-                        doubleIcon = true;
-                    } else {
-                        doubleIcon = false;
-                    }
-                }
-
                 break;
             }
             case DEAD: {
