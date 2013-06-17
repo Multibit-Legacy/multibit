@@ -24,7 +24,6 @@ import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -67,6 +66,7 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.SendRequest;
+import com.google.bitcoin.core.Wallet.SendResult;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
@@ -591,7 +591,10 @@ public class MultiBitService {
         SendRequest request = SendRequest.to(sendAddress, Utils.toNanoCoins(amount));
         request.aesKey = aesKey;
         request.fee = fee;
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup.getDownloadPeer(), request);
+        // Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup.getDownloadPeer(), request);
+        SendResult sendResult = perWalletModelData.getWallet().sendCoins(peerGroup, request, true);
+        Transaction sendTransaction = sendResult.tx;
+
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
         assert sendTransaction != null;
