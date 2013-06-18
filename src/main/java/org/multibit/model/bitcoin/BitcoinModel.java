@@ -109,8 +109,9 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String OPEN_URI_AMOUNT = "openUriAmount";
     public static final String BRING_TO_FRONT = "bringToFront";
 
-    // Default fee.
+    // Default fee and feePerKB
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000");
+    public static final BigInteger SEND_FEE_PER_KB_DEFAULT = new BigInteger("10000");
     
     // Minimum fee.
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");

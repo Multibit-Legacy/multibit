@@ -273,12 +273,12 @@ public class MultiBitBlockChainTest {
         chain.add(b1);
 
         // Check a transaction has been received.
-        assertNotNull(coinbaseTransaction);
+        assertNotNull("Coinbase tx was null", coinbaseTransaction);
 
         // The coinbase tx is not yet available to spend.
-        assertTrue(wallet.getBalance().equals(BigInteger.ZERO));
-        assertTrue(wallet.getBalance(BalanceType.ESTIMATED).equals(Utils.toNanoCoins(50, 0)));
-        assertTrue(!coinbaseTransaction.isMature());
+        assertTrue("Balance was not zero", wallet.getBalance().equals(BigInteger.ZERO));
+        assertEquals("Estimated balance was incorrect", Utils.toNanoCoins(50, 0),  wallet.getBalance(BalanceType.ESTIMATED));
+        assertTrue("The coinbase tx was mature, incorrectly", !coinbaseTransaction.isMature());
 
         // Attempt to spend the coinbase - this should fail as the coinbase is not mature yet.
         Transaction coinbaseSpend = wallet.createSend(addressToSendTo, Utils.toNanoCoins(49, 0));
@@ -324,18 +324,18 @@ public class MultiBitBlockChainTest {
 
         // Commit the coinbaseSpend to the first wallet and check the balances decrement.
         wallet.commitTx(coinbaseSpend);
-        assertTrue(wallet.getBalance(BalanceType.ESTIMATED).equals( Utils.toNanoCoins(1, 0)));
+        assertEquals("Wrong estimated balance after commit", Utils.toNanoCoins("0.9999"), wallet.getBalance(BalanceType.ESTIMATED));
         // Available balance is zero as change has not been received from a block yet.
-        assertTrue(wallet.getBalance(BalanceType.AVAILABLE).equals( Utils.toNanoCoins(0, 0)));
+        assertEquals("Wrong available balance", Utils.toNanoCoins(0, 0), wallet.getBalance(BalanceType.AVAILABLE));
 
         // Give it one more block - change from coinbaseSpend should now be available in the first wallet.
         Block b4 = createFakeBlock(unitTestParams, blockStore, coinbaseSpend).block;
         chain.add(b4);
-        assertTrue(wallet.getBalance(BalanceType.AVAILABLE).equals(Utils.toNanoCoins(1, 0)));
+        assertEquals("Wrong available balance after one more block", Utils.toNanoCoins("0.9999"), wallet.getBalance(BalanceType.AVAILABLE));
 
         // Check the balances in the second wallet.
-        assertTrue(wallet2.getBalance(BalanceType.ESTIMATED).equals( Utils.toNanoCoins(49, 0)));
-        assertTrue(wallet2.getBalance(BalanceType.AVAILABLE).equals( Utils.toNanoCoins(49, 0)));
+        assertEquals(Utils.toNanoCoins(49, 0), wallet2.getBalance(BalanceType.ESTIMATED));
+        assertEquals(Utils.toNanoCoins(49, 0), wallet2.getBalance(BalanceType.AVAILABLE));
     }
 
     // Some blocks from the test net.

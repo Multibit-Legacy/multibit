@@ -591,8 +591,9 @@ public class MultiBitService {
         SendRequest request = SendRequest.to(sendAddress, Utils.toNanoCoins(amount));
         request.aesKey = aesKey;
         request.fee = fee;
+        request.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
         // Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup.getDownloadPeer(), request);
-        SendResult sendResult = perWalletModelData.getWallet().sendCoins(peerGroup, request, true);
+        SendResult sendResult = perWalletModelData.getWallet().sendCoins(peerGroup, request);
         Transaction sendTransaction = sendResult.tx;
 
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
