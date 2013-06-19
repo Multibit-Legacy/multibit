@@ -62,11 +62,9 @@ import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.SendRequest;
-import com.google.bitcoin.core.Wallet.SendResult;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
@@ -578,29 +576,42 @@ public class MultiBitService {
      * @throws EncrypterDecrypterException
      */
 
-    public Transaction sendCoins(WalletData perWalletModelData, String sendAddressString, String amount, BigInteger fee,
+    public Transaction sendCoins(WalletData perWalletModelData, SendRequest sendRequest,
             CharSequence password) throws java.io.IOException, AddressFormatException, KeyCrypterException {
         // Send the coins
-        Address sendAddress = new Address(networkParameters, sendAddressString);
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
         KeyParameter aesKey = null;
         if (perWalletModelData.getWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
             aesKey = perWalletModelData.getWallet().getKeyCrypter().deriveKey(password);
         }
-        SendRequest request = SendRequest.to(sendAddress, Utils.toNanoCoins(amount));
-        request.aesKey = aesKey;
-        request.fee = fee;
-        request.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
-        // Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup.getDownloadPeer(), request);
-        SendResult sendResult = perWalletModelData.getWallet().sendCoins(peerGroup, request);
-        Transaction sendTransaction = sendResult.tx;
+        sendRequest.aesKey = aesKey;
+        sendRequest.fee = BigInteger.ZERO;
+        sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
+        
+        sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
+        // log.debug("Added txConfidenceListener " + txConfidenceListener + " to tx " + request.tx.getHashAsString() + ", identityHashCode = " + System.identityHashCode(request.tx));
+
+        try {
+            perWalletModelData.getWallet().commitTx(sendRequest.tx);
+            
+            // The tx has been committed to the pending pool by this point (via sendCoinsOffline -> commitTx), so it has
+            // a txConfidenceListener registered. Once the tx is broadcast the peers will update the memory pool with the
+            // count of seen peers, the memory pool will update the transaction confidence object, that will invoke the
+            // txConfidenceListener which will in turn invoke the wallets event listener onTransactionConfidenceChanged
+            // method.
+            peerGroup.broadcastTransaction(sendRequest.tx);
+        } catch (VerificationException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        Transaction sendTransaction = sendRequest.tx;
 
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
         assert sendTransaction != null;
-        // We should never try to send more
-        // coins than we have!
+        // We should never try to send more coins than we have!
         // throw an exception if sendTransaction is null - no money.
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString() + ", identityHashcode = " + System.identityHashCode(sendTransaction));

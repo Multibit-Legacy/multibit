@@ -150,10 +150,6 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
 
         String sendAmountLocalised = CurrencyConverter.INSTANCE.prettyPrint(sendAmount);
 
-//        String fee = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
-//        if (fee == null || fee == "") {
-//            fee = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
-//        }
         String fee = Utils.bitcoinValueToPlainString(sendRequest.fee);
         
         String sendFeeLocalised = CurrencyConverter.INSTANCE.prettyPrint(fee);
@@ -466,7 +462,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, this.bitcoinController, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
+        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, this.bitcoinController, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE), sendRequest);
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 

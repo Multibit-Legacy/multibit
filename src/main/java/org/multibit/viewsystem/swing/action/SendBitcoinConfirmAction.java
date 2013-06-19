@@ -16,17 +16,17 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.math.BigInteger;
 
 import javax.swing.Action;
 
-import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.dialogs.ValidationErrorDialog;
-import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +35,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet.SendRequest;
 import com.google.bitcoin.core.WrongNetworkException;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} shows the send bitcoin confirm dialog or validation dialog on an attempted spend.
@@ -82,17 +83,20 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
             Address sendAddressObject;
             try {
                 sendAddressObject = new Address(bitcoinController.getModel().getNetworkParameters(), sendAddress);
-                SendRequest request = SendRequest.to(sendAddressObject, Utils.toNanoCoins(sendAmount));
-                request.ensureMinRequiredFee = true;
-                // TODO - Request is not populated with AES key yet.
+                SendRequest sendRequest = SendRequest.to(sendAddressObject, Utils.toNanoCoins(sendAmount));
+                sendRequest.ensureMinRequiredFee = true;
+                sendRequest.fee = BigInteger.ZERO;
+                sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
+
+                // Note - Request is populated with the AES key in the SendBitcoinNowAction after the user has entered it on the SendBitcoinConfirm form.
                 
                 // Complete it (which works out the fee).
-                boolean completedOk = bitcoinController.getModel().getActiveWallet().completeTx(request);
-                log.debug("The fee after completing the transaction was " + request.fee);
+                boolean completedOk = bitcoinController.getModel().getActiveWallet().completeTx(sendRequest);
+                log.debug("The fee after completing the transaction was " + sendRequest.fee);
                 if (completedOk) {
                     // There is enough money.
                     
-                    sendBitcoinConfirmDialog = new SendBitcoinConfirmDialog(super.bitcoinController, mainFrame, request);
+                    sendBitcoinConfirmDialog = new SendBitcoinConfirmDialog(super.bitcoinController, mainFrame, sendRequest);
                     sendBitcoinConfirmDialog.setVisible(true);
                 } else {
                     // There is not enough money.
@@ -104,6 +108,9 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             } catch (AddressFormatException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } catch (KeyCrypterException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }

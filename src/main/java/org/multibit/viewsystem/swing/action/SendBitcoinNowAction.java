@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.CharBuffer;
 
 import javax.swing.AbstractAction;
@@ -31,10 +30,10 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.WalletAddressBookData;
 import org.multibit.model.bitcoin.BitcoinModel;
-import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletAddressBookData;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet.SendRequest;
 import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
@@ -75,12 +74,14 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
       
     private Transaction transaction;
     
+    private SendRequest sendRequest;
+    
 
     /**
      * Creates a new {@link SendBitcoinNowAction}.
      */
     public SendBitcoinNowAction(MultiBitFrame mainFrame, BitcoinController bitcoinController,
-            SendBitcoinConfirmPanel sendBitcoinConfirmPanel, JPasswordField walletPasswordField, ImageIcon icon) {
+            SendBitcoinConfirmPanel sendBitcoinConfirmPanel, JPasswordField walletPasswordField, ImageIcon icon, SendRequest sendRequest) {
         super(bitcoinController.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
         
         this.bitcoinController = bitcoinController;
@@ -88,6 +89,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         
         this.sendBitcoinConfirmPanel = sendBitcoinConfirmPanel;
         this.walletPasswordField = walletPasswordField;
+        this.sendRequest = sendRequest;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -118,17 +120,9 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             // Put sending message and remove the send button.
             sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 
-            // Get the data out of the wallet preferences.
+            // Get the label and address out of the wallet preferences.
             String sendAddress = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
             String sendLabel = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
-            String sendAmount = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_AMOUNT);
-            String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
-            BigInteger fee;
-            if (sendFeeString == null || sendFeeString.equals("")) {
-                fee = BitcoinModel.SEND_FEE_DEFAULT;
-            } else {
-                fee = Utils.toNanoCoins(sendFeeString);
-            }
 
             if (sendLabel != null && !sendLabel.equals("")) {
                 WalletInfoData addressBook = perWalletModelData.getWalletInfo();
@@ -173,7 +167,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                 
                 this.bitcoinController.fireWalletBusyChange(true);
 
-                performSend(perWalletModelData, sendAddress, sendAmount, fee, CharBuffer.wrap(walletPassword));
+                performSend(perWalletModelData, sendRequest, CharBuffer.wrap(walletPassword));
             }
         }
     }
@@ -181,13 +175,12 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     /**
      * Send the transaction directly.
      */
-    private void performSend(WalletData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, CharSequence walletPassword) {
+    private void performSend(WalletData perWalletModelData, SendRequest sendRequest, CharSequence walletPassword) {
         String message = null;
         
         boolean sendWasSuccessful = Boolean.FALSE;
         try {            
-            log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
-                    + fee + " to address = " + sendAddress);
+            log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", tx = " + sendRequest.tx.toString());
             
             if (useTestParameters) {
                 log.debug("Using test parameters - not really sending");
@@ -199,7 +192,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                     log.debug("Using test parameters - saying send failed");  
                 }
             } else {
-                transaction = this.bitcoinController.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
+                transaction = this.bitcoinController.getMultiBitService().sendCoins(perWalletModelData, sendRequest, walletPassword);
                 if (transaction == null) {
                     // a null transaction returned indicates there was not
                     // enough money (in spite of our validation)
