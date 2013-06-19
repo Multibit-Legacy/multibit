@@ -91,7 +91,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        boolean feeValidationError = false;
+//        boolean feeValidationError = false;
 
         boolean wantToFireDataStructureChanged = false;
 
@@ -100,69 +100,69 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
 
-            String updateStatusText = "";
+//            String updateStatusText = "";
 
             if (dataProvider != null) {
                 controller.getModel().setUserPreference(CoreModel.PREVIOUS_UNDO_CHANGES_TEXT,
                         dataProvider.getPreviousUndoChangesText());
 
-                String previousSendFee = dataProvider.getPreviousSendFee();
-                String newSendFee = dataProvider.getNewSendFee();
-                controller.getModel().setUserPreference(BitcoinModel.PREVIOUS_SEND_FEE, previousSendFee);
-
-                // Check fee is set.
-                if (newSendFee == null || "".equals(newSendFee)) {
-                    // Fee must be set validation error.
-                    controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
-                    feeValidationError = true;
-                    updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.aFeeMustBeSet");
-                }
-
-                if (!feeValidationError) {
-                    if (newSendFee.startsWith(ShowPreferencesPanel.UNPARSEABLE_FEE)) {
-                        String newSendFeeTrimmed = newSendFee.substring(ShowPreferencesPanel.UNPARSEABLE_FEE.length() + 1);
-                        // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
-                        feeValidationError = true;
-                        updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
-                                new Object[] { newSendFeeTrimmed });
-                    }
-                }
-                
-                if (!feeValidationError) {
-                    try {
-                        // Check fee is a number.
-                        BigInteger feeAsBigInteger = Utils.toNanoCoins(newSendFee);
-
-                        // Check fee is at least the minimum fee.
-                        if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
-                            feeValidationError = true;
-                            updateStatusText = controller.getLocaliser().getString(
-                                    "showPreferencesPanel.feeCannotBeSmallerThanMinimumFee");
-                        } else {
-                            if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
-                                feeValidationError = true;
-                                updateStatusText = controller.getLocaliser().getString(
-                                        "showPreferencesPanel.feeCannotBeGreaterThanMaximumFee");
-                            } else {
-                                // Fee is ok.
-                                controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, newSendFee);
-                            }
-                        }
-                    } catch (NumberFormatException nfe) {
-                        // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
-                        feeValidationError = true;
-                        updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
-                                new Object[] { newSendFee });
-                    } catch (ArithmeticException ae) {
-                        // Recycle the old fee and set status message.
-                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
-                        feeValidationError = true;
-                        updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
-                                new Object[] { newSendFee });
-                    }
-                }
+//                String previousSendFee = dataProvider.getPreviousSendFee();
+//                String newSendFee = dataProvider.getNewSendFee();
+//                controller.getModel().setUserPreference(BitcoinModel.PREVIOUS_SEND_FEE, previousSendFee);
+//
+//                // Check fee is set.
+//                if (newSendFee == null || "".equals(newSendFee)) {
+//                    // Fee must be set validation error.
+//                    controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
+//                    feeValidationError = true;
+//                    updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.aFeeMustBeSet");
+//                }
+//
+//                if (!feeValidationError) {
+//                    if (newSendFee.startsWith(ShowPreferencesPanel.UNPARSEABLE_FEE)) {
+//                        String newSendFeeTrimmed = newSendFee.substring(ShowPreferencesPanel.UNPARSEABLE_FEE.length() + 1);
+//                        // Recycle the old fee and set status message.
+//                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
+//                        feeValidationError = true;
+//                        updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
+//                                new Object[] { newSendFeeTrimmed });
+//                    }
+//                }
+//                
+//                if (!feeValidationError) {
+//                    try {
+//                        // Check fee is a number.
+//                        BigInteger feeAsBigInteger = Utils.toNanoCoins(newSendFee);
+//
+//                        // Check fee is at least the minimum fee.
+//                        if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
+//                            feeValidationError = true;
+//                            updateStatusText = controller.getLocaliser().getString(
+//                                    "showPreferencesPanel.feeCannotBeSmallerThanMinimumFee");
+//                        } else {
+//                            if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
+//                                feeValidationError = true;
+//                                updateStatusText = controller.getLocaliser().getString(
+//                                        "showPreferencesPanel.feeCannotBeGreaterThanMaximumFee");
+//                            } else {
+//                                // Fee is ok.
+//                                controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, newSendFee);
+//                            }
+//                        }
+//                    } catch (NumberFormatException nfe) {
+//                        // Recycle the old fee and set status message.
+//                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
+//                        feeValidationError = true;
+//                        updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
+//                                new Object[] { newSendFee });
+//                    } catch (ArithmeticException ae) {
+//                        // Recycle the old fee and set status message.
+//                        controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, previousSendFee);
+//                        feeValidationError = true;
+//                        updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
+//                                new Object[] { newSendFee });
+//                    }
+//                }
             }
 
             String previousLanguageCode = dataProvider.getPreviousUserLanguageCode();
@@ -461,12 +461,12 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 }            
             }
 
-            if (feeValidationError) {
-                MessageManager.INSTANCE.addMessage(new Message(updateStatusText, false));
-            } else {
-                // Clear any previous validation error.
-                MessageManager.INSTANCE.addMessage(new Message(" "));
-            }
+//            if (feeValidationError) {
+//                MessageManager.INSTANCE.addMessage(new Message(updateStatusText, false));
+//            } else {
+//                // Clear any previous validation error.
+//                MessageManager.INSTANCE.addMessage(new Message(" "));
+//            }
         } finally {
             if (mainFrame != null) {
                 mainFrame.setCursor(Cursor.getDefaultCursor());

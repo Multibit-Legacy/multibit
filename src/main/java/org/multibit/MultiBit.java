@@ -260,33 +260,33 @@ public class MultiBit {
             CurrencyConverter.INSTANCE.initialise(finalController);
             
             // Check the fee is between the lower and upper bounds - set to default fee if not.
-            String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
-            boolean setToDefaultFee = false;
-
-            if (sendFeeString == null || sendFeeString == "") {
-                setToDefaultFee = true;
-            } else {
-                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
-
-                if (converterResult.isBtcMoneyValid()) {
-                    // Check that the fee is at least the minimum fee and
-                    // smaller than the maximum fee.
-                    BigInteger feeAsBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
-                    if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
-                        setToDefaultFee = true;
-                    } else {
-                        if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
-                            setToDefaultFee = true;
-                        }
-                    }
-                }
-            }
-
-            if (setToDefaultFee) {
-               sendFeeString = controller.getLocaliser()
-                        .bitcoinValueToStringNotLocalised(BitcoinModel.SEND_FEE_DEFAULT, false, false);
-               controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, sendFeeString);
-            }
+//            String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
+//            boolean setToDefaultFee = false;
+//
+//            if (sendFeeString == null || sendFeeString == "") {
+//                setToDefaultFee = true;
+//            } else {
+//                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
+//
+//                if (converterResult.isBtcMoneyValid()) {
+//                    // Check that the fee is at least the minimum fee and
+//                    // smaller than the maximum fee.
+//                    BigInteger feeAsBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
+//                    if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
+//                        setToDefaultFee = true;
+//                    } else {
+//                        if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
+//                            setToDefaultFee = true;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if (setToDefaultFee) {
+//               sendFeeString = controller.getLocaliser()
+//                        .bitcoinValueToStringNotLocalised(BitcoinModel.SEND_FEE_DEFAULT, false, false);
+//               controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, sendFeeString);
+//            }
 
             // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface with initial view : " + controller.getCurrentView());
