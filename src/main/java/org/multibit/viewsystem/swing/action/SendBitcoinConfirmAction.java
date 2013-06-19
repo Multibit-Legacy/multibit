@@ -101,7 +101,7 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
                 } else {
                     // There is not enough money.
                     // TODO setup validation parameters accordingly so that it displays ok.
-                    validationErrorDialog = new ValidationErrorDialog(super.bitcoinController, mainFrame);
+                    validationErrorDialog = new ValidationErrorDialog(super.bitcoinController, mainFrame, sendRequest);
                     validationErrorDialog.setVisible(true);
                 }
            } catch (WrongNetworkException e1) {
@@ -115,7 +115,7 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
                 e1.printStackTrace();
             }
         } else {
-            validationErrorDialog = new ValidationErrorDialog(super.bitcoinController, mainFrame);
+            validationErrorDialog = new ValidationErrorDialog(super.bitcoinController, mainFrame, null);
             validationErrorDialog.setVisible(true);
         }
     }

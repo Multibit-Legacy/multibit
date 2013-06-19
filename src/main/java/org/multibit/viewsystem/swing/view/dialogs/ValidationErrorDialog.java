@@ -26,7 +26,9 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
+import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.bitcoin.core.Wallet.SendRequest;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -55,15 +57,17 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
     private final Controller controller;
     private final BitcoinController bitcoinController;
+    private final SendRequest sendRequest;
 
     /**
      * Creates a new {@link ValidationErrorDialog}.
      */
-    public ValidationErrorDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public ValidationErrorDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame, SendRequest sendRequest) {
         super(mainFrame, bitcoinController.getLocaliser().getString("validationErrorView.title"));
         
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
+        this.sendRequest = sendRequest;
 
         initUI();
     }
@@ -167,19 +171,12 @@ public class ValidationErrorDialog extends MultiBitDialog {
             if (!"".equals(completeMessage)) {
                 completeMessage = completeMessage + "\n";
             }
-            String fee = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
-            if (fee == null || fee.equals("")) {
-                fee = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
-            }
-            
-  
-            String feePlusConversionToFiat = CurrencyConverter.INSTANCE.prettyPrint(fee);
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
-                    new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
+                    new String[] { amountPlusConversionToFiat});
             if (this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
-                        new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
+                        new String[] { amountPlusConversionToFiat});
             }
             // There is an extra "BTC." in the translations - remove and add a return.
             textToAdd = textToAdd.replaceAll("BTC\\.", "\\.");
