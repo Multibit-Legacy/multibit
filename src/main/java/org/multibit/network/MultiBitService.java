@@ -46,7 +46,6 @@ import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.store.MultiBitWalletVersion;
-import org.multibit.store.ReplayableBlockStore;
 import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,7 +172,7 @@ public class MultiBitService {
         try {
             // Load or create the blockStore..
             log.debug("Loading/ creating blockstore ...");
-            blockStore = createBlockStore(null, false, false);
+            blockStore = createBlockStore(null, false);
             log.debug("Blockstore is '" + blockStore + "'");
 
             log.debug("Creating blockchain ...");
@@ -220,37 +219,32 @@ public class MultiBitService {
         log.error("Error creating MultiBitService " + e.getClass().getName() + " " + e.getMessage());
     }
 
-    private BlockStore createBlockStore(Date checkpointDate, boolean createNew, boolean isReplay) throws BlockStoreException, IOException {
+    private BlockStore createBlockStore(Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
         BlockStore blockStore = null;
 
         String filePrefix = getFilePrefix();
         log.debug("filePrefix = " + filePrefix);
 
-        String bobsBlockStoreFilename;
-        String spvBlockStoreFilename;
-
         if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
-            bobsBlockStoreFilename = filePrefix + BLOCKCHAIN_SUFFIX;
-            spvBlockStoreFilename = filePrefix + SPV_BLOCKCHAIN_SUFFIX;
+            blockchainFilename = filePrefix + SPV_BLOCKCHAIN_SUFFIX;
             checkpointsFilename = filePrefix + CHECKPOINTS_SUFFIX;
         } else {
-            bobsBlockStoreFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
-                    + filePrefix + BLOCKCHAIN_SUFFIX;
-            spvBlockStoreFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
+            blockchainFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
                     + filePrefix + SPV_BLOCKCHAIN_SUFFIX;
             checkpointsFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
             + filePrefix + CHECKPOINTS_SUFFIX;
         }
 
-        File bobsBlockStore = new File(bobsBlockStoreFilename);
-        File spvBlockStore = new File(spvBlockStoreFilename);
+        File blockStoreFile = new File(blockchainFilename);
+        boolean blockStoreCreatedNew = !blockStoreFile.exists();
 
         // Ensure there is a checkpoints file.
         File checkpointsFile = new File(checkpointsFilename);
         if (!checkpointsFile.exists()) {
-            this.bitcoinController.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
+            bitcoinController.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
         }
         
+        // Use the larger of the installed checkpoints file and the user data checkpoint file (larger = more recent).
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
         String installedCheckpointsFilename = applicationDataDirectoryLocator.getInstallationDirectory() + File.separator + MultiBitService.getFilePrefix()  + MultiBitService.CHECKPOINTS_SUFFIX;
         log.debug("Installed checkpoints file = '" + installedCheckpointsFilename + "'.");
@@ -269,44 +263,62 @@ public class MultiBitService {
             log.debug("Using user data checkpoints file as it is longer/same size as installed checkpoints - " + sizeOfUserDataCheckpointsFile + " bytes versus " + installedCheckpointsFile.length() + " bytes.");
         }
         
-        if (!spvBlockStore.exists() && (isReplay || !bobsBlockStore.exists())) {
-            // If there is no SPVBlockStore and no ReplayableBlockStore create an SPVBlockStore and use it.
-            blockchainFilename = spvBlockStoreFilename;
-            
-            blockStore = new SPVBlockStore(networkParameters, new File(blockchainFilename));
-
-            // Load the existing checkpoint file and checkpoint from today.
-            if (checkpointsFile.exists()) {
-                FileInputStream stream = new FileInputStream(checkpointsFile);
-                CheckpointManager.checkpoint(networkParameters, stream, blockStore, (new Date()).getTime() / 1000);
-            }
-        } else if (spvBlockStore.exists()) {
-            // If there is an SPVStore prefer that.
-            blockchainFilename = spvBlockStoreFilename;
-
-            File blockchainFile = new File(blockchainFilename);
-            if (createNew) {
+        // If the spvBlockStore is to be created new 
+        // or its size is 0 bytes delete the file so that it is recreated fresh (fix for issue 165).
+        if (createNew || blockStoreFile.length() == 0) {
+            // Garbage collect any closed references to the blockchainFile.
+            System.gc();
+            blockStoreFile.setWritable(true);
+            boolean deletedOk = blockStoreFile.delete();
+            log.debug("Deleting SPV block store '{}' from disk.1", blockchainFilename + ", deletedOk = " + deletedOk);
+            blockStoreCreatedNew = true;
+        }
+ 
+        log.debug("Opening / Creating SPV block store '{}' from disk", blockchainFilename);
+        try {
+            blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
+        } catch (BlockStoreException bse) {
+            try {
+                log.error("Failed to open/ create SPV block store '{}' from disk", blockchainFilename);
+                // If the block store creation failed, delete the block store file and try again. 
+                
                 // Garbage collect any closed references to the blockchainFile.
                 System.gc();
-                blockchainFile.setWritable(true);
-                boolean deletedOk = blockchainFile.delete();
-                log.debug("Recreating SPV block store '{}' from disk", blockchainFilename + ", deletedOk = " + deletedOk);
-            } else {
-                log.debug("Opening SPV block store '{}' from disk", blockchainFilename);
-            }
-            blockStore = new SPVBlockStore(networkParameters, blockchainFile);
+                blockStoreFile.setWritable(true);
+                boolean deletedOk = blockStoreFile.delete();
+                log.debug("Deleting SPV block store '{}' from disk.2", blockchainFilename + ", deletedOk = " + deletedOk);
+                blockStoreCreatedNew = true;
 
-            // Load the existing checkpoint file, setting the checkpoint date if it is a replay.
-            if (checkpointsFile.exists() && checkpointDate != null) {
-                FileInputStream stream = new FileInputStream(checkpointsFile);
-                CheckpointManager.checkpoint(networkParameters, stream, blockStore, checkpointDate.getTime() / 1000);
+                blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
+            } catch (BlockStoreException bse2) {
+                bse2.printStackTrace();
+                log.error("Unrecoverable failure in opening block store. This is bad.");
+                // Throw the exception so that it is indicated on the UI.
+                throw bse2;
             }
-        } else {
-            // Use the existing bobsBlockStore.
-            // (This will be used until the first replay/ import at which point the SPVStore will be used).
-            blockchainFilename = bobsBlockStoreFilename;
-            log.debug("Reading Replayable block store '{}' from disk", blockchainFilename);
-            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
+        }
+        
+        // Load the existing checkpoint file and checkpoint from today.
+        if (blockStore != null && checkpointsFile.exists()) {
+            FileInputStream stream = null;
+            try {
+                stream = new FileInputStream(checkpointsFile);
+                if (checkpointDate == null) {
+                    if (blockStoreCreatedNew) {
+                        // Brand new block store - checkpoint from today. This
+                        // will go back to the last checkpoint.
+                        CheckpointManager.checkpoint(networkParameters, stream, blockStore, (new Date()).getTime() / 1000);
+                    }
+                } else {
+                    // Use checkpoint date (block replay).
+                    CheckpointManager.checkpoint(networkParameters, stream, blockStore, checkpointDate.getTime() / 1000);
+                }
+            } finally {
+                if (stream != null) {
+                    stream.close();
+                    stream = null;
+                }
+            }
         }
         return blockStore;
     }
@@ -524,10 +536,10 @@ public class MultiBitService {
             }
         }
         if (dateToReplayFrom != null) {
-            blockStore = createBlockStore(dateToReplayFrom, true, true);
+            blockStore = createBlockStore(dateToReplayFrom, true);
         } else {
             Date oneSecondAfterGenesis = new Date(MultiBitService.genesisBlockCreationDate.getTime() + 1000);
-            blockStore = createBlockStore(oneSecondAfterGenesis, true, true);
+            blockStore = createBlockStore(oneSecondAfterGenesis, true);
         }
         log.debug("Blockstore is '" + blockStore + "'");
 
