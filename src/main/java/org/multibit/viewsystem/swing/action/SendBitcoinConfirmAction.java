@@ -90,8 +90,8 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
 
                 // Note - Request is populated with the AES key in the SendBitcoinNowAction after the user has entered it on the SendBitcoinConfirm form.
                 
-                // Complete it (which works out the fee).
-                boolean completedOk = bitcoinController.getModel().getActiveWallet().completeTx(sendRequest);
+                // Complete it (which works out the fee) but do not sign it yet.
+                boolean completedOk = bitcoinController.getModel().getActiveWallet().completeTx(sendRequest, false);
                 log.debug("The fee after completing the transaction was " + sendRequest.fee);
                 if (completedOk) {
                     // There is enough money.

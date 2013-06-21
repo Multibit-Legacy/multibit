@@ -593,6 +593,9 @@ public class MultiBitService {
         // log.debug("Added txConfidenceListener " + txConfidenceListener + " to tx " + request.tx.getHashAsString() + ", identityHashCode = " + System.identityHashCode(request.tx));
 
         try {
+            // The transaction is already added to the wallet (in SendBitcoinConfirmAction) so here we just need
+            // to sign it, commit it and broadcast it.
+            perWalletModelData.getWallet().sign(sendRequest);
             perWalletModelData.getWallet().commitTx(sendRequest.tx);
             
             // The tx has been committed to the pending pool by this point (via sendCoinsOffline -> commitTx), so it has
