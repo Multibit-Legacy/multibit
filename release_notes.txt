@@ -3,7 +3,9 @@ MultiBit release notes.
 Version 0.5.12
 Changes:
 + Updated to bitcoinj v0.9
-+ Fixed issues 150, 165 - Automatically recreates BlockStore if there are problems loading it.
++ Fees are now calculated automatically
++ The size of the transaction appears on the transactions detail dialog
++ Fixed issues 150, 165 - Automatically recreates BlockStore if there are problems loading it
 + Fixed issue 155 - Version.txt retrieval error on Java 7
 + Fixed issue 156 - Verify message available when wallet is syncing
 
