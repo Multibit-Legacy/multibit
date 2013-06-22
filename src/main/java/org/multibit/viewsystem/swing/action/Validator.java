@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet.BalanceType;
 
@@ -116,18 +117,12 @@ public class Validator {
                     amountValidatesOk = Boolean.FALSE;
                     amountIsNegativeOrZero = Boolean.TRUE;
                 } else {
-                    String fee = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
-                    BigInteger feeBigInteger;
-                    if (fee == null || fee.isEmpty()) {
-                        feeBigInteger = BitcoinModel.SEND_FEE_DEFAULT;
-                    } else {
-                        feeBigInteger = Utils.toNanoCoins(fee);
-                    }
-                    BigInteger totalSpend = amountBigInteger.add(feeBigInteger);
+                    // The fee is worked out in detail later, but we know it will be at least the minimum reference amount.
+                    BigInteger totalSpend = amountBigInteger.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
                     BigInteger availableBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
                     BigInteger estimatedBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED);
                     
-                    log.debug("Amount = " + amountBigInteger.toString() + ", fee = " + feeBigInteger.toString() 
+                    log.debug("Amount = " + amountBigInteger.toString() + ", fee of at least " + Transaction.REFERENCE_DEFAULT_MIN_TX_FEE.toString() 
                             + ", totalSpend = " + totalSpend.toString() + ", availableBalance = " + availableBalance.toString() + ", estimatedBalance = " + estimatedBalance.toString());
                     if (totalSpend.compareTo(availableBalance) > 0) {
                         // Not enough funds.
