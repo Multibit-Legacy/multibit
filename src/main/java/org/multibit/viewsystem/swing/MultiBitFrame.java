@@ -59,10 +59,12 @@ import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.text.DefaultEditorKit;
 
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import org.joda.money.Money;
 import org.multibit.Localiser;
 import org.multibit.controller.Controller;
-import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.core.CoreController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
@@ -71,8 +73,8 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
-import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.ReplayManager;
@@ -85,8 +87,8 @@ import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.Viewable;
-import org.multibit.viewsystem.swing.action.CloseWalletAction;
 import org.multibit.viewsystem.swing.action.AbstractExitAction;
+import org.multibit.viewsystem.swing.action.CloseWalletAction;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
@@ -106,21 +108,15 @@ import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
-
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.joda.money.Money;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 
 /*
@@ -203,12 +199,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private final GenericQuitResponse multiBitFrameQuitResponse = new GenericQuitResponse() {
         @Override
         public void cancelQuit() {
-            log.debug("Quit Cancled");
+            log.debug("Quit Canceled");
         }
 
         @Override
         public void performQuit() {
-            log.debug("Preformed Quit");
+            log.debug("Performed Quit");
         }
     };
     
@@ -1405,9 +1401,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             ShowTransactionsPanel.updateTransactions(); 
         } else if (controller.getCurrentView() == View.SEND_BITCOIN_VIEW) {
             final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
-            log.debug("numberOfPeers = " + numberOfPeers);
+            //log.debug("numberOfPeers = " + numberOfPeers);
             final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
-            log.debug((transaction != null && transaction.getConfidence() != null) ? transaction.getConfidence().toString() : "No transaction confidence for tx");
+            //log.debug((transaction != null && transaction.getConfidence() != null) ? transaction.getConfidence().toString() : "No transaction confidence for tx");
             SendBitcoinConfirmPanel.updatePanelDueToTransactionConfidenceChange(transactionHash, numberOfPeers); 
         }
     }

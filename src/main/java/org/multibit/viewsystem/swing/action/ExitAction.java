@@ -78,6 +78,7 @@ public class ExitAction extends AbstractExitAction {
         if (mainFrame != null) {
             if (EventQueue.isDispatchThread()) {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
             } else {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override

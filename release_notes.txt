@@ -3,7 +3,7 @@ MultiBit release notes.
 Version 0.5.12
 Changes:
 + Updated to bitcoinj v0.9
-+ Fees are now calculated automatically
++ Fees are now calculated automatically. Code by Matt Corallo.
 + The size of the transaction appears on the transactions detail dialog
 + Fixed issues 150, 165 - Automatically recreates BlockStore if there are problems loading it
 + Fixed issue 155 - Version.txt retrieval error on Java 7
