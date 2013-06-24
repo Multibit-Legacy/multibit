@@ -1032,8 +1032,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                         wallet.setTemporySecondPassword(secondPassword);
 
                         int numberOfKeys = 0;
-                        if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().keychain != null) {
-                            numberOfKeys = wallet.getBitcoinJWallet().keychain.size();
+                        if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
+                            numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
                         }
                         numberOfKeysLabel.setText("" + numberOfKeys);
 
@@ -1051,8 +1051,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                     MyWallet wallet = new MyWallet(importFileContents);
 
                     int numberOfKeys = 0;
-                    if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().keychain != null) {
-                        numberOfKeys = wallet.getBitcoinJWallet().keychain.size();
+                    if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
+                        numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
                     }
                     numberOfKeysLabel.setText("" + numberOfKeys);
 

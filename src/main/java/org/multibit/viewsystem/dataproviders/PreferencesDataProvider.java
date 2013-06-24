@@ -15,15 +15,15 @@ public interface PreferencesDataProvider extends DataProvider {
     public String getPreviousUndoChangesText();
     
     
-    /**
-     * Get the previous send fee
-     */
-    public String getPreviousSendFee();
-    
-    /**
-     * Get the new send fee
-     */
-    public String getNewSendFee();
+//    /**
+//     * Get the previous send fee
+//     */
+//    public String getPreviousSendFee();
+//    
+//    /**
+//     * Get the new send fee
+//     */
+//    public String getNewSendFee();
     
     
     /**

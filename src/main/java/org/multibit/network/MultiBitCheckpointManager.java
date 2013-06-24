@@ -38,7 +38,7 @@ public class MultiBitCheckpointManager extends CheckpointManager {
         
         if (highestCheckpointBeforeHeight == null) {
             try {
-                return new StoredBlock(params.genesisBlock, params.genesisBlock.getWork(), 0);
+                return new StoredBlock(params.getGenesisBlock(), params.getGenesisBlock().getWork(), 0);
             } catch (VerificationException e) {
                 e.printStackTrace();
             }

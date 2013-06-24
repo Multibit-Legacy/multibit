@@ -243,7 +243,7 @@ public class OpenWalletAction extends AbstractAction {
                         
                         // If there was no lastBlockSeenHeight, find the latest confirmed transaction height.
                         if (lastBlockSeenHeight <= 0) {
-                            Set<Transaction> transactions = perWalletModelData.getWallet().getTransactions(true, false);
+                            Set<Transaction> transactions = perWalletModelData.getWallet().getTransactions(true);
                             if (transactions != null) {
                                 for (Transaction transaction : transactions) {
                                     TransactionConfidence confidence = transaction.getConfidence();

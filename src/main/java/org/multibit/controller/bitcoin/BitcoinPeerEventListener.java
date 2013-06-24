@@ -3,6 +3,7 @@ package org.multibit.controller.bitcoin;
 import org.multibit.controller.bitcoin.BitcoinController;
 import java.util.List;
 
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -13,7 +14,11 @@ import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
+import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.VerificationException;
+import com.google.bitcoin.core.Wallet;
+
 import org.multibit.controller.Controller;
 
 public class BitcoinPeerEventListener implements PeerEventListener {
@@ -73,40 +78,6 @@ public class BitcoinPeerEventListener implements PeerEventListener {
 
     @Override
     public void onTransaction(Peer peer, Transaction transaction) { 
-        // Loop through all the wallets, seeing if the transaction is relevant
-        // and adding them as pending if so.
-//        if (transaction != null) {
-//            try {
-//                java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-//
-//                if (perWalletModelDataList != null) {
-//                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-//                        Wallet loopWallet = perWalletModelData.getWallet();
-//                        if (loopWallet != null) {
-//                            if (loopWallet.isPendingTransactionRelevant(transaction)) {
-//                                // The perWalletModelData is marked as dirty.
-//                                if (perWalletModelData.getWalletInfo() != null) {
-//                                    synchronized(perWalletModelData.getWalletInfo()) {
-//                                        perWalletModelData.setDirty(true);
-//                                    }
-//                                } else {
-//                                    perWalletModelData.setDirty(true);
-//                                }
-//                                if (loopWallet.getTransaction(transaction.getHash()) == null) {
-//                                    log.debug("MultiBit adding a new pending transaction for the wallet '"
-//                                            + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
-//                                    loopWallet.receivePending(transaction, null);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            } catch (ScriptException e) {
-//                log.error(e.getMessage(), e);
-//            } catch (VerificationException e) {
-//                log.error(e.getMessage(), e);
-//            }
-//        }
     }
 
     @Override

@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.uri.BitcoinURI;
@@ -53,7 +54,7 @@ import com.google.bitcoin.uri.BitcoinURIParseException;
  * 
  * @author jim
  */
-public class BitcoinController extends AbstractController<CoreController> implements WalletEventListener {
+public class BitcoinController extends AbstractController<CoreController> implements WalletEventListener, TransactionConfidence.Listener {
 
     public static final String ENCODED_SPACE_CHARACTER = "%20";
     private Logger log = LoggerFactory.getLogger(BitcoinController.class);
@@ -378,5 +379,26 @@ public class BitcoinController extends AbstractController<CoreController> implem
         public void handleQuitEvent(ExitAction exitAction) {
             exitAction.setBitcoinController(super.controller);
         }
+    }
+
+    @Override
+    public void onConfidenceChanged(Transaction tx) {
+//        log.debug("onConfidenceChanged for tx " + tx.getHashAsString() + ", identityHash = " + System.identityHashCode(tx));
+//        TransactionConfidence transactionConfidence = tx.getConfidence();
+//        if (transactionConfidence != null) {
+//            log.debug("number of peers = " + transactionConfidence.getBroadcastByCount());
+//        } else {
+//            log.debug("No transaction confidence");
+//        }
+//        List<WalletData> walletDataList = this.getModel().getPerWalletModelDataList();
+//        if (walletDataList != null) {
+//            for (WalletData walletData : walletDataList) {
+//                Transaction txInWallet = walletData.getWallet().getTransaction(tx.getHash());
+//                if (txInWallet != null) {
+//                    log.debug("onConfidenceChanged for wallet = '" + walletData.getWallet().getDescription() + "', tx = " + tx.getHashAsString() + ", identityHash = " + System.identityHashCode(tx));
+//                    onTransactionConfidenceChanged(walletData.getWallet(), tx);
+//                }
+//            }
+//        }
     }
 }

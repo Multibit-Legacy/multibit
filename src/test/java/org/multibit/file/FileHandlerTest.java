@@ -196,9 +196,9 @@ public class FileHandlerTest extends TestCase {
         // Create a new unencrypted (vanilla) protobuf wallet.
         Wallet newWallet = new Wallet(NetworkParameters.prodNet());
         ECKey newKey = new ECKey();
-        newWallet.keychain.add(newKey);
+        newWallet.getKeychain().add(newKey);
         newKey = new ECKey();
-        newWallet.keychain.add(newKey);
+        newWallet.getKeychain().add(newKey);
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
@@ -229,7 +229,7 @@ public class FileHandlerTest extends TestCase {
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_UNENCRYPTED_PROTOBUF_PREFIX, perWalletModelDataReborn.getWalletDescription());
-        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
+        assertEquals(2, perWalletModelDataReborn.getWallet().getKeychain().size());
 
         assertEquals(MultiBitWalletVersion.PROTOBUF_ENCRYPTED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
@@ -303,7 +303,7 @@ public class FileHandlerTest extends TestCase {
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX, perWalletModelDataReborn.getWalletDescription());
-        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
+        assertEquals(2, perWalletModelDataReborn.getWallet().getKeychain().size());
 
         assertEquals(MultiBitWalletVersion.PROTOBUF_ENCRYPTED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not of type ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
@@ -500,9 +500,9 @@ public class FileHandlerTest extends TestCase {
         // Create a new protobuf wallet with a future wallet version
         Wallet newWallet = new Wallet(NetworkParameters.prodNet());
         ECKey newKey = new ECKey();
-        newWallet.keychain.add(newKey);
+        newWallet.getKeychain().add(newKey);
         newKey = new ECKey();
-        newWallet.keychain.add(newKey);
+        newWallet.getKeychain().add(newKey);
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.FUTURE);
         
@@ -550,9 +550,9 @@ public class FileHandlerTest extends TestCase {
         // Create a new protobuf wallet.
         Wallet newWallet = new Wallet(NetworkParameters.prodNet());
         ECKey newKey = new ECKey();
-        newWallet.keychain.add(newKey);
+        newWallet.getKeychain().add(newKey);
         newKey = new ECKey();
-        newWallet.keychain.add(newKey);
+        newWallet.getKeychain().add(newKey);
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         

@@ -53,5 +53,6 @@
     <!-- Define logging for organisation applications only -->
     <logger name="org.multibit" level="DEBUG" />
     <logger name="com.google.bitcoin" level="INFO" />
-    <logger name="com.google.bitcoin.core.BitcoinSerializer" level="INFO" />
+    <logger name="com.google.bitcoin.core.Wallet" level="DEBUG" />
+
 </configuration>

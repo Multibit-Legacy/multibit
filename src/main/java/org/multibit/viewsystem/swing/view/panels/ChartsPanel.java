@@ -268,7 +268,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
       return new ArrayList<ChartData>();
     }
 
-    ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(this.bitcoinController.getModel().getActiveWallet().getTransactions(false, false));
+    ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(this.bitcoinController.getModel().getActiveWallet().getTransactions(false));
 
     // Order by date.
     Collections.sort(allTransactions, new Comparator<Transaction>() {

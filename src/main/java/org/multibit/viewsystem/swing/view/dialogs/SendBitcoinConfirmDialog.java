@@ -30,6 +30,8 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 
+import com.google.bitcoin.core.Wallet.SendRequest;
+
 /**
  * The send bitcoin confirm dialog.
  */
@@ -45,15 +47,18 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     
     private final Controller controller;
     private final BitcoinController bitcoinController;
+    
+    private final SendRequest sendRequest;
 
     /**
      * Creates a new {@link SendBitcoinConfirmDialog}.
      */
-    public SendBitcoinConfirmDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
+    public SendBitcoinConfirmDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame, SendRequest sendRequest) {
         super(mainFrame, bitcoinController.getLocaliser().getString("sendBitcoinConfirmView.title"));
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.mainFrame = mainFrame;
+        this.sendRequest = sendRequest;
 
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
         if (imageIcon != null) {
@@ -79,7 +84,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
             positionDialogRelativeToParent(this, 0.5D, 0.47D);
         }
         
-        sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(this.bitcoinController, mainFrame, this);
+        sendBitcoinConfirmPanel = new SendBitcoinConfirmPanel(this.bitcoinController, mainFrame, this, sendRequest);
         sendBitcoinConfirmPanel.setOpaque(false);
         
         setLayout(new BorderLayout());

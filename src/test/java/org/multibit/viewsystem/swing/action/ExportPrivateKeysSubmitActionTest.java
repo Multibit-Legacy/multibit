@@ -181,7 +181,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
 
         // Remember the private keys for the key - for comparision later.
         // Copy the private key bytes for checking later.
-        EncryptedPrivateKey encryptedPrivateKey = controller.getModel().getActiveWallet().keychain.get(0).getEncryptedPrivateKey();
+        EncryptedPrivateKey encryptedPrivateKey = controller.getModel().getActiveWallet().getKeychain().get(0).getEncryptedPrivateKey();
         KeyCrypter keyCrypter = controller.getModel().getActiveWallet().getKeyCrypter();
         byte[] originalPrivateKeyBytes = keyCrypter.decrypt(encryptedPrivateKey, keyCrypter.deriveKey(WALLET_PASSWORD));
 

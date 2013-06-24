@@ -144,7 +144,7 @@ public class PrivateKeysHandlerTest extends TestCase {
 
         Wallet bitcoinj = wallet.getBitcoinJWallet();
         Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-        for (ECKey key : bitcoinj.keychain) {
+        for (ECKey key : bitcoinj.getKeychain()) {
             privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
         }
         
@@ -178,7 +178,7 @@ public class PrivateKeysHandlerTest extends TestCase {
 
         Wallet bitcoinj = wallet.getBitcoinJWallet();
         Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-        for (ECKey key : bitcoinj.keychain) {
+        for (ECKey key : bitcoinj.getKeychain()) {
             privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
         }
         
@@ -213,7 +213,7 @@ public class PrivateKeysHandlerTest extends TestCase {
         
         Wallet bitcoinj = wallet.getBitcoinJWallet();
         Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-        for (ECKey key : bitcoinj.keychain) {
+        for (ECKey key : bitcoinj.getKeychain()) {
             privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
         }
         

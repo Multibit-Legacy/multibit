@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
@@ -94,6 +95,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private MultiBitLabel dateText;
     private MultiBitLabel amountText;
     private MultiBitLabel feeText;
+    private MultiBitLabel sizeText;
 
     private JPanel mainPanel;
     private JPanel buttonPanel;
@@ -153,7 +155,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     public void initUI() {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        int minimumHeight = fontMetrics.getHeight() * 13 + HEIGHT_DELTA;
+        int minimumHeight = fontMetrics.getHeight() * 14 + HEIGHT_DELTA;
         int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT),
                 fontMetrics.stringWidth("0123456789") * 5)
                 + WIDTH_DELTA;
@@ -259,7 +261,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(amountText, constraints);
 
         MultiBitLabel feeLabel = new MultiBitLabel("");
-        feeLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
+        feeLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.feeLabel.text"));
+        feeLabel.setToolTipText(controller.getLocaliser().getString("transactionDetailsDialog.feeLabel.tooltip"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
@@ -407,6 +410,39 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler2, constraints);
   
+        MultiBitLabel sizeLabel = new MultiBitLabel("");
+        feeLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
+        feeLabel.setToolTipText(controller.getLocaliser().getString("transactionDetailsDialog.feeLabel.tooltip"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 7;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        detailPanel.add(sizeLabel, constraints);
+
+        sizeText = new MultiBitLabel("");
+        sizeLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.sizeLabel.text"));
+        sizeLabel.setToolTipText(controller.getLocaliser().getString("transactionDetailsDialog.sizeLabel.tooltip"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 7;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        detailPanel.add(sizeText, constraints);
+        
+        ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+        try {
+            rowTableData.getTransaction().bitcoinSerialize(byteOutputStream);
+            sizeText.setText(controller.getLocaliser().getString("showPreferencesPanel.size.text", new Object[] {byteOutputStream.size()}));
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+
         if (isBrowserSupported()) {
             MultiBitButton openInBlockExplorerButton = new MultiBitButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockExplorer"));
             openInBlockExplorerButton.addActionListener(new ActionListener() {
@@ -424,7 +460,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             
             constraints.fill = GridBagConstraints.NONE;
             constraints.gridx = 2;
-            constraints.gridy = 7;
+            constraints.gridy = 8;
             constraints.weightx = 0.4;
             constraints.weighty = 0.1;
             constraints.gridwidth = 1;
@@ -446,7 +482,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             
             constraints.fill = GridBagConstraints.NONE;
             constraints.gridx = 3;
-            constraints.gridy = 7;
+            constraints.gridy = 8;
             constraints.weightx = 0.4;
             constraints.weighty = 0.1;
             constraints.gridwidth = 1;
@@ -466,7 +502,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
    
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         constraints.weightx = 0.4;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -557,7 +593,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             try {
                 // see if the address is a known sending address
                 if (theirOutput != null) {
-                    String addressString = theirOutput.getScriptPubKey().getToAddress().toString();
+                    String addressString = theirOutput.getScriptPubKey().getToAddress(wallet.getNetworkParameters()).toString();
                     String label = null;
                     if (perWalletModelData.getWalletInfo() != null) {
                         label = perWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);
@@ -626,11 +662,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             case DEAD:
                 builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.dead"));
                 break;
-            case NOT_IN_BEST_CHAIN:
-                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.sideChain"));
-                break;
-            case NOT_SEEN_IN_CHAIN:
-                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.notSeenInChain"));
+            case PENDING:
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.pending"));
                 break;
             case BUILDING:
                 builder.append(MultiBit.getController().getLocaliser()

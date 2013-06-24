@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.JPasswordField;
@@ -185,7 +186,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         if (encryptNewKeys) {
                             aesKey = walletKeyCrypter.deriveKey(walletPassword);
                         }
-                        Collection<ECKey> newKeys = new ArrayList<ECKey>();
+                        List<ECKey> newKeys = new ArrayList<ECKey>();
                         for (int i = 0; i < numberOfAddressesToCreate; i++) {
                             ECKey newKey;
                             if (encryptNewKeys) {
@@ -200,7 +201,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         FileHandler fileHandler = finalController.getFileHandler();
                         
                         synchronized (finalPerWalletModelData.getWallet()) {
-                            finalPerWalletModelData.getWallet().keychain.addAll(newKeys);
+                            finalPerWalletModelData.getWallet().addKeys(newKeys);
                         }
                         
                         // Add keys to address book.

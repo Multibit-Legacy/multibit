@@ -24,7 +24,6 @@ import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -47,7 +46,6 @@ import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.store.MultiBitWalletVersion;
-import org.multibit.store.ReplayableBlockStore;
 import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +61,6 @@ import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.SendRequest;
@@ -175,7 +172,7 @@ public class MultiBitService {
         try {
             // Load or create the blockStore..
             log.debug("Loading/ creating blockstore ...");
-            blockStore = createBlockStore(null, false, false);
+            blockStore = createBlockStore(null, false);
             log.debug("Blockstore is '" + blockStore + "'");
 
             log.debug("Creating blockchain ...");
@@ -222,37 +219,32 @@ public class MultiBitService {
         log.error("Error creating MultiBitService " + e.getClass().getName() + " " + e.getMessage());
     }
 
-    private BlockStore createBlockStore(Date checkpointDate, boolean createNew, boolean isReplay) throws BlockStoreException, IOException {
+    private BlockStore createBlockStore(Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
         BlockStore blockStore = null;
 
         String filePrefix = getFilePrefix();
         log.debug("filePrefix = " + filePrefix);
 
-        String bobsBlockStoreFilename;
-        String spvBlockStoreFilename;
-
         if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
-            bobsBlockStoreFilename = filePrefix + BLOCKCHAIN_SUFFIX;
-            spvBlockStoreFilename = filePrefix + SPV_BLOCKCHAIN_SUFFIX;
+            blockchainFilename = filePrefix + SPV_BLOCKCHAIN_SUFFIX;
             checkpointsFilename = filePrefix + CHECKPOINTS_SUFFIX;
         } else {
-            bobsBlockStoreFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
-                    + filePrefix + BLOCKCHAIN_SUFFIX;
-            spvBlockStoreFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
+            blockchainFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
                     + filePrefix + SPV_BLOCKCHAIN_SUFFIX;
             checkpointsFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
             + filePrefix + CHECKPOINTS_SUFFIX;
         }
 
-        File bobsBlockStore = new File(bobsBlockStoreFilename);
-        File spvBlockStore = new File(spvBlockStoreFilename);
+        File blockStoreFile = new File(blockchainFilename);
+        boolean blockStoreCreatedNew = !blockStoreFile.exists();
 
         // Ensure there is a checkpoints file.
         File checkpointsFile = new File(checkpointsFilename);
         if (!checkpointsFile.exists()) {
-            this.bitcoinController.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
+            bitcoinController.getFileHandler().copyCheckpointsFromInstallationDirectory(checkpointsFilename);                
         }
         
+        // Use the larger of the installed checkpoints file and the user data checkpoint file (larger = more recent).
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
         String installedCheckpointsFilename = applicationDataDirectoryLocator.getInstallationDirectory() + File.separator + MultiBitService.getFilePrefix()  + MultiBitService.CHECKPOINTS_SUFFIX;
         log.debug("Installed checkpoints file = '" + installedCheckpointsFilename + "'.");
@@ -271,44 +263,62 @@ public class MultiBitService {
             log.debug("Using user data checkpoints file as it is longer/same size as installed checkpoints - " + sizeOfUserDataCheckpointsFile + " bytes versus " + installedCheckpointsFile.length() + " bytes.");
         }
         
-        if (!spvBlockStore.exists() && (isReplay || !bobsBlockStore.exists())) {
-            // If there is no SPVBlockStore and no ReplayableBlockStore create an SPVBlockStore and use it.
-            blockchainFilename = spvBlockStoreFilename;
-            
-            blockStore = new SPVBlockStore(networkParameters, new File(blockchainFilename));
-
-            // Load the existing checkpoint file and checkpoint from today.
-            if (checkpointsFile.exists()) {
-                FileInputStream stream = new FileInputStream(checkpointsFile);
-                CheckpointManager.checkpoint(networkParameters, stream, blockStore, (new Date()).getTime() / 1000);
-            }
-        } else if (spvBlockStore.exists()) {
-            // If there is an SPVStore prefer that.
-            blockchainFilename = spvBlockStoreFilename;
-
-            File blockchainFile = new File(blockchainFilename);
-            if (createNew) {
+        // If the spvBlockStore is to be created new 
+        // or its size is 0 bytes delete the file so that it is recreated fresh (fix for issue 165).
+        if (createNew || blockStoreFile.length() == 0) {
+            // Garbage collect any closed references to the blockchainFile.
+            System.gc();
+            blockStoreFile.setWritable(true);
+            boolean deletedOk = blockStoreFile.delete();
+            log.debug("Deleting SPV block store '{}' from disk.1", blockchainFilename + ", deletedOk = " + deletedOk);
+            blockStoreCreatedNew = true;
+        }
+ 
+        log.debug("Opening / Creating SPV block store '{}' from disk", blockchainFilename);
+        try {
+            blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
+        } catch (BlockStoreException bse) {
+            try {
+                log.error("Failed to open/ create SPV block store '{}' from disk", blockchainFilename);
+                // If the block store creation failed, delete the block store file and try again. 
+                
                 // Garbage collect any closed references to the blockchainFile.
                 System.gc();
-                blockchainFile.setWritable(true);
-                boolean deletedOk = blockchainFile.delete();
-                log.debug("Recreating SPV block store '{}' from disk", blockchainFilename + ", deletedOk = " + deletedOk);
-            } else {
-                log.debug("Opening SPV block store '{}' from disk", blockchainFilename);
-            }
-            blockStore = new SPVBlockStore(networkParameters, blockchainFile);
+                blockStoreFile.setWritable(true);
+                boolean deletedOk = blockStoreFile.delete();
+                log.debug("Deleting SPV block store '{}' from disk.2", blockchainFilename + ", deletedOk = " + deletedOk);
+                blockStoreCreatedNew = true;
 
-            // Load the existing checkpoint file, setting the checkpoint date if it is a replay.
-            if (checkpointsFile.exists() && checkpointDate != null) {
-                FileInputStream stream = new FileInputStream(checkpointsFile);
-                CheckpointManager.checkpoint(networkParameters, stream, blockStore, checkpointDate.getTime() / 1000);
+                blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
+            } catch (BlockStoreException bse2) {
+                bse2.printStackTrace();
+                log.error("Unrecoverable failure in opening block store. This is bad.");
+                // Throw the exception so that it is indicated on the UI.
+                throw bse2;
             }
-        } else {
-            // Use the existing bobsBlockStore.
-            // (This will be used until the first replay/ import at which point the SPVStore will be used).
-            blockchainFilename = bobsBlockStoreFilename;
-            log.debug("Reading Replayable block store '{}' from disk", blockchainFilename);
-            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
+        }
+        
+        // Load the existing checkpoint file and checkpoint from today.
+        if (blockStore != null && checkpointsFile.exists()) {
+            FileInputStream stream = null;
+            try {
+                stream = new FileInputStream(checkpointsFile);
+                if (checkpointDate == null) {
+                    if (blockStoreCreatedNew) {
+                        // Brand new block store - checkpoint from today. This
+                        // will go back to the last checkpoint.
+                        CheckpointManager.checkpoint(networkParameters, stream, blockStore, (new Date()).getTime() / 1000);
+                    }
+                } else {
+                    // Use checkpoint date (block replay).
+                    CheckpointManager.checkpoint(networkParameters, stream, blockStore, checkpointDate.getTime() / 1000);
+                }
+            } finally {
+                if (stream != null) {
+                    stream.close();
+                    stream = null;
+                }
+            }
         }
         return blockStore;
     }
@@ -350,7 +360,7 @@ public class MultiBitService {
 
         if (!peersSpecified) {
             // Use DNS for production, IRC for test.
-            if (TESTNET3_GENESIS_HASH.equals(this.bitcoinController.getModel().getNetworkParameters().genesisBlock.getHashAsString())) {
+            if (TESTNET3_GENESIS_HASH.equals(this.bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
             } else if (NetworkParameters.testNet().equals(this.bitcoinController.getModel().getNetworkParameters())) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
@@ -381,7 +391,7 @@ public class MultiBitService {
     public static String getFilePrefix() {
         BitcoinController bitcoinController = MultiBit.getBitcoinController();
         // testnet3
-        if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().genesisBlock.getHashAsString())) {
+        if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET3_PREFIX;
         } else if (NetworkParameters.testNet().equals(bitcoinController.getModel().getNetworkParameters())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET_PREFIX;
@@ -440,7 +450,7 @@ public class MultiBitService {
                 // Create a brand new wallet - by default unencrypted.
                 wallet = new Wallet(networkParameters);
                 ECKey newKey = new ECKey();
-                wallet.keychain.add(newKey);
+                wallet.addKey(newKey);
 
                 perWalletModelDataToReturn = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet, walletFile.getAbsolutePath());
 
@@ -469,7 +479,7 @@ public class MultiBitService {
         if (wallet != null) {
             // Add the keys for this wallet to the address book as receiving
             // addresses.
-            ArrayList<ECKey> keys = wallet.keychain;
+            List<ECKey> keys = wallet.getKeychain();
             if (keys != null) {
                 if (!newWalletCreated) {
                     perWalletModelDataToReturn = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
@@ -498,9 +508,11 @@ public class MultiBitService {
             // Add wallet to peergroup.
             if (peerGroup != null) {
                 peerGroup.addWallet(wallet);
+                peerGroup.addEventListener(bitcoinController.getPeerEventListener());
             } else {
                 log.error("Could not add wallet '" + walletFilename + "' to the peerGroup as the peerGroup is null. This is bad. ");
             }
+            
         }
 
         return perWalletModelDataToReturn;
@@ -524,10 +536,10 @@ public class MultiBitService {
             }
         }
         if (dateToReplayFrom != null) {
-            blockStore = createBlockStore(dateToReplayFrom, true, true);
+            blockStore = createBlockStore(dateToReplayFrom, true);
         } else {
             Date oneSecondAfterGenesis = new Date(MultiBitService.genesisBlockCreationDate.getTime() + 1000);
-            blockStore = createBlockStore(oneSecondAfterGenesis, true, true);
+            blockStore = createBlockStore(oneSecondAfterGenesis, true);
         }
         log.debug("Blockstore is '" + blockStore + "'");
 
@@ -576,29 +588,55 @@ public class MultiBitService {
      * @throws EncrypterDecrypterException
      */
 
-    public Transaction sendCoins(WalletData perWalletModelData, String sendAddressString, String amount, BigInteger fee,
+    public Transaction sendCoins(WalletData perWalletModelData, SendRequest sendRequest,
             CharSequence password) throws java.io.IOException, AddressFormatException, KeyCrypterException {
         // Send the coins
-        Address sendAddress = new Address(networkParameters, sendAddressString);
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
         KeyParameter aesKey = null;
         if (perWalletModelData.getWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
             aesKey = perWalletModelData.getWallet().getKeyCrypter().deriveKey(password);
         }
-        SendRequest request = SendRequest.to(sendAddress, Utils.toNanoCoins(amount));
-        request.aesKey = aesKey;
-        request.fee = fee;
-        Wallet.SendResult sendResult = perWalletModelData.getWallet().sendCoins(peerGroup, request);
+        sendRequest.aesKey = aesKey;
+        sendRequest.fee = BigInteger.ZERO;
+        sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
+        
+        sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
+        // log.debug("Added txConfidenceListener " + txConfidenceListener + " to tx " + request.tx.getHashAsString() + ", identityHashCode = " + System.identityHashCode(request.tx));
+
+        try {
+            // The transaction is already added to the wallet (in SendBitcoinConfirmAction) so here we just need
+            // to sign it, commit it and broadcast it.
+            perWalletModelData.getWallet().sign(sendRequest);
+            perWalletModelData.getWallet().commitTx(sendRequest.tx);
+            
+            // The tx has been committed to the pending pool by this point (via sendCoinsOffline -> commitTx), so it has
+            // a txConfidenceListener registered. Once the tx is broadcast the peers will update the memory pool with the
+            // count of seen peers, the memory pool will update the transaction confidence object, that will invoke the
+            // txConfidenceListener which will in turn invoke the wallets event listener onTransactionConfidenceChanged
+            // method.
+            peerGroup.broadcastTransaction(sendRequest.tx);
+        } catch (VerificationException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        Transaction sendTransaction = sendRequest.tx;
+
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
-        Transaction sendTransaction = sendResult.tx;
 
         assert sendTransaction != null;
-        // We should never try to send more
-        // coins than we have!
+        // We should never try to send more coins than we have!
         // throw an exception if sendTransaction is null - no money.
         if (sendTransaction != null) {
-            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
+            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString() + ", identityHashcode = " + System.identityHashCode(sendTransaction));
+            
+            if (sendTransaction.getConfidence() != null) {
+                log.debug("Added bitcoinController " + System.identityHashCode(this.bitcoinController) + " as listener to tx = " + sendTransaction.getHashAsString());
+                sendTransaction.getConfidence().addEventListener(this.bitcoinController);
+            } else {
+                log.debug("Cannot add bitcoinController as listener to tx = " + sendTransaction.getHashAsString() + " no transactionConfidence");
+            }
 
             try {
                 this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);

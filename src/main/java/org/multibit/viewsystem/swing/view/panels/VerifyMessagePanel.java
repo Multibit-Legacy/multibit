@@ -538,20 +538,7 @@ public class VerifyMessagePanel extends JPanel implements Viewable, WalletBusyLi
     }
 
     @Override
-    public void walletBusyChange(boolean newWalletIsBusy) {       
-        // Update the enable status of the action to match the wallet busy status.
-        if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
-            // Wallet is busy with another operation that may change the private keys - Action is disabled.
-            verifyMessageSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
-                    new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
-            verifyMessageSubmitAction.setEnabled(false);           
-        } else {
-            // Enable unless wallet has been modified by another process.
-            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                verifyMessageSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("verifyMessageAction.tooltip")));
-                verifyMessageSubmitAction.setEnabled(true);
-            }
-        }
+    public void walletBusyChange(boolean newWalletIsBusy) {
     }
 
     public MultiBitTextArea getMessageTextArea() {

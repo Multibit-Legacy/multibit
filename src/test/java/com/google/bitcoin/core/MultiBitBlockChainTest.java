@@ -67,7 +67,7 @@ public class MultiBitBlockChainTest {
         resetBlockStore();
         chain = new BlockChain(unitTestParams, wallet, blockStore);
 
-        coinbaseTo = wallet.keychain.get(0).toAddress(unitTestParams);
+        coinbaseTo = wallet.getKeychain().get(0).toAddress(unitTestParams);
 
     }
 
@@ -99,7 +99,7 @@ public class MultiBitBlockChainTest {
         // Quick check that we can actually receive coins.
         Transaction tx1 = createFakeTx(unitTestParams,
                                        Utils.toNanoCoins(1, 0),
-                                       wallet.keychain.get(0).toAddress(unitTestParams));
+                                       wallet.getKeychain().get(0).toAddress(unitTestParams));
         Block b1 = createFakeBlock(unitTestParams, blockStore, tx1).block;
         chain.add(b1);
         assertTrue(wallet.getBalance().compareTo(BigInteger.ZERO) > 0);
@@ -111,7 +111,7 @@ public class MultiBitBlockChainTest {
         // there isn't any such tx present (as an optimization).
         Transaction tx1 = createFakeTx(unitTestParams,
                                        Utils.toNanoCoins(1, 0),
-                                       wallet.keychain.get(0).toAddress(unitTestParams));
+                                       wallet.getKeychain().get(0).toAddress(unitTestParams));
         Block b1 = createFakeBlock(unitTestParams, blockStore, tx1).block;
         chain.add(b1);
         resetBlockStore();
@@ -154,23 +154,23 @@ public class MultiBitBlockChainTest {
         // Add a bunch of blocks in a loop until we reach a difficulty transition point. The unit test params have an
         // artificially shortened period.
         Block prev = unitTestParams.genesisBlock;
-        Block.fakeClock = System.currentTimeMillis() / 1000;
+        Utils.setMockClock(System.currentTimeMillis()/1000);
         for (int i = 0; i < unitTestParams.interval - 1; i++) {
-            Block newBlock = prev.createNextBlock(coinbaseTo, Block.fakeClock);
+            Block newBlock = prev.createNextBlock(coinbaseTo, Utils.now().getTime()/1000);
             assertTrue(chain.add(newBlock));
             prev = newBlock;
             // The fake chain should seem to be "fast" for the purposes of difficulty calculations.
-            Block.fakeClock += 2;
+            Utils.rollMockClock(2);
         }
         // Now add another block that has no difficulty adjustment, it should be rejected.
         try {
-            chain.add(prev.createNextBlock(coinbaseTo, Block.fakeClock));
+            chain.add(prev.createNextBlock(coinbaseTo, Utils.now().getTime()/1000));
             fail();
         } catch (VerificationException e) {
         }
         // Create a new block with the right difficulty target given our blistering speed relative to the huge amount
         // of time it's supposed to take (set in the unit test network parameters).
-        Block b = prev.createNextBlock(coinbaseTo, Block.fakeClock);
+        Block b = prev.createNextBlock(coinbaseTo, Utils.now().getTime()/1000);
         b.setDifficultyTarget(0x201fFFFFL);
         b.solve();
         assertTrue(chain.add(b));
@@ -269,16 +269,16 @@ public class MultiBitBlockChainTest {
         Address addressToSendTo = receiveKey.toAddress(unitTestParams);
 
         // Create a block, sending the coinbase to the coinbaseTo address (which is in the wallet).
-        Block b1 = unitTestParams.genesisBlock.createNextBlockWithCoinbase(wallet.keychain.get(0).getPubKey());
+        Block b1 = unitTestParams.genesisBlock.createNextBlockWithCoinbase(wallet.getKeychain().get(0).getPubKey());
         chain.add(b1);
 
         // Check a transaction has been received.
-        assertNotNull(coinbaseTransaction);
+        assertNotNull("Coinbase tx was null", coinbaseTransaction);
 
         // The coinbase tx is not yet available to spend.
-        assertTrue(wallet.getBalance().equals(BigInteger.ZERO));
-        assertTrue(wallet.getBalance(BalanceType.ESTIMATED).equals(Utils.toNanoCoins(50, 0)));
-        assertTrue(!coinbaseTransaction.isMature());
+        assertTrue("Balance was not zero", wallet.getBalance().equals(BigInteger.ZERO));
+        assertEquals("Estimated balance was incorrect", Utils.toNanoCoins(50, 0),  wallet.getBalance(BalanceType.ESTIMATED));
+        assertTrue("The coinbase tx was mature, incorrectly", !coinbaseTransaction.isMature());
 
         // Attempt to spend the coinbase - this should fail as the coinbase is not mature yet.
         Transaction coinbaseSpend = wallet.createSend(addressToSendTo, Utils.toNanoCoins(49, 0));
@@ -324,18 +324,18 @@ public class MultiBitBlockChainTest {
 
         // Commit the coinbaseSpend to the first wallet and check the balances decrement.
         wallet.commitTx(coinbaseSpend);
-        assertTrue(wallet.getBalance(BalanceType.ESTIMATED).equals( Utils.toNanoCoins(1, 0)));
+        assertEquals("Wrong estimated balance after commit", Utils.toNanoCoins("0.9999"), wallet.getBalance(BalanceType.ESTIMATED));
         // Available balance is zero as change has not been received from a block yet.
-        assertTrue(wallet.getBalance(BalanceType.AVAILABLE).equals( Utils.toNanoCoins(0, 0)));
+        assertEquals("Wrong available balance", Utils.toNanoCoins(0, 0), wallet.getBalance(BalanceType.AVAILABLE));
 
         // Give it one more block - change from coinbaseSpend should now be available in the first wallet.
         Block b4 = createFakeBlock(unitTestParams, blockStore, coinbaseSpend).block;
         chain.add(b4);
-        assertTrue(wallet.getBalance(BalanceType.AVAILABLE).equals(Utils.toNanoCoins(1, 0)));
+        assertEquals("Wrong available balance after one more block", Utils.toNanoCoins("0.9999"), wallet.getBalance(BalanceType.AVAILABLE));
 
         // Check the balances in the second wallet.
-        assertTrue(wallet2.getBalance(BalanceType.ESTIMATED).equals( Utils.toNanoCoins(49, 0)));
-        assertTrue(wallet2.getBalance(BalanceType.AVAILABLE).equals( Utils.toNanoCoins(49, 0)));
+        assertEquals(Utils.toNanoCoins(49, 0), wallet2.getBalance(BalanceType.ESTIMATED));
+        assertEquals(Utils.toNanoCoins(49, 0), wallet2.getBalance(BalanceType.AVAILABLE));
     }
 
     // Some blocks from the test net.

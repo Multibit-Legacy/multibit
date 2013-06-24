@@ -116,8 +116,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int EXCHANGE_COMBO_HEIGHT_DELTA = 15;
     private static final int COMBO_WIDTH_DELTA = 150;
 
-    private static final int FEE_TEXT_FIELD_HEIGHT = 30;
-    private static final int FEE_TEXT_FIELD_WIDTH = 200;
+//    private static final int FEE_TEXT_FIELD_HEIGHT = 30;
+//    private static final int FEE_TEXT_FIELD_WIDTH = 200;
 
     private static final int API_CODE_FIELD_HEIGHT = 30;
     private static final int API_CODE_FIELD_WIDTH = 200;
@@ -133,8 +133,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private JRadioButton useDefaultLocale;
     private JComboBox languageComboBox;
 
-    private MultiBitTextField feeTextField;
-    private String originalFee;
+//    private MultiBitTextField feeTextField;
+//    private String originalFee;
 
     private JRadioButton ignoreAll;
     private JRadioButton fillAutomatically;
@@ -238,40 +238,40 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                 controller.getModel().getUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
         showBitcoinConvertedToFiat.setSelected(originalShowBitcoinConvertedToFiat);
 
-        String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
-
-        if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = controller.getLocaliser()
-                    .bitcoinValueToStringNotLocalised(BitcoinModel.SEND_FEE_DEFAULT, false, false);
-        }
-        originalFee = sendFeeString;
-
-        String sendFeeStringLocalised;
-        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
-
-        if (converterResult.isBtcMoneyValid()) {
-            // Check that the fee is at least the minimum fee and smaller than the maximum fee.
-            BigInteger feeAsBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
-            if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
-                // Set the fee to the default fee.
-                sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(
-                        Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(BitcoinModel.SEND_FEE_DEFAULT)));
-
-            } else {
-                if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
-                    // Set the fee to the default fee.
-                    sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(
-                            Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(BitcoinModel.SEND_FEE_DEFAULT)));
-                } else {
-                    // Fee is ok.
-                    sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-                }
-            }
-        } else {
-            // BTC did not parse - just use the original text
-            sendFeeStringLocalised = sendFeeString;
-        }
-        feeTextField.setText(sendFeeStringLocalised);
+//        String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
+//
+//        if (sendFeeString == null || sendFeeString == "") {
+//            sendFeeString = controller.getLocaliser()
+//                    .bitcoinValueToStringNotLocalised(BitcoinModel.SEND_FEE_DEFAULT, false, false);
+//        }
+//        originalFee = sendFeeString;
+//
+//        String sendFeeStringLocalised;
+//        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
+//
+//        if (converterResult.isBtcMoneyValid()) {
+//            // Check that the fee is at least the minimum fee and smaller than the maximum fee.
+//            BigInteger feeAsBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
+//            if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
+//                // Set the fee to the default fee.
+//                sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(
+//                        Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(BitcoinModel.SEND_FEE_DEFAULT)));
+//
+//            } else {
+//                if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
+//                    // Set the fee to the default fee.
+//                    sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(
+//                            Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(BitcoinModel.SEND_FEE_DEFAULT)));
+//                } else {
+//                    // Fee is ok.
+//                    sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+//                }
+//            }
+//        } else {
+//            // BTC did not parse - just use the original text
+//            sendFeeStringLocalised = sendFeeString;
+//        }
+//        feeTextField.setText(sendFeeStringLocalised);
 
         String showDialogString = controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG);
         String useUriString = controller.getModel().getUserPreference(BitcoinModel.OPEN_URI_USE_URI);
@@ -357,7 +357,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
 
-        String[] keys = new String[] { "showPreferencesPanel.feeLabel.text", "fontChooser.fontName", "fontChooser.fontStyle",
+        String[] keys = new String[] { "fontChooser.fontName", "fontChooser.fontStyle",
                 "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency",
                 "showPreferencesPanel.lookAndFeel", "showPreferencesPanel.oerLabel.text" };
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
@@ -365,14 +365,14 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         GridBagConstraints constraints = new GridBagConstraints();
         mainPanel.setLayout(new GridBagLayout());
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 2;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        mainPanel.add(createFeePanel(stentWidth), constraints);
+//        constraints.fill = GridBagConstraints.HORIZONTAL;
+//        constraints.gridx = 0;
+//        constraints.gridy = 0;
+//        constraints.gridwidth = 2;
+//        constraints.weightx = 1;
+//        constraints.weighty = 1;
+//        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+//        mainPanel.add(createFeePanel(stentWidth), constraints);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -591,109 +591,109 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         return languagePanel;
     }
 
-    private JPanel createFeePanel(int stentWidth) {
-        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(
-                controller.getLocaliser().getString("showPreferencesPanel.feeTitle"),
-                ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        GridBagConstraints constraints = new GridBagConstraints();
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.05;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
-        feePanel.add(indent, constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 3;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
-        feePanel.add(stent, constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
-        constraints.gridy = 3;
-        constraints.weightx = 0.05;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        feePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
-
-        MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
-        feeLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip")));
-        MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
-
-        String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
-
-        if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
-        }
-        originalFee = sendFeeString;
-
-        String sendFeeStringLocalised;
-        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
-
-        if (converterResult.isBtcMoneyValid()) {
-            sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-        } else {
-            // BTC did not parse - just use the original text
-            sendFeeStringLocalised = sendFeeString;
-        }
-
-        feeTextField = new MultiBitTextField("", 10, controller);
-        feeTextField.setHorizontalAlignment(JLabel.TRAILING);
-        feeTextField.setMinimumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
-        feeTextField.setPreferredSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
-        feeTextField.setMaximumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
-
-        feeTextField.setText(sendFeeStringLocalised);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 4;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        feePanel.add(feeLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 4;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        feePanel.add(feeTextField, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 4;
-        constraints.gridy = 4;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        feePanel.add(feeCurrencyLabel, constraints);
-
-        JPanel fill1 = new JPanel();
-        fill1.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 5;
-        constraints.gridy = 4;
-        constraints.weightx = 20;
-        constraints.weighty = 1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        feePanel.add(fill1, constraints);
-
-        return feePanel;
-    }
+//    private JPanel createFeePanel(int stentWidth) {
+//        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(
+//                controller.getLocaliser().getString("showPreferencesPanel.feeTitle"),
+//                ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+//
+//        GridBagConstraints constraints = new GridBagConstraints();
+//
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 0;
+//        constraints.gridy = 3;
+//        constraints.weightx = 0.1;
+//        constraints.weighty = 0.05;
+//        constraints.gridwidth = 1;
+//        constraints.gridheight = 1;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
+//        feePanel.add(indent, constraints);
+//
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 1;
+//        constraints.gridy = 3;
+//        constraints.weightx = 0.3;
+//        constraints.weighty = 0.3;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
+//        feePanel.add(stent, constraints);
+//
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 2;
+//        constraints.gridy = 3;
+//        constraints.weightx = 0.05;
+//        constraints.weighty = 0.3;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.CENTER;
+//        feePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+//
+//        MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
+//        feeLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip")));
+//        MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
+//
+//        String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
+//
+//        if (sendFeeString == null || sendFeeString == "") {
+//            sendFeeString = controller.getLocaliser().bitcoinValueToString(BitcoinModel.SEND_FEE_DEFAULT, false, false);
+//        }
+//        originalFee = sendFeeString;
+//
+//        String sendFeeStringLocalised;
+//        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
+//
+//        if (converterResult.isBtcMoneyValid()) {
+//            sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+//        } else {
+//            // BTC did not parse - just use the original text
+//            sendFeeStringLocalised = sendFeeString;
+//        }
+//
+//        feeTextField = new MultiBitTextField("", 10, controller);
+//        feeTextField.setHorizontalAlignment(JLabel.TRAILING);
+//        feeTextField.setMinimumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
+//        feeTextField.setPreferredSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
+//        feeTextField.setMaximumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
+//
+//        feeTextField.setText(sendFeeStringLocalised);
+//        constraints.fill = GridBagConstraints.NONE;
+//        constraints.gridx = 1;
+//        constraints.gridy = 4;
+//        constraints.weightx = 0.3;
+//        constraints.weighty = 0.3;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_END;
+//        feePanel.add(feeLabel, constraints);
+//
+//        constraints.fill = GridBagConstraints.NONE;
+//        constraints.gridx = 3;
+//        constraints.gridy = 4;
+//        constraints.weightx = 0.3;
+//        constraints.weighty = 0.3;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        feePanel.add(feeTextField, constraints);
+//
+//        constraints.fill = GridBagConstraints.NONE;
+//        constraints.gridx = 4;
+//        constraints.gridy = 4;
+//        constraints.weightx = 0.2;
+//        constraints.weighty = 0.3;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        feePanel.add(feeCurrencyLabel, constraints);
+//
+//        JPanel fill1 = new JPanel();
+//        fill1.setOpaque(false);
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 5;
+//        constraints.gridy = 4;
+//        constraints.weightx = 20;
+//        constraints.weighty = 1;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_END;
+//        feePanel.add(fill1, constraints);
+//
+//        return feePanel;
+//    }
 
     private JPanel createAppearancePanel(int stentWidth) {
         MultiBitTitledPanel appearancePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
@@ -1912,22 +1912,22 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         return controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text");
     }
 
-    @Override
-    public String getPreviousSendFee() {
-        return originalFee;
-    }
-
-    @Override
-    public String getNewSendFee() {
-        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(feeTextField.getText());
-        if (converterResult.isBtcMoneyValid()) {
-            return controller.getLocaliser().bitcoinValueToStringNotLocalised(
-                    converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
-        } else {
-            // Return UNPARSEABLE for the action to deal with it.
-            return ShowPreferencesPanel.UNPARSEABLE_FEE + " " + feeTextField.getText();
-        }
-    }
+//    @Override
+//    public String getPreviousSendFee() {
+//        return originalFee;
+//    }
+//
+//    @Override
+//    public String getNewSendFee() {
+//        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(feeTextField.getText());
+//        if (converterResult.isBtcMoneyValid()) {
+//            return controller.getLocaliser().bitcoinValueToStringNotLocalised(
+//                    converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
+//        } else {
+//            // Return UNPARSEABLE for the action to deal with it.
+//            return ShowPreferencesPanel.UNPARSEABLE_FEE + " " + feeTextField.getText();
+//        }
+//    }
     
     @Override
     public String getPreviousOpenExchangeRatesApiCode() {
