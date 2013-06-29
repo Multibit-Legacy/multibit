@@ -118,7 +118,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             // Put sending message and remove the send button.
-            sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
+            sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), "");
 
             // Get the label and address out of the wallet preferences.
             String sendAddress = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
@@ -163,7 +163,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                 perWalletModelData.setBusy(true);
                 perWalletModelData.setBusyTaskVerbKey("sendBitcoinNowAction.sendingBitcoin");
 
-                sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
+                sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), "");
                 
                 this.bitcoinController.fireWalletBusyChange(true);
 
@@ -179,9 +179,11 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         String message = null;
         
         boolean sendWasSuccessful = Boolean.FALSE;
-        try {            
-            log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", tx = " + sendRequest.tx.toString());
-            
+        try { 
+            if (sendRequest != null && sendRequest.tx != null) {
+                log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", tx = " + sendRequest.tx.toString());
+            }   
+
             if (useTestParameters) {
                 log.debug("Using test parameters - not really sending");
                 if (sayTestSendWasSuccessful) {
@@ -233,7 +235,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                 String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
                 if (sendBitcoinConfirmPanel != null && (sendBitcoinConfirmPanel.isVisible() || useTestParameters)) {
                     sendBitcoinConfirmPanel.setMessageText(
-                            controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"));
+                            controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
                     sendBitcoinConfirmPanel.showOkButton();
                     sendBitcoinConfirmPanel.clearPassword();
                 } else {
@@ -257,7 +259,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             // Declare that wallet is no longer busy with the task.
             perWalletModelData.setBusyTaskKey(null);
             perWalletModelData.setBusy(false);
-        this.bitcoinController.fireWalletBusyChange(false);                   
+            this.bitcoinController.fireWalletBusyChange(false);                   
 
             log.debug("firing fireRecreateAllViews...");
             controller.fireRecreateAllViews(false);

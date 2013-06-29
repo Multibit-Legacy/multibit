@@ -142,7 +142,9 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
             // Set the action up to use test parameters and fail-on-send.
             sendBitcoinNowAction.setTestParameters(true, false);
-            Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
+
+            // Wait for peer connections
+            Thread.sleep(6000);
 
             // Execute - this should give the sending or failed message.
             sendBitcoinNowAction.actionPerformed(null);
@@ -156,8 +158,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
             assertEquals("Wrong message - expecting sending on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR,
                     sendBitcoinConfirmPanel.getMessageText2());
 
-            // Wait a while and the message should be that it has failed the
-            // send.
+            // Wait a while and the message should be that it has failed the send.
             Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
 
             assertEquals("Wrong message - expecting success on messageText1", EXPECTED_SEND_FAILED,
@@ -191,7 +192,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
             sendBitcoinNowAction.setTestParameters(true, true);
 
             // Wait for peer connections
-            Thread.sleep(5000);
+            Thread.sleep(6000);
 
             // Execute - this should complain that the wallet password is not
             // set.
@@ -210,6 +211,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
             // Execute - this should give the sending message or sent message.
             sendBitcoinNowAction.actionPerformed(null);
+
             assertTrue(
                     "Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1()
                     + "'",
@@ -223,7 +225,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
             Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
 
             // Bitcoins should now be sent
-            assertEquals("Wrong message - expecting success on messageText1", EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY,
+            assertEquals("Wrong message - expecting success on messageText1, sendBitcoinConfirmPanel = " + System.identityHashCode(sendBitcoinConfirmPanel), EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY,
                     sendBitcoinConfirmPanel.getMessageText1());
             assertEquals("Wrong message - expecting success on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
 
