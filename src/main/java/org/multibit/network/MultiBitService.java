@@ -177,7 +177,7 @@ public class MultiBitService {
 
             log.debug("Creating blockchain ...");
             blockChain = new MultiBitBlockChain(networkParameters, blockStore);
-            log.debug("Created blockchain '" + blockChain + "'");
+            log.debug("Created blockchain '" + blockChain + "' with height " + blockChain.getBestChainHeight());
 
             log.debug("Creating peergroup ...");
             createNewPeerGroup();

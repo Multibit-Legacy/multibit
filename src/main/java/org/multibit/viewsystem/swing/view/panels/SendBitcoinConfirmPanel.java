@@ -573,7 +573,6 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                System.out.println("SendBitcoinConfirmPanel#setMessageText - message1 = '" + message1 + "', message2 = '" + message2 + "'");
                 confirmText1.setText(message1);
                 confirmText2.setText(" " + message2);
             }});
