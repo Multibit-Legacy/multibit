@@ -210,7 +210,6 @@ public class MultiBit {
             
             log.debug("MultiBit version = " + localiser.getVersionNumber());
 
-
             log.debug("Creating model");
 
             // Create the model.
