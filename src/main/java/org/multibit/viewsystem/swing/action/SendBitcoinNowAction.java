@@ -235,7 +235,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                 String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
                 if (sendBitcoinConfirmPanel != null && (sendBitcoinConfirmPanel.isVisible() || useTestParameters)) {
                     sendBitcoinConfirmPanel.setMessageText(
-                            controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
+                            controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"));
                     sendBitcoinConfirmPanel.showOkButton();
                     sendBitcoinConfirmPanel.clearPassword();
                 } else {
