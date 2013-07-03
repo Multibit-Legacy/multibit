@@ -133,7 +133,7 @@ public enum CurrencyConverter {
 
         currencyCodeToInfoMap.put("GBP", new CurrencyInfo("GBP", "\u00A3", true));
         currencyCodeToInfoMap.put("EUR", new CurrencyInfo("EUR", "\u20AC", true));
-        currencyCodeToInfoMap.put("CHF", new CurrencyInfo("CHF", "Fr.", true));
+        currencyCodeToInfoMap.put("CHF", new CurrencyInfo("CHF", "CHF", false));
         currencyCodeToInfoMap.put("JPY", new CurrencyInfo("JPY", "\u00A5", true));
         currencyCodeToInfoMap.put("CNY", new CurrencyInfo("CNY", "\u5143", false));
         currencyCodeToInfoMap.put("RUB", new CurrencyInfo("RUB", "\u0440\u0443\u0431", false));
