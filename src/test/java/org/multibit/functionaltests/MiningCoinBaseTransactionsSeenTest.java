@@ -68,10 +68,8 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
     private static final String MINING_PRIVATE_KEY = "5JDxPrBRghF1EvSBjDigywqfmAjpHPmTJxYtQTYJxJRHLLQA4mG";
 
     private static final String START_OF_REPLAY_PERIOD = "2012-03-03T13:00:00Z";
-    private static final int NUMBER_OF_BLOCKS_TO_REPLAY = 10;
 
     private static final BigInteger BALANCE_AT_START = BigInteger.ZERO;
-    private static final BigInteger BALANCE_AFTER_REPLAY = BigInteger.valueOf(22223642);
 
     private SimpleDateFormat formatter;
 
@@ -106,7 +104,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             controllers.coreController.registerViewSystem(simpleViewSystem);
             log.debug("simpleViewSystem = " + simpleViewSystem);
             
-            ReplayManager.INSTANCE.initialise(controllers.bitcoinController);
+            ReplayManager.INSTANCE.initialise(controllers.bitcoinController, true);
 
             //
             // MultiBit runtime is now setup and running.
@@ -153,9 +151,9 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
             // Run for a while.
-            log.debug("Twiddling thumbs for 180 seconds ...");
-            Thread.sleep(180000);
-            log.debug("... 180 seconds later.");
+            log.debug("Twiddling thumbs for 60 seconds ...");
+            Thread.sleep(60000);
+            log.debug("... 60 seconds later.");
 
             // Check new balance on wallet - estimated balance should be at least the
             // expected (may have later tx too)..
@@ -163,8 +161,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             log.debug("Mining wallet estimated balance is:\n" + controllers.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED).toString());
             log.debug("Mining wallet spendable balance is:\n" + controllers.bitcoinController.getModel().getActiveWallet().getBalance().toString());
             log.debug("Mining wallet is:\n" + controllers.bitcoinController.getModel().getActiveWallet().toString());
-            assertTrue("Estimated balance of mining wallet is incorrect", BALANCE_AFTER_REPLAY.compareTo(controllers.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) <= 0);
-            //assertTrue("Available balance of mining wallet is incorrect", BigInteger.ZERO.compareTo(controller.getModel().getActiveWallet().getBalance()) == 0);
+            assertTrue("There were no transactions after replay", controllers.bitcoinController.getModel().getActiveWallet().getTransactions(true).size() > 0);
 
             // See if the first transaction is a coinbase.
             miningWallet = controllers.bitcoinController.getModel().getActiveWallet();

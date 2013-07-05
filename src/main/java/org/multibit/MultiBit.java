@@ -230,7 +230,7 @@ public class MultiBit {
             CurrencyConverter.INSTANCE.initialise(finalController);
             
             // Initialise replay manager.
-            ReplayManager.INSTANCE.initialise(bitcoinController);
+            ReplayManager.INSTANCE.initialise(bitcoinController, false);
             
             log.debug("Setting look and feel");
             try {

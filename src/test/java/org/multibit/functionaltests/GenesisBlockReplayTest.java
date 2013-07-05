@@ -51,11 +51,6 @@ public class GenesisBlockReplayTest extends TestCase {
 
     private static final Logger log = LoggerFactory.getLogger(GenesisBlockReplayTest.class);
 
-    private static final int NUMBER_OF_BLOCKS_TO_REPLAY = 10;
-
-    private static final int BLOCKSIZE_BEFORE_REPLAY = 133;
-    private static final int BLOCKSIZE_AFTER_REPLAY = 2133; // Each block is 100 bytes, min NUMBER_OF_BLOCKS_TO_REPLAY blocks downloaded.
-
     private SimpleDateFormat formatter;
 
     @Test
@@ -86,7 +81,7 @@ public class GenesisBlockReplayTest extends TestCase {
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
             controllers.coreController.registerViewSystem(simpleViewSystem);
             
-            ReplayManager.INSTANCE.initialise(controllers.bitcoinController);
+            ReplayManager.INSTANCE.initialise(controllers.bitcoinController, true);
 
             //
             // MultiBit runtime is now setup and running.
@@ -110,9 +105,9 @@ public class GenesisBlockReplayTest extends TestCase {
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
             // Run for a minute.
-            log.debug("Twiddling thumbs for a minute ...");
+            log.debug("Twiddling thumbs for 60 seconds ...");
             Thread.sleep(60000);
-            log.debug("... one minute later.");
+            log.debug("... 60 seconds later later.");
 
             // Check the blockstore has added the downloaded blocks.
             assertNotNull("No multiBitService after replay", multiBitService);

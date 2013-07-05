@@ -69,8 +69,12 @@ public enum ReplayManager {
 
     final private Queue<ReplayTask> replayTaskQueue = new LinkedList<ReplayTask>();
 
-    public void initialise(BitcoinController controller) {
+    public void initialise(BitcoinController controller, boolean clearQueue) {
         this.controller = controller;
+        
+        if (clearQueue) {
+            replayTaskQueue.clear();
+        }
         replayManagerTimerTask = new ReplayManagerTimerTask(controller, replayTaskQueue);
         replayManagerTimer = new Timer();
         replayManagerTimer.scheduleAtFixedRate(replayManagerTimerTask, REPLAY_MANAGER_DELAY_TIME, REPLAY_MANAGER_REPEAT_TIME);
@@ -140,6 +144,7 @@ public enum ReplayManager {
         
         // Close the blockstore and recreate a new one.
         int newChainHeightAfterTruncate = controller.getMultiBitService().createNewBlockStoreForReplay(dateToReplayFrom);
+        log.debug("dateToReplayFrom = " + dateToReplayFrom + ", newChainHeightAfterTruncate = " + newChainHeightAfterTruncate);
         replayTask.setStartHeight(newChainHeightAfterTruncate);
         
         // Create a new PeerGroup.
@@ -203,14 +208,17 @@ public enum ReplayManager {
         int startHeight = replayTask.getStartHeight();
         if (startHeight == ReplayTask.UNKNOWN_START_HEIGHT) {
             File checkpointsFile = new File(controller.getMultiBitService().getCheckpointsFilename());
+            System.out.println("ReplayManager#offerReplayTask checkpointsFile = " + checkpointsFile.getAbsolutePath());
             if (checkpointsFile.exists() && replayTask.getStartDate() != null) {
                 FileInputStream stream = null;
                 try {
                     stream = new FileInputStream(checkpointsFile);
                     CheckpointManager checkpointManager = new CheckpointManager(controller.getModel().getNetworkParameters(), stream);
                     StoredBlock checkpoint = checkpointManager.getCheckpointBefore(replayTask.getStartDate().getTime() / 1000);
+                    System.out.println("ReplayManager#offerReplayTask checkpoint = " + checkpoint);
                     if (checkpoint != null) {
                         startHeight = checkpoint.getHeight();
+                        System.out.println("ReplayManager#offerReplayTask startHeight = " + startHeight);
                         
                         // Store it in the replay task as it will be used for percents.
                         replayTask.setStartHeight(startHeight);

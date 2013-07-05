@@ -39,6 +39,7 @@ public class SendBitcoinNowActionTest extends TestCase {
     private static final String EXPECTED_ENTER_THE_WALLET_PASSWORD = "Enter the wallet password";
     private static final String EXPECTED_TEST_SEND_FAILED_ERROR = " test - send failed";
     private static final String EXPECTED_SEND_FAILED = "The send of your bitcoin failed.";
+    private static final String EXPECTED_THE_WALLET_IS_BUSY = "The wallet is busy with the task \"\"";
     private static final String EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY = "Your bitcoin were sent successfully.";
     private static final String EXPECTED_SENDING_BITCOIN = "Sending bitcoin...";
     public static final CharSequence TEST_PASSWORD1 = "my hovercraft has eels";
@@ -249,11 +250,12 @@ public class SendBitcoinNowActionTest extends TestCase {
             // Execute - this should give the sending or failed message.
             sendBitcoinNowAction.actionPerformed(null);
             assertTrue(
-                    "Wrong message - expecting sending/failed on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1()
+                    "Wrong message - expecting sending/failed/ wallet busy on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1()
                     + "'",
                     "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
                     || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
-                    || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
+                    || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1())
+                    || EXPECTED_THE_WALLET_IS_BUSY.equals(sendBitcoinConfirmPanel.getMessageText1()));
             assertTrue(
                     "Wrong message - expecting blank/errormessage on messageText2 was '"
                     + sendBitcoinConfirmPanel.getMessageText2() + "'",
@@ -261,8 +263,7 @@ public class SendBitcoinNowActionTest extends TestCase {
                     || EXPECTED_TEST_SEND_FAILED_ERROR.equals(sendBitcoinConfirmPanel.getMessageText2())
                     || EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));
 
-            // Wait a while and the message should be that it has failed the
-            // send.
+            // Wait a while and the message should be that it has failed the send.
             Thread.sleep(DELAY_TO_COMPLETE_OPERATION);
 
             assertEquals("Wrong message - expecting success on messageText1", EXPECTED_SEND_FAILED,
