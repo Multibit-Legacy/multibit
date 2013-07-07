@@ -165,9 +165,6 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String PREVIOUS_OPEN_URI_SHOW_DIALOG = "previousOpenUriShowDialog";
     public static final String PREVIOUS_OPEN_URI_USE_URI = "previousOpenUriUseUri";
     public static final String PREVIOUS_SEND_FEE = "previousSendFee";
-
-    // Wallet migration.
-    public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
        
     // Wallet backup.
     public static final String WALLET_BACKUP_FILE = "walletBackupFile";

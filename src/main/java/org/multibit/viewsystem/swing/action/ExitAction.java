@@ -113,7 +113,7 @@ public class ExitAction extends AbstractExitAction {
                         // Save to backup.
                         try {
                             // log.debug("exit 4a");
-                            this.bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
+                            this.bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData);
                             // log.debug("exit 4b");
                         } catch (WalletSaveException wse2) {
                             log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());

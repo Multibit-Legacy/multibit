@@ -270,7 +270,7 @@ public class FileHandler {
                         perWalletModelData.setDirty(false);
                     } else {
                         // Write to backup files.
-                        backupPerWalletModelData(perWalletModelData, null);
+                        backupPerWalletModelData(perWalletModelData);
                     }
                 }
             }
@@ -279,15 +279,11 @@ public class FileHandler {
     }
 
     /**
-     * Backup the perWalletModelData. The lastFailedMigrateVersion parameter can
-     * be used so that wallet migration is delayed for the backup should it ever
-     * need to be opened in MultiBit (to stop the wallet migrate trying to
-     * re-migrate it).
+     * Backup the perWalletModelData.
      * 
      * @param perWalletModelData
-     * @param lastFailedMigrateVersion
      */
-    public void backupPerWalletModelData(WalletData perWalletModelData, String lastFailedMigrateVersion) {
+    public void backupPerWalletModelData(WalletData perWalletModelData) {
         // Write to backup files.
         // Work out / reuse the backup file names.
         String walletInfoBackupFilename = null;
@@ -310,22 +306,7 @@ public class FileHandler {
                 perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
             }
 
-            String previousLastFailedMigrateVersion = perWalletModelData.getWalletInfo().getProperty(
-                    BitcoinModel.LAST_FAILED_MIGRATE_VERSION);
-            if (lastFailedMigrateVersion != null) {
-                perWalletModelData.getWalletInfo().put(BitcoinModel.LAST_FAILED_MIGRATE_VERSION, lastFailedMigrateVersion);
-            }
             saveWalletAndWalletInfo(perWalletModelData, walletBackupFilename, walletInfoBackupFilename);
-
-            // Put the previous lastFailedMigrateVersion back.
-            if (lastFailedMigrateVersion != null) {
-                if (previousLastFailedMigrateVersion == null) {
-                    perWalletModelData.getWalletInfo().remove(lastFailedMigrateVersion);
-                } else {
-                    perWalletModelData.getWalletInfo().put(BitcoinModel.LAST_FAILED_MIGRATE_VERSION,
-                            previousLastFailedMigrateVersion);
-                }
-            }
 
             // The perWalletModelData is no longer dirty.
             perWalletModelData.setDirty(false);
@@ -357,7 +338,7 @@ public class FileHandler {
                 // Wallet description is currently stored in the wallet info file but is now available on the wallet itself.
                 // Store the description from the wallet info in the wallet - in the future the wallet value will be primary
                 // and wallet infos can be deprecated.
-                // TODO - migrate completely to use wallet description and then deprecate value in info file
+                // TODO - migrate completely to use wallet description and then deprecate value in info file.
                 if (walletInfo != null) {
                     String walletDescriptionInInfoFile = walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
                     if (walletDescriptionInInfoFile != null) {
