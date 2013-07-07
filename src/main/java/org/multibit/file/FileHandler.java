@@ -188,7 +188,7 @@ public class FileHandler {
                 rememberFileSizesAndLastModified(new File(walletFilenameToUse), walletInfo);
                 perWalletModelData.setDirty(false);
             }
-
+            
             return perWalletModelData;
         } catch (WalletVersionException wve) {
             // We want this to propagate out.
