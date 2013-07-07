@@ -528,7 +528,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
                 NetworkParameters networkParameters = getNetworkParameters();
                 if (networkParameters != null) {
                     if (perWalletModelData.getWalletInfo() != null) {
-                        // clear the existing receiving addresses
+                        // Clear the existing receiving addresses.
                         perWalletModelData.getWalletInfo().getReceivingAddresses().clear();
                         for (ECKey key : keyChain) {
                             Address address = key.toAddress(getNetworkParameters());

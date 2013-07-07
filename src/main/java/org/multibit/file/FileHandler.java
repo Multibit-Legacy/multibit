@@ -121,10 +121,11 @@ public class FileHandler {
         try {
             // See if the wallet is serialized or protobuf.
             WalletInfoData walletInfo;
+            // TODO - need to remove excess receiving addresses.
             if (isWalletSerialised(walletFile)) {
-                walletInfo = new WalletInfoData(walletFilenameToUse, MultiBitWalletVersion.SERIALIZED);
+                walletInfo = new WalletInfoData(walletFilenameToUse, null, MultiBitWalletVersion.SERIALIZED);
             } else {
-                walletInfo = new WalletInfoData(walletFilenameToUse, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfoData(walletFilenameToUse, null, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             }
             
             // If the wallet file is missing or empty but the backup file exists load that instead.
@@ -159,13 +160,16 @@ public class FileHandler {
                 // protobuf.3   (encrypted) wallets are stored as Wallet messages with a mandatory extension
                 wallet = Wallet.loadFromFileStream(stream);
                 
-                // If wallet description is only in the wallet, copy it to the wallet info
-                // (perhaps the user deleted/ did not copy the info file.
                 if (walletInfo != null) {
+                    // If wallet description is only in the wallet, copy it to the wallet info
+                    // (perhaps the user deleted/ did not copy the info file.
                     String walletDescriptionInInfo = walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
                     if ((walletDescriptionInInfo == null || walletDescriptionInInfo.length() == 0) && wallet.getDescription() != null ) {
                         walletInfo.put(WalletInfoData.DESCRIPTION_PROPERTY, wallet.getDescription());
                     }
+                    
+                    // Check that only receiving addresses that appear in a key appear in the wallet info.
+                    walletInfo.checkAllReceivingAddressesAppearInWallet(wallet);
                 }
             } finally {
                 if (stream != null) {

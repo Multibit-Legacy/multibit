@@ -171,7 +171,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 ECKey newKey = new ECKey();
                 newWallet.addKey(newKey);
                 WalletData perWalletModelData = new WalletData();
-                perWalletModelData.setWalletInfo(new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF));
+                perWalletModelData.setWalletInfo(new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF));
                 perWalletModelData.setWallet(newWallet);
                 perWalletModelData.setWalletFilename(newWalletFilename);
                 perWalletModelData.setWalletDescription(controller.getLocaliser().getString(

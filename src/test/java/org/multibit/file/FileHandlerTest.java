@@ -200,7 +200,7 @@ public class FileHandlerTest extends TestCase {
         newKey = new ECKey();
         newWallet.getKeychain().add(newKey);
         WalletData perWalletModelData = new WalletData();
-        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
         perWalletModelData.setWallet(newWallet);
@@ -269,7 +269,7 @@ public class FileHandlerTest extends TestCase {
         newWallet.addKey(newKey);
        
         WalletData perWalletModelData = new WalletData();
-        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
         perWalletModelData.setWallet(newWallet);
@@ -364,7 +364,7 @@ public class FileHandlerTest extends TestCase {
         newWallet.addKey(newKey);
        
         WalletData perWalletModelData = new WalletData();
-        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
         perWalletModelData.setWallet(newWallet);
@@ -423,7 +423,7 @@ public class FileHandlerTest extends TestCase {
         newWallet.addKey(newKey);
         
         WalletData perWalletModelData = new WalletData();
-        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
         perWalletModelData.setWallet(newWallet);
@@ -504,7 +504,7 @@ public class FileHandlerTest extends TestCase {
         newKey = new ECKey();
         newWallet.getKeychain().add(newKey);
         WalletData perWalletModelData = new WalletData();
-        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.FUTURE);
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.FUTURE);
         
         perWalletModelData.setWalletInfo(walletInfo);
        
@@ -554,7 +554,7 @@ public class FileHandlerTest extends TestCase {
         newKey = new ECKey();
         newWallet.getKeychain().add(newKey);
         WalletData perWalletModelData = new WalletData();
-        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
         perWalletModelData.setWalletInfo(walletInfo);
        

@@ -128,7 +128,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
         WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfoData(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfoData(perWalletModelData.getWalletFilename(), perWalletModelData.getWallet(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
         
@@ -208,7 +208,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         for (ECKey newKey : newKeys) {
                             lastAddressString = newKey.toAddress(finalController.getModel().getNetworkParameters()).toString();
                             finalPerWalletModelData.getWalletInfo().addReceivingAddress(new WalletAddressBookData("", lastAddressString),
-                                false, false);
+                                false);
                         }
                         
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(walletPassword));

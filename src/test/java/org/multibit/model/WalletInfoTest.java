@@ -62,13 +62,13 @@ public class WalletInfoTest extends TestCase {
                 + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_TEST1;
 
         // create wallet info
-        WalletInfoData walletInfo = new WalletInfoData(walletName, MultiBitWalletVersion.SERIALIZED);
+        WalletInfoData walletInfo = new WalletInfoData(walletName, null, MultiBitWalletVersion.SERIALIZED);
         assertNotNull(walletInfo);
 
         walletInfo.put(WalletInfoData.DESCRIPTION_PROPERTY, DESCRIPTION_TEST1);
 
         WalletAddressBookData receivingAddress = new WalletAddressBookData(EXAMPLE_RECEIVING_ADDRESS_LABEL, EXAMPLE_RECEIVING_ADDRESS);
-        walletInfo.addReceivingAddress(receivingAddress, false, true);
+        walletInfo.addReceivingAddress(receivingAddress, true);
 
         WalletAddressBookData sendingAddress = new WalletAddressBookData(EXAMPLE_SENDING_ADDRESS_LABEL, EXAMPLE_SENDING_ADDRESS);
         walletInfo.addSendingAddress(sendingAddress);
@@ -84,7 +84,7 @@ public class WalletInfoTest extends TestCase {
         assertTrue((new File(createdWalletInfoFile)).exists());
 
         // create new wallet info and reload
-        WalletInfoData rebornWalletInfo = new WalletInfoData(walletName, MultiBitWalletVersion.SERIALIZED);
+        WalletInfoData rebornWalletInfo = new WalletInfoData(walletName, null, MultiBitWalletVersion.SERIALIZED);
         assertNotNull(rebornWalletInfo);
 
         // check description
@@ -123,7 +123,7 @@ public class WalletInfoTest extends TestCase {
                 + WALLET_TESTDATA_DIRECTORY + File.separator + NON_EXISTENT_WALLET;
 
         // Create wallet info - should not throw exception.
-        WalletInfoData walletInfo = new WalletInfoData(walletName, MultiBitWalletVersion.PROTOBUF);
+        WalletInfoData walletInfo = new WalletInfoData(walletName, null, MultiBitWalletVersion.PROTOBUF);
         assertNotNull(walletInfo);
     }
     

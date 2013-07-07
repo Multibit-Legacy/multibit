@@ -1478,7 +1478,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
             WalletInfoData walletInfo = bitcoinController.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfoData(bitcoinController.getModel().getActiveWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfoData(bitcoinController.getModel().getActiveWalletFilename(), bitcoinController.getModel().getActiveWallet(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
                 bitcoinController.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);

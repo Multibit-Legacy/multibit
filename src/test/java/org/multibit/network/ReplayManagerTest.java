@@ -127,7 +127,7 @@ public class ReplayManagerTest extends TestCase {
 
             replayWallet.addKey(replayKey);
             WalletData perWalletModelData = new WalletData();
-            perWalletModelData.setWalletInfo(new WalletInfoData(replayWalletPath, MultiBitWalletVersion.PROTOBUF));
+            perWalletModelData.setWalletInfo(new WalletInfoData(replayWalletPath, replayWallet, MultiBitWalletVersion.PROTOBUF));
             perWalletModelData.setWallet(replayWallet);
             perWalletModelData.setWalletFilename(replayWalletPath);
             perWalletModelData.setWalletDescription("testReplayManagerSyncSingleWallet test");
