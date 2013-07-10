@@ -36,6 +36,9 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.BlockStoreException;
+
 /**
  * Exit the application.
  * 
@@ -90,21 +93,38 @@ public class ExitAction extends AbstractExitAction {
         }
         // log.debug("exit 2");
         
-        // Stop the peer group so that blocks are notified to wallets correctly.
-        if (this.bitcoinController.getMultiBitService() != null && this.bitcoinController.getMultiBitService().getPeerGroup() != null) {
-            log.debug("Closing Bitcoin network connection...");
-            this.bitcoinController.getMultiBitService().getPeerGroup().stopAndWait();
-            log.debug("PeerGroup is now stopped.");
+        if (bitcoinController != null && bitcoinController.getMultiBitService() != null) {
+            // Stop the peer group so that blocks are notified to wallets correctly.
+            if (bitcoinController.getMultiBitService().getPeerGroup() != null) {
+                log.debug("Closing Bitcoin network connection...");
+                bitcoinController.getMultiBitService().getPeerGroup().stopAndWait();
+                log.debug("PeerGroup is now stopped.");
+            }
+
+            // Close down the blockstore.
+            BlockStore blockStore = bitcoinController.getMultiBitService().getBlockStore();
+            if (blockStore != null) {
+                try {
+                    log.error("Closing blockStore. . .");
+                    blockStore.close();
+                    blockStore = null;
+                    log.error("BlockStore closed successfully.");
+                } catch (NullPointerException npe) {
+                    log.error("NullPointerException on blockstore close");
+                } catch (BlockStoreException e) {
+                    log.error("BlockStoreException on blockstore close. Message was '" + e.getMessage() + "'");
+                }
+            }
         }
 
-        if (null != this.bitcoinController) {
+        if (bitcoinController != null) {
             // Save all the wallets and put their filenames in the user preferences.
-            List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
                 for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     try {
                         // log.debug("exit 3a");
-                        this.bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
+                        bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
                         // log.debug("exit 3b");
                     } catch (WalletSaveException wse) {
                         log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
@@ -113,7 +133,7 @@ public class ExitAction extends AbstractExitAction {
                         // Save to backup.
                         try {
                             // log.debug("exit 4a");
-                            this.bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData);
+                            bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData);
                             // log.debug("exit 4b");
                         } catch (WalletSaveException wse2) {
                             log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
@@ -126,13 +146,10 @@ public class ExitAction extends AbstractExitAction {
                     }
                 }
             }
-            // log.debug("exit 5");
-        }
 
-        if (null != this.bitcoinController) {
             // Write the user properties.
             log.debug("Saving user preferences ...");
-            FileHandler.writeUserPreferences(this.bitcoinController);
+            FileHandler.writeUserPreferences(bitcoinController);
             // log.debug("exit 6");
         }
 

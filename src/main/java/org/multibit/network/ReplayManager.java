@@ -139,9 +139,7 @@ public enum ReplayManager {
  
         // Reset UI to zero peers.
         controller.getPeerEventListener().onPeerDisconnected(null, 0);
-
-        // TODO Save wallets.
-        
+       
         // Close the blockstore and recreate a new one.
         int newChainHeightAfterTruncate = controller.getMultiBitService().createNewBlockStoreForReplay(dateToReplayFrom);
         log.debug("dateToReplayFrom = " + dateToReplayFrom + ", newChainHeightAfterTruncate = " + newChainHeightAfterTruncate);
