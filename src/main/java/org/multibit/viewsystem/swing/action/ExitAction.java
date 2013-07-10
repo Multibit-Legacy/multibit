@@ -32,6 +32,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.store.WalletVersionException;
+import org.multibit.viewsystem.swing.FileChangeTimerTask;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,9 @@ import com.google.bitcoin.store.BlockStoreException;
 public class ExitAction extends AbstractExitAction {
 
     private static final long serialVersionUID = 8784284740245520863L;
+    
+    private static final int MAXIMUM_TIME_TO_WAIT_FOR_FILE_CHANGE_TASK = 10000; // ms
+    private static final int TIME_TO_WAIT = 200; // ms
     
     private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
@@ -90,8 +94,25 @@ public class ExitAction extends AbstractExitAction {
                     }
                 });
             }
+
+            // If the FileChangeTimerTask is running wait until it completes.
+            FileChangeTimerTask fileChangeTimerTask = mainFrame.getFileChangeTimerTask();
+            if (fileChangeTimerTask != null) {
+                boolean breakout = false;
+                int timeWaited = 0;
+                
+                while(fileChangeTimerTask.isRunning() && !breakout && timeWaited < MAXIMUM_TIME_TO_WAIT_FOR_FILE_CHANGE_TASK) {
+                    try {
+                        log.debug("Waiting for fileChangeTimerTask to complete (waited so far = " + timeWaited + "). . .");
+                        Thread.sleep(TIME_TO_WAIT);
+                        timeWaited = timeWaited + TIME_TO_WAIT;
+                    } catch (InterruptedException e) {
+                        breakout = true;
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
-        // log.debug("exit 2");
         
         if (bitcoinController != null && bitcoinController.getMultiBitService() != null) {
             // Stop the peer group so that blocks are notified to wallets correctly.
@@ -105,10 +126,10 @@ public class ExitAction extends AbstractExitAction {
             BlockStore blockStore = bitcoinController.getMultiBitService().getBlockStore();
             if (blockStore != null) {
                 try {
-                    log.error("Closing blockStore. . .");
+                    log.debug("Closing blockStore. . .");
                     blockStore.close();
                     blockStore = null;
-                    log.error("BlockStore closed successfully.");
+                    log.debug("BlockStore closed successfully.");
                 } catch (NullPointerException npe) {
                     log.error("NullPointerException on blockstore close");
                 } catch (BlockStoreException e) {
