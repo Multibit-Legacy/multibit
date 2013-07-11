@@ -474,28 +474,26 @@ public class FileHandler {
     }
 
     /**
-     * Backup the private keys of the active wallet to a file with name <wallet
+     * Backup the private keys of the active wallet to a file with name <wallet-name>-data/key-backup/<wallet
      * name>-yyyymmddhhmmss.key
      * 
      * @param passwordToUse
      * @return File to which keys were backed up, or null if they were not.
-     * @throws EncrypterDecrypterException
+     * @throws KeyCrypterException
      */
     public File backupPrivateKeys(CharSequence passwordToUse) throws IOException, KeyCrypterException {
         File privateKeysBackupFile = null;
 
-        // Only encrypted files are backed up, and they must have a non blank
-        // password.
+        // Only encrypted files are backed up, and they must have a non blank password.
         if (passwordToUse != null && passwordToUse.length() > 0) {
             if (controller.getModel() != null
                     && this.bitcoinController.getModel().getActiveWalletWalletInfo() != null
                     && this.bitcoinController.getModel().getActiveWalletWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF_ENCRYPTED) {
-                // Save a backup copy of the private keys, encrypted with the
-                // newPasswordToUse.
+                // Save a backup copy of the private keys, encrypted with the passwordToUse.
                 PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(this.bitcoinController.getModel()
                         .getNetworkParameters());
                 String privateKeysBackupFilename = createBackupFilename(new File(this.bitcoinController.getModel()
-                        .getActiveWalletFilename()), false, false, BitcoinModel.PRIVATE_KEY_FILE_EXTENSION);
+                        .getActiveWalletFilename()), PRIVATE_KEY_BACKUP_DIRECTORY_NAME, false, false, BitcoinModel.PRIVATE_KEY_FILE_EXTENSION);
                 privateKeysBackupFile = new File(privateKeysBackupFilename);
                 BlockChain blockChain = null;
                 if (this.bitcoinController.getMultiBitService() != null) {
@@ -896,6 +894,68 @@ public class FileHandler {
     }
 
     /**
+     * Create a backup filename the format is: original file: filename.suffix.
+     * backup file: 
+     * (without subDirectorySuffix) filename-yyyymmddhhmmss.suffix
+     * (with subDirectorySuffix) filename-data/subDirectorySuffix/filename-yyyymmddhhmmss.suffix
+     * 
+     *  (Any intermediate directories are automatically created if necessary)
+     *
+     * @param file
+     * @param subDirectorySuffix - subdirectory to add to backup file e.g key-backup. null for no subdirectory.
+     * @param saveBackupDate - save the backup date for use later
+     * @param reusePreviousBackupDate
+     *            Reuse the previously created backup date so that wallet and wallet info names match
+     * @param suffixToUse
+     *            the suffix text to use
+     * @return String the name of the created filename.
+     * @throws IOException
+     */
+    public String createBackupFilename(File file, String subDirectorySuffix, boolean saveBackupDate, boolean reusePreviousBackupDate, String suffixToUse)
+            throws IOException {
+        String filenameLong = file.getAbsolutePath(); // Full path.
+        String filenameShort = file.getName(); // Just the filename.
+        
+        String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(file);
+        createDirectoryIfNecessary(topLevelBackupDirectoryName);
+
+        // Find suffix and stems of filename.
+        int suffixSeparatorLong = filenameLong.lastIndexOf(".");
+        String stemLong = filenameLong.substring(0, suffixSeparatorLong);
+
+        int suffixSeparatorShort= filenameShort.lastIndexOf(".");
+        String stemShort = filenameShort.substring(0, suffixSeparatorShort);
+
+        String suffix;
+        if (suffixToUse != null) {
+            suffix = "." + suffixToUse;
+        } else {
+            suffix = filenameLong.substring(suffixSeparatorLong); // Includes separating dot.
+        }
+        
+        Date backupDateToUse = new Date();
+
+        if (saveBackupDate) {
+            dateForBackupName = backupDateToUse;
+        }
+
+        if (reusePreviousBackupDate) {
+            backupDateToUse = dateForBackupName;
+        }
+        String backupFilename;
+        
+        if (subDirectorySuffix != null && subDirectorySuffix.length() > 0) {
+            String backupFilenameShort = stemShort + SEPARATOR + dateFormat.format(backupDateToUse) + suffix;
+            String subDirectoryName =  topLevelBackupDirectoryName + File.separator + subDirectorySuffix;
+            createDirectoryIfNecessary(subDirectoryName);
+            backupFilename = subDirectoryName + File.separator + backupFilenameShort;
+        } else {
+            backupFilename = stemLong + SEPARATOR + dateFormat.format(backupDateToUse) + suffix;
+        }
+
+        return backupFilename;
+    }
+    /**
      * To support multiple users on the same machine, the checkpoints file is
      * installed into the program installation directory and is then copied to
      * the user's application data directory when MultiBit is first used.
@@ -1104,16 +1164,8 @@ public class FileHandler {
             return;
         }
 
-        // Work out the name of the top level wallet backup directory.
-        String walletPath = walletFile.getAbsolutePath();
-        // Remove any trailing ".wallet" text.
-        String walletSuffixSearchText = "." + BitcoinModel.WALLET_FILE_EXTENSION;
-        if (walletPath.endsWith(walletSuffixSearchText)) {
-            walletPath = walletPath.substring(0, walletPath.length() - walletSuffixSearchText.length());
-        }
-
         // Create the top-level directory for the wallet specific data, if necessary.
-        String topLevelBackupDirectoryName = walletPath + TOP_LEVEL_WALLET_BACKUP_SUFFIX;
+        String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(walletFile);
         createDirectoryIfNecessary(topLevelBackupDirectoryName);
 
         // Create the backup directories for the private keys, rolling backup and wallets.
@@ -1131,6 +1183,19 @@ public class FileHandler {
         String encryptedWalletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
                 + ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME;
         createDirectoryIfNecessary(encryptedWalletBackupDirectoryName);
+    }
+ 
+    private String calculateTopLevelBackupDirectoryName(File walletFile) {
+        // Work out the name of the top level wallet backup directory.
+        String walletPath = walletFile.getAbsolutePath();
+        // Remove any trailing ".wallet" text.
+        String walletSuffixSearchText = "." + BitcoinModel.WALLET_FILE_EXTENSION;
+        if (walletPath.endsWith(walletSuffixSearchText)) {
+            walletPath = walletPath.substring(0, walletPath.length() - walletSuffixSearchText.length());
+        }
+
+        // Create the top-level directory for the wallet specific data
+        return walletPath + TOP_LEVEL_WALLET_BACKUP_SUFFIX;
     }
 
     private void createDirectoryIfNecessary(String directoryName) {
