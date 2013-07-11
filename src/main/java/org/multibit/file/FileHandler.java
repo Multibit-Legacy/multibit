@@ -59,7 +59,6 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.model.core.CoreModel;
 
-
 /**
  * Class consolidating the File IO in MultiBit for wallets and wallet infos.
  * 
@@ -75,42 +74,57 @@ public class FileHandler {
     private static final String SEPARATOR = "-";
     public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
 
+    public static final String TOP_LEVEL_WALLET_BACKUP_SUFFIX = "-data";
+    public static final String PRIVATE_KEY_BACKUP_DIRECTORY_NAME = "key-backup";
+    public static final String ROLLING_WALLET_BACKUP_DIRECTORY_NAME = "rolling-backup";
+    public static final String ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME = "wallet-backup";
+    public static final String UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME = "wallet-unenc-backup";
+
     private final Controller controller;
     private final BitcoinController bitcoinController;
 
     private Date dateForBackupName = null;
-    
+
     private DateFormat dateFormat;
     private MultiBitWalletProtobufSerializer walletProtobufSerializer;
-    
+
     // Nonsense bytes to fill up deleted files - these have no meaning.
-    private static byte[] NONSENSE_BYTES = new byte[]{(byte)0xF0, (byte)0xA6, (byte)0x55, (byte)0xAA, (byte)0x33, (byte)0x77, (byte)0x33, (byte)0x37,
-                                                                (byte)0x12, (byte)0x34, (byte)0x56, (byte)0x78, (byte)0xC2, (byte)0xB3, (byte)0xA4, (byte)0x9A,
-                                                                (byte)0x30, (byte)0x7F, (byte)0xE5, (byte)0x5A, (byte)0x23, (byte)0x47, (byte)0x13, (byte)0x17,
-                                                                (byte)0x15, (byte)0x32, (byte)0x5C, (byte)0x77, (byte)0xC9, (byte)0x73, (byte)0x04, (byte)0x2D,
-                                                                (byte)0x40, (byte)0x0F, (byte)0xA5, (byte)0xA6, (byte)0x43, (byte)0x77, (byte)0x33, (byte)0x3B,
-                                                                (byte)0x62, (byte)0x34, (byte)0xB6, (byte)0x72, (byte)0x32, (byte)0xB3, (byte)0xA4, (byte)0x4B,
-                                                                (byte)0x80, (byte)0x7F, (byte)0xC5, (byte)0x43, (byte)0x23, (byte)0x47, (byte)0x13, (byte)0xB7,
-                                                                (byte)0xA5, (byte)0x32, (byte)0xDC, (byte)0x79, (byte)0x19, (byte)0xB1, (byte)0x03, (byte)0x9D};
-    
+    private static byte[] NONSENSE_BYTES = new byte[] { (byte) 0xF0, (byte) 0xA6, (byte) 0x55, (byte) 0xAA, (byte) 0x33,
+            (byte) 0x77, (byte) 0x33, (byte) 0x37, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0xC2, (byte) 0xB3,
+            (byte) 0xA4, (byte) 0x9A, (byte) 0x30, (byte) 0x7F, (byte) 0xE5, (byte) 0x5A, (byte) 0x23, (byte) 0x47, (byte) 0x13,
+            (byte) 0x17, (byte) 0x15, (byte) 0x32, (byte) 0x5C, (byte) 0x77, (byte) 0xC9, (byte) 0x73, (byte) 0x04, (byte) 0x2D,
+            (byte) 0x40, (byte) 0x0F, (byte) 0xA5, (byte) 0xA6, (byte) 0x43, (byte) 0x77, (byte) 0x33, (byte) 0x3B, (byte) 0x62,
+            (byte) 0x34, (byte) 0xB6, (byte) 0x72, (byte) 0x32, (byte) 0xB3, (byte) 0xA4, (byte) 0x4B, (byte) 0x80, (byte) 0x7F,
+            (byte) 0xC5, (byte) 0x43, (byte) 0x23, (byte) 0x47, (byte) 0x13, (byte) 0xB7, (byte) 0xA5, (byte) 0x32, (byte) 0xDC,
+            (byte) 0x79, (byte) 0x19, (byte) 0xB1, (byte) 0x03, (byte) 0x9D };
+
     private static int BULKING_UP_FACTOR = 16;
     private static byte[] SECURE_DELETE_FILL_BYTES = new byte[NONSENSE_BYTES.length * BULKING_UP_FACTOR];
-    
+
     static {
-        // Make some SECURE_DELETE_FILL_BYTES bytes = x BULKING_UP_FACTOR the NONSENSE just to save write time.
+        // Make some SECURE_DELETE_FILL_BYTES bytes = x BULKING_UP_FACTOR the
+        // NONSENSE just to save write time.
         for (int i = 0; i < BULKING_UP_FACTOR; i++) {
             System.arraycopy(NONSENSE_BYTES, 0, SECURE_DELETE_FILL_BYTES, NONSENSE_BYTES.length * i, NONSENSE_BYTES.length);
         }
     }
-    
+
     public FileHandler(BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
-        
+
         dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         walletProtobufSerializer = new MultiBitWalletProtobufSerializer();
     }
 
+    /**
+     * Load up a WalletData from a specified wallet file.
+     * 
+     * @param walletFile
+     * @return WalletData - the walletData for the created wallet
+     * @throws WalletLoadException
+     * @throws WalletVersionException
+     */
     public WalletData loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
         if (walletFile == null) {
             return null;
@@ -121,32 +135,39 @@ public class FileHandler {
         try {
             // See if the wallet is serialized or protobuf.
             WalletInfoData walletInfo;
-            // TODO - need to remove excess receiving addresses.
+
             if (isWalletSerialised(walletFile)) {
-                walletInfo = new WalletInfoData(walletFilenameToUse, null, MultiBitWalletVersion.SERIALIZED);
+                // Serialised wallets are no longer supported.
+                throw new WalletLoadException("Could not load wallet '" + walletFilenameToUse
+                        + "'. Serialized wallets are no longer supported.");
             } else {
                 walletInfo = new WalletInfoData(walletFilenameToUse, null, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             }
-            
-            // If the wallet file is missing or empty but the backup file exists load that instead.
+
+            // If the wallet file is missing or empty but the backup file exists
+            // load that instead.
             // This indicates that the write was interrupted (e.g. power loss).
             boolean saveImmediately = false;
             if (!walletFile.exists() || walletFile.length() == 0) {
-                String walletBackupFilename =  walletInfo.getProperty(BitcoinModel.WALLET_BACKUP_FILE);
+                String walletBackupFilename = walletInfo.getProperty(BitcoinModel.WALLET_BACKUP_FILE);
                 if (walletBackupFilename != null && !"".equals(walletBackupFilename)) {
                     File walletBackupFile = new File(walletBackupFilename);
                     if (walletBackupFile.exists()) {
                         // Use the walletBackup.
-                        log.debug("The wallet file '" + walletFile.getAbsolutePath() + "' is empty so using the wallet backup file of '" + walletBackupFile.getAbsolutePath() + "'.");
-                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("fileHandler.walletIsMissing", new Object[] {walletFile.getAbsolutePath(), walletBackupFile.getAbsolutePath()})));
+                        log.debug("The wallet file '" + walletFile.getAbsolutePath()
+                                + "' is empty so using the wallet backup file of '" + walletBackupFile.getAbsolutePath() + "'.");
+                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
+                                "fileHandler.walletIsMissing",
+                                new Object[] { walletFile.getAbsolutePath(), walletBackupFile.getAbsolutePath() })));
                         walletFile = walletBackupFile;
-                        
+
                         saveImmediately = true;
-                        
-                        // Wipe the wallet backup property so that the backup file will not be overwritten
-                        walletInfo.put(BitcoinModel.WALLET_BACKUP_FILE, "");                 
+
+                        // Wipe the wallet backup property so that the backup
+                        // file will not be overwritten
+                        walletInfo.put(BitcoinModel.WALLET_BACKUP_FILE, "");
                     }
-                } 
+                }
             }
 
             FileInputStream fileInputStream = new FileInputStream(walletFile);
@@ -154,45 +175,55 @@ public class FileHandler {
             Wallet wallet = null;
             try {
                 stream = new BufferedInputStream(fileInputStream);
-                
-                // serialised.1 wallets are stored as serialised.
-                // protobuf.2   (unencrypted) wallets stored as Wallet messages
-                // protobuf.3   (encrypted) wallets are stored as Wallet messages with a mandatory extension
+
+                // serialised.1 wallets are stored as serialised (no longer
+                // supported).
+                // protobuf.2 (unencrypted) wallets stored as Wallet messages
+                // protobuf.3 (encrypted) wallets are stored as Wallet messages
+                // with a mandatory extension
                 wallet = Wallet.loadFromFileStream(stream);
-                
+
                 if (walletInfo != null) {
-                    // If wallet description is only in the wallet, copy it to the wallet info
-                    // (perhaps the user deleted/ did not copy the info file.
+                    // If wallet description is only in the wallet, copy it to
+                    // the wallet info
+                    // (perhaps the user deleted/ did not copy the info file).
                     String walletDescriptionInInfo = walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
-                    if ((walletDescriptionInInfo == null || walletDescriptionInInfo.length() == 0) && wallet.getDescription() != null ) {
+                    if ((walletDescriptionInInfo == null || walletDescriptionInInfo.length() == 0)
+                            && wallet.getDescription() != null) {
                         walletInfo.put(WalletInfoData.DESCRIPTION_PROPERTY, wallet.getDescription());
                     }
-                    
-                    // Check that only receiving addresses that appear in a key appear in the wallet info.
+
+                    // Check that only receiving addresses that appear in a key
+                    // appear in the wallet info.
                     walletInfo.checkAllReceivingAddressesAppearInWallet(wallet);
                 }
+
+                // Ensure that the directories for the backups of the private
+                // keys, rolling backups and regular backups exist.
+                createBackupDirectories(walletFile);
             } finally {
                 if (stream != null) {
                     stream.close();
                 }
                 fileInputStream.close();
             }
-  
+
             // Add the new wallet into the model.
             wallet.setNetworkParameters(this.bitcoinController.getModel().getNetworkParameters());
-            WalletData perWalletModelData = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet, walletFilenameToUse);
+            WalletData perWalletModelData = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet,
+                    walletFilenameToUse);
 
             perWalletModelData.setWalletInfo(walletInfo);
 
             if (saveImmediately) {
                 savePerWalletModelData(perWalletModelData, true);
             }
-            
+
             synchronized (walletInfo) {
                 rememberFileSizesAndLastModified(new File(walletFilenameToUse), walletInfo);
                 perWalletModelData.setDirty(false);
             }
-            
+
             return perWalletModelData;
         } catch (WalletVersionException wve) {
             // We want this to propagate out.
@@ -203,7 +234,7 @@ public class FileHandler {
             throw new WalletLoadException(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
         }
     }
- 
+
     boolean isWalletSerialised(File walletFile) {
         boolean isWalletSerialised = false;
         InputStream stream = null;
@@ -233,7 +264,7 @@ public class FileHandler {
      * 
      * @param perWalletModelData
      * @param forceWrite
-     *            force the write of the perWalletModelData     
+     *            force the write of the perWalletModelData
      */
     public void savePerWalletModelData(WalletData perWalletModelData, boolean forceWrite) {
         if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
@@ -241,20 +272,24 @@ public class FileHandler {
         }
 
         // Log the stack trace of the call.
-//        Exception exception = new IllegalStateException();
-//        log.debug("Saving wallet '" + perWalletModelData.getWalletFilename() + "' from stack:");
-//        if (exception != null && exception.getStackTrace() != null) {
-//            for (int i = 0; i < exception.getStackTrace().length; i++) {
-//                log.debug("    " + exception.getStackTrace()[i].getFileName() + " - " + exception.getStackTrace()[i].getMethodName() + ";" + exception.getStackTrace()[i].getLineNumber());    
-//            }
-//        }
+        // Exception exception = new IllegalStateException();
+        // log.debug("Saving wallet '" + perWalletModelData.getWalletFilename()
+        // + "' from stack:");
+        // if (exception != null && exception.getStackTrace() != null) {
+        // for (int i = 0; i < exception.getStackTrace().length; i++) {
+        // log.debug("    " + exception.getStackTrace()[i].getFileName() + " - "
+        // + exception.getStackTrace()[i].getMethodName() + ";" +
+        // exception.getStackTrace()[i].getLineNumber());
+        // }
+        // }
         File walletFile = new File(perWalletModelData.getWalletFilename());
 
         WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
 
         if (walletInfo != null) {
             synchronized (walletInfo) {
-                // Save the perWalletModelData if it is dirty or if forceWrite is true.
+                // Save the perWalletModelData if it is dirty or if forceWrite
+                // is true.
                 if (perWalletModelData.isDirty() || forceWrite) {
                     // Check dates and sizes of files.
                     boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
@@ -302,7 +337,8 @@ public class FileHandler {
                 perWalletModelData.setWalletBackupFilename(walletBackupFilename);
 
                 walletInfoBackupFilename = createBackupFilename(
-                        new File(WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true, null);
+                        new File(WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true,
+                        null);
                 perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
             }
 
@@ -318,27 +354,30 @@ public class FileHandler {
         }
     }
 
-   /**
-    * To protect the wallet data, the write is in steps:
-    * 1) Create a backup file called <wallet file name>-<yyyymmddhhmmss>.wallet and copy the original wallet to that
-    * 2) Write the new wallet to the walletFilename
-    * 3) Delete the old backup file
-    * 4) Make the backup file in step 1) the new backup file
-    * 
-    **/
+    /**
+     * To protect the wallet data, the write is in steps: 1) Create a backup
+     * file called <wallet file name>-<yyyymmddhhmmss>.wallet and copy the
+     * original wallet to that 2) Write the new wallet to the walletFilename 3)
+     * Delete the old backup file 4) Make the backup file in step 1) the new
+     * backup file
+     * 
+     **/
     private void saveWalletAndWalletInfo(WalletData perWalletModelData, String walletFilename, String walletInfoFilename) {
         File walletFile = new File(walletFilename);
         WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
-        
+
         FileOutputStream fileOutputStream = null;
-        
+
         // Save the wallet file
         try {
             if (perWalletModelData.getWallet() != null) {
-                // Wallet description is currently stored in the wallet info file but is now available on the wallet itself.
-                // Store the description from the wallet info in the wallet - in the future the wallet value will be primary
+                // Wallet description is currently stored in the wallet info
+                // file but is now available on the wallet itself.
+                // Store the description from the wallet info in the wallet - in
+                // the future the wallet value will be primary
                 // and wallet infos can be deprecated.
-                // TODO - migrate completely to use wallet description and then deprecate value in info file.
+                // TODO - migrate completely to use wallet description and then
+                // deprecate value in info file.
                 if (walletInfo != null) {
                     String walletDescriptionInInfoFile = walletInfo.getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
                     if (walletDescriptionInInfoFile != null) {
@@ -348,11 +387,11 @@ public class FileHandler {
                 String oldBackupFilename = perWalletModelData.getWalletInfo().getProperty(BitcoinModel.WALLET_BACKUP_FILE);
                 File oldBackupFile = null;
                 String newBackupFilename = null;
-                if (null != oldBackupFilename && !"".equals(oldBackupFilename) ) {
+                if (null != oldBackupFilename && !"".equals(oldBackupFilename)) {
                     oldBackupFile = new File(oldBackupFilename);
                 }
-                if (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion() ||
-                        MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
+                if (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()
+                        || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
                     newBackupFilename = copyExistingWalletToBackupAndDeleteOriginal(walletFile);
                 }
 
@@ -394,18 +433,19 @@ public class FileHandler {
                 }
                 log.debug("... done saving wallet file.");
 
-                
-                if (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion() ||
-                        MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
+                if (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()
+                        || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
                     perWalletModelData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, newBackupFilename);
-                    
-                    // Delete the oldBackupFile unless the user has manually opened it.
+
+                    // Delete the oldBackupFile unless the user has manually
+                    // opened it.
                     boolean userHasOpenedBackupFile = false;
                     List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null) {
                         for (WalletData perWalletModelDataLoop : perWalletModelDataList) {
-                            if ((oldBackupFilename != null && oldBackupFilename.equals(perWalletModelDataLoop.getWalletFilename())) ||
-                                (newBackupFilename != null && newBackupFilename.equals(perWalletModelDataLoop.getWalletFilename()))) {
+                            if ((oldBackupFilename != null && oldBackupFilename.equals(perWalletModelDataLoop.getWalletFilename()))
+                                    || (newBackupFilename != null && newBackupFilename.equals(perWalletModelDataLoop
+                                            .getWalletFilename()))) {
                                 userHasOpenedBackupFile = true;
                                 break;
                             }
@@ -428,36 +468,42 @@ public class FileHandler {
                 }
             }
         }
-        
+
         // Write wallet info.
         walletInfo.writeToFile(walletInfoFilename, walletInfo.getWalletVersion());
     }
-    
+
     /**
-     * Backup the private keys of the active wallet to a file with name <wallet name>-yyyymmddhhmmss.key
+     * Backup the private keys of the active wallet to a file with name <wallet
+     * name>-yyyymmddhhmmss.key
+     * 
      * @param passwordToUse
      * @return File to which keys were backed up, or null if they were not.
-     * @throws EncrypterDecrypterException 
+     * @throws EncrypterDecrypterException
      */
     public File backupPrivateKeys(CharSequence passwordToUse) throws IOException, KeyCrypterException {
         File privateKeysBackupFile = null;
 
-        // Only encrypted files are backed up, and they must have a non blank password.
+        // Only encrypted files are backed up, and they must have a non blank
+        // password.
         if (passwordToUse != null && passwordToUse.length() > 0) {
             if (controller.getModel() != null
                     && this.bitcoinController.getModel().getActiveWalletWalletInfo() != null
                     && this.bitcoinController.getModel().getActiveWalletWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF_ENCRYPTED) {
-                // Save a backup copy of the private keys, encrypted with the newPasswordToUse.
-                PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(this.bitcoinController.getModel().getNetworkParameters());
-                String privateKeysBackupFilename = createBackupFilename(new File(this.bitcoinController.getModel().getActiveWalletFilename()),
-                        false, false, BitcoinModel.PRIVATE_KEY_FILE_EXTENSION);
+                // Save a backup copy of the private keys, encrypted with the
+                // newPasswordToUse.
+                PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(this.bitcoinController.getModel()
+                        .getNetworkParameters());
+                String privateKeysBackupFilename = createBackupFilename(new File(this.bitcoinController.getModel()
+                        .getActiveWalletFilename()), false, false, BitcoinModel.PRIVATE_KEY_FILE_EXTENSION);
                 privateKeysBackupFile = new File(privateKeysBackupFilename);
                 BlockChain blockChain = null;
                 if (this.bitcoinController.getMultiBitService() != null) {
                     blockChain = this.bitcoinController.getMultiBitService().getChain();
                 }
-                
-                privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, this.bitcoinController.getModel().getActiveWallet(), blockChain, true, passwordToUse, passwordToUse);
+
+                privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, this.bitcoinController.getModel().getActiveWallet(),
+                        blockChain, true, passwordToUse, passwordToUse);
             } else {
                 log.debug("Wallet '" + this.bitcoinController.getModel().getActiveWalletFilename()
                         + "' private keys not backed up as not PROTOBUF_ENCRYPTED");
@@ -468,7 +514,7 @@ public class FileHandler {
         }
         return privateKeysBackupFile;
     }
-    
+
     private String copyExistingWalletToBackupAndDeleteOriginal(File walletFile) throws IOException {
         // Create a backup file called <wallet filename>.<random number>.bak
         String newWalletBackupFilename = createBackupFilename(walletFile, false, false, null);
@@ -484,7 +530,7 @@ public class FileHandler {
                 secureDelete(walletFile);
             }
         }
-        
+
         return newWalletBackupFilename;
     }
 
@@ -548,39 +594,46 @@ public class FileHandler {
                 String walletInfoFileSize = "" + walletInfoFile.length();
                 String walletInfoFileLastModified = "" + walletInfoFile.lastModified();
 
-                // log.debug("Previous wallet file size was '" + walletInfo.getProperty(BitcoinModel.WALLET_FILE_SIZE)
-                //         + "'. It is now '" + walletFileSize + "'");
+                // log.debug("Previous wallet file size was '" +
+                // walletInfo.getProperty(BitcoinModel.WALLET_FILE_SIZE)
+                // + "'. It is now '" + walletFileSize + "'");
                 if (!walletFileSize.equals(walletInfo.getProperty(BitcoinModel.WALLET_FILE_SIZE))) {
                     haveFilesChanged = true;
                 }
 
                 // log.debug("Previous wallet file modification date was '"
-                //        + walletInfo.getProperty(BitcoinModel.WALLET_FILE_LAST_MODIFIED) + "'. It is now '"
-                //         + walletFileLastModified + "'");
+                // +
+                // walletInfo.getProperty(BitcoinModel.WALLET_FILE_LAST_MODIFIED)
+                // + "'. It is now '"
+                // + walletFileLastModified + "'");
                 if (!walletFileLastModified.equals(walletInfo.getProperty(BitcoinModel.WALLET_FILE_LAST_MODIFIED))) {
                     haveFilesChanged = true;
                 }
 
-                // log.debug("Previous wallet info file size was '" + walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_SIZE)
-                //         + "'. It is now '" + walletInfoFileSize + "'");
+                // log.debug("Previous wallet info file size was '" +
+                // walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_SIZE)
+                // + "'. It is now '" + walletInfoFileSize + "'");
                 if (!walletInfoFileSize.equals(walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_SIZE))) {
                     haveFilesChanged = true;
                 }
 
                 // log.debug("Previous wallet info file modification date was '"
-                //         + walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED) + "'. It is now '"
-                //         + walletInfoFileLastModified + "'");
-//                if (!walletInfoFileLastModified.equals(walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
-//                    haveFilesChanged = true;
-//                 }
+                // +
+                // walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED)
+                // + "'. It is now '"
+                // + walletInfoFileLastModified + "'");
+                // if
+                // (!walletInfoFileLastModified.equals(walletInfo.getProperty(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED)))
+                // {
+                // haveFilesChanged = true;
+                // }
 
                 if (haveFilesChanged) {
                     log.debug("Result of check of whether files have changed for wallet filename "
                             + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
-                    log.debug(BitcoinModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
-                            + BitcoinModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
-                            + BitcoinModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
-                            + BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
+                    log.debug(BitcoinModel.WALLET_FILE_SIZE + " " + walletFileSize + " ," + BitcoinModel.WALLET_FILE_LAST_MODIFIED
+                            + " " + walletFileLastModified + " ," + BitcoinModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize
+                            + " ," + BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
                 }
 
                 // Create backup filenames early if the files have changed.
@@ -590,8 +643,8 @@ public class FileHandler {
                         perWalletModelData.setWalletBackupFilename(createBackupFilename(walletFile, true, false, null));
 
                         perWalletModelData.setWalletInfoBackupFilename(createBackupFilename(
-                                new File(WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true,
-                                null));
+                                new File(WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false,
+                                true, null));
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
                     }
@@ -612,7 +665,8 @@ public class FileHandler {
      *            The wallet info
      */
     private void rememberFileSizesAndLastModified(File walletFile, WalletInfoData walletInfo) {
-        // Get the files' last modified data and sizes and store them in the wallet properties.
+        // Get the files' last modified data and sizes and store them in the
+        // wallet properties.
         if (walletFile == null || walletInfo == null) {
             return;
         }
@@ -642,72 +696,78 @@ public class FileHandler {
         // Save all the wallets' filenames in the user preferences.
         if (bitcoinController.getModel().getPerWalletModelDataList() != null) {
             List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
-      
+
             List<String> orderList = new ArrayList<String>();
             List<String> earlyList = new ArrayList<String>();
             List<String> protobuf3List = new ArrayList<String>();
-            
+
             for (WalletData perWalletModelData : perWalletModelDataList) {
                 // Check if this is the initial empty WalletData
-                if ("".equals(perWalletModelData.getWalletFilename()) || perWalletModelData.getWalletFilename() == null || perWalletModelData.getWalletInfo() == null) {
+                if ("".equals(perWalletModelData.getWalletFilename()) || perWalletModelData.getWalletFilename() == null
+                        || perWalletModelData.getWalletInfo() == null) {
                     continue;
                 }
-                
+
                 // Do not save deleted wallets
                 if (perWalletModelData.getWalletInfo().isDeleted()) {
-                    log.debug("Not writing out info about wallet '" + perWalletModelData.getWalletFilename() + "' as it has been deleted");
+                    log.debug("Not writing out info about wallet '" + perWalletModelData.getWalletFilename()
+                            + "' as it has been deleted");
                     continue;
                 }
-                
+
                 if (!orderList.contains(perWalletModelData.getWalletFilename())) {
                     orderList.add(perWalletModelData.getWalletFilename());
                 }
-                
+
                 if (perWalletModelData.getWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF_ENCRYPTED) {
                     if (!protobuf3List.contains(perWalletModelData.getWalletFilename())) {
                         protobuf3List.add(perWalletModelData.getWalletFilename());
                     }
-                 } else if (perWalletModelData.getWalletInfo().getWalletVersion() == null
-                         || perWalletModelData.getWalletInfo().getWalletVersion() == MultiBitWalletVersion.SERIALIZED 
-                         || perWalletModelData.getWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF) {
+                } else if (perWalletModelData.getWalletInfo().getWalletVersion() == null
+                        || perWalletModelData.getWalletInfo().getWalletVersion() == MultiBitWalletVersion.SERIALIZED
+                        || perWalletModelData.getWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF) {
                     if (!earlyList.contains(perWalletModelData.getWalletFilename())) {
                         earlyList.add(perWalletModelData.getWalletFilename());
                     }
                 }
             }
-            
+
             int orderCount = 1;
             for (String walletFilename : orderList) {
                 controller.getModel().setUserPreference(BitcoinModel.WALLET_ORDER_PREFIX + orderCount, walletFilename);
-                orderCount++;  
+                orderCount++;
             }
             controller.getModel().setUserPreference(BitcoinModel.WALLET_ORDER_TOTAL, "" + orderList.size());
-        
+
             int earlyCount = 1;
             for (String walletFilename : earlyList) {
                 controller.getModel().setUserPreference(BitcoinModel.EARLY_WALLET_FILENAME_PREFIX + earlyCount, walletFilename);
                 earlyCount++;
             }
             controller.getModel().setUserPreference(BitcoinModel.NUMBER_OF_EARLY_WALLETS, "" + earlyList.size());
-            
+
             int protobuf3Count = 1;
             for (String walletFilename : protobuf3List) {
-                controller.getModel().setUserPreference(BitcoinModel.PROTOBUF3_WALLET_FILENAME_PREFIX + protobuf3Count, walletFilename);
+                controller.getModel().setUserPreference(BitcoinModel.PROTOBUF3_WALLET_FILENAME_PREFIX + protobuf3Count,
+                        walletFilename);
                 protobuf3Count++;
             }
             controller.getModel().setUserPreference(BitcoinModel.NUMBER_OF_PROTOBUF3_WALLETS, "" + protobuf3List.size());
-            controller.getModel().setUserPreference(BitcoinModel.ACTIVE_WALLET_FILENAME, bitcoinController.getModel().getActiveWalletFilename());
+            controller.getModel().setUserPreference(BitcoinModel.ACTIVE_WALLET_FILENAME,
+                    bitcoinController.getModel().getActiveWalletFilename());
         }
 
         Properties userPreferences = controller.getModel().getAllUserPreferences();
-     
-        // If the view is marked as also requiring a backwards compatible numeric field write that.
+
+        // If the view is marked as also requiring a backwards compatible
+        // numeric field write that.
         @SuppressWarnings("deprecation")
         int currentViewNumericFormat = View.toOldViewNumeric(controller.getCurrentView());
         if (currentViewNumericFormat != 0) {
             userPreferences.put(CoreModel.SELECTED_VIEW, "" + currentViewNumericFormat);
         } else {
-            // Make sure the old numeric value for a view is not in the user properties.
+            // Make sure the old numeric value for a view is not in the user
+            // properties.
             userPreferences.remove(CoreModel.SELECTED_VIEW);
         }
         // Write the user preference properties.
@@ -797,15 +857,18 @@ public class FileHandler {
      * backup file: filename-yyyymmddhhmmss.suffix
      * 
      * @param file
-     * @param saveBackupDate - save the backup date for use later
+     * @param saveBackupDate
+     *            - save the backup date for use later
      * @param reusePreviousBackupDate
      *            Reuse the previously created backup date so that wallet and
      *            wallet info names match
-     * @param suffixToUse the suffix text to use
+     * @param suffixToUse
+     *            the suffix text to use
      * @return
      * @throws IOException
      */
-    public String createBackupFilename(File file, boolean saveBackupDate, boolean reusePreviousBackupDate, String suffixToUse) throws IOException {
+    public String createBackupFilename(File file, boolean saveBackupDate, boolean reusePreviousBackupDate, String suffixToUse)
+            throws IOException {
         String filename = file.getAbsolutePath();
 
         // Find suffix.
@@ -815,14 +878,15 @@ public class FileHandler {
         if (suffixToUse != null) {
             suffix = "." + suffixToUse;
         } else {
-            suffix = filename.substring(suffixSeparator); // Includes separating dot.
-        }                                                
+            suffix = filename.substring(suffixSeparator); // Includes separating
+                                                          // dot.
+        }
         Date backupDateToUse = new Date();
-        
+
         if (saveBackupDate) {
             dateForBackupName = backupDateToUse;
         }
-        
+
         if (reusePreviousBackupDate) {
             backupDateToUse = dateForBackupName;
         }
@@ -838,17 +902,18 @@ public class FileHandler {
      * 
      * Thus each user has their own copy of the blockchain.
      */
-    public void copyCheckpointsFromInstallationDirectory(String destinationCheckpointsFilename)
-            throws IOException {
+    public void copyCheckpointsFromInstallationDirectory(String destinationCheckpointsFilename) throws IOException {
         if (destinationCheckpointsFilename == null) {
             return;
         }
 
-        // See if the block chain in the user's application data directory exists.
+        // See if the block chain in the user's application data directory
+        // exists.
         File destinationCheckpoints = new File(destinationCheckpointsFilename);
 
         if (!destinationCheckpoints.exists()) {
-            // Work out the source checkpoints (put into the program installation directory by the installer).
+            // Work out the source checkpoints (put into the program
+            // installation directory by the installer).
             File directory = new File(".");
             String currentWorkingDirectory = directory.getCanonicalPath();
 
@@ -870,9 +935,7 @@ public class FileHandler {
                             + "' is of length "
                             + sourceLength
                             + "\nbut the destination checkpoints '"
-                            + destinationCheckpointsFilename
-                            + "' is of length "
-                            + destinationLength;
+                            + destinationCheckpointsFilename + "' is of length " + destinationLength;
                     log.error(errorText);
                     throw new FileHandlerException(errorText);
                 }
@@ -910,7 +973,7 @@ public class FileHandler {
             if (sourceBlockchain.exists() && !destinationBlockChainFilename.equals(sourceBlockchainFilename)) {
                 // It should exist since installer puts them in.
                 log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename + "'");
-                
+
                 if (alwaysOverWrite) {
                     // Delete the existing destinationBlockchain if it exists.
                     if (destinationBlockchain.exists()) {
@@ -931,9 +994,7 @@ public class FileHandler {
                             + "' is of length "
                             + sourceLength
                             + "\nbut the destination blockchain '"
-                            + destinationBlockChainFilename
-                            + "' is of length "
-                            + destinationLength;
+                            + destinationBlockChainFilename + "' is of length " + destinationLength;
                     log.error(errorText);
                     throw new FileHandlerException(errorText);
                 }
@@ -999,23 +1060,24 @@ public class FileHandler {
     /**
      * Delete a file with an overwrite of all of the data.
      * 
-     * Set bit patterns are used rather than random numbers to avoid
-     * a futex_wait_queue_me error on Linux systems (related to /dev/random usage)
+     * Set bit patterns are used rather than random numbers to avoid a
+     * futex_wait_queue_me error on Linux systems (related to /dev/random usage)
      * 
      * @param file
      * @throws IOException
      */
     public static void secureDelete(File file) throws IOException {
         log.debug("Start of secureDelete");
-        
+
         RandomAccessFile raf = null;
         if (file != null && file.exists()) {
             try {
                 // Prep for file delete as this can be fiddly on windows.
-                // Make sure it is writable and any references to it are garbage collected and finalized.
+                // Make sure it is writable and any references to it are garbage
+                // collected and finalized.
                 file.setWritable(true);
                 System.gc();
-                
+
                 long length = file.length();
                 raf = new RandomAccessFile(file, "rws");
                 raf.seek(0);
@@ -1035,5 +1097,47 @@ public class FileHandler {
             log.debug("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
         }
         log.debug("End of secureDelete");
+    }
+
+    public void createBackupDirectories(File walletFile) {
+        if (walletFile == null) {
+            return;
+        }
+
+        // Work out the name of the top level wallet backup directory.
+        String walletPath = walletFile.getAbsolutePath();
+        // Remove any trailing ".wallet" text.
+        String walletSuffixSearchText = "." + BitcoinModel.WALLET_FILE_EXTENSION;
+        if (walletPath.endsWith(walletSuffixSearchText)) {
+            walletPath = walletPath.substring(0, walletPath.length() - walletSuffixSearchText.length());
+        }
+
+        // Create the top-level directory for the wallet specific data, if necessary.
+        String topLevelBackupDirectoryName = walletPath + TOP_LEVEL_WALLET_BACKUP_SUFFIX;
+        createDirectoryIfNecessary(topLevelBackupDirectoryName);
+
+        // Create the backup directories for the private keys, rolling backup and wallets.
+        String privateKeysBackupDirectoryName = topLevelBackupDirectoryName + File.separator + PRIVATE_KEY_BACKUP_DIRECTORY_NAME;
+        createDirectoryIfNecessary(privateKeysBackupDirectoryName);
+
+        String rollingWalletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
+                + ROLLING_WALLET_BACKUP_DIRECTORY_NAME;
+        createDirectoryIfNecessary(rollingWalletBackupDirectoryName);
+
+        String unencryptedWalletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
+                + UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME;
+        createDirectoryIfNecessary(unencryptedWalletBackupDirectoryName);
+
+        String encryptedWalletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
+                + ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME;
+        createDirectoryIfNecessary(encryptedWalletBackupDirectoryName);
+    }
+
+    private void createDirectoryIfNecessary(String directoryName) {
+        File directory = new File(directoryName);
+        if (!directory.exists()) {
+            boolean createSuccess = directory.mkdir();
+            log.debug("Result of create of directory + '" + directoryName + "' was " + createSuccess);
+        }
     }
 }
