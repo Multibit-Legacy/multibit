@@ -513,9 +513,16 @@ public class FileHandler {
         return privateKeysBackupFile;
     }
 
+    /**
+     * Copy an existing wallet to a backup file and delete the original.
+     * Used in rolling backups
+     * 
+     * @param walletFile
+     * @return
+     * @throws IOException
+     */
     private String copyExistingWalletToBackupAndDeleteOriginal(File walletFile) throws IOException {
-        // Create a backup file called <wallet filename>.<random number>.bak
-        String newWalletBackupFilename = createBackupFilename(walletFile, false, false, null);
+        String newWalletBackupFilename = createBackupFilename(walletFile, ROLLING_WALLET_BACKUP_DIRECTORY_NAME, false, false, null);
         File newWalletBackupFile = new File(newWalletBackupFilename);
         if (walletFile != null && walletFile.exists()) {
             FileHandler.copyFile(walletFile, newWalletBackupFile);
