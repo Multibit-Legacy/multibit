@@ -211,8 +211,12 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                                 false);
                         }
                         
+                        // Backup the private keys.
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(walletPassword));
                         thisAction.setLastPrivateKeysBackupFile(privateKeysBackupFile);
+
+                        // Backup the wallet and wallet info.
+                        fileHandler.backupPerWalletModelData(finalPerWalletModelData);
 
                         successMeasure = Boolean.TRUE;
                     } catch (KeyCrypterException kce) {

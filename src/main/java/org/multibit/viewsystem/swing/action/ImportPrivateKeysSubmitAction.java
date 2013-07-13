@@ -385,8 +385,12 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Import was successful.
                     uiMessage = finalBitcoinController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
 
+                    // Backup the private keys.
                     privateKeysBackupFile = finalBitcoinController.getFileHandler().backupPrivateKeys(CharBuffer.wrap(walletPassword));
 
+                    // Backup the wallet and wallet info.
+                    finalBitcoinController.getFileHandler().backupPerWalletModelData(finalPerWalletModelData);
+                    
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
                     if (performReplay) {

@@ -146,7 +146,11 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                         FileHandler fileHandler = new FileHandler(super.bitcoinController);
                         fileHandler.savePerWalletModelData(super.bitcoinController.getModel().getActivePerWalletModelData(), true);
                         
+                        // Backup the private keys.
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(newPasswordToUse));
+                        
+                        // Backup the wallet and wallet info
+                        fileHandler.backupPerWalletModelData(perWalletModelData);
                     } catch (KeyCrypterException kce) {
                         // Notify the user that the encrypt failed.
                         changePasswordPanel.setMessage1(controller.getLocaliser().getString(
