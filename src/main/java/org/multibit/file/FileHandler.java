@@ -17,10 +17,12 @@ package org.multibit.file;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,6 +31,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +39,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -52,11 +57,19 @@ import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
+import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.EncryptedPrivateKey;
+import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.protobuf.ByteString;
+
 import org.multibit.model.core.CoreModel;
 
 /**
@@ -82,13 +95,20 @@ public class FileHandler {
     
     public static final String INFO_FILE_SUFFIX_STRING = "info";
 
+    transient private static SecureRandom secureRandom = new SecureRandom();
+
     private final Controller controller;
     private final BitcoinController bitcoinController;
+    
+    private static final int MAX_FILE_SIZE = 1024 * 1024 * 1024; // Dont read files greater than 1 gigabyte.
 
     private Date dateForBackupName = null;
 
     private DateFormat dateFormat;
     private MultiBitWalletProtobufSerializer walletProtobufSerializer;
+    
+    public static final byte[] ENCRYPTED_FILE_FORMAT_MAGIC_BYTES = new byte[]{(byte) 0x6D, (byte) 0x65, (byte) 0x6E, (byte) 0x64, (byte) 0x6F, (byte) 0x7A, (byte) 0x61}; // mendoza in ASCII
+    
 
     // Nonsense bytes to fill up deleted files - these have no meaning.
     private static byte[] NONSENSE_BYTES = new byte[] { (byte) 0xF0, (byte) 0xA6, (byte) 0x55, (byte) 0xAA, (byte) 0x33,
@@ -389,7 +409,7 @@ public class FileHandler {
 
                 log.debug("Saving wallet file '" + walletFile.getAbsolutePath() + "' ...");
                 if (MultiBitWalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
-                    saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
+                    throw new WalletSaveException("Cannot save wallet '" + walletFile.getAbsolutePath() + "'. Serialized wallets are no longer supported.");
                 } else {
                     // See if there are any encrypted private keys - if there
                     // are the wallet will be saved
@@ -498,8 +518,8 @@ public class FileHandler {
 
                 log.debug("Saving wallet file '" + walletFile.getAbsolutePath() + "' ...");
                 if (MultiBitWalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
-                    saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
-                } else {
+                    throw new WalletSaveException("Cannot save wallet '" + walletFile.getAbsolutePath() + "'. Serialized wallets are no longer supported.");
+               } else {
                     // See if there are any encrypted private keys - if there
                     // are the wallet will be saved
                     // as encrypted and the version set to PROTOBUF_ENCRYPTED.
@@ -695,20 +715,6 @@ public class FileHandler {
                             + " " + walletFileLastModified + " ," + BitcoinModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize
                             + " ," + BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
                 }
-
-                // Create backup filenames early if the files have changed.
-                // (It is then available in the tooltip).
-//                if (haveFilesChanged && perWalletModelData.getWalletBackupFilename() == null) {
-//                    try {
-//                        perWalletModelData.setWalletBackupFilename(createBackupFilename(walletFile, true, false, null));
-//
-//                        perWalletModelData.setWalletInfoBackupFilename(createBackupFilename(
-//                                new File(WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false,
-//                                true, null));
-//                    } catch (IOException e) {
-//                        log.error(e.getMessage(), e);
-//                    }
-//                }
             }
         }
 
@@ -883,76 +889,6 @@ public class FileHandler {
         }
 
         return userPreferences;
-    }
-
-    /**
-     * Uses Java serialization to save the wallet to the given file.
-     */
-    private synchronized void saveToFileAsSerialised(Wallet wallet, File f) throws IOException {
-        log.debug("Saving wallet to file " + f.getAbsolutePath() + " in version 1 (serialised) format.");
-        FileOutputStream stream = null;
-        try {
-            stream = new FileOutputStream(f);
-            saveToFileStreamAsSerialised(wallet, stream);
-        } finally {
-            if (stream != null) {
-                stream.close();
-                stream = null;
-            }
-        }
-    }
-
-    /**
-     * Uses Java serialization to save the wallet to the given file stream.
-     */
-    private synchronized void saveToFileStreamAsSerialised(Wallet wallet, OutputStream f) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(f);
-        oos.writeObject(wallet);
-        oos.flush();
-        oos.close();
-    }
-
-    /**
-     * Create a backup filename the format is: original file: filename.suffix.
-     * backup file: filename-yyyymmddhhmmss.suffix
-     * 
-     * @param file
-     * @param saveBackupDate
-     *            - save the backup date for use later
-     * @param reusePreviousBackupDate
-     *            Reuse the previously created backup date so that wallet and
-     *            wallet info names match
-     * @param suffixToUse
-     *            the suffix text to use
-     * @return
-     * @throws IOException
-     */
-    public String createBackupFilename(File file, boolean saveBackupDate, boolean reusePreviousBackupDate, String suffixToUse)
-            throws IOException {
-        String filename = file.getAbsolutePath();
-
-        // Find suffix.
-        int suffixSeparator = filename.lastIndexOf(".");
-        String stem = filename.substring(0, suffixSeparator);
-        String suffix;
-        if (suffixToUse != null) {
-            suffix = "." + suffixToUse;
-        } else {
-            suffix = filename.substring(suffixSeparator); // Includes separating
-                                                          // dot.
-        }
-        Date backupDateToUse = new Date();
-
-        if (saveBackupDate) {
-            dateForBackupName = backupDateToUse;
-        }
-
-        if (reusePreviousBackupDate) {
-            backupDateToUse = dateForBackupName;
-        }
-        String backupFilename = stem + SEPARATOR + dateFormat.format(backupDateToUse) + suffix;
-
-        return backupFilename;
     }
 
     /**
@@ -1160,6 +1096,102 @@ public class FileHandler {
             }
         }
     }
+    
+    public static void copyFileAndEncrypt(File sourceFile, File destinationFile, CharSequence passwordToUse) throws IOException {
+        if (passwordToUse == null || passwordToUse.length() == 0) {
+            throw new IllegalArgumentException("Password cannot be blank");
+        }
+        
+        // Read in the source file.
+        byte[] sourceFileUnencrypted = read(sourceFile);
+        
+        // Create the destination file.
+        if (!destinationFile.exists()) {
+            destinationFile.createNewFile();
+        }
+        
+        // Encrypt the data.
+        byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
+        secureRandom.nextBytes(salt);
+        System.out.println(Utils.bytesToHexString(salt));
+        
+        Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder()
+        .setSalt(ByteString.copyFrom(salt));
+        ScryptParameters scryptParameters = scryptParametersBuilder.build();
+        KeyCrypterScrypt keyCrypter = new KeyCrypterScrypt(scryptParameters);
+        EncryptedPrivateKey encryptedData = keyCrypter.encrypt(sourceFileUnencrypted, keyCrypter.deriveKey(passwordToUse));
+        
+        // The format of the encrypted data is:
+        // 7 magic bytes 'mendoza' in ASCII.
+        // 1 byte version number of format - initially set to 0
+        // 8 bytes salt
+        // 16 bytes iv
+        // rest of file is the encrypted byte data
+        
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(destinationFile);
+            fileOutputStream.write(ENCRYPTED_FILE_FORMAT_MAGIC_BYTES);
+            
+            // file format version.
+            fileOutputStream.write((byte) 0x00);
+            
+            fileOutputStream.write(salt); // 8 bytes.
+            fileOutputStream.write(encryptedData.getInitialisationVector()); // 16 bytes.
+            System.out.println(Utils.bytesToHexString(encryptedData.getInitialisationVector()));
+            
+            fileOutputStream.write(encryptedData.getEncryptedBytes());
+            System.out.println(Utils.bytesToHexString(encryptedData.getEncryptedBytes()));
+        } finally {
+            if (fileOutputStream != null) {
+                fileOutputStream.flush();
+                fileOutputStream.close();
+            }
+        }
+        
+        // Read in the file again and decrypt it to make sure everything was ok.
+        byte[] phoenix = readFileAndDecrypt(destinationFile, passwordToUse);
+        
+        if (!Arrays.areEqual(sourceFileUnencrypted, phoenix)) {
+            throw new IOException("File '" + sourceFile.getAbsolutePath() + "' was not correctly encrypted to file '" + destinationFile.getAbsolutePath());
+        }
+    }
+
+    public static byte[] readFileAndDecrypt(File encryptedFile, CharSequence passwordToUse) throws IOException {
+        // Read in the encrypted file.
+        
+        byte[] sourceFileEncrypted = read(encryptedFile);
+        
+        // Check the first bytes match the magic number.
+        if (!Arrays.areEqual(ENCRYPTED_FILE_FORMAT_MAGIC_BYTES, Arrays.copyOfRange(sourceFileEncrypted, 0, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length))) {
+            throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' did not start with the correct magic bytes.");            
+        }
+        
+        // Check the format version.
+        String versionNumber = "" + sourceFileEncrypted[ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length];
+        if (!("0".equals(versionNumber))) {
+            throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' did not have the expected version number of 0. It was " + versionNumber);            
+        }
+
+        // Extract the salt.
+        byte[] salt = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH);
+        System.out.println(Utils.bytesToHexString(salt));
+        
+        // Extract the IV.
+        byte[] iv = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH , ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH);
+        System.out.println(Utils.bytesToHexString(iv));
+        
+        // Extract the encrypted bytes.
+        byte[] encryptedBytes = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH , sourceFileEncrypted.length);
+        System.out.println(Utils.bytesToHexString(encryptedBytes));
+         
+        // Decrypt the data.
+        Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
+        ScryptParameters scryptParameters = scryptParametersBuilder.build();
+        KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
+        EncryptedPrivateKey encryptedPrivateKey = new EncryptedPrivateKey(iv, encryptedBytes);
+        return keyCrypter.decrypt(encryptedPrivateKey, keyCrypter.deriveKey(passwordToUse));
+    }
 
     public static File createTempDirectory(String filePrefix) throws IOException {
         final File temp;
@@ -1271,5 +1303,34 @@ public class FileHandler {
             boolean createSuccess = directory.mkdir();
             log.debug("Result of create of directory + '" + directoryName + "' was " + createSuccess);
         }
+    }
+    
+    public static byte[] read(File file) throws IOException {
+        if (file == null) {
+            throw new IllegalArgumentException("File must be provided");
+        }
+        
+        if ( file.length() > MAX_FILE_SIZE ) {
+            throw new IOException("File '" + file.getAbsolutePath() + "' is too large to input");
+        }
+
+        byte []buffer = new byte[(int) file.length()];
+        InputStream ios = null;
+        try {
+            ios = new FileInputStream(file);
+            if ( ios.read(buffer) == -1 ) {
+                throw new IOException("EOF reached while trying to read the whole file");
+            }        
+        } finally { 
+            try {
+                 if ( ios != null )  {
+                      ios.close();
+                 }
+            } catch ( IOException e) {
+                log.error(e.getClass().getName() + " " + e.getMessage());
+            }
+        }
+
+        return buffer;
     }
 }
