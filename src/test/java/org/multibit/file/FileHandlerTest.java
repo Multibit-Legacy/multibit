@@ -470,6 +470,7 @@ public class FileHandlerTest extends TestCase {
 
         File temporaryWalletCopy = File.createTempFile(TEST_FILE_ENCRYPT_DECRYPT, ".wallet.cipher");
         temporaryWalletCopy.deleteOnExit();
+        temporaryWalletCopy.delete();
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 

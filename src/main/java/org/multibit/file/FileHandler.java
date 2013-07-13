@@ -355,11 +355,10 @@ public class FileHandler {
             } else {
                 backupSuffixText = FileHandler.ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME;
             }
-            String walletBackupFilename = createBackupFilename(new File(perWalletModelData.getWalletFilename()), backupSuffixText, true, false, null);
+            String walletBackupFilename = createBackupFilename(new File(perWalletModelData.getWalletFilename()), backupSuffixText, true, false, BitcoinModel.WALLET_FILE_EXTENSION);
             perWalletModelData.setWalletBackupFilename(walletBackupFilename);
 
-            String walletInfoBackupFilename = createBackupFilename(
-                    new File(WalletInfoData.createWalletInfoFilename(perWalletModelData.getWalletFilename())), backupSuffixText, false, true, null);
+            String walletInfoBackupFilename = walletBackupFilename.replaceAll(BitcoinModel.WALLET_FILE_EXTENSION + "$", INFO_FILE_SUFFIX_STRING);
             perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
 
             saveWalletAndWalletInfoSimple(perWalletModelData, walletBackupFilename, walletInfoBackupFilename);
@@ -624,7 +623,7 @@ public class FileHandler {
      * @throws IOException
      */
     private String copyExistingWalletToBackupAndDeleteOriginal(File walletFile) throws IOException {
-        String newWalletBackupFilename = createBackupFilename(walletFile, ROLLING_WALLET_BACKUP_DIRECTORY_NAME, false, false, null);
+        String newWalletBackupFilename = createBackupFilename(walletFile, ROLLING_WALLET_BACKUP_DIRECTORY_NAME, false, false, BitcoinModel.WALLET_FILE_EXTENSION);
         File newWalletBackupFile = new File(newWalletBackupFilename);
         if (walletFile != null && walletFile.exists()) {
             FileHandler.copyFile(walletFile, newWalletBackupFile);

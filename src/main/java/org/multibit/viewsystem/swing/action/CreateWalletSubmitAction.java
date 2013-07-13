@@ -187,6 +187,9 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 FileHandler.writeUserPreferences(this.bitcoinController);
                 log.debug("User preferences with new wallet written successfully");
 
+                // Backup the wallet and wallet info.
+                bitcoinController.getFileHandler().backupPerWalletModelData(perWalletModelData);
+                
                 controller.fireRecreateAllViews(true);
                 controller.fireDataChangedUpdateNow();
             }
