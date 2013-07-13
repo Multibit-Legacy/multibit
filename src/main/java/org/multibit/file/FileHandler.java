@@ -30,11 +30,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
+import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -94,8 +96,11 @@ public class FileHandler {
     public static final String UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME = "wallet-unenc-backup";
     
     public static final String INFO_FILE_SUFFIX_STRING = "info";
+    public static final String FILE_ENCRYPTED_WALLET_SUFFIX = "cipher";
 
     transient private static SecureRandom secureRandom = new SecureRandom();
+    public static final int EXPECTED_LENGTH_OF_SALT = 8;
+    public static final int EXPECTED_LENGTH_OF_IV = 16;
 
     private final Controller controller;
     private final BitcoinController bitcoinController;
@@ -1097,9 +1102,52 @@ public class FileHandler {
         }
     }
     
+    public void fileLevelEncryptUnencryptedWalletBackups(WalletData perWalletModelData, CharSequence passwordToUse) {
+        // See if there are any unencrpyted wallet backups.
+        String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(new File(perWalletModelData.getWalletFilename()));
+        String unencryptedWalletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
+                + UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME;
+        File unencryptedWalletBackupDirectory = new File(unencryptedWalletBackupDirectoryName);
+
+        File[] listOfFiles = unencryptedWalletBackupDirectory.listFiles();
+
+        Collection<File> unencryptedWalletBackups = new ArrayList<File>();
+        // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol>.
+        if (listOfFiles != null) {
+            for (int i = 0; i < listOfFiles.length; i++) {
+                if (listOfFiles[i].isFile()) {
+                    if (listOfFiles[i].getName().matches(".*-\\d{14}\\.wallet$")) {
+                        unencryptedWalletBackups.add(listOfFiles[i]);
+                    }
+                } 
+            }
+            
+            // Copy and encrypt each file and secure delete the original.
+            for(File loopFile : unencryptedWalletBackups) {
+                try {
+                    String encryptedFilename = loopFile.getAbsolutePath() + "." + FILE_ENCRYPTED_WALLET_SUFFIX;
+                    copyFileAndEncrypt(loopFile, new File(encryptedFilename), passwordToUse);
+                    secureDelete(loopFile);
+                } catch (IOException ioe) {
+                    log.error(ioe.getClass().getName() + " " + ioe.getMessage());
+                } catch (IllegalArgumentException iae) {
+                    log.error(iae.getClass().getName() + " " + iae.getMessage());
+                } catch (IllegalStateException ise) {
+                    log.error(ise.getClass().getName() + " " + ise.getMessage());
+                }catch (KeyCrypterException kce) {
+                    log.error(kce.getClass().getName() + " " + kce.getMessage());
+                }
+            }
+        }
+    }
+
     public static void copyFileAndEncrypt(File sourceFile, File destinationFile, CharSequence passwordToUse) throws IOException {
         if (passwordToUse == null || passwordToUse.length() == 0) {
             throw new IllegalArgumentException("Password cannot be blank");
+        }
+       
+        if (destinationFile.exists()) {
+            throw new IllegalArgumentException("The destination file '" + destinationFile.getAbsolutePath() + "' already exists.");            
         }
         
         // Read in the source file.

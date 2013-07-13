@@ -150,7 +150,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(newPasswordToUse));
                         
                         // Backup the wallet and wallet info
-                        fileHandler.backupPerWalletModelData(perWalletModelData);
+                        fileHandler.backupPerWalletModelData(perWalletModelData);                        
                     } catch (KeyCrypterException kce) {
                         // Notify the user that the encrypt failed.
                         changePasswordPanel.setMessage1(controller.getLocaliser().getString(

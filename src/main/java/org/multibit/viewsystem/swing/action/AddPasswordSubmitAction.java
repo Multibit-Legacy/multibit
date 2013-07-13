@@ -153,6 +153,9 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
 
                     // Backup the wallet and wallet info.
                     fileHandler.backupPerWalletModelData(perWalletModelData);
+                    
+                    // Ensure that any unencrypted wallet backups are file encrypted with the wallet password.
+                    fileHandler.fileLevelEncryptUnencryptedWalletBackups(perWalletModelData, CharBuffer.wrap(passwordToUse));
                 }
             } catch (KeyCrypterException ede) {
                 ede.printStackTrace();

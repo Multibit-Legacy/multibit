@@ -504,4 +504,12 @@ public class FileHandlerTest extends TestCase {
         
         assertTrue("The wallet after the encrypt save roundtrip has changed", Arrays.areEqual(sourceBytes, decryptedWalletBytes));
     }
+    
+    @Test
+    public void checkSaltAndIVLength() {
+        // If something changes in the KeyCrypterScrypt it would cause backwards compatibility problems reading and writing
+        // the encrypted backup files so check them.
+        assertTrue("The salt length seems to have changed from length 8 bytes", FileHandler.EXPECTED_LENGTH_OF_SALT == KeyCrypterScrypt.SALT_LENGTH);
+        assertTrue("The initialisation vector length seems to have changed from length 16 bytes", FileHandler.EXPECTED_LENGTH_OF_IV == KeyCrypterScrypt.BLOCK_LENGTH);
+    }
 }
