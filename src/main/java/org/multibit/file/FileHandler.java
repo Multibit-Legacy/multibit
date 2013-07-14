@@ -33,8 +33,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.bitcoinj.wallet.Protos;
@@ -141,6 +145,8 @@ public class FileHandler {
 
     /**
      * Load up a WalletData from a specified wallet file.
+     * If the main wallet cannot be loaded, the most recent backup is tried, 
+     * followed by the next recent.
      * 
      * @param walletFile
      * @return WalletData - the walletData for the created wallet
@@ -152,7 +158,7 @@ public class FileHandler {
             return null;
         }
 
-        String walletFilenameToUse = walletFile.getAbsolutePath();
+        String walletFilenameToUseInModel = walletFile.getAbsolutePath();
 
         try {
             // See if the wallet is serialized or protobuf.
@@ -160,51 +166,81 @@ public class FileHandler {
 
             if (isWalletSerialised(walletFile)) {
                 // Serialised wallets are no longer supported.
-                throw new WalletLoadException("Could not load wallet '" + walletFilenameToUse
+                throw new WalletLoadException("Could not load wallet '" + walletFilenameToUseInModel
                         + "'. Serialized wallets are no longer supported.");
             } else {
-                walletInfo = new WalletInfoData(walletFilenameToUse, null, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfoData(walletFilenameToUseInModel, null, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             }
 
             // If the wallet file is missing or empty but the backup file exists
-            // load that instead.
-            // This indicates that the write was interrupted (e.g. power loss).
-            boolean saveImmediately = false;
-            if (!walletFile.exists() || walletFile.length() == 0) {
-                String walletBackupFilename = walletInfo.getProperty(BitcoinModel.WALLET_BACKUP_FILE);
-                if (walletBackupFilename != null && !"".equals(walletBackupFilename)) {
-                    File walletBackupFile = new File(walletBackupFilename);
-                    if (walletBackupFile.exists()) {
-                        // Use the walletBackup.
-                        log.debug("The wallet file '" + walletFile.getAbsolutePath()
-                                + "' is empty so using the wallet backup file of '" + walletBackupFile.getAbsolutePath() + "'.");
-                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
-                                "fileHandler.walletIsMissing",
-                                new Object[] { walletFile.getAbsolutePath(), walletBackupFile.getAbsolutePath() })));
-                        walletFile = walletBackupFile;
+            // load that instead. This indicates that the write was interrupted
+            // (e.g. power loss).
+            boolean useBackupWallets = ( !walletFile.exists() || walletFile.length() == 0 );
+            boolean walletWasLoadedSuccessfully = false;
 
-                        saveImmediately = true;
+            Wallet wallet = null;
 
-                        // Wipe the wallet backup property so that the backup
-                        // file will not be overwritten
-                        walletInfo.put(BitcoinModel.WALLET_BACKUP_FILE, "");
+            // Try the main wallet first unless it is obviously broken.
+            if (!useBackupWallets) {
+                FileInputStream fileInputStream = new FileInputStream(walletFile);
+                InputStream stream = null;
+
+                try {
+                    stream = new BufferedInputStream(fileInputStream);
+                    wallet = Wallet.loadFromFileStream(stream);
+                    walletWasLoadedSuccessfully = true;
+                } catch (WalletVersionException wve) {
+                    // We want this exception to propagate out.
+                    throw wve;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+                } finally {
+                    if (stream != null) {
+                        stream.close();
+                    }
+                    fileInputStream.close();
+                }
+            }
+            
+             if (!walletWasLoadedSuccessfully) {
+                 // If the main wallet was not loaded successfully, work out the best backup
+                 // wallets to try and load them.
+                 useBackupWallets = true;
+                 
+                 Collection<String> backupWalletsToTry = calculateBestWalletBackups(walletFile, walletInfo);
+
+                 Iterator<String> iterator = backupWalletsToTry.iterator();
+                 while (!walletWasLoadedSuccessfully && iterator.hasNext()) {
+                    String walletToTry = iterator.next();
+
+                    FileInputStream fileInputStream = new FileInputStream(new File(walletToTry));
+                    InputStream stream = null;
+
+                    try {
+                        stream = new BufferedInputStream(fileInputStream);
+                        wallet = Wallet.loadFromFileStream(stream);
+                        walletWasLoadedSuccessfully = true;
+                        
+                        // Mention to user that backup is being used.
+                        // Report failure to user.
+                        MessageManager.INSTANCE.addMessage(new Message(bitcoinController.getLocaliser().getString("fileHandler.walletCannotLoadUsingBackup",
+                                new String[]{walletFilenameToUseInModel, walletToTry})));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+                    } finally {
+                        if (stream != null) {
+                            stream.close();
+                        }
+                        fileInputStream.close();
                     }
                 }
             }
 
-            FileInputStream fileInputStream = new FileInputStream(walletFile);
-            InputStream stream = null;
-            Wallet wallet = null;
-            try {
-                stream = new BufferedInputStream(fileInputStream);
+            WalletData perWalletModelData = null;
 
-                // serialised.1 wallets are stored as serialised (no longer
-                // supported).
-                // protobuf.2 (unencrypted) wallets stored as Wallet messages
-                // protobuf.3 (encrypted) wallets are stored as Wallet messages
-                // with a mandatory extension
-                wallet = Wallet.loadFromFileStream(stream);
-
+            if (walletWasLoadedSuccessfully) {
                 if (walletInfo != null) {
                     // If wallet description is only in the wallet, copy it to
                     // the wallet info
@@ -223,29 +259,40 @@ public class FileHandler {
                 // Ensure that the directories for the backups of the private
                 // keys, rolling backups and regular backups exist.
                 createBackupDirectories(walletFile);
-            } finally {
-                if (stream != null) {
-                    stream.close();
+
+                // Add the new wallet into the model.
+                wallet.setNetworkParameters(bitcoinController.getModel().getNetworkParameters());
+                perWalletModelData = bitcoinController.getModel().addWallet(this.bitcoinController, wallet,
+                        walletFilenameToUseInModel);
+
+                perWalletModelData.setWalletInfo(walletInfo);
+
+                // If the backup files were used save them immediately and don't
+                // delete any rolling backups.
+                if (useBackupWallets) {
+                    // Wipe the wallet backup property so that the rolling
+                    // backup file will not be overwritten
+                    walletInfo.put(BitcoinModel.WALLET_BACKUP_FILE, "");
+
+                    // Save the wallet immediately just to be on the safe side.
+                    savePerWalletModelData(perWalletModelData, true);
                 }
-                fileInputStream.close();
+
+                synchronized (walletInfo) {
+                    rememberFileSizesAndLastModified(new File(walletFilenameToUseInModel), walletInfo);
+                    perWalletModelData.setDirty(false);
+                }
+            } else {
+                // No wallet was loaded successfully.
+                // Wipe the rolling backup property to ensure that file wont be deleted.
+                if (walletInfo != null) {
+                    walletInfo.put(BitcoinModel.WALLET_BACKUP_FILE, "");
+                }
+                
+                // Report failure to user.
+                MessageManager.INSTANCE.addMessage(new Message(bitcoinController.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                        new String[]{walletFilenameToUseInModel, "Unable to load wallet or backups. See help for more details."})));
             }
-
-            // Add the new wallet into the model.
-            wallet.setNetworkParameters(this.bitcoinController.getModel().getNetworkParameters());
-            WalletData perWalletModelData = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet,
-                    walletFilenameToUse);
-
-            perWalletModelData.setWalletInfo(walletInfo);
-
-            if (saveImmediately) {
-                savePerWalletModelData(perWalletModelData, true);
-            }
-
-            synchronized (walletInfo) {
-                rememberFileSizesAndLastModified(new File(walletFilenameToUse), walletInfo);
-                perWalletModelData.setDirty(false);
-            }
-
             return perWalletModelData;
         } catch (WalletVersionException wve) {
             // We want this to propagate out.
@@ -256,8 +303,91 @@ public class FileHandler {
             throw new WalletLoadException(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
         }
     }
+    
+    /**
+     * Work out the best wallet backups to try to load
+     * @param walletFile
+     * @return Collection<String> The best wallets to try to load, in order of goodness.
+     */
+    private Collection<String> calculateBestWalletBackups(File walletFile, WalletInfoData walletInfo) {
+        Collection<String> backupWalletsToTry = new ArrayList<String>();
+        
+        // Get the name of the rolling backup file.
+        String walletBackupFilenameLong = walletInfo.getProperty(BitcoinModel.WALLET_BACKUP_FILE);
+        String walletBackupFilenameShort = null;
+        if (walletBackupFilenameLong != null && !"".equals(walletBackupFilenameLong)) {
+            File walletBackupFile = new File(walletBackupFilenameLong);
+            walletBackupFilenameShort = walletBackupFile.getName();
+            if (!walletBackupFile.exists()) {
+                walletBackupFilenameLong = null;
+                walletBackupFilenameShort = null;
+            }
+        }
+        
+        Collection<File> unencryptedWalletBackups = getWalletsInBackupDirectory(walletFile.getAbsolutePath(),
+                UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME);
+        Collection<File> encryptedWalletBackups = getWalletsInBackupDirectory(walletFile.getAbsolutePath(),
+                ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME);
 
-    boolean isWalletSerialised(File walletFile) {
+        // Make a list of ALL the unencrypted and encrypted backup names and sort them.
+        // Because the backups have a timestamp YYYYMMDDHHMMSS sort in ascending order gives most recent - we will use this one.
+        List<String> encryptedAndUnencryptedFilenames = new ArrayList<String>();
+        
+        // Sorting is done by the filename, keep track of the corresponding absolute path.
+        Map<String, String> shortNamesToLongMap = new HashMap<String, String>();
+        
+        if (unencryptedWalletBackups != null) {
+            for (File file  : unencryptedWalletBackups) {
+                encryptedAndUnencryptedFilenames.add(file.getName());
+                shortNamesToLongMap.put(file.getName(), file.getAbsolutePath());
+            }
+        }
+        if (encryptedWalletBackups != null) {
+            for (File file  : encryptedWalletBackups) {
+                encryptedAndUnencryptedFilenames.add(file.getName());
+                // If there is a duplicate, encrypted wallets are preferred.
+                shortNamesToLongMap.put(file.getName(), file.getAbsolutePath());
+            }
+        }
+        
+        Collections.sort(encryptedAndUnencryptedFilenames);
+        
+        String bestCandidateShort = null;
+        String bestCandidateLong = null;
+        if (encryptedAndUnencryptedFilenames.size() > 0) {
+            bestCandidateShort = encryptedAndUnencryptedFilenames.get(encryptedAndUnencryptedFilenames.size() - 1);
+            if (bestCandidateShort != null) {
+                bestCandidateLong = shortNamesToLongMap.get(bestCandidateShort);
+            }
+        }
+        log.debug("For wallet '" + walletFile + "' the rolling backup file was '" + walletBackupFilenameLong + "' and the best encrypted/ unencrypted backup was '" + bestCandidateLong + "'");
+        
+        if (walletBackupFilenameLong == null) {
+            if (bestCandidateLong == null) {
+                // No backups to try.
+            } else {
+                // bestCandidate only.
+                backupWalletsToTry.add(bestCandidateLong);
+            }
+        } else {
+          if (bestCandidateLong == null) {
+              // WalletBackupFilename only.
+              backupWalletsToTry.add(walletBackupFilenameLong);
+            } else {
+                // Have both. Try the most recent first.
+                if (walletBackupFilenameShort.compareTo(bestCandidateShort) <= 0) {
+                    backupWalletsToTry.add(bestCandidateLong);
+                    backupWalletsToTry.add(walletBackupFilenameLong);
+                } else {
+                    backupWalletsToTry.add(walletBackupFilenameLong);
+                    backupWalletsToTry.add(bestCandidateLong);                    
+                }
+            }
+        }
+        return backupWalletsToTry;
+    }
+
+    private boolean isWalletSerialised(File walletFile) {
         boolean isWalletSerialised = false;
         InputStream stream = null;
         try {
@@ -1096,41 +1226,49 @@ public class FileHandler {
         }
     }
     
-    public void fileLevelEncryptUnencryptedWalletBackups(WalletData perWalletModelData, CharSequence passwordToUse) {
-        // See if there are any unencrpyted wallet backups.
-        String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(new File(perWalletModelData.getWalletFilename()));
-        String unencryptedWalletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
-                + UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME;
-        File unencryptedWalletBackupDirectory = new File(unencryptedWalletBackupDirectoryName);
+    private Collection<File> getWalletsInBackupDirectory(String walletFilename, String directorySuffix) {
+        // See if there are any unencrypted wallet backups.
+        String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(new File(walletFilename));
+        String walletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
+                + directorySuffix;
+        File walletBackupDirectory = new File(walletBackupDirectoryName);
 
-        File[] listOfFiles = unencryptedWalletBackupDirectory.listFiles();
+        File[] listOfFiles = walletBackupDirectory.listFiles();
 
-        Collection<File> unencryptedWalletBackups = new ArrayList<File>();
+        Collection<File> walletBackups = new ArrayList<File>();
         // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol>.
         if (listOfFiles != null) {
             for (int i = 0; i < listOfFiles.length; i++) {
                 if (listOfFiles[i].isFile()) {
                     if (listOfFiles[i].getName().matches(".*-\\d{14}\\.wallet$")) {
-                        unencryptedWalletBackups.add(listOfFiles[i]);
+                        walletBackups.add(listOfFiles[i]);
                     }
                 } 
             }
-            
-            // Copy and encrypt each file and secure delete the original.
-            for(File loopFile : unencryptedWalletBackups) {
-                try {
-                    String encryptedFilename = loopFile.getAbsolutePath() + "." + FILE_ENCRYPTED_WALLET_SUFFIX;
-                    copyFileAndEncrypt(loopFile, new File(encryptedFilename), passwordToUse);
-                    secureDelete(loopFile);
-                } catch (IOException ioe) {
-                    log.error(ioe.getClass().getName() + " " + ioe.getMessage());
-                } catch (IllegalArgumentException iae) {
-                    log.error(iae.getClass().getName() + " " + iae.getMessage());
-                } catch (IllegalStateException ise) {
-                    log.error(ise.getClass().getName() + " " + ise.getMessage());
-                }catch (KeyCrypterException kce) {
-                    log.error(kce.getClass().getName() + " " + kce.getMessage());
-                }
+        }
+        
+        return walletBackups;
+    }
+    
+    public void fileLevelEncryptUnencryptedWalletBackups(WalletData perWalletModelData, CharSequence passwordToUse) {
+        // See if there are any unencrypted wallet backups.
+        Collection<File> unencryptedWalletBackups = getWalletsInBackupDirectory(perWalletModelData.getWalletFilename(),
+                UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME);
+
+        // Copy and encrypt each file and secure delete the original.
+        for (File loopFile : unencryptedWalletBackups) {
+            try {
+                String encryptedFilename = loopFile.getAbsolutePath() + "." + FILE_ENCRYPTED_WALLET_SUFFIX;
+                copyFileAndEncrypt(loopFile, new File(encryptedFilename), passwordToUse);
+                secureDelete(loopFile);
+            } catch (IOException ioe) {
+                log.error(ioe.getClass().getName() + " " + ioe.getMessage());
+            } catch (IllegalArgumentException iae) {
+                log.error(iae.getClass().getName() + " " + iae.getMessage());
+            } catch (IllegalStateException ise) {
+                log.error(ise.getClass().getName() + " " + ise.getMessage());
+            } catch (KeyCrypterException kce) {
+                log.error(kce.getClass().getName() + " " + kce.getMessage());
             }
         }
     }

@@ -286,7 +286,7 @@ public class OpenWalletAction extends AbstractAction {
                             }
                         } else {
                             // If we still dont have a sync date/height, use the key birth date of the wallet
-                            // and sync from that. This might be expensive, but hould only be used for empty
+                            // and sync from that. This might be expensive, but should only be used for empty
                             // wallets.
                             requiredSyncTimeInSeconds = wallet.getEarliestKeyCreationTime();
                             needToSync = true;
