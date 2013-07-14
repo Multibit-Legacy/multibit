@@ -17,20 +17,16 @@ package org.multibit.file;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
-import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.security.SecureRandom;
 import java.text.DateFormat;
@@ -51,6 +47,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.store.MultiBitWalletProtobufSerializer;
 import org.multibit.store.MultiBitWalletVersion;
@@ -59,7 +56,6 @@ import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.BlockChain;
@@ -71,8 +67,6 @@ import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
-
-import org.multibit.model.core.CoreModel;
 
 /**
  * Class consolidating the File IO in MultiBit for wallets and wallet infos.
@@ -97,6 +91,7 @@ public class FileHandler {
     
     public static final String INFO_FILE_SUFFIX_STRING = "info";
     public static final String FILE_ENCRYPTED_WALLET_SUFFIX = "cipher";
+    public static final byte FILE_ENCRYPTED_VERSION_NUMBER = (byte) 0x00;
 
     transient private static SecureRandom secureRandom = new SecureRandom();
     public static final int EXPECTED_LENGTH_OF_SALT = 8;
@@ -1181,7 +1176,7 @@ public class FileHandler {
             fileOutputStream.write(ENCRYPTED_FILE_FORMAT_MAGIC_BYTES);
             
             // file format version.
-            fileOutputStream.write((byte) 0x00);
+            fileOutputStream.write(FILE_ENCRYPTED_VERSION_NUMBER);
             
             fileOutputStream.write(salt); // 8 bytes.
             fileOutputStream.write(encryptedData.getInitialisationVector()); // 16 bytes.
@@ -1216,21 +1211,22 @@ public class FileHandler {
         
         // Check the format version.
         String versionNumber = "" + sourceFileEncrypted[ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length];
+        System.out.println("FileHandler - versionNumber = " + versionNumber);
         if (!("0".equals(versionNumber))) {
             throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' did not have the expected version number of 0. It was " + versionNumber);            
         }
 
         // Extract the salt.
         byte[] salt = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH);
-        System.out.println(Utils.bytesToHexString(salt));
+        System.out.println("FileHandler - salt = " + Utils.bytesToHexString(salt));
         
         // Extract the IV.
         byte[] iv = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH , ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH);
-        System.out.println(Utils.bytesToHexString(iv));
+        System.out.println("FileHandler - iv = " + Utils.bytesToHexString(iv));
         
         // Extract the encrypted bytes.
         byte[] encryptedBytes = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH , sourceFileEncrypted.length);
-        System.out.println(Utils.bytesToHexString(encryptedBytes));
+        System.out.println("FileHandler - encryptedBytes = " + Utils.bytesToHexString(encryptedBytes));
          
         // Decrypt the data.
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));

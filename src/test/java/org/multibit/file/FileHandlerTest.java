@@ -16,19 +16,24 @@
 package org.multibit.file;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
+
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.multibit.Constants;
-
 import org.multibit.CreateControllers;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletData;
@@ -36,10 +41,6 @@ import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 import org.spongycastle.util.Arrays;
-
-import org.bitcoinj.wallet.Protos;
-import org.bitcoinj.wallet.Protos.ScryptParameters;
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
@@ -71,13 +72,16 @@ public class FileHandlerTest extends TestCase {
     
     private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
 
+    public static final String CIPHER_TESTDATA_DIRECTORY = "cipher";
+    public static final String CIPHER_WALLET_VERSION_0_FILENAME = "qwertyuiop-version-0.wallet.cipher";
+    public static final String CIPHER_WALLET_VERSION_FF_FILENAME = "qwertyuiop-version-ff.wallet.cipher";
+    public static final String CIPHER_WALLET_PASSWORD = "qwertyuiop";
+
     private SecureRandom secureRandom;
     
     private BitcoinController controller;
     private FileHandler fileHandler;
     
-    private KeyCrypter keyCrypter;
-
     @Before
     @Override
     public void setUp() throws Exception {
@@ -87,7 +91,6 @@ public class FileHandlerTest extends TestCase {
         secureRandom.nextBytes(salt);
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
-        keyCrypter = new KeyCrypterScrypt(scryptParameters);
         
         // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
@@ -512,5 +515,68 @@ public class FileHandlerTest extends TestCase {
         // the encrypted backup files so check them.
         assertTrue("The salt length seems to have changed from length 8 bytes", FileHandler.EXPECTED_LENGTH_OF_SALT == KeyCrypterScrypt.SALT_LENGTH);
         assertTrue("The initialisation vector length seems to have changed from length 16 bytes", FileHandler.EXPECTED_LENGTH_OF_IV == KeyCrypterScrypt.BLOCK_LENGTH);
+    }
+    
+    @Test
+    public void testReadCipherVersion0() throws Exception {  
+        File directory = new File(".");
+        String currentPath = directory.getAbsolutePath();
+
+        String testDirectory = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+                + CIPHER_TESTDATA_DIRECTORY;
+        
+        File walletFile = new File (testDirectory + File.separator + CIPHER_WALLET_VERSION_0_FILENAME);
+        
+        // Read in the version 0 wallet and decrypt it.
+        byte[] walletBytes = FileHandler.readFileAndDecrypt(walletFile, CIPHER_WALLET_PASSWORD); 
+
+        InputStream walletInputStream = new ByteArrayInputStream(walletBytes);
+        Wallet wallet = null;
+        try {
+            wallet = Wallet.loadFromFileStream(walletInputStream);
+        } finally {
+            walletInputStream.close();
+        }
+
+        // Check the private keys are reborn ok.
+        assertNotNull(wallet);
+        assertEquals("Wrong number of private keys in decrypted wallet file", 3, wallet.getKeychainSize());
+        
+        List<ECKey> keys = wallet.getKeychain();
+        assertEquals("Wrong private key 0", "0ec932ea4f6b305247c12c0a4fb310d839a688ac0011d69724e6a32bc35fcda8", Utils.bytesToHexString(keys.get(0).getPrivKeyBytes()));
+        assertEquals("Wrong private key 1", "02ac2c94e44fc2edab9585111480d6d438ebe8c96faf92e561957a48d2bbdacc", Utils.bytesToHexString(keys.get(1).getPrivKeyBytes()));
+        assertEquals("Wrong private key 2", "b01a936b78b6a649ea0ede2182eb73629d5ca3200d36a48b1006eb6729c1bc15", Utils.bytesToHexString(keys.get(2).getPrivKeyBytes()));
+    }
+    
+    @Test
+    /**
+     * Check that future versions of encrypted files cannot be loaded.
+     * (This test wallet has a version of 0xff in it).
+     */
+    public void testReadCipherVersionff() throws Exception {  
+        File directory = new File(".");
+        String currentPath = directory.getAbsolutePath();
+
+        String testDirectory = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+                + CIPHER_TESTDATA_DIRECTORY;
+        
+        File walletFile = new File (testDirectory + File.separator + CIPHER_WALLET_VERSION_FF_FILENAME);
+        
+        // Read in the version ff wallet and decrypt it.
+        InputStream walletInputStream = null;
+        try {
+            byte[] walletBytes = FileHandler.readFileAndDecrypt(walletFile, CIPHER_WALLET_PASSWORD); 
+
+            walletInputStream = new ByteArrayInputStream(walletBytes);
+
+            Wallet.loadFromFileStream(walletInputStream);
+            fail("Wallet with a future encrypted file version loaded but it should not");
+        } catch(IOException ioe) {
+            // Success.
+        } finally {
+            if (walletInputStream != null) {
+                walletInputStream.close();
+            }
+        }
     }
 }
