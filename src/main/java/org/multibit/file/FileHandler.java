@@ -291,7 +291,7 @@ public class FileHandler {
                 
                 // Report failure to user.
                 MessageManager.INSTANCE.addMessage(new Message(bitcoinController.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                        new String[]{walletFilenameToUseInModel, "Unable to load wallet or backups. See help for more details."})));
+                        new String[]{walletFilenameToUseInModel, "Unable to load wallet or backups. See help on 'Wallet Backups' for more details."})));
             }
             return perWalletModelData;
         } catch (WalletVersionException wve) {

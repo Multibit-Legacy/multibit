@@ -107,8 +107,6 @@ public class MultiBitService {
 
     public Logger logger = LoggerFactory.getLogger(MultiBitService.class.getName());
 
-    private Wallet wallet;
-
     private MultiBitPeerGroup peerGroup;
 
     private String blockchainFilename;
@@ -408,6 +406,7 @@ public class MultiBitService {
      */
     public WalletData addWalletFromFilename(String walletFilename) throws IOException {
         WalletData perWalletModelDataToReturn = null;
+        Wallet wallet = null;
 
         File walletFile = null;
         boolean walletFileIsADirectory = false;
@@ -427,7 +426,7 @@ public class MultiBitService {
             }
         }
 
-        if (wallet == null || walletFilename == null || walletFilename.equals("") || walletFileIsADirectory) {
+        if (walletFilename == null || walletFilename.equals("") || walletFileIsADirectory) {
             // Use default wallet name - create if does not exist.
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
                 walletFilename = getFilePrefix() + WALLET_SUFFIX;
@@ -443,9 +442,8 @@ public class MultiBitService {
                 perWalletModelDataToReturn = bitcoinController.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
+                    newWalletCreated = true;
                 }
-
-                newWalletCreated = true;
             } else {
                 // Create a brand new wallet - by default unencrypted.
                 wallet = new Wallet(networkParameters);
