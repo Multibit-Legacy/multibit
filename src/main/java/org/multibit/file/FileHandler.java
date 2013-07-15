@@ -177,6 +177,7 @@ public class FileHandler {
             // (e.g. power loss).
             boolean useBackupWallets = ( !walletFile.exists() || walletFile.length() == 0 );
             boolean walletWasLoadedSuccessfully = false;
+            Collection<String> errorMessages = new ArrayList<String>();
 
             Wallet wallet = null;
 
@@ -194,7 +195,9 @@ public class FileHandler {
                     throw wve;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+                    String description = e.getClass().getCanonicalName() + " " + e.getMessage();
+                    log.error(description);
+                    errorMessages.add(description);
                 } finally {
                     if (stream != null) {
                         stream.close();
@@ -228,7 +231,9 @@ public class FileHandler {
                                 new String[]{walletFilenameToUseInModel, walletToTry})));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+                        String description = e.getClass().getCanonicalName() + " " + e.getMessage();
+                        log.error(description);
+                        errorMessages.add(description);
                     } finally {
                         if (stream != null) {
                             stream.close();
@@ -290,8 +295,19 @@ public class FileHandler {
                 }
                 
                 // Report failure to user.
-                MessageManager.INSTANCE.addMessage(new Message(bitcoinController.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                        new String[]{walletFilenameToUseInModel, "Unable to load wallet or backups. See help on 'Wallet Backups' for more details."})));
+                String messageText = bitcoinController.getLocaliser().getString("fileHandler.unableToLoadWalletOrBackups", new String[] {walletFilenameToUseInModel});
+                if (!errorMessages.isEmpty()) {
+                    String errorMessagesAsString = "";
+                    for (String errorText : errorMessages) {
+                        if (!"".equals(errorMessagesAsString)) {
+                            errorMessagesAsString = errorMessagesAsString + "\n";
+                            
+                        }
+                        errorMessagesAsString = errorMessagesAsString + errorText;
+                    }
+                    messageText = messageText + "\n" + bitcoinController.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new String[]{errorMessagesAsString});
+                }
+                MessageManager.INSTANCE.addMessage(new Message(messageText));
             }
             return perWalletModelData;
         } catch (WalletVersionException wve) {
@@ -321,6 +337,20 @@ public class FileHandler {
             if (!walletBackupFile.exists()) {
                 walletBackupFilenameLong = null;
                 walletBackupFilenameShort = null;
+            }
+        } else {
+            // No backup file was listed in the info file. Maybe it is damaged so take the most recent
+            // file in the rolling backup directory, if there is one.
+            Collection<File> rollingWalletBackups = getWalletsInBackupDirectory(walletFile.getAbsolutePath(),
+                    ROLLING_WALLET_BACKUP_DIRECTORY_NAME);
+            if (rollingWalletBackups != null && !rollingWalletBackups.isEmpty()) {
+                List<String> rollingWalletBackupFilenames = new ArrayList<String>();
+                for (File file  : rollingWalletBackups) {
+                    rollingWalletBackupFilenames.add(file.getAbsolutePath());
+                }
+                Collections.sort(rollingWalletBackupFilenames);
+                walletBackupFilenameLong = rollingWalletBackupFilenames.get(rollingWalletBackupFilenames.size() - 1);
+                walletBackupFilenameShort = (new File(walletBackupFilenameLong)).getName();
             }
         }
         
@@ -374,7 +404,7 @@ public class FileHandler {
               // WalletBackupFilename only.
               backupWalletsToTry.add(walletBackupFilenameLong);
             } else {
-                // Have both. Try the most recent first.
+                // Have both. Try the most recent first (preferring the backups to the rolling backups if there is a tie).
                 if (walletBackupFilenameShort.compareTo(bestCandidateShort) <= 0) {
                     backupWalletsToTry.add(bestCandidateLong);
                     backupWalletsToTry.add(walletBackupFilenameLong);
@@ -471,6 +501,10 @@ public class FileHandler {
      * @param perWalletModelData
      */
     public void backupPerWalletModelData(WalletData perWalletModelData) {
+        if (perWalletModelData == null) {
+            return;
+        }
+        
         // Write to backup files.
 
         try {
@@ -1236,12 +1270,14 @@ public class FileHandler {
         File[] listOfFiles = walletBackupDirectory.listFiles();
 
         Collection<File> walletBackups = new ArrayList<File>();
-        // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol>.
+        // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
         if (listOfFiles != null) {
             for (int i = 0; i < listOfFiles.length; i++) {
                 if (listOfFiles[i].isFile()) {
                     if (listOfFiles[i].getName().matches(".*-\\d{14}\\.wallet$")) {
-                        walletBackups.add(listOfFiles[i]);
+                        if (listOfFiles[i].length() > 0) {
+                            walletBackups.add(listOfFiles[i]);
+                        }
                     }
                 } 
             }

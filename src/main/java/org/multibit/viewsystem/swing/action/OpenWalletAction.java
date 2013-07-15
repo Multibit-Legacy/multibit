@@ -129,7 +129,6 @@ public class OpenWalletAction extends AbstractAction {
             int returnVal = fileChooser.showOpenDialog(mainFrame);
             mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
                 if (file != null) {
@@ -194,7 +193,7 @@ public class OpenWalletAction extends AbstractAction {
             protected Boolean doInBackground() throws Exception {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "'.");
-                    bitcoinController.addWalletFromFilename(selectedWalletFilenameFinal);
+                    WalletData perWalletModelData = bitcoinController.addWalletFromFilename(selectedWalletFilenameFinal);
  
                     log.debug("Setting active wallet for file '" + selectedWalletFilenameFinal + "'.");
                     bitcoinController.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
@@ -203,7 +202,10 @@ public class OpenWalletAction extends AbstractAction {
                     log.debug("Writing user preferences. . .");
                     FileHandler.writeUserPreferences(bitcoinController);
                     log.debug("User preferences with new wallet written successfully");
- 
+
+                    // Backup the wallet and wallet info.
+                    bitcoinController.getFileHandler().backupPerWalletModelData(perWalletModelData);
+                    
                     message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal}); 
                     
                     return Boolean.TRUE;
