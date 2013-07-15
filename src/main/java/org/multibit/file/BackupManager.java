@@ -45,6 +45,7 @@ public enum BackupManager {
     public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
     private static final String SEPARATOR = "-";
     private DateFormat dateFormat;
+    private Date dateForBackupName = null;
 
     public static final String TOP_LEVEL_WALLET_BACKUP_SUFFIX = "-data";
     public static final String PRIVATE_KEY_BACKUP_DIRECTORY_NAME = "key-backup";
@@ -60,9 +61,7 @@ public enum BackupManager {
     public static final byte FILE_ENCRYPTED_VERSION_NUMBER = (byte) 0x00;
 
     public static final byte[] ENCRYPTED_FILE_FORMAT_MAGIC_BYTES = new byte[]{(byte) 0x6D, (byte) 0x65, (byte) 0x6E, (byte) 0x64, (byte) 0x6F, (byte) 0x7A, (byte) 0x61}; // mendoza in ASCII
-    
-    private Date dateForBackupName = null;
-
+     
     /**
      * Backup the perWalletModelData to the <wallet>-data/wallet-backup (encrypted) or wallet-unenc-backup (unencrypted) directories.
      * 
@@ -74,7 +73,6 @@ public enum BackupManager {
         }
         
         // Write to backup files.
-
         try {
             String backupSuffixText;
             if (perWalletModelData.getWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF) {
@@ -143,8 +141,8 @@ public enum BackupManager {
         String filenameLong = file.getAbsolutePath(); // Full path.
         String filenameShort = file.getName(); // Just the filename.
         
-        String topLevelBackupDirectoryName = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(file);
-        BackupManager.INSTANCE.createDirectoryIfNecessary(topLevelBackupDirectoryName);
+        String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(file);
+        createDirectoryIfNecessary(topLevelBackupDirectoryName);
 
         // Find suffix and stems of filename.
         int suffixSeparatorLong = filenameLong.lastIndexOf(".");
@@ -178,7 +176,7 @@ public enum BackupManager {
         if (subDirectorySuffix != null && subDirectorySuffix.length() > 0) {
             String backupFilenameShort = stemShort + SEPARATOR + dateFormat.format(backupDateToUse) + suffix;
             String subDirectoryName =  topLevelBackupDirectoryName + File.separator + subDirectorySuffix;
-            BackupManager.INSTANCE.createDirectoryIfNecessary(subDirectoryName);
+            createDirectoryIfNecessary(subDirectoryName);
             backupFilename = subDirectoryName + File.separator + backupFilenameShort;
         } else {
             backupFilename = stemLong + SEPARATOR + dateFormat.format(backupDateToUse) + suffix;
@@ -253,7 +251,6 @@ public enum BackupManager {
     
     byte[] readFileAndDecrypt(File encryptedFile, CharSequence passwordToUse) throws IOException {
         // Read in the encrypted file.
-        
         byte[] sourceFileEncrypted = FileHandler.read(encryptedFile);
         
         // Check the first bytes match the magic number.
