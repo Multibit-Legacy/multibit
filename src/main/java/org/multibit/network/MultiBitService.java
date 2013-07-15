@@ -37,6 +37,7 @@ import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -466,7 +467,7 @@ public class MultiBitService {
                     newWalletCreated = true;
                     
                     // Backup the wallet and wallet info.
-                    bitcoinController.getFileHandler().backupPerWalletModelData(perWalletModelDataToReturn);
+                    BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelDataToReturn);
 
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());

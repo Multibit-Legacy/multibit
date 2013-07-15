@@ -31,6 +31,7 @@ import javax.swing.JFileChooser;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -188,7 +189,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 log.debug("User preferences with new wallet written successfully");
 
                 // Backup the wallet and wallet info.
-                bitcoinController.getFileHandler().backupPerWalletModelData(perWalletModelData);
+                BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
                 
                 controller.fireRecreateAllViews(true);
                 controller.fireDataChangedUpdateNow();

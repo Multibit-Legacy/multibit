@@ -37,6 +37,7 @@ import javax.swing.SwingWorker;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -204,7 +205,7 @@ public class OpenWalletAction extends AbstractAction {
                     log.debug("User preferences with new wallet written successfully");
 
                     // Backup the wallet and wallet info.
-                    bitcoinController.getFileHandler().backupPerWalletModelData(perWalletModelData);
+                    BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
                     
                     message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal}); 
                     

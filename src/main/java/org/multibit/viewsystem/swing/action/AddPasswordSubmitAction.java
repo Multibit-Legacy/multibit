@@ -29,6 +29,7 @@ import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
@@ -152,10 +153,10 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                     privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(passwordToUse));
 
                     // Backup the wallet and wallet info.
-                    fileHandler.backupPerWalletModelData(perWalletModelData);
+                    BackupManager.INSTANCE.backupPerWalletModelData(fileHandler,perWalletModelData);
                     
                     // Ensure that any unencrypted wallet backups are file encrypted with the wallet password.
-                    fileHandler.fileLevelEncryptUnencryptedWalletBackups(perWalletModelData, CharBuffer.wrap(passwordToUse));
+                    BackupManager.INSTANCE.fileLevelEncryptUnencryptedWalletBackups(perWalletModelData, CharBuffer.wrap(passwordToUse));
                 }
             } catch (KeyCrypterException ede) {
                 ede.printStackTrace();

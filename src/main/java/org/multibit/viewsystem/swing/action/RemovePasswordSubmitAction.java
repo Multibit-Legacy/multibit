@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
@@ -105,7 +106,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                             fileHandler.savePerWalletModelData(perWalletModelData, true);
                             
                             // Backup the wallet and wallet info.
-                            fileHandler.backupPerWalletModelData(perWalletModelData);
+                            BackupManager.INSTANCE.backupPerWalletModelData(fileHandler, perWalletModelData);
                         }
                     } catch (KeyCrypterException kce) {
                         removePasswordPanel.setMessage1(controller.getLocaliser()
