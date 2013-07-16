@@ -19,11 +19,11 @@ import java.util.Map;
 
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
-import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
@@ -85,7 +85,7 @@ public enum BackupManager {
         // Write to backup files.
         try {
             String backupSuffixText;
-            if (perWalletModelData.getWalletInfo().getWalletVersion() == MultiBitWalletVersion.PROTOBUF) {
+            if (EncryptionType.UNENCRYPTED == perWalletModelData.getWallet().getEncryptionType()) {
                 backupSuffixText = UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME;
             } else {
                 backupSuffixText = ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME;
@@ -436,9 +436,13 @@ public enum BackupManager {
         return walletPath + TOP_LEVEL_WALLET_BACKUP_SUFFIX;
     }
     
-    public void moveSiblingTimestampedKeyAndWalletBackups(String walletFilename) {
+    public void moveSiblingTimestampedKeyAndWalletBackups(String walletFilename, String walletBackupFilename) {
         // Work out the stem of the wallet i.e. stripped of a .wallet suffix
         File walletFile = new File(walletFilename);
+        String walletBackupFilenameShort = null;
+        if (walletBackupFilename != null) {
+            walletBackupFilenameShort = new File(walletBackupFilename).getName();
+        }
         String stemShort= walletFile.getName();
         if (walletFilename.matches(REGEX_FOR_WALLET_SUFFIX)) {
             stemShort = walletFile.getName().substring(0, walletFile.getName().length() - ("." + BitcoinModel.WALLET_FILE_EXTENSION).length());
@@ -450,7 +454,7 @@ public enum BackupManager {
         File containingDirectory = walletFile.getParentFile();
         File[] siblingFiles = containingDirectory.listFiles();
         
-        // See if there are any files matching stem + timestamp + .key.
+        // See if there are any files matching stem + timestamp + .key, .wallet and .info.
         Collection<String> privateKeyFilesShort = new ArrayList<String>();
         Collection<String> walletFilesShort = new ArrayList<String>();
         Collection<String> infoFilesShort = new ArrayList<String>();
@@ -471,7 +475,11 @@ public enum BackupManager {
                         if (siblingFilenameShort.startsWith(stemShort)
                                 && siblingFilenameShort.length() == (stemShort.length() + 22)) {
                             // 22 = length of hyphen + timestamp + dot + wallet
-                            walletFilesShort.add(siblingFilenameShort);
+                            
+                            // Do not move the rolling backup wallet file.
+                            if (walletBackupFilenameShort == null || !siblingFilenameShort.equals(walletBackupFilenameShort)) {
+                                walletFilesShort.add(siblingFilenameShort);
+                            }
                         }
                     }  else if (siblingFilenameShort.matches(REGEX_FOR_TIMESTAMP_AND_INFO_SUFFIX)) {
                         // It has a timestamp and the info suffix.
@@ -516,9 +524,8 @@ public enum BackupManager {
                 File infoFileDestinationFileEncrypted = new File(topLevelWalletDirectory + File.separator
                         + ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME + File.separator + infoFilenameShort);
                 
-                // By default rename to unencrypted (this is safest).
-                File destinationWalletFile = walletDestinationFileUnencrypted;
-                File destinationInfoFile = infoFileDestinationFileUnencrypted;
+                File destinationWalletFile = null;
+                File destinationInfoFile = null;
 
                 FileInputStream fileInputStream = null;
                 InputStream stream = null;
@@ -527,9 +534,14 @@ public enum BackupManager {
                     fileInputStream = new FileInputStream(walletSourceFile);
                     stream = new BufferedInputStream(fileInputStream);
                     Wallet loadedWallet = Wallet.loadFromFileStream(stream);
-                    if (loadedWallet != null && loadedWallet.isEncrypted()) {
-                        destinationWalletFile = walletDestinationFileEncrypted;
-                        destinationInfoFile = infoFileDestinationFileEncrypted;
+                    if (loadedWallet != null) {
+                        if (EncryptionType.UNENCRYPTED == loadedWallet.getEncryptionType()) {
+                            destinationWalletFile = walletDestinationFileUnencrypted;
+                            destinationInfoFile = infoFileDestinationFileUnencrypted;
+                        } else {
+                            destinationWalletFile = walletDestinationFileEncrypted;
+                            destinationInfoFile = infoFileDestinationFileEncrypted;
+                        }
                     }
                 } catch (Exception e) {
                     // Just log the error message - we will treat the wallet as
@@ -541,22 +553,24 @@ public enum BackupManager {
                             stream.close();
                             stream = null;
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            log.error(e.getClass().getName() + " " + e.getMessage());
                         }
                     } if (fileInputStream != null) {
                         try {
                             fileInputStream.close();
                             fileInputStream = null;
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            log.error(e.getClass().getName() + " " + e.getMessage());
                         }
                     }
                     try {
                         // Rename the wallet.
-                        walletSourceFile.renameTo(destinationWalletFile);
+                        if (destinationWalletFile != null) {
+                            walletSourceFile.renameTo(destinationWalletFile);
+                        }
                         
                         // Rename the info file.
-                        if (alsoRenameInfoFile) {
+                        if (alsoRenameInfoFile && destinationInfoFile != null) {
                             infoFileSourceFile.renameTo(destinationInfoFile);
                         }
                     } catch (SecurityException se) {
