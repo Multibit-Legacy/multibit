@@ -24,7 +24,7 @@
 package org.multibit.model;
 
 import java.util.Properties;
-import org.multibit.model.core.CoreModel;
+
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,10 +61,10 @@ public abstract class BaseModel<M extends BaseModel<M>> implements Model {
 
         this.userPreferences = userPreferences;
 
-        this.SetSavedView();
+        setSavedView();
     }
 
-    private void SetSavedView() {
+    private void setSavedView() {
         // Initialize everything to look at the stored opened view.
         // If no properties passed in just initialize to the default view.
         if (userPreferences != null) {
