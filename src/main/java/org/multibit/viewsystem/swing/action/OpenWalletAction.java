@@ -176,7 +176,7 @@ public class OpenWalletAction extends AbstractAction {
                         
                         if (!walletIsAlreadyOpen) {
                             // If the wallet is file encrypted, work out the name of the decrypted file and see if it exists.
-                            if (selectedWalletFilename.matches(".*-\\d{14}\\.wallet.cipher$")) {
+                            if (selectedWalletFilename.matches(BackupManager.REGEX_FOR_TIMESTAMP_AND_WALLET_AND_CIPHER_SUFFIX)) {
                                 String decryptedWalletFileName = selectedWalletFilename.substring(0, selectedWalletFilename.length() - ("." + BackupManager.FILE_ENCRYPTED_WALLET_SUFFIX).length());
                                 // if this file already exists open it.
                                 if ((new File(decryptedWalletFileName).exists())) {
@@ -301,6 +301,10 @@ public class OpenWalletAction extends AbstractAction {
             protected Boolean doInBackground() throws Exception {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "'.");
+                    // Check if this is the first time this wallet has been opened post addition of data directories.
+                    String topLevelWalletDirectory = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(new File(selectedWalletFilenameFinal));
+                    boolean firstUsageSinceWalletDirectoriesIntroduced = !(new File(topLevelWalletDirectory).exists());
+                    
                     WalletData perWalletModelData = bitcoinController.addWalletFromFilename(selectedWalletFilenameFinal);
  
                     log.debug("Setting active wallet for file '" + selectedWalletFilenameFinal + "'.");
@@ -314,6 +318,10 @@ public class OpenWalletAction extends AbstractAction {
                     // Backup the wallet and wallet info.
                     BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
                     
+                    if (firstUsageSinceWalletDirectoriesIntroduced) {
+                        // Move any timestamped key and wallet files into their appropriate directories
+                        BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(selectedWalletFilenameFinal);
+                    }
                     message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal}); 
                     
                     return Boolean.TRUE;
