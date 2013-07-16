@@ -249,7 +249,7 @@ public enum BackupManager {
         }
     }
     
-    byte[] readFileAndDecrypt(File encryptedFile, CharSequence passwordToUse) throws IOException {
+    public byte[] readFileAndDecrypt(File encryptedFile, CharSequence passwordToUse) throws IOException {
         // Read in the encrypted file.
         byte[] sourceFileEncrypted = FileHandler.read(encryptedFile);
         

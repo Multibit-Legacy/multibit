@@ -17,6 +17,7 @@ package org.multibit.file;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -1019,6 +1020,23 @@ public class FileHandler {
                 destination.close();
                 destination = null;
             } else if (fileOutputStream != null) {
+                fileOutputStream.flush();
+                fileOutputStream.close();
+            }
+        }
+    }
+
+    public static void writeFile(byte[] sourceBytes, File destinationFile) throws IOException {
+        if (!destinationFile.exists()) {
+            destinationFile.createNewFile();
+        }
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(destinationFile);
+
+            fileOutputStream.write(sourceBytes);
+        } finally {
+            if (fileOutputStream != null) {
                 fileOutputStream.flush();
                 fileOutputStream.close();
             }

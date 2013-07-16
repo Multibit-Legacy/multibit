@@ -19,10 +19,15 @@ import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -33,6 +38,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.Controller;
@@ -52,6 +60,7 @@ import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
@@ -62,6 +71,7 @@ import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} opens a wallet from a file.
@@ -80,8 +90,6 @@ public class OpenWalletAction extends AbstractAction {
     private JFileChooser fileChooser;
     
     private Font adjustedFont;
-
-    private String selectedWalletFilename;
 
     /**
      * Creates a new {@link OpenWalletAction}.
@@ -134,7 +142,7 @@ public class OpenWalletAction extends AbstractAction {
                 File file = fileChooser.getSelectedFile();
                 if (file != null) {
                     if (!file.isDirectory()) {
-                        selectedWalletFilename = file.getAbsolutePath();
+                        String selectedWalletFilename = file.getAbsolutePath();
                         
                         // See if the wallet is already open.
                         boolean walletIsAlreadyOpen = false;
@@ -151,6 +159,14 @@ public class OpenWalletAction extends AbstractAction {
                                                 this.bitcoinController.getModel().setActiveWalletByFilename(selectedWalletFilename);
                                                 controller.fireDataChangedUpdateNow();
                                                 break;
+                                            } else {
+                                                // Check if the file encrypted version of the wallet is already open - if so use it.
+                                                if ((perWalletModelData.getWalletFilename() + "." + BackupManager.FILE_ENCRYPTED_WALLET_SUFFIX).equals(selectedWalletFilename)) {
+                                                    walletIsAlreadyOpen = true;
+                                                    this.bitcoinController.getModel().setActiveWalletByFilename(perWalletModelData.getWalletFilename());
+                                                    controller.fireDataChangedUpdateNow();
+                                                    break;
+                                                }    
                                             }
                                         }
                                     }
@@ -159,6 +175,37 @@ public class OpenWalletAction extends AbstractAction {
                         }
                         
                         if (!walletIsAlreadyOpen) {
+                            // If the wallet is file encrypted, work out the name of the decrypted file and see if it exists.
+                            if (selectedWalletFilename.matches(".*-\\d{14}\\.wallet.cipher$")) {
+                                String decryptedWalletFileName = selectedWalletFilename.substring(0, selectedWalletFilename.length() - ("." + BackupManager.FILE_ENCRYPTED_WALLET_SUFFIX).length());
+                                // if this file already exists open it.
+                                if ((new File(decryptedWalletFileName).exists())) {
+                                    selectedWalletFilename = decryptedWalletFileName;
+                                } else {
+                                    // Ask the user for the wallet password.
+                                    CharSequence passwordToUse = getPasswordFromUser();
+                                    if (passwordToUse == null) {
+                                        return;
+                                    }
+                                    
+                                    // Read in the encrypted file and decrypt it.
+                                    try {
+                                        byte [] walletBytes = BackupManager.INSTANCE.readFileAndDecrypt(new File(selectedWalletFilename), passwordToUse);
+                                        
+                                        // Make a regular wallet file.
+                                        FileHandler.writeFile(walletBytes, new File(decryptedWalletFileName));
+                                        
+                                        // Now just use the decrypted file and open it.
+                                        selectedWalletFilename = decryptedWalletFileName;
+                                    } catch (IOException e1) {
+                                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilename, e1.getMessage()})));
+                                        return;
+                                    } catch (KeyCrypterException e2) {
+                                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilename, e2.getMessage()})));
+                                        return;
+                                    }
+                                }
+                            }
                             Message openMessage = new Message(controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilename}));
                             openMessage.setShowInStatusBar(false);
                             MessageManager.INSTANCE.addMessage(openMessage);
@@ -166,11 +213,9 @@ public class OpenWalletAction extends AbstractAction {
                         }
                     }
                 } else {
-                    selectedWalletFilename = null;
                     fileChooser = null;
                 }
             } else {
-                selectedWalletFilename = null;
                 fileChooser = null;
             }
         } finally {
@@ -179,6 +224,68 @@ public class OpenWalletAction extends AbstractAction {
         }
     }
 
+    private CharSequence getPasswordFromUser() {
+        // Using a JPanel as the message for the JOptionPane
+        JPanel passwordPanel = new JPanel();
+        passwordPanel.setOpaque(false);
+        passwordPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        FontMetrics fontMetrics = passwordPanel.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
+        int minimumHeight = fontMetrics.getHeight() * 6;
+        int minimumWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("openWalletAction.enterPassword.message")) + 30;
+        passwordPanel.setMinimumSize(new Dimension(minimumWidth, minimumHeight));
+
+        MultiBitLabel explainLabel = new MultiBitLabel("");
+        explainLabel.setText(controller.getLocaliser().getString("openWalletAction.enterPassword.message"));
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.08;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordPanel.add(explainLabel, constraints);
+
+        MultiBitLabel passwordLabel = new MultiBitLabel("");
+        passwordLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.08;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        passwordPanel.add(passwordLabel, constraints);
+
+        JPasswordField passwordField = new JPasswordField();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 2;
+        constraints.gridy = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordPanel.add(passwordField, constraints);
+
+        int input = JOptionPane.showConfirmDialog(mainFrame, passwordPanel, 
+                controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
+
+        if (input == 0) {
+            // Retrieve password.
+            return CharBuffer.wrap(passwordField.getPassword());
+        } else {
+            // Either the cancel button or the 'x' has been pressed.
+            return null;
+        }
+    }
+    
     /**
      * Open a wallet in a background Swing worker thread.
      * @param selectedWalletFilename Filename of wallet to open
