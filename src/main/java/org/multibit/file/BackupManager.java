@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +24,6 @@ import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
-import org.multibit.store.MultiBitWalletVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
@@ -58,6 +58,11 @@ public enum BackupManager {
     public static final String ENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME = "wallet-backup";
     public static final String UNENCRYPTED_WALLET_BACKUP_DIRECTORY_NAME = "wallet-unenc-backup";
 
+    public static final int MAXIMUM_NUMBER_OF_BACKUPS = 60; // Chosen so that you will have about weekly backups for a year, fortnightly over two years.
+    public static final int NUMBER_OF_FIRST_WALLETS_TO_ALWAYS_KEEP = 2; 
+    public static final int NUMBER_OF_LAST_WALLETS_TO_ALWAYS_KEEP = 8; // Must be at least 1.
+    
+    
     public static final String REGEX_FOR_WALLET_SUFFIX = ".*\\.wallet$";
     public static final String REGEX_FOR_TIMESTAMP_AND_KEY_SUFFIX = ".*-\\d{14}\\.key$";
     public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{14}\\.wallet$";
@@ -96,6 +101,9 @@ public enum BackupManager {
             String walletInfoBackupFilename = walletBackupFilename.replaceAll(BitcoinModel.WALLET_FILE_EXTENSION + "$", INFO_FILE_SUFFIX_STRING);
             perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
 
+            // If the backup directory is needs thinning, do so.
+            thinBackupDirectory(perWalletModelData.getWalletFilename(), backupSuffixText);
+            
             fileHandler.saveWalletAndWalletInfoSimple(perWalletModelData, walletBackupFilename, walletInfoBackupFilename);
 
             log.info("Written backup wallet files to '" + walletBackupFilename + "', '" + walletInfoBackupFilename + "'");
@@ -195,6 +203,91 @@ public enum BackupManager {
         return backupFilename;
     }
    
+    /**
+     * Thin the wallet backups when they reach the MAXIMUM_NUMBER_OF_BACKUPS setting.
+     * Thinning is done by removing the most quickly replaced backup, except for the first and last few 
+     * (as they are considered to be more valuable backups).
+     * 
+     * @param backupDirectoryName
+     */
+    void thinBackupDirectory(String walletFilename, String backupSuffixText) {
+        if (dateFormat == null) {
+            dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
+        }
+        
+        // Find out how many wallet backups there are.
+        List<File> backupWallets = this.getWalletsInBackupDirectory(walletFilename, backupSuffixText);
+        
+        if (backupWallets.size() < MAXIMUM_NUMBER_OF_BACKUPS) {
+            return;
+        }
+        
+        // Work out the date the backup was made for each of the wallet.
+        // This is done using the timestamp rather than the write time of the file.
+        Map<File, Date> mapOfFileToBackupTimes = new HashMap<File, Date>();
+        for (int i = 0; i < backupWallets.size(); i++) {
+            String filename = backupWallets.get(i).getName();
+            if (filename.length() > 22) { // 22 = 1 for hyphen + 14 for timestamp + 1 for dot + 6 for wallet.
+                int startOfTimestamp = filename.length() - 21; // 21 = 14 for timestamp + 1 for dot + 6 for wallet.
+                String timestampText = filename.substring(startOfTimestamp, startOfTimestamp + 14); // 14 = length of YYYYMMDDHHMMSS timestamp.
+                try {
+                    Date parsedTimestamp = dateFormat.parse(timestampText);
+                    mapOfFileToBackupTimes.put(backupWallets.get(i), parsedTimestamp);
+                } catch (ParseException pe) {
+                    // Cannot parse text - may be some other type of file the user has put in the directory.
+                    log.debug("For wallet '" + filename + " could not parse the timestamp of '" + timestampText + "'.");
+                }
+            }
+        }
+
+        // See which wallet is most quickly replaced by another backup - this will be thinned.
+        int walletBackupToDeleteIndex = -1; // Not set yet.
+        long walletBackupToDeleteReplacementTimeMillis = Integer.MAX_VALUE; // How quickly the wallet was replaced by a later one.
+        
+        for (int i = 0; i < backupWallets.size(); i++) {
+            if ((i < NUMBER_OF_FIRST_WALLETS_TO_ALWAYS_KEEP)
+                    || (i >= backupWallets.size() - NUMBER_OF_LAST_WALLETS_TO_ALWAYS_KEEP)) {
+                // Keep the very first and last wallets always.
+            } else {
+                // If there is a data directory for the backup then it may have been opened
+                // in MultiBit so we will skip considering it for deletion.
+                String possibleDataDirectory = calculateTopLevelBackupDirectoryName(backupWallets.get(i));
+                boolean theWalletHasADataDirectory = (new File(possibleDataDirectory)).exists();
+
+                // Work out how quickly the wallet is replaced by the next backup.
+                Date thisWalletTimestamp = mapOfFileToBackupTimes.get(backupWallets.get(i));
+                Date nextWalletTimestamp = mapOfFileToBackupTimes.get(backupWallets.get(i + 1));
+                if (thisWalletTimestamp != null && nextWalletTimestamp != null) {
+                    long deltaTimeMillis = nextWalletTimestamp.getTime() - thisWalletTimestamp.getTime();
+                    if (deltaTimeMillis < walletBackupToDeleteReplacementTimeMillis && ! theWalletHasADataDirectory) {
+                        // This is the best candidate for deletion so far.
+                        walletBackupToDeleteIndex = i;
+                        walletBackupToDeleteReplacementTimeMillis = deltaTimeMillis;
+                    }
+                }
+            }
+        }
+        
+        if (walletBackupToDeleteIndex > -1) {
+           try {
+                // Secure delete the chosen backup wallet and its info file if present.
+                log.debug("To save space, secure deleting backup wallet '"
+                        + backupWallets.get(walletBackupToDeleteIndex).getAbsolutePath() + "'.");
+                FileHandler.secureDelete(backupWallets.get(walletBackupToDeleteIndex));
+
+                String walletInfoBackupFilename = backupWallets.get(walletBackupToDeleteIndex).getAbsolutePath()
+                        .replaceAll(BitcoinModel.WALLET_FILE_EXTENSION + "$", INFO_FILE_SUFFIX_STRING);
+                File walletInfoBackup = new File(walletInfoBackupFilename);
+                if (walletInfoBackup.exists()) {
+                    log.debug("To save space, secure deleting backup info file '" + walletInfoBackup.getAbsolutePath() + "'.");
+                    FileHandler.secureDelete(walletInfoBackup);
+                }
+            } catch (IOException ioe) {
+                log.error(ioe.getClass().getName() + " " + ioe.getMessage());
+            }
+        }
+    }
+        
     void copyFileAndEncrypt(File sourceFile, File destinationFile, CharSequence passwordToUse) throws IOException {
         if (passwordToUse == null || passwordToUse.length() == 0) {
             throw new IllegalArgumentException("Password cannot be blank");
@@ -436,13 +529,9 @@ public enum BackupManager {
         return walletPath + TOP_LEVEL_WALLET_BACKUP_SUFFIX;
     }
     
-    public void moveSiblingTimestampedKeyAndWalletBackups(String walletFilename, String walletBackupFilename) {
+    public void moveSiblingTimestampedKeyAndWalletBackups(String walletFilename) {
         // Work out the stem of the wallet i.e. stripped of a .wallet suffix
         File walletFile = new File(walletFilename);
-        String walletBackupFilenameShort = null;
-        if (walletBackupFilename != null) {
-            walletBackupFilenameShort = new File(walletBackupFilename).getName();
-        }
         String stemShort= walletFile.getName();
         if (walletFilename.matches(REGEX_FOR_WALLET_SUFFIX)) {
             stemShort = walletFile.getName().substring(0, walletFile.getName().length() - ("." + BitcoinModel.WALLET_FILE_EXTENSION).length());
@@ -475,11 +564,7 @@ public enum BackupManager {
                         if (siblingFilenameShort.startsWith(stemShort)
                                 && siblingFilenameShort.length() == (stemShort.length() + 22)) {
                             // 22 = length of hyphen + timestamp + dot + wallet
-                            
-                            // Do not move the rolling backup wallet file.
-                            if (walletBackupFilenameShort == null || !siblingFilenameShort.equals(walletBackupFilenameShort)) {
-                                walletFilesShort.add(siblingFilenameShort);
-                            }
+                            walletFilesShort.add(siblingFilenameShort);
                         }
                     }  else if (siblingFilenameShort.matches(REGEX_FOR_TIMESTAMP_AND_INFO_SUFFIX)) {
                         // It has a timestamp and the info suffix.
@@ -585,7 +670,7 @@ public enum BackupManager {
         }
     }
     
-    private Collection<File> getWalletsInBackupDirectory(String walletFilename, String directorySuffix) {
+    private List<File> getWalletsInBackupDirectory(String walletFilename, String directorySuffix) {
         // See if there are any unencrypted wallet backups.
         String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(new File(walletFilename));
         String walletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
@@ -594,7 +679,7 @@ public enum BackupManager {
 
         File[] listOfFiles = walletBackupDirectory.listFiles();
 
-        Collection<File> walletBackups = new ArrayList<File>();
+        List<File> walletBackups = new ArrayList<File>();
         // Look for filenames with format "text"-YYYYMMDDHHMMSS.wallet<eol> and are not empty.
         if (listOfFiles != null) {
             for (int i = 0; i < listOfFiles.length; i++) {

@@ -320,7 +320,7 @@ public class OpenWalletAction extends AbstractAction {
                     
                     if (firstUsageSinceWalletDirectoriesIntroduced) {
                         // Move any timestamped key and wallet files into their appropriate directories
-                        BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(selectedWalletFilenameFinal, perWalletModelData.getWalletBackupFilename());
+                        BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(selectedWalletFilenameFinal);
                     }
                     message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal}); 
                     

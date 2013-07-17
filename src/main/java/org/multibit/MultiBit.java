@@ -315,7 +315,7 @@ public class MultiBit {
                             BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelDataList.get(0));
      
                             // Move any timestamped key and wallet files into their appropriate directories
-                            BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(activeWalletFilename, perWalletModelDataList.get(0).getWalletBackupFilename());
+                            BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(activeWalletFilename);
                         }
                     }
                 } catch (WalletLoadException e) {
@@ -469,7 +469,7 @@ public class MultiBit {
                                         BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
              
                                         // Move any timestamped key and wallet files into their appropriate directories
-                                        BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(actualOrder, perWalletModelData.getWalletBackupFilename());
+                                        BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(actualOrder);
                                     }
                                 }
                             } catch (WalletLoadException e) {
