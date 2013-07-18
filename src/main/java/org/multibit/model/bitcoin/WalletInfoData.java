@@ -357,10 +357,28 @@ public class WalletInfoData {
                 out.write(columnOne + SEPARATOR + columnTwo + SEPARATOR + encodeURLString(columnThree) + "\n");
             }
 
-            for (Object key : walletPreferences.keySet()) {
+            // Remove some properties form the wallet file that dont need to be persisted.
+            Properties walletPreferencesClone = new Properties();
+            walletPreferencesClone.putAll(walletPreferences);
+            walletPreferencesClone.remove(BitcoinModel.WALLET_FILE_SIZE);
+            walletPreferencesClone.remove(BitcoinModel.WALLET_FILE_LAST_MODIFIED);
+            walletPreferencesClone.remove(BitcoinModel.WALLET_INFO_FILE_SIZE);
+            walletPreferencesClone.remove(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED);
+
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_ADDRESS_IS_INVALID);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_ADDRESS_VALUE);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_AMOUNT_IS_INVALID);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_AMOUNT_IS_MISSING);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_AMOUNT_VALUE);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS);
+
+            walletPreferencesClone.remove(BitcoinModel.SEND_PERFORM_PASTE_NOW);
+
+            for (Object key : walletPreferencesClone.keySet()) {
                 String columnOne = PROPERTY_MARKER;
                 String columnTwo = (String) key;
-                String encodedColumnThree = encodeURLString((String) walletPreferences.get(key));
+                String encodedColumnThree = encodeURLString((String) walletPreferencesClone.get(key));
                 if (columnTwo == null) {
                     columnTwo = "";
                 }

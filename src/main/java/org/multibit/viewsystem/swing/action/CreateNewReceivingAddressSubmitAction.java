@@ -30,6 +30,7 @@ import javax.swing.SwingWorker;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -211,8 +212,12 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                                 false);
                         }
                         
+                        // Backup the private keys.
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(walletPassword));
                         thisAction.setLastPrivateKeysBackupFile(privateKeysBackupFile);
+
+                        // Backup the wallet and wallet info.
+                        BackupManager.INSTANCE.backupPerWalletModelData(fileHandler, finalPerWalletModelData);
 
                         successMeasure = Boolean.TRUE;
                     } catch (KeyCrypterException kce) {

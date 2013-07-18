@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.view;
 import java.io.File;
 
 import org.multibit.controller.Controller;
+import org.multibit.file.BackupManager;
 import org.multibit.model.bitcoin.BitcoinModel;
 
 public class WalletFileFilter extends javax.swing.filechooser.FileFilter {
@@ -31,7 +32,9 @@ public class WalletFileFilter extends javax.swing.filechooser.FileFilter {
     
     @Override
     public boolean accept(File file) {
-        return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) || (file.getName().toLowerCase().endsWith(BitcoinModel.WALLET_FILE_EXTENSION));
+        return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) 
+        || (file.getName().toLowerCase().endsWith(BitcoinModel.WALLET_FILE_EXTENSION)
+        || (file.getName().toLowerCase().endsWith(BitcoinModel.WALLET_FILE_EXTENSION + "." + BackupManager.FILE_ENCRYPTED_WALLET_SUFFIX)));
     }
 
     @Override

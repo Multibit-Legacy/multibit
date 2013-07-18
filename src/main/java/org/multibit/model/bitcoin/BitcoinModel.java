@@ -23,17 +23,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.AbstractModel;
-import org.multibit.model.bitcoin.WalletData;
-import org.multibit.model.bitcoin.WalletInfoData;
-import org.multibit.model.bitcoin.WalletTableData;
+import org.multibit.model.ModelEnum;
 import org.multibit.model.core.CoreModel;
-import org.multibit.viewsystem.View;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +45,6 @@ import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.store.BlockStoreException;
-import org.multibit.model.ModelEnum;
 
 /**
  * Model containing the MultiBit data.

@@ -16,6 +16,7 @@
 package org.multibit;
 
 import java.awt.Cursor;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -39,6 +40,7 @@ import org.multibit.controller.core.CoreController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
@@ -294,6 +296,10 @@ public class MultiBit {
                 boolean thereWasAnErrorLoadingTheWallet = false;
 
                 try {
+                    // Check if this is the first time this wallet has been opened post addition of data directories.
+                    String topLevelWalletDirectory = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(new File(activeWalletFilename));
+                    boolean firstUsageSinceWalletDirectoriesIntroduced = !(new File(topLevelWalletDirectory).exists());
+
                     // ActiveWalletFilename may be null on first time startup.
                     bitcoinController.addWalletFromFilename(activeWalletFilename);
                     List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
@@ -303,6 +309,14 @@ public class MultiBit {
                         log.debug("Created/loaded wallet '" + activeWalletFilename + "'");
                         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
                                 "multiBit.createdWallet", new Object[] { activeWalletFilename })));
+                        
+                        if (firstUsageSinceWalletDirectoriesIntroduced) {
+                            // Backup the wallet and wallet info.
+                            BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelDataList.get(0));
+     
+                            // Move any timestamped key and wallet files into their appropriate directories
+                            BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(activeWalletFilename);
+                        }
                     }
                 } catch (WalletLoadException e) {
                     String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
@@ -317,6 +331,12 @@ public class MultiBit {
                     log.error(message);
                     thereWasAnErrorLoadingTheWallet = true;
                 } catch (IOException e) {
+                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                            new Object[] { activeWalletFilename, e.getMessage() });
+                    MessageManager.INSTANCE.addMessage(new Message(message));
+                    log.error(message);
+                    thereWasAnErrorLoadingTheWallet = true;
+                }  catch (Exception e) {
                     String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                             new Object[] { activeWalletFilename, e.getMessage() });
                     MessageManager.INSTANCE.addMessage(new Message(message));
@@ -427,16 +447,31 @@ public class MultiBit {
                             message.setShowInStatusBar(false);
                             MessageManager.INSTANCE.addMessage(message);
                             try {
+                                // Check if this is the first time this wallet has been opened post addition of data directories.
+                                String topLevelWalletDirectory = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(new File(actualOrder));
+                                boolean firstUsageSinceWalletDirectoriesIntroduced = !(new File(topLevelWalletDirectory).exists());
+
+                                WalletData perWalletModelData = null;
                                 if (activeWalletFilename != null && activeWalletFilename.equals(actualOrder)) {
-                                    bitcoinController.addWalletFromFilename(actualOrder);
+                                    perWalletModelData = bitcoinController.addWalletFromFilename(actualOrder);
                                     bitcoinController.getModel().setActiveWalletByFilename(actualOrder);
                                 } else {
-                                    bitcoinController.addWalletFromFilename(actualOrder);
+                                    perWalletModelData = bitcoinController.addWalletFromFilename(actualOrder);
                                 }
                                 Message message2 = new Message(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                         new Object[] { actualOrder }));
                                 message2.setShowInStatusBar(false);
                                 MessageManager.INSTANCE.addMessage(message2);
+                                
+                                if (firstUsageSinceWalletDirectoriesIntroduced) {
+                                    if (perWalletModelData != null && perWalletModelData.getWallet() != null) {
+                                        // Backup the wallet and wallet info.
+                                        BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
+             
+                                        // Move any timestamped key and wallet files into their appropriate directories
+                                        BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(actualOrder);
+                                    }
+                                }
                             } catch (WalletLoadException e) {
                                 message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                         new Object[] { actualOrder, e.getMessage() }));
@@ -455,6 +490,12 @@ public class MultiBit {
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
                                 thereWasAnErrorLoadingTheWallet = true;
+                            } catch (Exception e) {
+                                message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                                        new Object[] { actualOrder, e.getMessage() }));
+                                MessageManager.INSTANCE.addMessage(message);
+                                log.error(message.getText());
+                                thereWasAnErrorLoadingTheWallet = true;
                             }
                             
                             if (thereWasAnErrorLoadingTheWallet) {
@@ -468,7 +509,6 @@ public class MultiBit {
                             }
                         }
                     }
-
                 } catch (NumberFormatException nfe) {
                     // Carry on.
                 } finally {

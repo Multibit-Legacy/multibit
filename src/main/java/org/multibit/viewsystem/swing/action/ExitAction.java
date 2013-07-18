@@ -26,6 +26,7 @@ import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.Controller;
 import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -154,7 +155,7 @@ public class ExitAction extends AbstractExitAction {
                         // Save to backup.
                         try {
                             // log.debug("exit 4a");
-                            bitcoinController.getFileHandler().backupPerWalletModelData(loopPerWalletModelData);
+                            BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), loopPerWalletModelData);
                             // log.debug("exit 4b");
                         } catch (WalletSaveException wse2) {
                             log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
