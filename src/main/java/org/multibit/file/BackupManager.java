@@ -670,7 +670,7 @@ public enum BackupManager {
         }
     }
     
-    private List<File> getWalletsInBackupDirectory(String walletFilename, String directorySuffix) {
+    List<File> getWalletsInBackupDirectory(String walletFilename, String directorySuffix) {
         // See if there are any unencrypted wallet backups.
         String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(new File(walletFilename));
         String walletBackupDirectoryName = topLevelBackupDirectoryName + File.separator

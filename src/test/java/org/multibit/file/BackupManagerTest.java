@@ -20,10 +20,13 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.Constants;
@@ -32,16 +35,21 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
+import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.protobuf.ByteString;
 
 public class BackupManagerTest extends TestCase {
     private static final String TEST_FILE_COPY_AND_ENCRYPT = "testFileCopyAndEncrypt";
+    private static final String TEST_BACKUP_WALLET_UNENCRYPTED = "testBackupWalletUnencrypted";
+    private static final String TEST_BACKUP_WALLET_ENCRYPTED = "testBackupWalletEncrypted";
 
     private final CharSequence WALLET_PASSWORD = "horatio nelson 123";
 
@@ -176,5 +184,117 @@ public class BackupManagerTest extends TestCase {
                 walletInputStream.close();
             }
         }
+    }
+    
+    @Test
+    public void testBackupWalletUnencrypted() throws IOException {
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        controller = controllers.bitcoinController;
+
+        File temporaryWallet = File.createTempFile(TEST_BACKUP_WALLET_UNENCRYPTED, ".wallet");
+        temporaryWallet.deleteOnExit();
+
+        String newWalletFilename = temporaryWallet.getAbsolutePath();
+
+        // Create a new protobuf wallet - unencrypted.
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        ECKey newKey = new ECKey();
+        newWallet.getKeychain().add(newKey);
+        newKey = new ECKey();
+        newWallet.getKeychain().add(newKey);
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF);
+        
+        perWalletModelData.setWalletInfo(walletInfo);
+       
+        perWalletModelData.setWallet(newWallet);
+        perWalletModelData.setWalletFilename(newWalletFilename);
+        perWalletModelData.setWalletDescription(TEST_BACKUP_WALLET_UNENCRYPTED);
+
+        // Check there are initially no backup wallets.
+        List<File> backupWallets = BackupManager.INSTANCE.getWalletsInBackupDirectory(newWalletFilename, "wallet-unenc-backup");
+        assertNotNull("Null backupWallets list returned", backupWallets);
+        assertEquals("Wring number of backup wallets", 0, backupWallets.size());
+        
+        // Save the wallet.
+        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+
+        // Backup the wallet.
+        BackupManager.INSTANCE.backupPerWalletModelData(controller.getFileHandler(), perWalletModelData);
+        
+        // Check that a backup copy has been saved in the data/wallet-unenc-backup directory
+        backupWallets = BackupManager.INSTANCE.getWalletsInBackupDirectory(newWalletFilename, "wallet-unenc-backup");
+        assertNotNull("Null backupWallets list returned", backupWallets);
+        assertEquals("Wring number of backup wallets", 1, backupWallets.size());
+ 
+        // Read the originally saved wallet back in.
+        byte[] originalBytes = FileHandler.read(temporaryWallet);
+ 
+        // Read the backup wallet back in.
+        byte[] backupBytes = FileHandler.read(backupWallets.get(0));
+
+        assertNotNull("The originally saved wallet was not read back in ok.1", originalBytes);
+        assertTrue("The originally saved wallet was not read back in ok.2", originalBytes.length > 0);
+        assertEquals("Wrong length of file after backup", originalBytes.length, backupBytes.length);  
+        assertTrue("The wallet after the backup has changed", Arrays.areEqual(originalBytes, backupBytes));
+    }
+    
+    @Test
+    public void testBackupWalletEncrypted() throws IOException {
+        // Create MultiBit controller.
+        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+        controller = controllers.bitcoinController;
+
+        File temporaryWallet = File.createTempFile(TEST_BACKUP_WALLET_ENCRYPTED, ".wallet");
+        temporaryWallet.deleteOnExit();
+
+        String newWalletFilename = temporaryWallet.getAbsolutePath();
+
+        // Create a new protobuf wallet - encrypted.
+        byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(salt);
+        Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
+        ScryptParameters scryptParameters = scryptParametersBuilder.build();
+
+        KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
+        Wallet encryptedWallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
+
+        WalletData perWalletModelData = new WalletData();
+        WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, encryptedWallet, MultiBitWalletVersion.PROTOBUF);
+        
+        perWalletModelData.setWalletInfo(walletInfo);
+       
+        perWalletModelData.setWallet(encryptedWallet);
+        perWalletModelData.setWalletFilename(newWalletFilename);
+        perWalletModelData.setWalletDescription(TEST_BACKUP_WALLET_ENCRYPTED);
+                
+        // Check there are initially no backup wallets.
+        List<File> backupWallets = BackupManager.INSTANCE.getWalletsInBackupDirectory(newWalletFilename, "wallet-backup");
+        assertNotNull("Null backupWallets list returned", backupWallets);
+        assertEquals("Wring number of backup wallets", 0, backupWallets.size());
+        
+        // Save the wallet.
+        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+
+        // Backup the wallet.
+        BackupManager.INSTANCE.backupPerWalletModelData(controller.getFileHandler(), perWalletModelData);
+        
+        // Check that a backup copy has been saved in the data/wallet-backup directory
+        backupWallets = BackupManager.INSTANCE.getWalletsInBackupDirectory(newWalletFilename, "wallet-backup");
+        assertNotNull("Null backupWallets list returned", backupWallets);
+        assertEquals("Wring number of backup wallets", 1, backupWallets.size());
+ 
+        // Read the originally saved wallet back in.
+        byte[] originalBytes = FileHandler.read(temporaryWallet);
+ 
+        // Read the backup wallet back in.
+        byte[] backupBytes = FileHandler.read(backupWallets.get(0));
+
+        assertNotNull("The originally saved wallet was not read back in ok.1", originalBytes);
+        assertTrue("The originally saved wallet was not read back in ok.2", originalBytes.length > 0);
+        assertEquals("Wrong length of file after backup", originalBytes.length, backupBytes.length);  
+        assertTrue("The wallet after the backup has changed", Arrays.areEqual(originalBytes, backupBytes));
     }
 }
