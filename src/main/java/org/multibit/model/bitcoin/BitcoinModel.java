@@ -113,9 +113,6 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     // Maximum fee.
     public static final BigInteger SEND_MAXIMUM_FEE = new BigInteger("100000000"); // 1 BTC.
 
-    public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
-    public static final String SEND_ERROR_MESSAGE = "sendErrorMessage";
-
     // Receive bitcoin.
     public static final String IS_RECEIVE_BITCOIN = "isReceiveBitcoin";
     public static final String RECEIVE_ADDRESS = "receiveAddress";

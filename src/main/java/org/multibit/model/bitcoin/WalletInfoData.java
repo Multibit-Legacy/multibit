@@ -374,6 +374,11 @@ public class WalletInfoData {
             walletPreferencesClone.remove(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS);
 
             walletPreferencesClone.remove(BitcoinModel.SEND_PERFORM_PASTE_NOW);
+            
+            // These properties are obselete so removed from the info file to tidy them up.
+            walletPreferencesClone.remove("sendErrorMessage");
+            walletPreferencesClone.remove("sendWasSuccessful");
+            walletPreferencesClone.remove("earliestTransactionDate");
 
             for (Object key : walletPreferencesClone.keySet()) {
                 String columnOne = PROPERTY_MARKER;
