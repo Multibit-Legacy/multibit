@@ -64,10 +64,10 @@ public enum BackupManager {
     
     
     public static final String REGEX_FOR_WALLET_SUFFIX = ".*\\.wallet$";
-    public static final String REGEX_FOR_TIMESTAMP_AND_KEY_SUFFIX = ".*-\\d{14}\\.key$";
-    public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{14}\\.wallet$";
-    public static final String REGEX_FOR_TIMESTAMP_AND_INFO_SUFFIX = ".*-\\d{14}\\.info$";
-    public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_AND_CIPHER_SUFFIX = ".*-\\d{14}\\.wallet\\.cipher$";
+    public static final String REGEX_FOR_TIMESTAMP_AND_KEY_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.key$";
+    public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.wallet$";
+    public static final String REGEX_FOR_TIMESTAMP_AND_INFO_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.info$";
+    public static final String REGEX_FOR_TIMESTAMP_AND_WALLET_AND_CIPHER_SUFFIX = ".*-\\d{" + BACKUP_SUFFIX_FORMAT.length() + "}\\.wallet\\.cipher$";
     public static final int EXPECTED_LENGTH_OF_SALT = 8;
     public static final int EXPECTED_LENGTH_OF_IV = 16;
     
@@ -83,7 +83,7 @@ public enum BackupManager {
      * @param perWalletModelData
      */
     public void backupPerWalletModelData(FileHandler fileHandler, WalletData perWalletModelData) {
-        if (perWalletModelData == null) {
+        if (perWalletModelData == null || fileHandler == null) {
             return;
         }
         
@@ -110,6 +110,9 @@ public enum BackupManager {
         } catch (IOException ioe) {
             log.error(ioe.getClass().getCanonicalName() + " " + ioe.getMessage());
             throw new WalletSaveException("Cannot backup wallet '" + perWalletModelData.getWalletFilename(), ioe);
+        } catch (Exception e) {
+            log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+            throw new WalletSaveException("Cannot backup wallet '" + perWalletModelData.getWalletFilename(), e);
         }
     }
     
@@ -215,10 +218,15 @@ public enum BackupManager {
             dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         }
         
+        if (walletFilename == null || backupSuffixText == null) {
+            return;
+        }
+        
         // Find out how many wallet backups there are.
-        List<File> backupWallets = this.getWalletsInBackupDirectory(walletFilename, backupSuffixText);
+        List<File> backupWallets = getWalletsInBackupDirectory(walletFilename, backupSuffixText);
         
         if (backupWallets.size() < MAXIMUM_NUMBER_OF_BACKUPS) {
+            // No thinning required.
             return;
         }
         
@@ -229,7 +237,7 @@ public enum BackupManager {
             String filename = backupWallets.get(i).getName();
             if (filename.length() > 22) { // 22 = 1 for hyphen + 14 for timestamp + 1 for dot + 6 for wallet.
                 int startOfTimestamp = filename.length() - 21; // 21 = 14 for timestamp + 1 for dot + 6 for wallet.
-                String timestampText = filename.substring(startOfTimestamp, startOfTimestamp + 14); // 14 = length of YYYYMMDDHHMMSS timestamp.
+                String timestampText = filename.substring(startOfTimestamp, startOfTimestamp + BACKUP_SUFFIX_FORMAT.length() );
                 try {
                     Date parsedTimestamp = dateFormat.parse(timestampText);
                     mapOfFileToBackupTimes.put(backupWallets.get(i), parsedTimestamp);
@@ -259,7 +267,7 @@ public enum BackupManager {
                 Date nextWalletTimestamp = mapOfFileToBackupTimes.get(backupWallets.get(i + 1));
                 if (thisWalletTimestamp != null && nextWalletTimestamp != null) {
                     long deltaTimeMillis = nextWalletTimestamp.getTime() - thisWalletTimestamp.getTime();
-                    if (deltaTimeMillis < walletBackupToDeleteReplacementTimeMillis && ! theWalletHasADataDirectory) {
+                    if (deltaTimeMillis < walletBackupToDeleteReplacementTimeMillis && !theWalletHasADataDirectory) {
                         // This is the best candidate for deletion so far.
                         walletBackupToDeleteIndex = i;
                         walletBackupToDeleteReplacementTimeMillis = deltaTimeMillis;
@@ -308,7 +316,6 @@ public enum BackupManager {
         // Encrypt the data.
         byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
         secureRandom.nextBytes(salt);
-        System.out.println(Utils.bytesToHexString(salt));
         
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder()
         .setSalt(ByteString.copyFrom(salt));
@@ -361,24 +368,29 @@ public enum BackupManager {
             throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' did not start with the correct magic bytes.");            
         }
         
+        // If the file is too short don't process it.
+        if (sourceFileEncrypted.length < ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH) {
+            throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' is too short to decrypt. It is " + sourceFileEncrypted.length + " bytes long.");                        
+        }
+        
         // Check the format version.
         String versionNumber = "" + sourceFileEncrypted[ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length];
-        System.out.println("FileHandler - versionNumber = " + versionNumber);
+        //System.out.println("FileHandler - versionNumber = " + versionNumber);
         if (!("0".equals(versionNumber))) {
             throw new IOException("File '" + encryptedFile.getAbsolutePath() + "' did not have the expected version number of 0. It was " + versionNumber);            
         }
 
         // Extract the salt.
         byte[] salt = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH);
-        System.out.println("FileHandler - salt = " + Utils.bytesToHexString(salt));
+        //System.out.println("FileHandler - salt = " + Utils.bytesToHexString(salt));
         
         // Extract the IV.
         byte[] iv = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH , ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH);
-        System.out.println("FileHandler - iv = " + Utils.bytesToHexString(iv));
+        //System.out.println("FileHandler - iv = " + Utils.bytesToHexString(iv));
         
         // Extract the encrypted bytes.
         byte[] encryptedBytes = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH , sourceFileEncrypted.length);
-        System.out.println("FileHandler - encryptedBytes = " + Utils.bytesToHexString(encryptedBytes));
+        //System.out.println("FileHandler - encryptedBytes = " + Utils.bytesToHexString(encryptedBytes));
          
         // Decrypt the data.
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
@@ -671,7 +683,7 @@ public enum BackupManager {
     }
     
     List<File> getWalletsInBackupDirectory(String walletFilename, String directorySuffix) {
-        // See if there are any unencrypted wallet backups.
+        // See if there are any wallet backups.
         String topLevelBackupDirectoryName = calculateTopLevelBackupDirectoryName(new File(walletFilename));
         String walletBackupDirectoryName = topLevelBackupDirectoryName + File.separator
                 + directorySuffix;
