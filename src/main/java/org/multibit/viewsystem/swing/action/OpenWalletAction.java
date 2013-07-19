@@ -235,8 +235,10 @@ public class OpenWalletAction extends AbstractAction {
         FontMetrics fontMetrics = passwordPanel.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         int minimumHeight = fontMetrics.getHeight() * 6;
-        int minimumWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("openWalletAction.enterPassword.message")) + 30;
+        int minimumWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("openWalletAction.enterPassword.message")) + 50;
         passwordPanel.setMinimumSize(new Dimension(minimumWidth, minimumHeight));
+        passwordPanel.setPreferredSize(new Dimension(minimumWidth, minimumHeight));
+        passwordPanel.setMaximumSize(new Dimension(minimumWidth, minimumHeight));
 
         MultiBitLabel explainLabel = new MultiBitLabel("");
         explainLabel.setText(controller.getLocaliser().getString("openWalletAction.enterPassword.message"));
@@ -251,7 +253,7 @@ public class OpenWalletAction extends AbstractAction {
         passwordPanel.add(explainLabel, constraints);
 
         MultiBitLabel passwordLabel = new MultiBitLabel("");
-        passwordLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"));
+        passwordLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt") + "  "); // Two spaces.
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 2;
