@@ -19,7 +19,6 @@ import java.awt.Cursor;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -39,19 +38,18 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
-import org.multibit.network.AlertManager;
-import org.multibit.network.MultiBitCheckpointManager;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ConnectHttps;
 import org.multibit.model.exchange.ExchangeModel;
+import org.multibit.network.AlertManager;
+import org.multibit.network.MultiBitCheckpointManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
@@ -154,7 +152,6 @@ public class MultiBit {
             bitcoinController = new BitcoinController(coreController);
             exchangeController = new ExchangeController(coreController);
 
-
             log.info("Configuring native event handling");
             GenericApplicationSpecification specification = new GenericApplicationSpecification();
             specification.getOpenURIEventListeners().add(coreController);
@@ -216,14 +213,12 @@ public class MultiBit {
 
             // Create the model.
             // The model is set to the controller.
-            {
             final CoreModel coreModel = new CoreModel(userPreferences);
             final BitcoinModel model = new BitcoinModel(coreModel);
             final ExchangeModel exchangeModel = new ExchangeModel(coreModel);
-                coreController.setModel(coreModel);
-                bitcoinController.setModel(model);
-                exchangeController.setModel(exchangeModel);
-            }
+            coreController.setModel(coreModel);
+            bitcoinController.setModel(model);
+            exchangeController.setModel(exchangeModel);
 
             // Trust all HTTPS certificates.
             ConnectHttps.trustAllCerts();
@@ -289,16 +284,25 @@ public class MultiBit {
 
             boolean useFastCatchup = false;
 
-            if (numberOfEarlyWalletsAsString == null || "".equals(numberOfEarlyWalletsAsString)) {
+            if (numberOfEarlyWalletsAsString == null || "".equals(numberOfEarlyWalletsAsString) || "null".equals(numberOfEarlyWalletsAsString)) {
                 // If this is missing then there is just the one wallet (old format
                 // properties or user has just started up for the first time).
                 useFastCatchup = true;
                 boolean thereWasAnErrorLoadingTheWallet = false;
 
                 try {
-                    // Check if this is the first time this wallet has been opened post addition of data directories.
-                    String topLevelWalletDirectory = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(new File(activeWalletFilename));
-                    boolean firstUsageSinceWalletDirectoriesIntroduced = !(new File(topLevelWalletDirectory).exists());
+                    boolean backupWallet = false;
+                    boolean moveSiblingFiles = false;
+                                      
+                    // If there is no active filename this is a new instance of multibit so backup the new wallet.
+                    if (activeWalletFilename == null || "".equals(activeWalletFilename) || "null".equals(activeWalletFilename) ) {
+                        backupWallet = true;
+                    } else {
+                       // See if a data directory is missing - if so we will move in any wallet or key files and backup.
+                       String topLevelWalletDirectory = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(new File(activeWalletFilename));
+                       moveSiblingFiles = !(new File(topLevelWalletDirectory).exists());
+                       backupWallet = moveSiblingFiles;
+                    }
 
                     // ActiveWalletFilename may be null on first time startup.
                     bitcoinController.addWalletFromFilename(activeWalletFilename);
@@ -310,10 +314,11 @@ public class MultiBit {
                         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
                                 "multiBit.createdWallet", new Object[] { activeWalletFilename })));
                         
-                        if (firstUsageSinceWalletDirectoriesIntroduced) {
+                        if (backupWallet) {
                             // Backup the wallet and wallet info.
                             BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelDataList.get(0));
-     
+                        }
+                        if (moveSiblingFiles) {
                             // Move any timestamped key and wallet files into their appropriate directories
                             BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(activeWalletFilename);
                         }
