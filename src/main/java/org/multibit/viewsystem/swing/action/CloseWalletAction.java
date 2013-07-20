@@ -15,12 +15,15 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.Cursor;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import org.multibit.controller.Controller;
+import javax.swing.SwingUtilities;
+
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.bitcoin.WalletData;
@@ -54,6 +57,20 @@ public class CloseWalletAction extends MultiBitSubmitAction {
         }
         
         try {
+            if (mainFrame != null) {
+                if (EventQueue.isDispatchThread()) {
+                    mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        }
+                    });
+                }
+            }
+
             // Close the wallet.
             WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
             
@@ -105,6 +122,19 @@ public class CloseWalletAction extends MultiBitSubmitAction {
             }
         } finally {
             controller.fireRecreateAllViews(true);
+            if (mainFrame != null) {
+                if (EventQueue.isDispatchThread()) {
+                    mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        }
+                    });
+                }
+            }
         }
     }
 }
