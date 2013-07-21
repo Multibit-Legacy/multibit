@@ -84,43 +84,10 @@ public class MultiBit {
     private static BitcoinController bitcoinController = null;
     private static ExchangeController exchangeController = null;
     
-    public static Controller getController() {
-        return controller;
-    }
-    
-    public static CoreController getCoreController() {
-        return coreController;
-    }
-    
-    public static BitcoinController getBitcoinController() {
-        return bitcoinController;
-    }
-    
-    public static ExchangeController getExchangeController() {
-        return exchangeController;
-    }
-    
-    /**
-     * Used in testing
-     */
-    public static void setCoreController(CoreController coreController ) {
-        MultiBit.controller = coreController;
-        MultiBit.coreController = coreController;
-    }
-    
-    public static void setBitcoinController(BitcoinController bitcoinController) {
-        MultiBit.bitcoinController = bitcoinController;
-    }
-     
-     public static void setExchangeController(ExchangeController exchangeController) {
-        MultiBit.exchangeController = exchangeController;
-    }
-    
     /**
      * Start MultiBit user interface.
      * 
-     * @param args
-     *            String encoding of arguments ([0]= Bitcoin URI)
+     * @param args String encoding of arguments ([0]= Bitcoin URI)
      */
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
@@ -146,7 +113,7 @@ public class MultiBit {
             // Load up the user preferences.
             Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
 
-            // create the controllers
+            // Create the controllers.
             coreController = new CoreController(applicationDataDirectoryLocator);
             controller = coreController;
             bitcoinController = new BitcoinController(coreController);
@@ -244,13 +211,13 @@ public class MultiBit {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
             } catch (UnsupportedLookAndFeelException e) {
-                // carry on
+                // Carry on.
             } catch (ClassNotFoundException e) {
-                // carry on
+                // Carry on.
             } catch (InstantiationException e) {
-                // carry on
+                // Carry on.
             } catch (IllegalAccessException e) {
-                // carry on
+                // Carry on.
             }
 
             // Initialise singletons.
@@ -294,7 +261,7 @@ public class MultiBit {
                     boolean backupWallet = false;
                     boolean moveSiblingFiles = false;
                                       
-                    // If there is no active filename this is a new instance of multibit so backup the new wallet.
+                    // If there is no active filename this is a new instance of MultiBit so backup the new wallet when created.
                     if (activeWalletFilename == null || "".equals(activeWalletFilename) || "null".equals(activeWalletFilename) ) {
                         backupWallet = true;
                     } else {
@@ -367,7 +334,7 @@ public class MultiBit {
                         int numberOfEarlyWallets = Integer.parseInt(numberOfEarlyWalletsAsString);
                         if (numberOfEarlyWallets > 0) {
                             for (int i = 1; i <= numberOfEarlyWallets; i++) {
-                                // look up ith wallet filename
+                                // Look up ith wallet filename.
                                 String loopWalletFilename = userPreferences.getProperty(BitcoinModel.EARLY_WALLET_FILENAME_PREFIX + i);
                                 if (!walletFilenamesToLoad.contains(loopWalletFilename)) {
                                     walletFilenamesToLoad.add(loopWalletFilename);
@@ -381,7 +348,7 @@ public class MultiBit {
                         int numberOfProtobuf3Wallets = Integer.parseInt(numberOfProtobuf3WalletsAsString);
                         if (numberOfProtobuf3Wallets > 0) {
                             for (int i = 1; i <= numberOfProtobuf3Wallets; i++) {
-                                // look up ith wallet filename
+                                // Look up ith wallet filename.
                                 String loopWalletFilename = userPreferences.getProperty(BitcoinModel.PROTOBUF3_WALLET_FILENAME_PREFIX + i);
                                 if (!walletFilenamesToLoad.contains(loopWalletFilename)) {
                                     walletFilenamesToLoad.add(loopWalletFilename);
@@ -404,7 +371,7 @@ public class MultiBit {
                         if (walletOrderTotal > 0) {
                             haveWalletOrder = true;
                             for (int i = 1; i <= walletOrderTotal; i++) {
-                                // add the wallet filename order
+                                // Add the wallet filename order.
                                 String loopWalletFilename = userPreferences.getProperty(BitcoinModel.WALLET_ORDER_PREFIX + i);
                                 if (!walletFilenameOrder.contains(loopWalletFilename)) {
                                     walletFilenameOrder.add(loopWalletFilename);
@@ -440,7 +407,6 @@ public class MultiBit {
                         }
                     }
                     
-
                     if (actualOrderToLoad.size() > 0) {
                         boolean thereWasAnErrorLoadingTheWallet = false;
 
@@ -556,7 +522,7 @@ public class MultiBit {
             }
             
             // Work out the late date/ block the wallets saw to see if it needs syncing
-            // or if we can use regular downloading
+            // or if we can use regular downloading.
             int currentChainHeight = -1;
             if (bitcoinController.getMultiBitService().getChain() != null) {
                 if (bitcoinController.getMultiBitService().getChain().getChainHead() != null) {
@@ -681,5 +647,37 @@ public class MultiBit {
         } catch (UnsupportedEncodingException e) {
             log.error("UTF=8 is not supported on this platform");
         }
+    }
+    
+    public static Controller getController() {
+        return controller;
+    }
+    
+    public static CoreController getCoreController() {
+        return coreController;
+    }
+    
+    public static BitcoinController getBitcoinController() {
+        return bitcoinController;
+    }
+    
+    public static ExchangeController getExchangeController() {
+        return exchangeController;
+    }
+    
+    /**
+     * Used in testing
+     */
+    public static void setCoreController(CoreController coreController ) {
+        MultiBit.controller = coreController;
+        MultiBit.coreController = coreController;
+    }
+    
+    public static void setBitcoinController(BitcoinController bitcoinController) {
+        MultiBit.bitcoinController = bitcoinController;
+    }
+     
+     public static void setExchangeController(ExchangeController exchangeController) {
+        MultiBit.exchangeController = exchangeController;
     }
 }

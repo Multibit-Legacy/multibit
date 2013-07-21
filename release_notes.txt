@@ -1,27 +1,14 @@
 MultiBit release notes.
 
-Version 0.5.12
+22 Jul Version 0.5.13
 Changes:
-+ Updated to bitcoinj v0.9
-+ Fees are now calculated automatically. Code by Matt Corallo.
-+ The size of the transaction appears on the transactions detail dialog
-+ Fixed issues 150, 165 - Automatically recreates BlockStore if there are problems loading it
-+ Fixed issue 155 - Version.txt retrieval error on Java 7
-+ Fixed issue 156 - Verify message available when wallet is syncing
+#190. The backing up of wallets has been improved. 
+      There is now a data directory for each wallet.
 
-
-03 Jun 2013 - Version 0.5.11
-Changes
-+ Implemented issue 96 - Sign and Verify message.
-
-
-27 May 2013 - Version 0.5.10
-Changes:
-+ Fixed issue 116 - could not import blockchain.info backups.
-+ Fixed issue 117 - fee was too high.
-+ Fixed issue 121 - MtGox ticker information not showing.
-+ Fixed issue 125 - overzealous syncing of wallet(s).
-+ Fixed issue 137 - Import / Export filechooser nomenclature.
-+ Fixed issue 140 - use installed checkpoints file if newer.
-+ Fixed issue 141 - bump to XChange 1.7.0, XChart 2.2.0.
-
+#111. Test was failing. Also fixed functional tests.
+#174. Send address is properly trimmed.
+#182. Swiss Francs now has correct currency prefix.
+#189. Receiving addresses that are manually added to the info file do not appear in the UI.
+#191. Swahili added as a target language.
+#195. Fixed Verify Message tooltip on a Mac.
+#201. Fixed blank validation message if fee takes total over amount in wallet.

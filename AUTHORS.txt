@@ -9,9 +9,13 @@ Tim Molter
 
 Internationalisation:
 ---------------------
+http://translate.multibit.org
+
 3phase              - Greek
+904                 - Russian
 allbiznessman       - Arabic
 alpaycan            - Turkish
+andreacondoluci     - Italian
 anod1               - French
 aneurysm11          - Hindi
 AnonX               - Norwegian
@@ -19,12 +23,16 @@ Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
 balkaneze           - Russian
 Baltar              - Polish
+bbcardfree          - Portuguese
 Beetle              - Russian
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
 blackarrow          - Hindi
+BROM                - Russian
+brucesimmens        - Danish
 btcinfo_nl          - Dutch
 btctalk             - Persian
+carlosfranco        - Spanish
 code187             - Hebrew
 CoinCrazy           - Tamil
 coolerboy           - Thai
@@ -37,6 +45,7 @@ Cyberius            - Hebrew
 D4CH                - Danish
 dagrauna            - Portuguese
 damnek              - Dutch
+daniil              - Russian
 darpho              - Spanish
 davux               - Spanish
 deathstar84         - Finnish
@@ -71,8 +80,11 @@ haritosh            - Hindi
 hey                 - Dutch
 Hiera               - Polish
 HostFat             - Italian
+Ihmahr              - Dutch
 ildubbioso          - Italian
+Ingvarr             - Persian
 Ipaboo              - Greek
+irfanevrens         - Turkish
 lzsaver             - Russian
 Jaff                - Romanian
 Jan-steenbergen     - Dutch
@@ -84,6 +96,7 @@ JeppeJ              - Swedish
 JeromeS             - Arabic
 jesusangel          - Spanish
 jmsanto123          - Tamil
+joaquimarin2        - Spanish
 jocose              - Russian
 joewinkler          - German
 JohnJohn            - Turkish
@@ -91,24 +104,32 @@ Jonny Heggheim      - Norwegian
 jrnr601             - Dutch
 Katya Rowe          - Russian
 Kayleigh            - Portuguese
+kellychan887        - Chinese Simplified
+k2k                 - German
 Kishor Kumar        - Hindi
+kguschina           - Russian
 knight22            - French
 krieg_king          - Spanish
 Kupsi               - Norwegian
 kyuupichan          - Japanese
 laowuzhao           - Chinese Simplified
 Layonee             - Dutch
+linflux             - Portuguese
 litecoin            - Portuguese
 lophie              - Arabic 
 Lourens             - Afrikaans
 majdom              - Polish
+Makyx               - Spanish
+marinazay1305       - Russian
 mazi                - Slovenian
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
 mbe                 - Arabic
 MBH                 - Arabic
 Memory Dealers      - Japanese
+miajulin            - Finnish
 michabailey         - Hebrew
+minasargirou1995boom- Greek
 mnm                 - Arabic
 mohammad_rafigh     - Persian
 moole               - Czech
@@ -116,12 +137,15 @@ MrM                 - Slovenian
 mrmx                - Spanish
 MrBison             - Russian
 mrvision            - Spanish
+msdemolition        - Russian
 muyuu               - Japanese
 nsnia               - Croatian
 nnuuij11111         - Chinese Simplified
 nuntius.marii       - Dutch
+Olgerd96            - Russian
 Oshikavadia         - Hindi
 okahira             - Chinese Simplified
+okanakinci          - Turkish
 orabneb             - French
 p96590              - Chinese Simplified
 pallikarva          - Finnish
@@ -151,6 +175,7 @@ soli                - Chinese Simplified
 Southnet            - Russian
 spiccioli           - Italian
 ss692558521         - Chinese Simplified
+stevnwei222         - Chinese Simplified
 stlucifer           - Hindi
 stuk88              - Hebrew
 subash              - Tamil
@@ -176,4 +201,5 @@ Wim1441             - Dutch
 xdarktemplar89      - Italian
 XeF6                - Turkish
 Yui_K               - Spanish
+z1983w0505          - Chinese Simplified
 ziomik              - Italian
