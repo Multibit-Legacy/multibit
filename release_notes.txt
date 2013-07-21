@@ -1,11 +1,11 @@
 MultiBit release notes.
 
-22 Jul Version 0.5.13
+22 Jul 2013 Version 0.5.13
 Changes:
 #190. The backing up of wallets has been improved. 
       There is now a data directory for each wallet.
 
-#111. Test was failing. Also fixed functional tests.
+#111. Failing test fixed. Also fixed functional tests.
 #174. Send address is properly trimmed.
 #182. Swiss Francs now has correct currency prefix.
 #189. Receiving addresses that are manually added to the info file do not appear in the UI.
