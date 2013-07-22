@@ -30,6 +30,7 @@ import javax.swing.SwingWorker;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -128,7 +129,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
         WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfoData(perWalletModelData.getWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfoData(perWalletModelData.getWalletFilename(), perWalletModelData.getWallet(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
         
@@ -208,11 +209,15 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         for (ECKey newKey : newKeys) {
                             lastAddressString = newKey.toAddress(finalController.getModel().getNetworkParameters()).toString();
                             finalPerWalletModelData.getWalletInfo().addReceivingAddress(new WalletAddressBookData("", lastAddressString),
-                                false, false);
+                                false);
                         }
                         
+                        // Backup the private keys.
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(walletPassword));
                         thisAction.setLastPrivateKeysBackupFile(privateKeysBackupFile);
+
+                        // Backup the wallet and wallet info.
+                        BackupManager.INSTANCE.backupPerWalletModelData(fileHandler, finalPerWalletModelData);
 
                         successMeasure = Boolean.TRUE;
                     } catch (KeyCrypterException kce) {

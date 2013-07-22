@@ -21,6 +21,7 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigInteger;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -58,16 +59,19 @@ public class ValidationErrorDialog extends MultiBitDialog {
     private final Controller controller;
     private final BitcoinController bitcoinController;
     private final SendRequest sendRequest;
+    private boolean insufficientFee;
+    
 
     /**
      * Creates a new {@link ValidationErrorDialog}.
      */
-    public ValidationErrorDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame, SendRequest sendRequest) {
+    public ValidationErrorDialog(BitcoinController bitcoinController, MultiBitFrame mainFrame, SendRequest sendRequest, boolean insufficientFee) {
         super(mainFrame, bitcoinController.getLocaliser().getString("validationErrorView.title"));
         
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         this.sendRequest = sendRequest;
+        this.insufficientFee = insufficientFee;
 
         initUI();
     }
@@ -114,7 +118,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
         // Amount is more than available funds.
         String notEnoughFunds = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS);
         boolean notEnoughFundsBoolean = false;
-        if (Boolean.TRUE.toString().equals(notEnoughFunds)) {
+        if (Boolean.TRUE.toString().equals(notEnoughFunds) || insufficientFee) {
             notEnoughFundsBoolean = true;
         }
 

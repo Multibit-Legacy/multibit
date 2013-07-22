@@ -28,24 +28,26 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.multibit.MultiBit;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
 
 /**
- * Wallet info is the companion info to the bitcoinj that multibit uses it
- * contains the sending and receiving addresses and the wallet version.
+ * Wallet info is the companion info to the bitcoinj Wallet that multibit uses
+ * it contains the sending and receiving addresses and the wallet version.
  * 
  * It is stored in the same directory as the wallet and has the suffix ".info".
  * 
@@ -57,12 +59,6 @@ public class WalletInfoData {
     private static final Logger log = LoggerFactory.getLogger(WalletInfoData.class);
     private static final String ENCODED_SPACE_CHARACTER = "%20";
     private static final String VALID_HEX_CHARACTERS = "01234567890abcdef";
-
-    /**
-     * The total receiving addresses known - from the address book (will include
-     * keys that are in other wallets).
-     */
-    private Set<WalletAddressBookData> candidateReceivingAddresses;
 
     /**
      * The actual receiving addresses exposed for this address book (only keys
@@ -88,9 +84,10 @@ public class WalletInfoData {
 
     private String walletFilename;
     private MultiBitWalletVersion walletVersion;
+    private Wallet wallet;
 
     private Properties walletPreferences;
-    
+
     /**
      * Flag indicated that the wallet has been deleted and should not be used.
      */
@@ -101,11 +98,11 @@ public class WalletInfoData {
      * @param walletFilename
      *            the filename for the wallet this is the info for
      */
-    public WalletInfoData(String walletFilename, MultiBitWalletVersion walletVersion) {
+    public WalletInfoData(String walletFilename, Wallet wallet, MultiBitWalletVersion walletVersion) {
         this.walletFilename = walletFilename;
         this.walletVersion = walletVersion;
+        this.wallet = wallet;
 
-        candidateReceivingAddresses = new HashSet<WalletAddressBookData>();
         receivingAddresses = new ArrayList<WalletAddressBookData>();
         sendingAddresses = new ArrayList<WalletAddressBookData>();
 
@@ -151,7 +148,7 @@ public class WalletInfoData {
     public void remove(String key) {
         walletPreferences.remove(key);
     }
-    
+
     public ArrayList<WalletAddressBookData> getReceivingAddresses() {
         return receivingAddresses;
     }
@@ -165,42 +162,74 @@ public class WalletInfoData {
     }
 
     /**
-     * Add a receiving address in the form of an WalletAddressBookData, replacing the
-     * label of any existing address.
+     * Add a receiving address in the form of an WalletAddressBookData,
+     * replacing the label of any existing address.
      * 
      * @param receivingAddress
-     * @param addToCandidates
-     *            - add to the list of candidate receiving addresses
+     * @param checkAlreadyPresent
      */
-    public void addReceivingAddress(WalletAddressBookData receivingAddress, boolean addToCandidates, boolean checkAlreadyPresent) {
-        if (receivingAddress == null) {
+    public void addReceivingAddress(WalletAddressBookData receivingAddress, boolean checkAlreadyPresent) {
+        if (receivingAddress == null || receivingAddress.getAddress() == null) {
             return;
         }
 
-        Collection<WalletAddressBookData> addressesToUse;
-        if (addToCandidates) {
-            addressesToUse = candidateReceivingAddresses;
-        } else {
-            addressesToUse = receivingAddresses;
-        }
+        boolean justUpdateLabel = false;
 
-        
-        boolean done = false;
-        
         if (checkAlreadyPresent) {
-            // check the address is not already in the set
-            for (WalletAddressBookData addressBookData : addressesToUse) {
+            // Check the address is not already in the set.
+            for (WalletAddressBookData addressBookData : receivingAddresses) {
                 if (addressBookData.getAddress().equals(receivingAddress.getAddress())) {
-                    // just update label
+                    // Just update label.
                     addressBookData.setLabel(receivingAddress.getLabel());
-                    done = true;
+                    justUpdateLabel = true;
                     break;
                 }
             }
         }
 
-        if (!done) {
-            addressesToUse.add(receivingAddress);
+        boolean addressMatchesKey = false;
+        if (wallet != null) {
+            for (ECKey key : wallet.getKeys()) {
+                if (receivingAddress.getAddress().equals(
+                        key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()))) {
+                    addressMatchesKey = true;
+                    break;
+                }
+            }
+        }
+
+        if (!justUpdateLabel && (wallet == null || addressMatchesKey)) {
+            receivingAddresses.add(receivingAddress);
+        }
+    }
+
+    /**
+     * Ensure only receiving addresses actually in the wallet appear. This is to
+     * prevent adding receiving addresses manually in the info file.
+     */
+    public void checkAllReceivingAddressesAppearInWallet(Wallet wallet) {
+        List<WalletAddressBookData> toRemove = new ArrayList<WalletAddressBookData>();
+        if (wallet != null) {
+            Iterator<WalletAddressBookData> iterator = receivingAddresses.iterator();
+            while (iterator.hasNext()) {
+                boolean addressMatchesKey = false;
+                WalletAddressBookData walletAddressBookData = iterator.next();
+                for (ECKey key : wallet.getKeys()) {
+                    if (walletAddressBookData.getAddress().equals(
+                            key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()).toString())) {
+                        addressMatchesKey = true;
+                        break;
+                    }
+                }
+                
+                if (!addressMatchesKey) {
+                    // Remove from receivingAddresses and log.
+                    toRemove.add(walletAddressBookData);
+                    log.debug("Removed receiving address " + walletAddressBookData.getAddress() + " because it did not match a key in the wallet '" + wallet.getDescription() + "'");
+                }
+            }
+            
+            receivingAddresses.removeAll(toRemove);
         }
     }
 
@@ -217,16 +246,7 @@ public class WalletInfoData {
         }
 
         if (!containsReceivingAddress(receivingAddress.toString())) {
-            // see if there is a label in the candidate receiving addresses
-            String label = "";
-
-            for (WalletAddressBookData addressBookData : candidateReceivingAddresses) {
-                if (addressBookData.getAddress().equals(receivingAddress.toString())) {
-                    label = addressBookData.getLabel();
-                    break;
-                }
-            }
-            receivingAddresses.add(new WalletAddressBookData(label, receivingAddress.toString()));
+            receivingAddresses.add(new WalletAddressBookData("", receivingAddress.toString()));
         }
     }
 
@@ -250,10 +270,10 @@ public class WalletInfoData {
         }
 
         boolean done = false;
-        // check the address is not already in the arraylist
+        // Check the address is not already in the arraylist.
         for (WalletAddressBookData addressBookData : sendingAddresses) {
             if (addressBookData.getAddress() != null && addressBookData.getAddress().equals(sendingAddress.getAddress())) {
-                // just update label
+                // Just update label.
                 addressBookData.setLabel(sendingAddress.getLabel());
                 done = true;
                 break;
@@ -291,20 +311,16 @@ public class WalletInfoData {
      * 
      * @param walletInfoFilename
      *            The full path of the wallet info file to write
-     * @param walletVersion The wallet version.
+     * @param walletVersion
+     *            The wallet version.
      * @throws WalletSaveException
      *             Exception if write is unsuccessful
      */
     public void writeToFile(String walletInfoFilename, MultiBitWalletVersion walletVersion) throws WalletSaveException {
         BufferedWriter out = null;
         try {
-            // We write out the union of the candidate and actual receiving addresses.
+            // We write out all the receiving addresses.
             HashMap<String, WalletAddressBookData> allReceivingAddresses = new HashMap<String, WalletAddressBookData>();
-            if (candidateReceivingAddresses != null) {
-                for (WalletAddressBookData addressBookData : candidateReceivingAddresses) {
-                    allReceivingAddresses.put(addressBookData.address, addressBookData);
-                }
-            }
             if (receivingAddresses != null) {
                 for (WalletAddressBookData addressBookData : receivingAddresses) {
                     allReceivingAddresses.put(addressBookData.address, addressBookData);
@@ -341,10 +357,33 @@ public class WalletInfoData {
                 out.write(columnOne + SEPARATOR + columnTwo + SEPARATOR + encodeURLString(columnThree) + "\n");
             }
 
-            for (Object key : walletPreferences.keySet()) {
+            // Remove some properties form the wallet file that dont need to be persisted.
+            Properties walletPreferencesClone = new Properties();
+            walletPreferencesClone.putAll(walletPreferences);
+            walletPreferencesClone.remove(BitcoinModel.WALLET_FILE_SIZE);
+            walletPreferencesClone.remove(BitcoinModel.WALLET_FILE_LAST_MODIFIED);
+            walletPreferencesClone.remove(BitcoinModel.WALLET_INFO_FILE_SIZE);
+            walletPreferencesClone.remove(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED);
+
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_ADDRESS_IS_INVALID);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_ADDRESS_VALUE);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_AMOUNT_IS_INVALID);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_AMOUNT_IS_MISSING);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_AMOUNT_VALUE);
+            walletPreferencesClone.remove(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS);
+
+            walletPreferencesClone.remove(BitcoinModel.SEND_PERFORM_PASTE_NOW);
+            
+            // These properties are obselete so removed from the info file to tidy them up.
+            walletPreferencesClone.remove("sendErrorMessage");
+            walletPreferencesClone.remove("sendWasSuccessful");
+            walletPreferencesClone.remove("earliestTransactionDate");
+
+            for (Object key : walletPreferencesClone.keySet()) {
                 String columnOne = PROPERTY_MARKER;
                 String columnTwo = (String) key;
-                String encodedColumnThree = encodeURLString((String) walletPreferences.get(key));
+                String encodedColumnThree = encodeURLString((String) walletPreferencesClone.get(key));
                 if (columnTwo == null) {
                     columnTwo = "";
                 }
@@ -388,7 +427,8 @@ public class WalletInfoData {
             String firstLine = bufferedReader.readLine();
             if (firstLine == null) {
                 // This is not an multibit address book.
-                throw new WalletLoadException("The file '" + walletInfoFilename + "' is not a valid wallet info file (empty line 1)");
+                throw new WalletLoadException("The file '" + walletInfoFilename
+                        + "' is not a valid wallet info file (empty line 1)");
             }
             StringTokenizer tokenizer = new StringTokenizer(firstLine, SEPARATOR);
             int numberOfTokens = tokenizer.countTokens();
@@ -397,11 +437,13 @@ public class WalletInfoData {
                 String versionNumber = tokenizer.nextToken();
                 if (!INFO_MAGIC_TEXT.equals(magicText) || !INFO_VERSION_TEXT.equals(versionNumber)) {
                     // This is not an multibit address book.
-                    throw new WalletLoadException("The file '" + walletInfoFilename + "' is not a valid wallet info file (wrong magic number on line 1)");
+                    throw new WalletLoadException("The file '" + walletInfoFilename
+                            + "' is not a valid wallet info file (wrong magic number on line 1)");
                 }
             } else {
                 // This is not an multibit address book.
-                throw new WalletLoadException("The file '" + walletInfoFilename + "' is not a valid wallet info file (wrong number of tokens on line 1)");
+                throw new WalletLoadException("The file '" + walletInfoFilename
+                        + "' is not a valid wallet info file (wrong number of tokens on line 1)");
             }
 
             // Read the wallet version.
@@ -411,21 +453,25 @@ public class WalletInfoData {
             if (walletVersionTokenNumber == 2) {
                 String walletVersionMarker = walletVersionTokenizer.nextToken();
                 String walletVersionString = walletVersionTokenizer.nextToken();
-                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) 
-                                || !(MultiBitWalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString) 
-                                || MultiBitWalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString)
-                                || MultiBitWalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionString().equals(walletVersionString))) {
-                    // This refers to a version of the wallet we do not know about.
-                    throw new WalletVersionException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
+                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker)
+                        || !(MultiBitWalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString)
+                                || MultiBitWalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString) || MultiBitWalletVersion.PROTOBUF_ENCRYPTED
+                                .getWalletVersionString().equals(walletVersionString))) {
+                    // This refers to a version of the wallet we do not know
+                    // about.
+                    throw new WalletVersionException("Cannot understand wallet version of '" + walletVersionMarker + "', '"
+                            + walletVersionString + "'");
                 } else {
-                    // The wallet version passed in the file is used rather than the value in the constructor
+                    // The wallet version passed in the file is used rather than
+                    // the value in the constructor
                     if (!walletVersion.getWalletVersionString().equals(walletVersionString)) {
-                        log.debug("The wallet version in the constructor was '" + walletVersion + "'. In the wallet info file it was '" + walletVersionString + "'. Using the latter.");
+                        log.debug("The wallet version in the constructor was '" + walletVersion
+                                + "'. In the wallet info file it was '" + walletVersionString + "'. Using the latter.");
                         if (MultiBitWalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString)) {
                             walletVersion = MultiBitWalletVersion.SERIALIZED;
                         } else if (MultiBitWalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString)) {
                             walletVersion = MultiBitWalletVersion.PROTOBUF;
-                        }  else if (MultiBitWalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionString().equals(walletVersionString)) {
+                        } else if (MultiBitWalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionString().equals(walletVersionString)) {
                             walletVersion = MultiBitWalletVersion.PROTOBUF_ENCRYPTED;
                         }
                     }
@@ -450,7 +496,8 @@ public class WalletInfoData {
                         String decodedMultiLineColumnThreeValue = decodeURLString(multilineColumnThreeValue);
 
                         if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {
-                            addReceivingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false, true);
+                            addReceivingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo),
+                                    true);
                         } else {
                             if (SEND_ADDRESS_MARKER.equals(previousColumnOne)) {
                                 addSendingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo));
@@ -483,7 +530,7 @@ public class WalletInfoData {
                     }
                     String decodedColumnThreeValue = decodeURLString(columnThree);
                     if (RECEIVE_ADDRESS_MARKER.equals(columnOne)) {
-                        addReceivingAddress(new WalletAddressBookData(decodedColumnThreeValue, columnTwo), false, true);
+                        addReceivingAddress(new WalletAddressBookData(decodedColumnThreeValue, columnTwo), true);
                     } else {
                         if (SEND_ADDRESS_MARKER.equals(columnOne)) {
                             addSendingAddress(new WalletAddressBookData(decodedColumnThreeValue, columnTwo));
@@ -498,7 +545,8 @@ public class WalletInfoData {
                     previousColumnTwo = columnTwo;
                     multilineColumnThreeValue = columnThree;
                 } else {
-                    // This is a multiline column 3 (typically a multiline label).
+                    // This is a multiline column 3 (typically a multiline
+                    // label).
                     isMultilineColumnThree = true;
                     multilineColumnThreeValue = multilineColumnThreeValue + "\n" + inputLine;
                 }
@@ -507,7 +555,7 @@ public class WalletInfoData {
                 // Add previous multiline column three to model.
                 String decodedMultiLineColumnThreeValue = decodeURLString(multilineColumnThreeValue);
                 if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {
-                    addReceivingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false, true);
+                    addReceivingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), true);
                 } else {
                     if (SEND_ADDRESS_MARKER.equals(previousColumnOne)) {
                         addSendingAddress(new WalletAddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo));
@@ -574,10 +622,10 @@ public class WalletInfoData {
             return java.net.URLEncoder.encode(stringToEncode, "UTF-8").replace("+", ENCODED_SPACE_CHARACTER);
         } catch (UnsupportedEncodingException e) {
             // Should not happen - UTF-8 is a valid encoding.
-            throw new  WalletSaveException("Could not encode string '" + stringToEncode + "'", e);
+            throw new WalletSaveException("Could not encode string '" + stringToEncode + "'", e);
         }
     }
-    
+
     /**
      * Decode a string using URL encoding.
      * 
@@ -586,7 +634,8 @@ public class WalletInfoData {
      */
     public static String decodeURLString(String stringToDecode) {
         try {
-            // Earlier multibits did not encode the info file - check if encoded.
+            // Earlier multibits did not encode the info file - check if
+            // encoded.
             boolean isEncoded = true;
             if (!stringToDecode.contains("%")) {
                 // Not encoded.
@@ -594,35 +643,37 @@ public class WalletInfoData {
             } else {
                 // See if there is a % followed by non hex - not encoded.
                 int percentPosition = stringToDecode.indexOf("%");
-                if (percentPosition > -1 ) {
+                if (percentPosition > -1) {
                     int nextCharacterPosition = percentPosition + 1;
                     int nextNextCharacterPosition = nextCharacterPosition + 1;
                     if (nextCharacterPosition >= stringToDecode.length() || nextNextCharacterPosition >= stringToDecode.length()) {
                         isEncoded = false;
                     } else {
-                        String nextCharacter = stringToDecode.substring(nextCharacterPosition, nextCharacterPosition + 1).toLowerCase();
-                        String nextNextCharacter = stringToDecode.substring(nextNextCharacterPosition, nextNextCharacterPosition + 1).toLowerCase();
-                        
+                        String nextCharacter = stringToDecode.substring(nextCharacterPosition, nextCharacterPosition + 1)
+                                .toLowerCase();
+                        String nextNextCharacter = stringToDecode.substring(nextNextCharacterPosition,
+                                nextNextCharacterPosition + 1).toLowerCase();
+
                         if (VALID_HEX_CHARACTERS.indexOf(nextCharacter) < 0 || VALID_HEX_CHARACTERS.indexOf(nextNextCharacter) < 0) {
                             isEncoded = false;
-                        }    
+                        }
                     }
                 }
             }
-            
+
             if (!isEncoded) {
                 return stringToDecode;
             }
-    
+
             // If there are any spaces convert them to %20s.
             stringToDecode = stringToDecode.replace(ENCODED_SPACE_CHARACTER, "+");
-            
+
             String decodedText = java.net.URLDecoder.decode(stringToDecode, "UTF-8");
             return decodedText;
         } catch (UnsupportedEncodingException e) {
             // Should not happen - UTF-8 is a valid encoding.
-            throw new  WalletLoadException("Could not decode string '" + stringToDecode + "'", e);
-         }
+            throw new WalletLoadException("Could not decode string '" + stringToDecode + "'", e);
+        }
     }
 
     public boolean isDeleted() {

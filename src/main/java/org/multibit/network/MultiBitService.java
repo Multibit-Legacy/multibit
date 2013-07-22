@@ -37,6 +37,7 @@ import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -107,8 +108,6 @@ public class MultiBitService {
 
     public Logger logger = LoggerFactory.getLogger(MultiBitService.class.getName());
 
-    private Wallet wallet;
-
     private MultiBitPeerGroup peerGroup;
 
     private String blockchainFilename;
@@ -177,7 +176,7 @@ public class MultiBitService {
 
             log.debug("Creating blockchain ...");
             blockChain = new MultiBitBlockChain(networkParameters, blockStore);
-            log.debug("Created blockchain '" + blockChain + "'");
+            log.debug("Created blockchain '" + blockChain + "' with height " + blockChain.getBestChainHeight());
 
             log.debug("Creating peergroup ...");
             createNewPeerGroup();
@@ -324,7 +323,7 @@ public class MultiBitService {
     }
 
     public void createNewPeerGroup() {
-        peerGroup = new MultiBitPeerGroup(this.bitcoinController, networkParameters, blockChain);
+        peerGroup = new MultiBitPeerGroup(bitcoinController, networkParameters, blockChain);
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
@@ -360,20 +359,20 @@ public class MultiBitService {
 
         if (!peersSpecified) {
             // Use DNS for production, IRC for test.
-            if (TESTNET3_GENESIS_HASH.equals(this.bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
+            if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
-            } else if (NetworkParameters.testNet().equals(this.bitcoinController.getModel().getNetworkParameters())) {
+            } else if (NetworkParameters.testNet().equals(bitcoinController.getModel().getNetworkParameters())) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
                 peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
             }
         }
         // Add the controller as a PeerEventListener.
-        peerGroup.addEventListener(this.bitcoinController.getPeerEventListener());
+        peerGroup.addEventListener(bitcoinController.getPeerEventListener());
 
         // Add all existing wallets to the PeerGroup.
         if (controller != null && controller.getModel() != null) {
-            List<WalletData> perWalletDataModels = this.bitcoinController.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletDataModels = bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletDataModels != null) {
                 Iterator<WalletData> iterator = perWalletDataModels.iterator();
                 if (iterator != null) {
@@ -408,6 +407,7 @@ public class MultiBitService {
      */
     public WalletData addWalletFromFilename(String walletFilename) throws IOException {
         WalletData perWalletModelDataToReturn = null;
+        Wallet wallet = null;
 
         File walletFile = null;
         boolean walletFileIsADirectory = false;
@@ -419,7 +419,7 @@ public class MultiBitService {
                 walletFileIsADirectory = true;
             } else {
 
-                perWalletModelDataToReturn = this.bitcoinController.getFileHandler().loadFromFile(walletFile);
+                perWalletModelDataToReturn = bitcoinController.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
                 }
@@ -427,7 +427,7 @@ public class MultiBitService {
             }
         }
 
-        if (wallet == null || walletFilename == null || walletFilename.equals("") || walletFileIsADirectory) {
+        if (walletFilename == null || walletFilename.equals("") || walletFileIsADirectory) {
             // Use default wallet name - create if does not exist.
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
                 walletFilename = getFilePrefix() + WALLET_SUFFIX;
@@ -440,22 +440,21 @@ public class MultiBitService {
 
             if (walletFile.exists()) {
                 // Wallet file exists with default name.
-                perWalletModelDataToReturn = this.bitcoinController.getFileHandler().loadFromFile(walletFile);
+                perWalletModelDataToReturn = bitcoinController.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
+                    newWalletCreated = true;
                 }
-
-                newWalletCreated = true;
             } else {
                 // Create a brand new wallet - by default unencrypted.
                 wallet = new Wallet(networkParameters);
                 ECKey newKey = new ECKey();
                 wallet.addKey(newKey);
 
-                perWalletModelDataToReturn = this.bitcoinController.getModel().addWallet(this.bitcoinController, wallet, walletFile.getAbsolutePath());
+                perWalletModelDataToReturn = bitcoinController.getModel().addWallet(bitcoinController, wallet, walletFile.getAbsolutePath());
 
                 // Create a wallet info.
-                WalletInfoData walletInfo = new WalletInfoData(walletFile.getAbsolutePath(), MultiBitWalletVersion.PROTOBUF);
+                WalletInfoData walletInfo = new WalletInfoData(walletFile.getAbsolutePath(), wallet, MultiBitWalletVersion.PROTOBUF);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // Set a default description.
@@ -463,9 +462,13 @@ public class MultiBitService {
                 perWalletModelDataToReturn.setWalletDescription(defaultDescription);
 
                 try {
-                    this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
+                    bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
 
                     newWalletCreated = true;
+                    
+                    // Backup the wallet and wallet info.
+                    BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelDataToReturn);
+
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                     MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
@@ -482,7 +485,7 @@ public class MultiBitService {
             List<ECKey> keys = wallet.getKeychain();
             if (keys != null) {
                 if (!newWalletCreated) {
-                    perWalletModelDataToReturn = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
+                    perWalletModelDataToReturn = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                 }
                 if (perWalletModelDataToReturn != null) {
                     WalletInfoData walletInfo = perWalletModelDataToReturn.getWalletInfo();
@@ -544,12 +547,12 @@ public class MultiBitService {
         log.debug("Blockstore is '" + blockStore + "'");
 
         log.debug("Creating blockchain ...");
-        blockChain = new MultiBitBlockChain(this.bitcoinController.getModel().getNetworkParameters(), blockStore);
+        blockChain = new MultiBitBlockChain(bitcoinController.getModel().getNetworkParameters(), blockStore);
         log.debug("Created blockchain '" + blockChain + "'");
 
         // Hook up the wallets to the new blockchain.
         if (blockChain != null) {
-            List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+            List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
             for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                 blockChain.addWallet(loopPerWalletModelData.getWallet());
             }
@@ -632,14 +635,14 @@ public class MultiBitService {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString() + ", identityHashcode = " + System.identityHashCode(sendTransaction));
             
             if (sendTransaction.getConfidence() != null) {
-                log.debug("Added bitcoinController " + System.identityHashCode(this.bitcoinController) + " as listener to tx = " + sendTransaction.getHashAsString());
-                sendTransaction.getConfidence().addEventListener(this.bitcoinController);
+                log.debug("Added bitcoinController " + System.identityHashCode(bitcoinController) + " as listener to tx = " + sendTransaction.getHashAsString());
+                sendTransaction.getConfidence().addEventListener(bitcoinController);
             } else {
                 log.debug("Cannot add bitcoinController as listener to tx = " + sendTransaction.getHashAsString() + " no transactionConfidence");
             }
 
             try {
-                this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+                bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             } catch (WalletSaveException wse) {
                 log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
@@ -650,7 +653,7 @@ public class MultiBitService {
 
             try {
                 // Notify other wallets of the send (it might be a send to or from them).
-                List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
+                List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
 
                 if (perWalletModelDataList != null) {
                     for (WalletData loopPerWalletModelData : perWalletModelDataList) {

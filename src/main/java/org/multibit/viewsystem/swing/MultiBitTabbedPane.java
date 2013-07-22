@@ -38,6 +38,9 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     private ImageIcon closeTabIcon;
     private Dimension closeButtonSize;
+    private final int CLOSE_ICON_WIDTH = 10;
+    private final int CLOSE_ICON_HEIGHT = 10;
+    private final int SEPARATION_DISTANCE = 2;
 
     private int tabCounter = 0;
 
@@ -60,7 +63,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
         closeTabIcon = ImageLoader.createImageIcon(ImageLoader.CLOSE_TAB_ICON_FILE);
 
         // Create a Dimension that can be used to size the close buttons.
-        closeButtonSize = new Dimension(closeTabIcon.getIconWidth() + 2, closeTabIcon.getIconHeight() + 2);
+        closeButtonSize = new Dimension(CLOSE_ICON_WIDTH + SEPARATION_DISTANCE, CLOSE_ICON_HEIGHT + SEPARATION_DISTANCE);
         
         ToolTipManager.sharedInstance().registerComponent(this);
     }

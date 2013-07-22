@@ -150,7 +150,10 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
 
         String sendAmountLocalised = CurrencyConverter.INSTANCE.prettyPrint(sendAmount);
 
-        String fee = Utils.bitcoinValueToPlainString(sendRequest.fee);
+        String fee = "0";
+        if (sendRequest != null) {
+            fee = Utils.bitcoinValueToPlainString(sendRequest.fee);
+        }
         
         String sendFeeLocalised = CurrencyConverter.INSTANCE.prettyPrint(fee);
     
@@ -543,7 +546,14 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         if (sendBitcoinNowAction != null) {
             sendBitcoinNowAction.setEnabled(enableSend);
             if (confirmText1 != null) {
-                confirmText1.setText(message);
+                if (enableSend) {
+                    // Only clear the 'multibitMustBeOnline' message.
+                    if (controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline").equals(confirmText1.getText())) {
+                        confirmText1.setText(message);
+                    }
+                } else {
+                    confirmText1.setText(message);                   
+                }
             }
         }
     }

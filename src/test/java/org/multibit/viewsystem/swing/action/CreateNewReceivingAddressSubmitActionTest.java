@@ -29,68 +29,8 @@ import org.multibit.CreateControllers;
 public class CreateNewReceivingAddressSubmitActionTest extends TestCase {      
     public static final CharSequence TEST_PASSWORD1 = "my hovercraft has eels";
     
-    private int TIME_TO_WAIT_FOR_ONE_KEY = 500; // milliseconds
-    
-//    @Test
-//    public void testAddReceivingAddressesWithNonEncryptedWallet() throws Exception {       
-//        // Create MultiBit controller
-//        Controller controller = ActionTestUtils.createController();
-//        
-//        // Create a new wallet and put it in the model as the active wallet.
-//        ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", false, null);
-//
-//        // Create a new CreateNewReceivingAddressSubmitAction to test.
-//        FontSizer.INSTANCE.initialise(controller);
-//        CreateNewReceivingAddressPanel createNewPanel = new CreateNewReceivingAddressPanel(controller, null, null);
-//        CreateNewReceivingAddressSubmitAction createNewAction = createNewPanel.getCreateNewReceivingAddressSubmitAction();
-//
-//        assertNotNull("createNewAction was not created successfully", createNewAction);
-//        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
-//        assertTrue("Wallet password is enabled when it should not be", !createNewPanel.isWalletPasswordFieldEnabled());
-//        assertNull("The last private key backup file was not null", createNewAction.getLastPrivateKeysBackupFile());
-//        
-//        // Execute the createNewAction - by default the createNewDialog should be set to add one key.
-//        createNewAction.actionPerformed(null);
-//        
-//        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
-//        
-//        assertEquals("Wrong number of keys after addition of default number of keys", 2, controller.getModel().getActiveWallet().getKeychain().size());    
-//
-//        assertNull("The last private key backup file was not null - a backup should not be created for non-encrypted wallets.", createNewAction.getLastPrivateKeysBackupFile());
-//
-//        // Add one address by selecting on the combo box.
-//        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(1));
-//        createNewAction.actionPerformed(null);
-//        
-//        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
-//
-//        assertEquals("Wrong number of keys after addition of 1 key", 3, controller.getModel().getActiveWallet().getKeychain().size());
-//        
-//        // Add five addresses by selecting on the combo box.
-//        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(5));
-//        createNewAction.actionPerformed(null);
-//        
-//        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 5);
-//
-//        assertEquals("Wrong number of keys after addition of 5 keys", 8, controller.getModel().getActiveWallet().getKeychain().size());   
-//        
-//        // Add twenty addresses by selecting on the combo box.
-//        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
-//        createNewAction.actionPerformed(null);
-//        
-//        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 20);
-//
-//        assertEquals("Wrong number of keys after addition of 20 keys", 28, controller.getModel().getActiveWallet().getKeychain().size());  
-//        
-//        // Add one hundred addresses by selecting on the combo box.
-//        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(100));
-//        createNewAction.actionPerformed(null);
-//
-//        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 100);
-//
-//        assertEquals("Wrong number of keys after addition of 100 keys", 128, controller.getModel().getActiveWallet().getKeychain().size());    
-//    }
-    
+    private int TIME_TO_WAIT_FOR_ONE_KEY = 1000; // milliseconds
+   
     @Test
     public void testAddReceivingAddressesWithEncryptedWallet() throws Exception {   
         // Create MultiBit controller.

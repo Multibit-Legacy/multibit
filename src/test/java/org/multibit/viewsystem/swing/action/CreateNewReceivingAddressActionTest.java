@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import org.multibit.Constants;
 import org.multibit.CreateControllers;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
@@ -30,25 +31,34 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 public class CreateNewReceivingAddressActionTest extends TestCase {
     @Test
     public void testNoWalletSelected() throws Exception {
-        // Create MultiBit controller.
-        final CreateControllers.Controllers controllers = CreateControllers.createControllers();
-        final BitcoinController controller = controllers.bitcoinController;
+        // Get the system property runFunctionalTest to see if the functional
+        // tests need running.
+        String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
+        if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
 
-        // This test runs against an empty PerWalletModelDataList.
-        assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
+            // Create MultiBit controller.
+            final CreateControllers.Controllers controllers = CreateControllers.createControllers();
+            final BitcoinController controller = controllers.bitcoinController;
 
-        // Create a new CreateNewReceivingAddressAction to test.
-        ColorAndFontConstants.init();
-        FontSizer.INSTANCE.initialise(controller);
-        ReceiveBitcoinPanel receiveBitcoinPanel = new ReceiveBitcoinPanel(controller, null);
-        CreateNewReceivingAddressAction createNewReceivingAddressAction = receiveBitcoinPanel.getCreateNewReceivingAddressAction();
+            // This test runs against an empty PerWalletModelDataList.
+            assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
 
-        assertNotNull("createNewReceivingAddressAction was not created successfully", createNewReceivingAddressAction);
+            // Create a new CreateNewReceivingAddressAction to test.
+            ColorAndFontConstants.init();
+            FontSizer.INSTANCE.initialise(controller);
+            ReceiveBitcoinPanel receiveBitcoinPanel = new ReceiveBitcoinPanel(controller, null);
+            CreateNewReceivingAddressAction createNewReceivingAddressAction = receiveBitcoinPanel
+                    .getCreateNewReceivingAddressAction();
 
-        // Execute.
-        createNewReceivingAddressAction.actionPerformed(null);
-        Object[] messages = MessageManager.INSTANCE.getMessages().toArray();
-        assertTrue("There were no messages but there should have been", messages != null && messages.length > 0);
-        assertEquals("Wrong message after receive bitcoin confirm with no active wallet", ResetTransactionsSubmitActionTest.EXPECTED_NO_WALLET_IS_SELECTED, ((Message)messages[messages.length - 1]).getText());
+            assertNotNull("createNewReceivingAddressAction was not created successfully", createNewReceivingAddressAction);
+
+            // Execute.
+            createNewReceivingAddressAction.actionPerformed(null);
+            Object[] messages = MessageManager.INSTANCE.getMessages().toArray();
+            assertTrue("There were no messages but there should have been", messages != null && messages.length > 0);
+            assertEquals("Wrong message after receive bitcoin confirm with no active wallet",
+                    ResetTransactionsSubmitActionTest.EXPECTED_NO_WALLET_IS_SELECTED,
+                    ((Message) messages[messages.length - 1]).getText());
+        }
     }
 }

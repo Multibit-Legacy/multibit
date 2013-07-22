@@ -1029,6 +1029,10 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
         if (addressTextField != null) {
             address = addressTextField.getText();
+            if (!WhitespaceTrimmer.trim(address).equals(address)) {
+                address = WhitespaceTrimmer.trim(address);
+                addressTextField.setText(address);
+            }
         }
         String amount = null;
         if (amountBTCTextField != null) {
@@ -1446,6 +1450,11 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             String address = null;
             if (addressTextField != null) {
                 address = addressTextField.getText();
+                if (!WhitespaceTrimmer.trim(address).equals(address)) {
+                    address = WhitespaceTrimmer.trim(address);
+                    addressTextField.setText(address);
+                }
+
             }
             String amount = "";
             if (amountBTCTextField != null) {
@@ -1469,7 +1478,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
             WalletInfoData walletInfo = bitcoinController.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfoData(bitcoinController.getModel().getActiveWalletFilename(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfoData(bitcoinController.getModel().getActiveWalletFilename(), bitcoinController.getModel().getActiveWallet(), MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
                 bitcoinController.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);
@@ -1505,7 +1514,10 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             String address = null;
             if (addressTextField != null) {
                 address = addressTextField.getText();
-                address = WhitespaceTrimmer.trim(address);
+                if (!WhitespaceTrimmer.trim(address).equals(address)) {
+                    address = WhitespaceTrimmer.trim(address);
+                    addressTextField.setText(address);
+                }
             }
             String amount = "";
             
@@ -1556,7 +1568,10 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             String address = null;
             if (addressTextField != null) {
                 address = addressTextField.getText();
-                address = WhitespaceTrimmer.trim(address);
+                if (!WhitespaceTrimmer.trim(address).equals(address)) {
+                    address = WhitespaceTrimmer.trim(address);
+                    addressTextField.setText(address);
+                }
             }
             String label = labelTextArea.getText();
             String amountFiat = amountFiatTextField.getText();
@@ -1932,7 +1947,9 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     @Override
     public String getAddress() {
         if (addressTextField != null) {
-            return addressTextField.getText();
+            String address = addressTextField.getText();
+            return WhitespaceTrimmer.trim(address);
+
         } else {
             return null;
         }

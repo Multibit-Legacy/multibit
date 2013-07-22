@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multibit</artifactId>
-    <version>0.5.12</version>
+    <version>0.5.13</version>
     <name>MultiBit</name>
     <description>A Java Swing client for Bitcoin</description>
     <url>https://multibit.org</url>

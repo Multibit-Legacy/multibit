@@ -29,9 +29,11 @@ import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.slf4j.Logger;
@@ -117,10 +119,12 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
             }
 
             WalletData perWalletModelData = null;
+            WalletInfoData walletInfoData = null;
             try {
                 // Double check wallet is not busy then declare that the active
                 // wallet is busy with the task
                 perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
+                walletInfoData = this.bitcoinController.getModel().getActiveWalletWalletInfo();
 
                 if (!perWalletModelData.isBusy()) {
                     perWalletModelData.setBusy(true);
@@ -140,13 +144,19 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                     }
 
                     wallet.encrypt(keyCrypterToUse, keyCrypterToUse.deriveKey(CharBuffer.wrap(passwordToUse)));
-                    this.bitcoinController.getModel().getActiveWalletWalletInfo().setWalletVersion(MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
-                    this.bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
+                    walletInfoData.setWalletVersion(MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                    perWalletModelData.setDirty(true);
                     FileHandler fileHandler = new FileHandler(super.bitcoinController);
-                    fileHandler.savePerWalletModelData(this.bitcoinController.getModel().getActivePerWalletModelData(), true);
+                    fileHandler.savePerWalletModelData(perWalletModelData, true);
 
+                    // Backup the private keys.
                     privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(passwordToUse));
 
+                    // Backup the wallet and wallet info.
+                    BackupManager.INSTANCE.backupPerWalletModelData(fileHandler,perWalletModelData);
+                    
+                    // Ensure that any unencrypted wallet backups are file encrypted with the wallet password.
+                    BackupManager.INSTANCE.fileLevelEncryptUnencryptedWalletBackups(perWalletModelData, CharBuffer.wrap(passwordToUse));
                 }
             } catch (KeyCrypterException ede) {
                 ede.printStackTrace();
@@ -160,8 +170,10 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                 return;
             } finally {
                 // Declare that wallet is no longer busy with the task.
-                perWalletModelData.setBusyTaskKey(null);
-                perWalletModelData.setBusy(false);
+                if (perWalletModelData != null) {
+                    perWalletModelData.setBusyTaskKey(null);
+                    perWalletModelData.setBusy(false);
+                }
                 super.bitcoinController.fireWalletBusyChange(false);                   
             }
         }

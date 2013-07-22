@@ -34,6 +34,7 @@ import javax.swing.SwingWorker;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
@@ -385,8 +386,12 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Import was successful.
                     uiMessage = finalBitcoinController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
 
+                    // Backup the private keys.
                     privateKeysBackupFile = finalBitcoinController.getFileHandler().backupPrivateKeys(CharBuffer.wrap(walletPassword));
 
+                    // Backup the wallet and wallet info.
+                    BackupManager.INSTANCE.backupPerWalletModelData(finalBitcoinController.getFileHandler(), finalPerWalletModelData);
+                    
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
                     if (performReplay) {

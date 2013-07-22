@@ -16,9 +16,9 @@
 package org.multibit;
 
 import java.awt.Cursor;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -38,18 +38,18 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.exchange.CurrencyConverterResult;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
-import org.multibit.network.AlertManager;
-import org.multibit.network.MultiBitCheckpointManager;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ConnectHttps;
 import org.multibit.model.exchange.ExchangeModel;
+import org.multibit.network.AlertManager;
+import org.multibit.network.MultiBitCheckpointManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
@@ -84,43 +84,10 @@ public class MultiBit {
     private static BitcoinController bitcoinController = null;
     private static ExchangeController exchangeController = null;
     
-    public static Controller getController() {
-        return controller;
-    }
-    
-    public static CoreController getCoreController() {
-        return coreController;
-    }
-    
-    public static BitcoinController getBitcoinController() {
-        return bitcoinController;
-    }
-    
-    public static ExchangeController getExchangeController() {
-        return exchangeController;
-    }
-    
-    /**
-     * Used in testing
-     */
-    public static void setCoreController(CoreController coreController ) {
-        MultiBit.controller = coreController;
-        MultiBit.coreController = coreController;
-    }
-    
-    public static void setBitcoinController(BitcoinController bitcoinController) {
-        MultiBit.bitcoinController = bitcoinController;
-    }
-     
-     public static void setExchangeController(ExchangeController exchangeController) {
-        MultiBit.exchangeController = exchangeController;
-    }
-    
     /**
      * Start MultiBit user interface.
      * 
-     * @param args
-     *            String encoding of arguments ([0]= Bitcoin URI)
+     * @param args String encoding of arguments ([0]= Bitcoin URI)
      */
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
@@ -146,12 +113,11 @@ public class MultiBit {
             // Load up the user preferences.
             Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
 
-            // create the controllers
+            // Create the controllers.
             coreController = new CoreController(applicationDataDirectoryLocator);
             controller = coreController;
             bitcoinController = new BitcoinController(coreController);
             exchangeController = new ExchangeController(coreController);
-
 
             log.info("Configuring native event handling");
             GenericApplicationSpecification specification = new GenericApplicationSpecification();
@@ -207,19 +173,19 @@ public class MultiBit {
                 }
             }
             coreController.setLocaliser(localiser);
+            
+            log.debug("MultiBit version = " + localiser.getVersionNumber());
 
             log.debug("Creating model");
 
             // Create the model.
             // The model is set to the controller.
-            {
             final CoreModel coreModel = new CoreModel(userPreferences);
             final BitcoinModel model = new BitcoinModel(coreModel);
             final ExchangeModel exchangeModel = new ExchangeModel(coreModel);
-                coreController.setModel(coreModel);
-                bitcoinController.setModel(model);
-                exchangeController.setModel(exchangeModel);
-            }
+            coreController.setModel(coreModel);
+            bitcoinController.setModel(model);
+            exchangeController.setModel(exchangeModel);
 
             // Trust all HTTPS certificates.
             ConnectHttps.trustAllCerts();
@@ -228,7 +194,7 @@ public class MultiBit {
             CurrencyConverter.INSTANCE.initialise(finalController);
             
             // Initialise replay manager.
-            ReplayManager.INSTANCE.initialise(bitcoinController);
+            ReplayManager.INSTANCE.initialise(bitcoinController, false);
             
             log.debug("Setting look and feel");
             try {
@@ -245,48 +211,19 @@ public class MultiBit {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
             } catch (UnsupportedLookAndFeelException e) {
-                // carry on
+                // Carry on.
             } catch (ClassNotFoundException e) {
-                // carry on
+                // Carry on.
             } catch (InstantiationException e) {
-                // carry on
+                // Carry on.
             } catch (IllegalAccessException e) {
-                // carry on
+                // Carry on.
             }
 
             // Initialise singletons.
             ColorAndFontConstants.init();
             FontSizer.INSTANCE.initialise(controller);
             CurrencyConverter.INSTANCE.initialise(finalController);
-            
-            // Check the fee is between the lower and upper bounds - set to default fee if not.
-//            String sendFeeString = controller.getModel().getUserPreference(BitcoinModel.SEND_FEE);
-//            boolean setToDefaultFee = false;
-//
-//            if (sendFeeString == null || sendFeeString == "") {
-//                setToDefaultFee = true;
-//            } else {
-//                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
-//
-//                if (converterResult.isBtcMoneyValid()) {
-//                    // Check that the fee is at least the minimum fee and
-//                    // smaller than the maximum fee.
-//                    BigInteger feeAsBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
-//                    if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MINIMUM_FEE) < 0) {
-//                        setToDefaultFee = true;
-//                    } else {
-//                        if (feeAsBigInteger.compareTo(BitcoinModel.SEND_MAXIMUM_FEE) >= 0) {
-//                            setToDefaultFee = true;
-//                        }
-//                    }
-//                }
-//            }
-//
-//            if (setToDefaultFee) {
-//               sendFeeString = controller.getLocaliser()
-//                        .bitcoinValueToStringNotLocalised(BitcoinModel.SEND_FEE_DEFAULT, false, false);
-//               controller.getModel().setUserPreference(BitcoinModel.SEND_FEE, sendFeeString);
-//            }
 
             // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface with initial view : " + controller.getCurrentView());
@@ -314,13 +251,26 @@ public class MultiBit {
 
             boolean useFastCatchup = false;
 
-            if (numberOfEarlyWalletsAsString == null || "".equals(numberOfEarlyWalletsAsString)) {
+            if (numberOfEarlyWalletsAsString == null || "".equals(numberOfEarlyWalletsAsString) || "null".equals(numberOfEarlyWalletsAsString)) {
                 // If this is missing then there is just the one wallet (old format
                 // properties or user has just started up for the first time).
                 useFastCatchup = true;
                 boolean thereWasAnErrorLoadingTheWallet = false;
 
                 try {
+                    boolean backupWallet = false;
+                    boolean moveSiblingFiles = false;
+                                      
+                    // If there is no active filename this is a new instance of MultiBit so backup the new wallet when created.
+                    if (activeWalletFilename == null || "".equals(activeWalletFilename) || "null".equals(activeWalletFilename) ) {
+                        backupWallet = true;
+                    } else {
+                       // See if a data directory is missing - if so we will move in any wallet or key files and backup.
+                       String topLevelWalletDirectory = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(new File(activeWalletFilename));
+                       moveSiblingFiles = !(new File(topLevelWalletDirectory).exists());
+                       backupWallet = moveSiblingFiles;
+                    }
+
                     // ActiveWalletFilename may be null on first time startup.
                     bitcoinController.addWalletFromFilename(activeWalletFilename);
                     List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
@@ -330,6 +280,15 @@ public class MultiBit {
                         log.debug("Created/loaded wallet '" + activeWalletFilename + "'");
                         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
                                 "multiBit.createdWallet", new Object[] { activeWalletFilename })));
+                        
+                        if (backupWallet) {
+                            // Backup the wallet and wallet info.
+                            BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelDataList.get(0));
+                        }
+                        if (moveSiblingFiles) {
+                            // Move any timestamped key and wallet files into their appropriate directories
+                            BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(activeWalletFilename);
+                        }
                     }
                 } catch (WalletLoadException e) {
                     String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
@@ -344,6 +303,12 @@ public class MultiBit {
                     log.error(message);
                     thereWasAnErrorLoadingTheWallet = true;
                 } catch (IOException e) {
+                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                            new Object[] { activeWalletFilename, e.getMessage() });
+                    MessageManager.INSTANCE.addMessage(new Message(message));
+                    log.error(message);
+                    thereWasAnErrorLoadingTheWallet = true;
+                }  catch (Exception e) {
                     String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                             new Object[] { activeWalletFilename, e.getMessage() });
                     MessageManager.INSTANCE.addMessage(new Message(message));
@@ -369,7 +334,7 @@ public class MultiBit {
                         int numberOfEarlyWallets = Integer.parseInt(numberOfEarlyWalletsAsString);
                         if (numberOfEarlyWallets > 0) {
                             for (int i = 1; i <= numberOfEarlyWallets; i++) {
-                                // look up ith wallet filename
+                                // Look up ith wallet filename.
                                 String loopWalletFilename = userPreferences.getProperty(BitcoinModel.EARLY_WALLET_FILENAME_PREFIX + i);
                                 if (!walletFilenamesToLoad.contains(loopWalletFilename)) {
                                     walletFilenamesToLoad.add(loopWalletFilename);
@@ -383,7 +348,7 @@ public class MultiBit {
                         int numberOfProtobuf3Wallets = Integer.parseInt(numberOfProtobuf3WalletsAsString);
                         if (numberOfProtobuf3Wallets > 0) {
                             for (int i = 1; i <= numberOfProtobuf3Wallets; i++) {
-                                // look up ith wallet filename
+                                // Look up ith wallet filename.
                                 String loopWalletFilename = userPreferences.getProperty(BitcoinModel.PROTOBUF3_WALLET_FILENAME_PREFIX + i);
                                 if (!walletFilenamesToLoad.contains(loopWalletFilename)) {
                                     walletFilenamesToLoad.add(loopWalletFilename);
@@ -406,7 +371,7 @@ public class MultiBit {
                         if (walletOrderTotal > 0) {
                             haveWalletOrder = true;
                             for (int i = 1; i <= walletOrderTotal; i++) {
-                                // add the wallet filename order
+                                // Add the wallet filename order.
                                 String loopWalletFilename = userPreferences.getProperty(BitcoinModel.WALLET_ORDER_PREFIX + i);
                                 if (!walletFilenameOrder.contains(loopWalletFilename)) {
                                     walletFilenameOrder.add(loopWalletFilename);
@@ -442,7 +407,6 @@ public class MultiBit {
                         }
                     }
                     
-
                     if (actualOrderToLoad.size() > 0) {
                         boolean thereWasAnErrorLoadingTheWallet = false;
 
@@ -454,16 +418,31 @@ public class MultiBit {
                             message.setShowInStatusBar(false);
                             MessageManager.INSTANCE.addMessage(message);
                             try {
+                                // Check if this is the first time this wallet has been opened post addition of data directories.
+                                String topLevelWalletDirectory = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(new File(actualOrder));
+                                boolean firstUsageSinceWalletDirectoriesIntroduced = !(new File(topLevelWalletDirectory).exists());
+
+                                WalletData perWalletModelData = null;
                                 if (activeWalletFilename != null && activeWalletFilename.equals(actualOrder)) {
-                                    bitcoinController.addWalletFromFilename(actualOrder);
+                                    perWalletModelData = bitcoinController.addWalletFromFilename(actualOrder);
                                     bitcoinController.getModel().setActiveWalletByFilename(actualOrder);
                                 } else {
-                                    bitcoinController.addWalletFromFilename(actualOrder);
+                                    perWalletModelData = bitcoinController.addWalletFromFilename(actualOrder);
                                 }
                                 Message message2 = new Message(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                         new Object[] { actualOrder }));
                                 message2.setShowInStatusBar(false);
                                 MessageManager.INSTANCE.addMessage(message2);
+                                
+                                if (firstUsageSinceWalletDirectoriesIntroduced) {
+                                    if (perWalletModelData != null && perWalletModelData.getWallet() != null) {
+                                        // Backup the wallet and wallet info.
+                                        BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
+             
+                                        // Move any timestamped key and wallet files into their appropriate directories
+                                        BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(actualOrder);
+                                    }
+                                }
                             } catch (WalletLoadException e) {
                                 message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                         new Object[] { actualOrder, e.getMessage() }));
@@ -482,6 +461,12 @@ public class MultiBit {
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
                                 thereWasAnErrorLoadingTheWallet = true;
+                            } catch (Exception e) {
+                                message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                                        new Object[] { actualOrder, e.getMessage() }));
+                                MessageManager.INSTANCE.addMessage(message);
+                                log.error(message.getText());
+                                thereWasAnErrorLoadingTheWallet = true;
                             }
                             
                             if (thereWasAnErrorLoadingTheWallet) {
@@ -495,7 +480,6 @@ public class MultiBit {
                             }
                         }
                     }
-
                 } catch (NumberFormatException nfe) {
                     // Carry on.
                 } finally {
@@ -538,7 +522,7 @@ public class MultiBit {
             }
             
             // Work out the late date/ block the wallets saw to see if it needs syncing
-            // or if we can use regular downloading
+            // or if we can use regular downloading.
             int currentChainHeight = -1;
             if (bitcoinController.getMultiBitService().getChain() != null) {
                 if (bitcoinController.getMultiBitService().getChain().getChainHead() != null) {
@@ -663,5 +647,37 @@ public class MultiBit {
         } catch (UnsupportedEncodingException e) {
             log.error("UTF=8 is not supported on this platform");
         }
+    }
+    
+    public static Controller getController() {
+        return controller;
+    }
+    
+    public static CoreController getCoreController() {
+        return coreController;
+    }
+    
+    public static BitcoinController getBitcoinController() {
+        return bitcoinController;
+    }
+    
+    public static ExchangeController getExchangeController() {
+        return exchangeController;
+    }
+    
+    /**
+     * Used in testing
+     */
+    public static void setCoreController(CoreController coreController ) {
+        MultiBit.controller = coreController;
+        MultiBit.coreController = coreController;
+    }
+    
+    public static void setBitcoinController(BitcoinController bitcoinController) {
+        MultiBit.bitcoinController = bitcoinController;
+    }
+     
+     public static void setExchangeController(ExchangeController exchangeController) {
+        MultiBit.exchangeController = exchangeController;
     }
 }

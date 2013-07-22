@@ -23,17 +23,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.AbstractModel;
-import org.multibit.model.bitcoin.WalletData;
-import org.multibit.model.bitcoin.WalletInfoData;
-import org.multibit.model.bitcoin.WalletTableData;
+import org.multibit.model.ModelEnum;
 import org.multibit.model.core.CoreModel;
-import org.multibit.viewsystem.View;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +45,6 @@ import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.store.BlockStoreException;
-import org.multibit.model.ModelEnum;
 
 /**
  * Model containing the MultiBit data.
@@ -119,9 +113,6 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     // Maximum fee.
     public static final BigInteger SEND_MAXIMUM_FEE = new BigInteger("100000000"); // 1 BTC.
 
-    public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
-    public static final String SEND_ERROR_MESSAGE = "sendErrorMessage";
-
     // Receive bitcoin.
     public static final String IS_RECEIVE_BITCOIN = "isReceiveBitcoin";
     public static final String RECEIVE_ADDRESS = "receiveAddress";
@@ -165,9 +156,6 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String PREVIOUS_OPEN_URI_SHOW_DIALOG = "previousOpenUriShowDialog";
     public static final String PREVIOUS_OPEN_URI_USE_URI = "previousOpenUriUseUri";
     public static final String PREVIOUS_SEND_FEE = "previousSendFee";
-
-    // Wallet migration.
-    public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
        
     // Wallet backup.
     public static final String WALLET_BACKUP_FILE = "walletBackupFile";
@@ -528,7 +516,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
                 NetworkParameters networkParameters = getNetworkParameters();
                 if (networkParameters != null) {
                     if (perWalletModelData.getWalletInfo() != null) {
-                        // clear the existing receiving addresses
+                        // Clear the existing receiving addresses.
                         perWalletModelData.getWalletInfo().getReceivingAddresses().clear();
                         for (ECKey key : keyChain) {
                             Address address = key.toAddress(getNetworkParameters());

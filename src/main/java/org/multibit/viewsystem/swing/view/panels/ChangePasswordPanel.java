@@ -73,6 +73,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
 
     private MultiBitLabel messageLabel1;
     private MultiBitLabel messageLabel2;
+    private MultiBitLabel messageLabel3;
 
     private MultiBitLabel reminderLabel1;
     private MultiBitLabel reminderLabel2;
@@ -204,6 +205,19 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(messageLabel2, constraints);
 
+        messageLabel3 = new MultiBitLabel("");
+        messageLabel3.setOpaque(false);
+        messageLabel3.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 30));
+        messageLabel3.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 7;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(messageLabel3, constraints);
+
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
                 HelpContentsPanel.HELP_PASSWORD_PROTECTION_URL);
@@ -218,7 +232,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
         helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -230,7 +244,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 8;
+        constraints.gridy = 9;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 100;
@@ -722,6 +736,7 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
     public void clearMessages() {
         setMessage1(" ");
         setMessage2(" ");
+        setMessage3(" ");
     }
     
     public void clearPasswords() {
@@ -740,6 +755,12 @@ public class ChangePasswordPanel extends JPanel implements Viewable, WalletBusyL
     public void setMessage2(String message2) {
         if (messageLabel2 != null) {
             messageLabel2.setText(message2);
+        }
+    }
+    
+    public void setMessage3(String message3) {
+        if (messageLabel3 != null) {
+            messageLabel3.setText(message3);
         }
     }
 

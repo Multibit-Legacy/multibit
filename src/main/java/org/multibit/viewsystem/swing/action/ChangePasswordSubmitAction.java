@@ -25,13 +25,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
-import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
-import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
@@ -146,7 +145,11 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                         FileHandler fileHandler = new FileHandler(super.bitcoinController);
                         fileHandler.savePerWalletModelData(super.bitcoinController.getModel().getActivePerWalletModelData(), true);
                         
+                        // Backup the private keys.
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(CharBuffer.wrap(newPasswordToUse));
+                        
+                        // Backup the wallet and wallet info
+                        BackupManager.INSTANCE.backupPerWalletModelData(fileHandler, perWalletModelData);                        
                     } catch (KeyCrypterException kce) {
                         // Notify the user that the encrypt failed.
                         changePasswordPanel.setMessage1(controller.getLocaliser().getString(
@@ -182,6 +185,8 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                 if (privateKeysBackupFile != null) {
                     try {
                         changePasswordPanel.setMessage2(controller.getLocaliser().getString(
+                        "changePasswordPanel.oldBackupsMessage"));
+                        changePasswordPanel.setMessage3(controller.getLocaliser().getString(
                                 "changePasswordPanel.keysBackupSuccess", new Object[] { privateKeysBackupFile.getCanonicalPath() }));
                     } catch (IOException e1) {
                         log.debug(e1.getClass().getCanonicalName() + " " + e1.getMessage());
