@@ -25,6 +25,7 @@ package org.multibit.controller.core;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ import org.multibit.platform.listener.GenericQuitEventListener;
 import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
 
 import org.slf4j.Logger;
@@ -201,8 +203,20 @@ public class CoreController extends BaseController<CoreController> implements Ge
     @Override
     public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
         if (isOKToQuit()) {
-            ExitAction exitAction = new ExitAction(this,null);
-
+            
+            ExitAction exitAction;
+            if (super.getViewSystem() != null) {
+                Iterator<ViewSystem> iterator = super.getViewSystem().iterator();
+                ViewSystem viewSystemLoop = iterator.next();
+                if (viewSystemLoop instanceof MultiBitFrame) {
+                    exitAction = new ExitAction(this, (MultiBitFrame)viewSystemLoop);                    
+                } else {
+                    exitAction = new ExitAction(this, null);                    
+                }
+            } else {
+                exitAction = new ExitAction(this, null);
+            }
+            
             for (AbstractEventHandler theEventHandler : this.eventHandlers) {
                 theEventHandler.handleQuitEvent(exitAction);
             }

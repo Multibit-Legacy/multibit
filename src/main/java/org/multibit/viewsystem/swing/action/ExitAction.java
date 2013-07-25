@@ -15,8 +15,11 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
@@ -54,6 +57,8 @@ public class ExitAction extends AbstractExitAction {
     private static final int MAXIMUM_TIME_TO_WAIT_FOR_FILE_CHANGE_TASK = 10000; // ms
     private static final int TIME_TO_WAIT = 200; // ms
     
+    private static int SHUTDOWN_TRANSPARENCY = 200;
+    
     private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
 
@@ -83,18 +88,36 @@ public class ExitAction extends AbstractExitAction {
     @Override
     public void actionPerformed(ActionEvent arg0) {
         // log.debug("exit 1");
+        Rectangle bounds = null;
+        int verticalDelta = 0;
+
+        int numberOfSteps = 3;
+        if (bitcoinController != null) {
+            List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
+            if (perWalletModelDataList != null) {
+                numberOfSteps = numberOfSteps + perWalletModelDataList.size();
+            }
+        }
+        
         if (mainFrame != null) {
+            bounds = mainFrame.getBounds();
+            verticalDelta = (int)(0.5 * bounds.height / numberOfSteps);
+            
             if (EventQueue.isDispatchThread()) {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
+                //Toolkit.getDefaultToolkit().beep();
             } else {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        //Toolkit.getDefaultToolkit().beep();
                     }
                 });
             }
+            animate(bounds, verticalDelta, 1);
+            Color backgroundColor = mainFrame.getBackground();
+            mainFrame.setBackground(new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), SHUTDOWN_TRANSPARENCY));
 
             // If the FileChangeTimerTask is running wait until it completes.
             FileChangeTimerTask fileChangeTimerTask = mainFrame.getFileChangeTimerTask();
@@ -138,13 +161,35 @@ public class ExitAction extends AbstractExitAction {
                 }
             }
         }
+        animate(bounds, verticalDelta, 2);
+
 
         if (bitcoinController != null) {
             // Save all the wallets and put their filenames in the user preferences.
             List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
+                int loopCount = 0;
+                String basicTitle = bitcoinController.getLocaliser().getString("multiBitFrame.title");
                 for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     try {
+                        String titleText = basicTitle;
+                        if (mainFrame != null) {
+                            if (loopPerWalletModelData != null) {
+                                titleText = bitcoinController.getLocaliser().getString("multiBitFrame.title.saving",
+                                        new String[] { loopPerWalletModelData.getWalletDescription() });
+                            }
+                            if (EventQueue.isDispatchThread()) {
+                                mainFrame.setTitle(titleText);
+                            } else {
+                                final String finalTitleText = titleText;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mainFrame.setTitle(finalTitleText);
+                                    }
+                                });
+                            }
+                        }
                         // log.debug("exit 3a");
                         bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
                         // log.debug("exit 3b");
@@ -165,6 +210,9 @@ public class ExitAction extends AbstractExitAction {
                     } catch (WalletVersionException wve) {
                         log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
                         MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
+                    } finally {
+                        loopCount++;
+                        animate(bounds, verticalDelta, 2 + loopCount);
                     }
                 }
             }
@@ -192,5 +240,22 @@ public class ExitAction extends AbstractExitAction {
 
         System.exit(0);
         // log.debug("exit 11");
+    }
+    
+    private void animate(final Rectangle bounds, final int verticalDelta, final int step) {
+        if (mainFrame == null) {
+            return;
+        }
+        
+        if (EventQueue.isDispatchThread()) {
+            mainFrame.setBounds(bounds.x, bounds.y, bounds.width, bounds.height - 2 * step * verticalDelta);
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    mainFrame.setBounds(bounds.x, bounds.y, bounds.width - 2, bounds.height - 2 * step * verticalDelta);
+                }
+            });
+        }
     }
 }

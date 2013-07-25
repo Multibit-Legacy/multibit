@@ -93,6 +93,7 @@ public class MultiBit {
     public static void main(String args[]) {
         log.info("Starting MultiBit at " + (new Date()).toGMTString());
 
+        ViewSystem swingViewSystem = null;
         // Enclosing try to enable graceful closure for unexpected errors.
         try {
             // Set any bespoke system properties.
@@ -105,8 +106,6 @@ public class MultiBit {
             } catch (SecurityException se) {
                 log.error(se.getClass().getName() + " " + se.getMessage());
             }
-            
-            ViewSystem swingViewSystem = null;
 
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
 
@@ -602,7 +601,7 @@ public class MultiBit {
 
             // Try saving any dirty wallets.
             if (controller != null) {
-                ExitAction exitAction = new ExitAction(controller, null);
+                ExitAction exitAction = new ExitAction(controller, (MultiBitFrame)swingViewSystem);
                 exitAction.actionPerformed(null);
             }
         }
