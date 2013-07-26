@@ -15,11 +15,8 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
@@ -27,8 +24,8 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.Controller;
-import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.core.CoreController;
 import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
@@ -56,10 +53,7 @@ public class ExitAction extends AbstractExitAction {
     
     private static final int MAXIMUM_TIME_TO_WAIT_FOR_FILE_CHANGE_TASK = 10000; // ms
     private static final int TIME_TO_WAIT = 200; // ms
-    
-    private static int SHUTDOWN_TRANSPARENCY = 200;
-    private static int HEADER_VERTICAL_DELTA = 40;
-    
+
     private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
 
@@ -89,25 +83,12 @@ public class ExitAction extends AbstractExitAction {
     @Override
     public void actionPerformed(ActionEvent arg0) {
         // log.debug("exit 1");
-        Rectangle bounds = null;
-        int verticalDelta = 0;
-
-        int numberOfSteps = 2;
-        if (bitcoinController != null) {
-            List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
-            if (perWalletModelDataList != null) {
-                numberOfSteps = numberOfSteps + perWalletModelDataList.size();
-            }
-        }
 
         String shuttingDownTitle = bitcoinController.getLocaliser().getString("multiBitFrame.title.shuttingDown");
 
         if (mainFrame != null) {
             mainFrame.setTitle(shuttingDownTitle);
-            
-            bounds = mainFrame.getBounds();
-            verticalDelta = (int)((bounds.height - HEADER_VERTICAL_DELTA) / numberOfSteps);
-            
+               
             if (EventQueue.isDispatchThread()) {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 //Toolkit.getDefaultToolkit().beep();
@@ -120,14 +101,7 @@ public class ExitAction extends AbstractExitAction {
                     }
                 });
             }
-            Color backgroundColor = mainFrame.getBackground();
-            try {
-                mainFrame.setBackground(new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), SHUTDOWN_TRANSPARENCY));
-            } catch (java.awt.IllegalComponentStateException ics) {
-                // Cannot use transparency effect.
-            }
-            animate(bounds, verticalDelta, 1);
-                
+               
             // If the FileChangeTimerTask is running wait until it completes.
             FileChangeTimerTask fileChangeTimerTask = mainFrame.getFileChangeTimerTask();
             if (fileChangeTimerTask != null) {
@@ -170,14 +144,11 @@ public class ExitAction extends AbstractExitAction {
                 }
             }
         }
-        animate(bounds, verticalDelta, 2);
-
 
         if (bitcoinController != null) {
             // Save all the wallets and put their filenames in the user preferences.
             List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
-                int loopCount = 0;
                 for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     try {
                         String titleText = shuttingDownTitle;
@@ -218,9 +189,6 @@ public class ExitAction extends AbstractExitAction {
                     } catch (WalletVersionException wve) {
                         log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
                         MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
-                    } finally {
-                        loopCount++;
-                        animate(bounds, verticalDelta, 2 + loopCount);
                     }
                 }
             }
@@ -248,22 +216,5 @@ public class ExitAction extends AbstractExitAction {
 
         System.exit(0);
         // log.debug("exit 11");
-    }
-    
-    private void animate(final Rectangle bounds, final int verticalDelta, final int step) {
-        if (mainFrame == null) {
-            return;
-        }
-        
-        if (EventQueue.isDispatchThread()) {
-            mainFrame.setBounds(bounds.x, bounds.y, bounds.width, bounds.height - step * verticalDelta);
-        } else {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    mainFrame.setBounds(bounds.x, bounds.y, bounds.width, bounds.height - step * verticalDelta);
-                }
-            });
-        }
     }
 }

@@ -160,7 +160,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                 fontMetrics.stringWidth("0123456789") * 5)
                 + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
-        positionDialogRelativeToParent(this, 0.5D, 0.40D);
+        positionDialogRelativeToParent(this, 0.5D, 0.45D);
 
         mainPanel = new JPanel();
         mainPanel.setOpaque(false);

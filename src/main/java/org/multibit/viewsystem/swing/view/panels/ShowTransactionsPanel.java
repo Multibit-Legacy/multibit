@@ -359,10 +359,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        buttonPanel
-                .setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder),
-                        BorderFactory.createEmptyBorder(2, 0, 2, 0)));
+        buttonPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
         buttonPanel.setOpaque(true);
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -381,12 +378,11 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         helpButton.setText("");
         helpButton.setToolTipText(controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip"));
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
-        //helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT));
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
+        constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -408,7 +404,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.weightx = 20;
@@ -429,6 +425,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         scrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         scrollPane.setOpaque(true);
         scrollPane.getViewport().setOpaque(true);
+        scrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, SystemColor.windowBorder));
+
     }
 
     @Override
