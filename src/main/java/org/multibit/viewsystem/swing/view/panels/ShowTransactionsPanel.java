@@ -45,9 +45,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -131,7 +134,11 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     private static final String PICKAXE_ICON_FILE = "/images/pickaxe.png";
     private static final String SMALL_EXCLAMATION_MARK_ICON_FILE = "/images/smallExclamationMark.png";
 
+    private ListSelectionModel listSelectionModel;
     private int selectedRow = -1;
+    
+    private Action showTransactionDetailsAction;
+    private MultiBitButton showTransactionsButton;
     
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 1000; // milliseconds
     
@@ -162,10 +169,11 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     private void initUI() {
         setLayout(new BorderLayout());
+        JPanel buttonPanel = createButtonPanel();
+
         JPanel transactionsPanel = createTransactionsPanel();
         add(transactionsPanel, BorderLayout.CENTER);
         
-        JPanel buttonPanel = createButtonPanel();
         buttonPanel.setMinimumSize(new Dimension(60, 60));
         add(buttonPanel, BorderLayout.SOUTH);
     }
@@ -201,6 +209,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         // No row is currently selected.
         selectedRow = -1;
 
+        // Listener for row selections.
+        listSelectionModel = table.getSelectionModel();
+        listSelectionModel.addListSelectionListener(new SharedListSelectionHandler(showTransactionDetailsAction));
+        
         // Date right justified.
         table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedDateRenderer());
 
@@ -387,9 +399,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         buttonPanel.add(helpButton, constraints);
-        Action showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, this);
+        showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, this);
 
-        MultiBitButton showTransactionsButton = new MultiBitButton(showTransactionDetailsAction, controller);
+        showTransactionsButton = new MultiBitButton(showTransactionDetailsAction, controller);
+        showTransactionsButton.setEnabled(false);
         buttonPanel.add(showTransactionsButton);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -1073,6 +1086,37 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             outerPanel.doLayout();
 
             return outerPanel;
+        }
+    }
+    
+    class SharedListSelectionHandler implements ListSelectionListener {
+        private Action showTransactionDetailsAction;
+        
+        SharedListSelectionHandler (Action action) {
+            this.showTransactionDetailsAction = action;
+        }
+        
+        public void valueChanged(ListSelectionEvent e) { 
+            ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+            if (lsm.isSelectionEmpty()) {
+                showTransactionDetailsAction.setEnabled(false);
+                showTransactionsButton.invalidate();
+                showTransactionsButton.validate();
+                showTransactionsButton.repaint();
+            } else {
+                // Find out which indexes are selected.
+                int minIndex = lsm.getMinSelectionIndex();
+                int maxIndex = lsm.getMaxSelectionIndex();
+                for (int i = minIndex; i <= maxIndex; i++) {
+                    if (lsm.isSelectedIndex(i)) {
+                        showTransactionDetailsAction.setEnabled(true);
+                        showTransactionsButton.invalidate();
+                        showTransactionsButton.validate();
+                        showTransactionsButton.repaint();
+                        break;
+                    }
+                }
+            }
         }
     }
 
