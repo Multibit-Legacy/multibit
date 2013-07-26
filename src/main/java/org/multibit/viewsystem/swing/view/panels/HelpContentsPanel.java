@@ -70,6 +70,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
     public static final String HELP_WALLET_FORMATS_URL = "help_walletFormats.html";
     public static final String HELP_WALLET_TYPES_URL = "help_walletTypes.html";
     public static final String HELP_PASSWORD_PROTECTION_URL = "help_passwordProtection.html";
+    public static final String HELP_TRANSACTIONS_URL = "help_transactions.html";
     
     private static final long serialVersionUID = 4921443778446348403L;
 

@@ -24,10 +24,7 @@ import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.SystemColor;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -44,9 +41,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
@@ -83,13 +78,12 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
 import org.multibit.viewsystem.swing.WalletTableModel;
-import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
+import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ShowTransactionDetailsAction;
-import org.multibit.viewsystem.swing.action.UndoPreferencesChangesSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -373,25 +367,49 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
+        Action helpAction;
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_TRANSACTIONS_URL);
+        } else {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_TRANSACTIONS_URL);
+        }
+        HelpButton helpButton = new HelpButton(helpAction, controller);
+        helpButton.setText("");
+        helpButton.setToolTipText(controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip"));
+        helpButton.setHorizontalAlignment(SwingConstants.LEADING);
+        //helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT));
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        buttonPanel.add(helpButton, constraints);
         Action showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, this);
 
-        MultiBitButton submitButton = new MultiBitButton(showTransactionDetailsAction, controller);
-        buttonPanel.add(submitButton);
+        MultiBitButton showTransactionsButton = new MultiBitButton(showTransactionDetailsAction, controller);
+        buttonPanel.add(showTransactionsButton);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
+        constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.weightx = 0.1;
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        buttonPanel.add(submitButton, constraints);
+        constraints.anchor = GridBagConstraints.LINE_START;
+        buttonPanel.add(showTransactionsButton, constraints);
 
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
+        constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.weightx = 20;
         constraints.weighty = 1;
@@ -431,8 +449,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
-
-        //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
     @Override
@@ -1062,52 +1078,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         }
     }
 
-//    class TransactionPopUp extends JPopupMenu {
-//        private static final long serialVersionUID = 1022706046979674798L;
-//        JMenuItem showTransactionsDetailsMenuItem;
-//
-//        public TransactionPopUp(WalletTableData rowTableData) {
-//            Action showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, rowTableData);
-//            showTransactionsDetailsMenuItem = new JMenuItem(showTransactionDetailsAction);
-//            showTransactionsDetailsMenuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-//
-//            add(showTransactionsDetailsMenuItem);
-//        }
-//    }
-
-//    class PopClickListener extends MouseAdapter {
-//        @Override
-//        public void mousePressed(MouseEvent e) {
-//            if (e.isPopupTrigger())
-//                doPop(e);
-//        }
-//
-//        @Override
-//        public void mouseReleased(MouseEvent e) {
-//            if (e.isPopupTrigger())
-//                doPop(e);
-//        }
-//
-//        private void doPop(MouseEvent e) {
-//            JTable table = (JTable) (e.getSource());
-//            Point p = e.getPoint();
-//            int row = table.rowAtPoint(p);
-//            int col = table.columnAtPoint(p);
-//
-//            // The autoscroller can generate drag events outside the Table's
-//            // range.
-//            if ((col != -1) && (row != -1)) {
-//                selectedRow = row;
-//                table.setRowSelectionInterval(row, row);
-//            }
-//
-//            // get the transaction on the row
-//            WalletTableData rowTableData = walletTableModel.getRow(rowSorter.convertRowIndexToModel(row));
-//            TransactionPopUp menu = new TransactionPopUp(rowTableData);
-//            menu.show(e.getComponent(), e.getX(), e.getY());
-//        }
-//    }
-
     public WalletTableData getSelectedRowData() {
         int row = table.getSelectedRow();
         return walletTableModel.getRow(rowSorter.convertRowIndexToModel(row));
@@ -1134,8 +1104,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     }
 
     @Override
-    public void lostExchangeRate(ExchangeRate exchangeRate) {
-        // TODO Auto-generated method stub    
+    public void lostExchangeRate(ExchangeRate exchangeRate) {  
     }
 
     @Override
