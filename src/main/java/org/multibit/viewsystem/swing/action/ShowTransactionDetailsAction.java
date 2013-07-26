@@ -23,8 +23,10 @@ import javax.swing.Action;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletTableData;
+import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.TransactionDetailsDialog;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
 /**
  * This {@link Action} shows the transaction details dialog
@@ -37,18 +39,18 @@ public class ShowTransactionDetailsAction extends AbstractAction {
     private final BitcoinController bitcoinController;
     
     private MultiBitFrame mainFrame;
-    private WalletTableData rowTableData;
+    private ShowTransactionsPanel showTransactionsPanel;
 
     /**
      * Creates a new {@link ShowTransactionDetailsAction}.
      */
-    public ShowTransactionDetailsAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, WalletTableData rowTableData) {
-        super(bitcoinController.getLocaliser().getString("showTransactionsDetailAction.text"));
+    public ShowTransactionDetailsAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, ShowTransactionsPanel showTransactionsPanel) {
+        super(bitcoinController.getLocaliser().getString("showTransactionsDetailAction.text"), ImageLoader.createImageIcon(ImageLoader.TRANSACTIONS_ICON_FILE));
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
+        this.showTransactionsPanel = showTransactionsPanel;
         
         this.mainFrame = mainFrame;
-        this.rowTableData = rowTableData;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showTransactionsDetailAction.tooltip"));
@@ -60,6 +62,8 @@ public class ShowTransactionDetailsAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+        WalletTableData rowTableData = showTransactionsPanel.getSelectedRowData();
+
         final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(this.bitcoinController, mainFrame, rowTableData);
         transactionDetailsDialog.setVisible(true);
     }
