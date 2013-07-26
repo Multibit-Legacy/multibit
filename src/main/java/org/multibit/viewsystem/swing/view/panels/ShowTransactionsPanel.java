@@ -345,6 +345,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPaneSetup();   
+        
+        showTransactionDetailsAction.setEnabled(table.getSelectedRow() > -1);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
