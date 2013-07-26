@@ -58,6 +58,7 @@ public class ExitAction extends AbstractExitAction {
     private static final int TIME_TO_WAIT = 200; // ms
     
     private static int SHUTDOWN_TRANSPARENCY = 200;
+    private static int HEADER_VERTICAL_DELTA = 40;
     
     private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
@@ -91,17 +92,21 @@ public class ExitAction extends AbstractExitAction {
         Rectangle bounds = null;
         int verticalDelta = 0;
 
-        int numberOfSteps = 3;
+        int numberOfSteps = 2;
         if (bitcoinController != null) {
             List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
                 numberOfSteps = numberOfSteps + perWalletModelDataList.size();
             }
         }
-        
+
+        String shuttingDownTitle = bitcoinController.getLocaliser().getString("multiBitFrame.title.shuttingDown");
+
         if (mainFrame != null) {
+            mainFrame.setTitle(shuttingDownTitle);
+            
             bounds = mainFrame.getBounds();
-            verticalDelta = (int)(0.5 * bounds.height / numberOfSteps);
+            verticalDelta = (int)((bounds.height - HEADER_VERTICAL_DELTA) / numberOfSteps);
             
             if (EventQueue.isDispatchThread()) {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -115,10 +120,14 @@ public class ExitAction extends AbstractExitAction {
                     }
                 });
             }
-            animate(bounds, verticalDelta, 1);
             Color backgroundColor = mainFrame.getBackground();
-            mainFrame.setBackground(new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), SHUTDOWN_TRANSPARENCY));
-
+            try {
+                mainFrame.setBackground(new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), SHUTDOWN_TRANSPARENCY));
+            } catch (java.awt.IllegalComponentStateException ics) {
+                // Cannot use transparency effect.
+            }
+            animate(bounds, verticalDelta, 1);
+                
             // If the FileChangeTimerTask is running wait until it completes.
             FileChangeTimerTask fileChangeTimerTask = mainFrame.getFileChangeTimerTask();
             if (fileChangeTimerTask != null) {
@@ -169,10 +178,9 @@ public class ExitAction extends AbstractExitAction {
             List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
                 int loopCount = 0;
-                String basicTitle = bitcoinController.getLocaliser().getString("multiBitFrame.title");
                 for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     try {
-                        String titleText = basicTitle;
+                        String titleText = shuttingDownTitle;
                         if (mainFrame != null) {
                             if (loopPerWalletModelData != null) {
                                 titleText = bitcoinController.getLocaliser().getString("multiBitFrame.title.saving",
@@ -248,12 +256,12 @@ public class ExitAction extends AbstractExitAction {
         }
         
         if (EventQueue.isDispatchThread()) {
-            mainFrame.setBounds(bounds.x, bounds.y, bounds.width, bounds.height - 2 * step * verticalDelta);
+            mainFrame.setBounds(bounds.x, bounds.y, bounds.width, bounds.height - step * verticalDelta);
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    mainFrame.setBounds(bounds.x, bounds.y, bounds.width - 2, bounds.height - 2 * step * verticalDelta);
+                    mainFrame.setBounds(bounds.x, bounds.y, bounds.width, bounds.height - step * verticalDelta);
                 }
             });
         }
