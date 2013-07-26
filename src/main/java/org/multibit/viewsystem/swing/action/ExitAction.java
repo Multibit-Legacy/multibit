@@ -43,9 +43,6 @@ import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * Exit the application.
- * 
- * @author jim
- * 
  */
 public class ExitAction extends AbstractExitAction {
 
@@ -82,8 +79,6 @@ public class ExitAction extends AbstractExitAction {
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
-        // log.debug("exit 1");
-
         String shuttingDownTitle = bitcoinController.getLocaliser().getString("multiBitFrame.title.shuttingDown");
 
         if (mainFrame != null) {
@@ -91,13 +86,11 @@ public class ExitAction extends AbstractExitAction {
                
             if (EventQueue.isDispatchThread()) {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                //Toolkit.getDefaultToolkit().beep();
             } else {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                        //Toolkit.getDefaultToolkit().beep();
                     }
                 });
             }
@@ -169,18 +162,14 @@ public class ExitAction extends AbstractExitAction {
                                 });
                             }
                         }
-                        // log.debug("exit 3a");
                         bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
-                        // log.debug("exit 3b");
                     } catch (WalletSaveException wse) {
                         log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                         MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
 
                         // Save to backup.
                         try {
-                            // log.debug("exit 4a");
                             BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), loopPerWalletModelData);
-                            // log.debug("exit 4b");
                         } catch (WalletSaveException wse2) {
                             log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
                             MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " "
@@ -196,25 +185,20 @@ public class ExitAction extends AbstractExitAction {
             // Write the user properties.
             log.debug("Saving user preferences ...");
             FileHandler.writeUserPreferences(bitcoinController);
-            // log.debug("exit 6");
         }
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
-        // log.debug("exit 7");
 
         // Get rid of main display.
         if (mainFrame != null) {
             mainFrame.setVisible(false);
         }
-        // log.debug("exit 8");
 
         if (mainFrame != null) {
             mainFrame.dispose();
         }
-        // log.debug("exit 10");
 
         System.exit(0);
-        // log.debug("exit 11");
     }
 }

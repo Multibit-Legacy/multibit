@@ -54,8 +54,6 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.MultiBitTabbedPane;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletAction;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 
 /**
@@ -64,8 +62,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 public class WalletListPanel extends JPanel implements Viewable, WalletBusyListener, ComponentListener, CurrencyConverterListener {
 
     private static final long serialVersionUID = 191352298245057705L;
-
-    //private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
     private final Controller controller;
     private final BitcoinController bitcoinController;

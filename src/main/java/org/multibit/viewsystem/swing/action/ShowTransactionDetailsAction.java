@@ -66,5 +66,8 @@ public class ShowTransactionDetailsAction extends AbstractAction {
 
         final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(this.bitcoinController, mainFrame, rowTableData);
         transactionDetailsDialog.setVisible(true);
+        
+        // Put the focus back on the table so that the up and down arrows work.
+        showTransactionsPanel.getTable().requestFocusInWindow();
     }
 }

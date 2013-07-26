@@ -57,7 +57,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,11 +97,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private MultiBitLabel sizeText;
 
     private JPanel mainPanel;
-    private JPanel buttonPanel;
-
-    public JPanel getButtonPanel() {
-        return buttonPanel;
-    }
+    private JPanel detailPanel;
 
     private MultiBitButton okButton;
 
@@ -139,7 +134,25 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             initUI();
 
             applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-            okButton.requestFocusInWindow();
+
+            // Put focus on okButton.
+            (new Thread() {
+                public void run() {
+                    // Sleep long enough for the window to pop up.....
+                    try {
+                        Thread.sleep(200);
+                        // request focus.
+                        okButton.requestFocus();
+
+                        Thread.sleep(400);
+                    } catch (Exception e) {
+                        // Not required.
+                    }
+                    // Request focus.
+                    okButton.requestFocus();
+                }
+            }).start();
+
             initialisedOk = true;
         } catch (Exception e) {
             String errorMessage = e.getClass().getName() + " " + e.getMessage();
@@ -148,7 +161,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                     "privateKeysHandler.thereWasAnException", new String[] { errorMessage })));
         }
     }
-
+    
     /**
      * Initialise transaction details dialog.
      */
@@ -179,7 +192,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
         }
 
-        JPanel detailPanel = new JPanel(new GridBagLayout());
+        detailPanel = new JPanel(new GridBagLayout());
         detailPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         mainPanel.add(detailPanel, BorderLayout.CENTER);
 

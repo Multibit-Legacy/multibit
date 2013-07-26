@@ -87,8 +87,6 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
@@ -96,8 +94,6 @@ import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
 public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
-
-    private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
 
     private final Controller controller;
     private final BitcoinController bitcoinController;
@@ -441,7 +437,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         scrollPane.setOpaque(true);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, SystemColor.windowBorder));
-
     }
 
     @Override
@@ -1125,6 +1120,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     public WalletTableData getSelectedRowData() {
         int row = table.getSelectedRow();
         return walletTableModel.getRow(rowSorter.convertRowIndexToModel(row));
+    }
+
+    public JTable getTable() {
+        return table;
     }
 
     @Override
