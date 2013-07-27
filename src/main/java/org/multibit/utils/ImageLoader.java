@@ -73,6 +73,7 @@ public class ImageLoader {
     public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
+    public static final String TRANSACTIONS_EXPORT_ICON_FILE = "/images/transactionsExport.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";
     public static final String WELCOME_ICON_FILE = "/images/welcome.png";
     public static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";

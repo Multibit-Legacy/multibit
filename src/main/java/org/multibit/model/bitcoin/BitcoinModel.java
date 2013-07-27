@@ -130,6 +130,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
 
     public static final String WALLET_FILE_EXTENSION = "wallet";
+    public static final String CSV_FILE_EXTENSION = "csv";
 
     // Private key import and export.
     public static final String PRIVATE_KEY_FILE_EXTENSION = "key";

@@ -81,6 +81,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
 import org.multibit.viewsystem.swing.WalletTableModel;
+import org.multibit.viewsystem.swing.action.ExportTransactionsSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ShowTransactionDetailsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -135,6 +136,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     
     private Action showTransactionDetailsAction;
     private MultiBitButton showTransactionsButton;
+    
+    private Action exportTransactionsSubmitAction;
+    private MultiBitButton exportTransactionsButton;
     
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 1000; // milliseconds
     
@@ -397,12 +401,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         buttonPanel.add(helpButton, constraints);
+        
         showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, this);
-
         showTransactionsButton = new MultiBitButton(showTransactionDetailsAction, controller);
         showTransactionsButton.setEnabled(false);
-        buttonPanel.add(showTransactionsButton);
-
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -413,10 +415,23 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         constraints.anchor = GridBagConstraints.LINE_START;
         buttonPanel.add(showTransactionsButton, constraints);
 
+        exportTransactionsSubmitAction = new ExportTransactionsSubmitAction(bitcoinController, mainFrame);
+        exportTransactionsButton = new MultiBitButton(exportTransactionsSubmitAction, controller);
+        showTransactionsButton.setEnabled(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        buttonPanel.add(exportTransactionsButton, constraints);
+
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 0;
         constraints.weightx = 20;
         constraints.weighty = 1;
