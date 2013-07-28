@@ -1,9 +1,5 @@
 package org.multibit.file;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-
-import org.joda.money.Money;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyInfo;

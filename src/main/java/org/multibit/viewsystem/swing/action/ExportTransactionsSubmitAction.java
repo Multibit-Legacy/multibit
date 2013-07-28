@@ -22,8 +22,10 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,7 +54,6 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Transaction;
 import com.googlecode.jcsv.CSVStrategy;
 import com.googlecode.jcsv.writer.CSVWriter;
 import com.googlecode.jcsv.writer.internal.CSVWriterBuilder;
@@ -180,6 +181,16 @@ public class ExportTransactionsSubmitAction extends AbstractAction {
             if (selection != JOptionPane.YES_OPTION) {
                 return;
             }
+            
+            // Delete the existing file.
+            boolean deleteWasSuccessful = exportTransactionsFile.delete();
+            if (!deleteWasSuccessful) {
+                String message2 = controller.getLocaliser().getString("exportTransactionsSubmitAction.genericCouldNotDelete",
+                        new Object[] { exportTransactionsFilename});
+                log.error(message2);
+                MessageManager.INSTANCE.addMessage(new Message(message2));
+                return;
+            }
         }
         
         // Now actually perform the export.
@@ -247,14 +258,16 @@ public class ExportTransactionsSubmitAction extends AbstractAction {
         };
         Collections.sort(walletTableDataList, Collections.reverseOrder(comparator));
         
-        Writer out = null;
+        //Writer out = null;
+        OutputStreamWriter outputStreamWriter = null;
         try {
-            out = new FileWriter(exportTransactionsFilename);
+            //out = new FileWriter(exportTransactionsFilename);
+            outputStreamWriter = new OutputStreamWriter ( new FileOutputStream(exportTransactionsFilename, true ), "UTF-8" ); 
             
             // Write the header row.
             WalletTableDataHeaderEntryConverter headerConverter = new WalletTableDataHeaderEntryConverter();
             headerConverter.setBitcoinController(bitcoinController);
-            CSVWriter<WalletTableData> csvHeaderWriter = new CSVWriterBuilder<WalletTableData>(out).strategy(CSVStrategy.UK_DEFAULT)
+            CSVWriter<WalletTableData> csvHeaderWriter = new CSVWriterBuilder<WalletTableData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
                     .entryConverter(headerConverter).build();
             
             csvHeaderWriter.write(new WalletTableData(null));
@@ -262,7 +275,7 @@ public class ExportTransactionsSubmitAction extends AbstractAction {
             // Write the body of the CSV file.
             WalletTableDataEntryConverter converter = new WalletTableDataEntryConverter();
             converter.setBitcoinController(bitcoinController);
-            CSVWriter<WalletTableData> csvWriter = new CSVWriterBuilder<WalletTableData>(out).strategy(CSVStrategy.UK_DEFAULT)
+            CSVWriter<WalletTableData> csvWriter = new CSVWriterBuilder<WalletTableData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
                     .entryConverter(converter).build();
             
             csvWriter.writeAll(walletTableDataList);
@@ -280,10 +293,10 @@ public class ExportTransactionsSubmitAction extends AbstractAction {
             log.error(message);
             MessageManager.INSTANCE.addMessage(new Message(message));
         } finally {
-            if (out != null) {
+            if (outputStreamWriter != null) {
                 try {
-                    out.flush();
-                    out.close();
+                    outputStreamWriter.flush();
+                    outputStreamWriter.close();
                 } catch (IOException ioe) {
                     String message = controller.getLocaliser().getString("exportTransactionsSubmitAction.failure",
                             new Object[] { exportTransactionsFilename, ioe.getMessage() });
