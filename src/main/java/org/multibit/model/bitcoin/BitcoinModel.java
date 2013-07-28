@@ -392,7 +392,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
             wallet.addEventListener(bitcoinController);
         }
 
-        createWalletData(bitcoinController, walletFilename);
+        createWalletTableData(bitcoinController, walletFilename);
         createAddressBookReceivingAddresses(walletFilename);
 
         return newPerWalletModelData;
@@ -413,14 +413,14 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
      * to show to the user in tabular form.
      */
     public ArrayList<WalletTableData> createActiveWalletData(final BitcoinController bitcoinController) {
-        return createWalletDataInternal(bitcoinController, this.getActivePerWalletModelData());
+        return createWalletTableData(bitcoinController, this.getActivePerWalletModelData());
     }
     
     /**
      * Convert the wallet info into walletdata records as they are easier
      * to show to the user in tabular form.
      */
-    public ArrayList<WalletTableData> createWalletData(final BitcoinController bitcoinController, String walletFilename) {
+    public ArrayList<WalletTableData> createWalletTableData(final BitcoinController bitcoinController, String walletFilename) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (walletFilename == null) {
@@ -437,10 +437,10 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
             }
         }
         
-        return createWalletDataInternal(bitcoinController, perWalletModelData);
+        return createWalletTableData(bitcoinController, perWalletModelData);
     }
 
-    public ArrayList<WalletTableData> createWalletDataInternal(final BitcoinController bitcoinController, WalletData perWalletModelData) {
+    public ArrayList<WalletTableData> createWalletTableData(final BitcoinController bitcoinController, WalletData perWalletModelData) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (perWalletModelData == null || perWalletModelData.getWallet() == null) {

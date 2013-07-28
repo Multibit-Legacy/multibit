@@ -51,7 +51,7 @@ public class WalletTableModel extends AbstractTableModel {
 
         createHeaders();
 
-        walletData = this.bitcoinController.getModel().createWalletData(this.bitcoinController, this.bitcoinController.getModel().getActiveWalletFilename());
+        walletData = this.bitcoinController.getModel().createWalletTableData(this.bitcoinController, this.bitcoinController.getModel().getActiveWalletFilename());
     }
     
     @Override

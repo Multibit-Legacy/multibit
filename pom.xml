@@ -738,6 +738,11 @@
             <artifactId>scrypt</artifactId>
             <version>1.3.2</version>
         </dependency>
+        <dependency>
+        <groupId>com.googlecode.jcsv</groupId>
+            <artifactId>jcsv</artifactId>
+            <version>1.4.0</version>
+        </dependency>
     </dependencies>
 
     <reporting>

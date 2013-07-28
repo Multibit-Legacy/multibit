@@ -819,14 +819,14 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             label.setText(value + SPACER);
 
             if ((value + "").indexOf("-") > -1) {
-                // debit
+                // Debit.
                 if (isSelected) {
                     label.setForeground(table.getSelectionForeground());
                 } else {
                     label.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
                 }
             } else {
-                // debit
+                // Credit.
                 if (isSelected) {
                     label.setForeground(table.getSelectionForeground()); 
                 } else {
