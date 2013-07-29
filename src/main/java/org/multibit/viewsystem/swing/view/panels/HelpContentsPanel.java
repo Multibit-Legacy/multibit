@@ -61,16 +61,17 @@ public class HelpContentsPanel extends JPanel implements Viewable {
     
     public static final String HELP_AVAILABLE_TO_SPEND_URL = "help_availableToSpend.html";
     public static final String HELP_CONTENTS_URL = "help_contents.html";
-    public static final String HELP_SIGN_AND_VERIFY_MESSAGE_URL = "help_signAndVerifyMessage.html";
     public static final String HELP_EXPORTING_PRIVATE_KEYS_URL = "help_exportingPrivateKeys.html";
     public static final String HELP_IMPORTING_PRIVATE_KEYS_URL = "help_importingPrivateKeys.html";
+    public static final String HELP_PASSWORD_PROTECTION_URL = "help_passwordProtection.html";
+    public static final String HELP_PREFERENCES_URL = "help_preferences.html";
     public static final String HELP_RECEIVING_URL = "help_receivingBitcoin.html";
-    public static final String HELP_SENDING_URL = "help_sendingBitcoin.html";
     public static final String HELP_RESET_BLOCKCHAIN_URL = "help_resetBlockchain.html";
+    public static final String HELP_SENDING_URL = "help_sendingBitcoin.html";
+    public static final String HELP_SIGN_AND_VERIFY_MESSAGE_URL = "help_signAndVerifyMessage.html";
+    public static final String HELP_TRANSACTIONS_URL = "help_transactions.html";
     public static final String HELP_WALLET_FORMATS_URL = "help_walletFormats.html";
     public static final String HELP_WALLET_TYPES_URL = "help_walletTypes.html";
-    public static final String HELP_PASSWORD_PROTECTION_URL = "help_passwordProtection.html";
-    public static final String HELP_TRANSACTIONS_URL = "help_transactions.html";
     
     private static final long serialVersionUID = 4921443778446348403L;
 

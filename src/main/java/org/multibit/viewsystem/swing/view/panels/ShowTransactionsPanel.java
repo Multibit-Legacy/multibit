@@ -433,7 +433,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 0;
-        constraints.weightx = 20;
+        constraints.weightx = 200;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
