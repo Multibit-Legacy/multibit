@@ -37,10 +37,10 @@ public class WalletTableDataEntryConverter implements CSVEntryConverter<WalletTa
         columns[0] = formattedDate;
 
         // Description.
-        columns[1] = walletTableData.getDescription();
+        columns[1] = walletTableData.getDescription() == null ? "" : walletTableData.getDescription();
 
         // Amount in BTC.
-        String amountBTC = null;
+        String amountBTC = "";
         BigInteger debitAmount = walletTableData.getDebit();
         BigInteger creditAmount = walletTableData.getCredit();
         if (debitAmount != null && debitAmount.compareTo(BigInteger.ZERO) > 0) {
@@ -53,7 +53,7 @@ public class WalletTableDataEntryConverter implements CSVEntryConverter<WalletTa
         columns[2] = amountBTC;
 
         // Amount in fiat
-        String amountFiat = null;
+        String amountFiat = "";
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
             if (walletTableData.getDebit() != null && walletTableData.getDebit().compareTo(BigInteger.ZERO) > 0) {
                 Money debitAmountFiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(walletTableData.getDebit());

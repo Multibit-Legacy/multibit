@@ -209,7 +209,7 @@ public class ExportTransactionsSubmitAction extends AbstractAction {
         }
     }
     
-    void exportTransactionsDoIt(WalletData walletData, String exportTransactionsFilename) {        
+    public void exportTransactionsDoIt(WalletData walletData, String exportTransactionsFilename) {        
         List<WalletTableData> walletTableDataList = bitcoinController.getModel().createWalletTableData(bitcoinController, walletData);
         
         // Sort by date descending.

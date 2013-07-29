@@ -35,6 +35,8 @@ public class WalletTableDataHeaderEntryConverter implements CSVEntryConverter<Wa
                 currencySymbol = currencyInfo.getCurrencySymbol();
             }
             columns[3] = bitcoinController.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (" + currencySymbol + ")";
+        } else {
+            columns[3] = "";
         }
          
         // Transaction hash.
