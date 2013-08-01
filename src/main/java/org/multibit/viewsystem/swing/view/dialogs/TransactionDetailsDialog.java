@@ -567,7 +567,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                 if (perWalletModelData.getWalletInfo() != null) {
                     label = perWalletModelData.getWalletInfo().lookupLabelForReceivingAddress(addressString);
                 }
-                if (label != null && label != "") {
+                if (label != null && !label.equals("")) {
                     toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
                             new Object[] { addressString, label });
                 } else {
@@ -590,7 +590,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                     if (perWalletModelData.getWalletInfo() != null) {
                         label = perWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);
                     }
-                    if (label != null && label != "") {
+                    if (label != null && !label.equals("")) {
                         toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
                                 new Object[] { addressString, label });
                     } else {

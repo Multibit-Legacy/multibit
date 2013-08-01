@@ -562,7 +562,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
                 if (perWalletModelData.getWalletInfo() != null) {
                     label = perWalletModelData.getWalletInfo().lookupLabelForReceivingAddress(addressString);
                 }
-                if (label != null && label != "") {
+                if (label != null && !label.equals("")) {
                     toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
                             new Object[]{addressString, label});
                 } else {
@@ -585,7 +585,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
                     if (perWalletModelData.getWalletInfo() != null) {
                         label = perWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);
                     }
-                    if (label != null && label != "") {
+                    if (label != null && !label.equals("")) {
                         toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
                                 new Object[]{addressString, label});
                     } else {
