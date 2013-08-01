@@ -15,18 +15,10 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.SwingUtilities;
-
+import com.google.bitcoin.core.Sha256Hash;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet.SendRequest;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
@@ -47,21 +39,19 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Sha256Hash;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet.SendRequest;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The send bitcoin confirm panel.
  */
 public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListener {
     private static final long serialVersionUID = 191435612399957705L;
-   
+
     private static final Logger log = LoggerFactory.getLogger(SendBitcoinConfirmPanel.class);
 
     private static final int STENT_WIDTH = 10;
-    
+
     private MultiBitFrame mainFrame;
     private MultiBitDialog sendBitcoinConfirmDialog;
 
@@ -79,16 +69,16 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
 
     private MultiBitLabel confirmText1;
     private MultiBitLabel confirmText2;
-    
+
     private SendBitcoinNowAction sendBitcoinNowAction;
     private MultiBitButton sendButton;
     private MultiBitButton cancelButton;
-    
+
     private JPasswordField walletPasswordField;
     private MultiBitLabel walletPasswordPromptLabel;
-    
+
     private static SendBitcoinConfirmPanel thisPanel = null;
-    
+
     private static ImageIcon shapeTriangleIcon;
     private static ImageIcon shapeSquareIcon;
     private static ImageIcon shapeHeptagonIcon;
@@ -113,14 +103,14 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         this.mainFrame = mainFrame;
         this.sendBitcoinConfirmDialog = sendBitcoinConfirmDialog;
         this.sendRequest = sendRequest;
-        
+
         thisPanel = this;
 
         initUI();
-        
+
         cancelButton.requestFocusInWindow();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        
+
         this.bitcoinController.registerWalletBusyListener(this);
     }
 
@@ -130,12 +120,12 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
     public void initUI() {
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
-        
+
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
-        
+
         mainPanel.setLayout(new GridBagLayout());
-        
+
         String[] keys = new String[] { "sendBitcoinPanel.addressLabel",
                 "sendBitcoinPanel.labelLabel", "sendBitcoinPanel.amountLabel",
                 "showPreferencesPanel.feeLabel.text", "showExportPrivateKeysPanel.walletPasswordPrompt"};
@@ -154,9 +144,9 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         if (sendRequest != null) {
             fee = Utils.bitcoinValueToPlainString(sendRequest.fee);
         }
-        
+
         String sendFeeLocalised = CurrencyConverter.INSTANCE.prettyPrint(fee);
-    
+
         GridBagConstraints constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -200,7 +190,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(MultiBitTitledPanel.createStent(STENT_WIDTH), constraints);
-       
+
         MultiBitLabel explainLabel = new MultiBitLabel("");
         explainLabel.setText(controller.getLocaliser().getString("sendBitcoinConfirmView.message"));
         constraints.fill = GridBagConstraints.NONE;
@@ -222,11 +212,11 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.weighty = 0.8;
         constraints.gridwidth = 3;
         constraints.gridheight = 5;
-        constraints.anchor = GridBagConstraints.CENTER;        
+        constraints.anchor = GridBagConstraints.CENTER;
         mainPanel.add(detailPanel, constraints);
-        
+
         GridBagConstraints constraints2 = new GridBagConstraints();
-       
+
         constraints2.fill = GridBagConstraints.HORIZONTAL;
         constraints2.gridx = 0;
         constraints2.gridy = 0;
@@ -246,7 +236,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints2.anchor = GridBagConstraints.CENTER;
         detailPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
                 constraints2);
-        
+
         JLabel forcer1 = new JLabel();
         forcer1.setOpaque(false);
         constraints2.fill = GridBagConstraints.HORIZONTAL;
@@ -346,7 +336,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints2.gridwidth = 1;
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendFeeText, constraints2);
-     
+
         constraints2.fill = GridBagConstraints.HORIZONTAL;
         constraints2.gridx = 0;
         constraints2.gridy = 5;
@@ -447,7 +437,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                 walletPasswordPromptLabel.setEnabled(false);
             }
         }
-        
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
@@ -479,7 +469,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.gridwidth = 6;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText1, constraints);
-        
+
         JLabel filler3 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 7;
@@ -499,7 +489,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.gridwidth = 6;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText2, constraints);
-        
+
         JLabel filler6 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 7;
@@ -509,7 +499,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler6, constraints);
-        
+
         enableSendAccordingToNumberOfConnectedPeersAndWalletBusy();
     }
 
@@ -520,7 +510,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         if (this.controller.getModel() != null) {
             String singleNodeConnection = this.controller.getModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
             boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
-            
+
             String peers = this.controller.getModel().getUserPreference(BitcoinModel.PEERS);
             boolean singlePeerOverride = peers != null && peers.split(",").length == 1;
 
@@ -536,13 +526,13 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                 }
                 if (this.bitcoinController.getModel().getActivePerWalletModelData().isBusy()) {
                     enableSend = false;
-                    message = controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
+                    message = controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
                             new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())});
                 }
                 thisPanel.sendBitcoinNowAction.setEnabled(enableSend);
             }
         }
-        
+
         if (sendBitcoinNowAction != null) {
             sendBitcoinNowAction.setEnabled(enableSend);
             if (confirmText1 != null) {
@@ -552,12 +542,12 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                         confirmText1.setText(message);
                     }
                 } else {
-                    confirmText1.setText(message);                   
+                    confirmText1.setText(message);
                 }
             }
         }
     }
-    
+
     public void setMessageText(final String message1) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -567,8 +557,8 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         invalidate();
         validate();
         repaint();
-    }    
-    
+    }
+
     public void setMessageText(final String message1, final String message2) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -579,8 +569,8 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         invalidate();
         validate();
         repaint();
-    }    
-    
+    }
+
     public void clearPassword() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -588,14 +578,14 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                 walletPasswordField.setText("");
             }});
     }
-    
+
     public void showOkButton() {
         OkBackToParentAction okAction = new OkBackToParentAction(controller, sendBitcoinConfirmDialog);
         sendButton.setAction(okAction);
-        
+
         cancelButton.setVisible(false);
     }
-    
+
     public static void updatePanel() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -605,7 +595,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                     if (bitcoinController != null) {
                         String singleNodeConnection = bitcoinController.getModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
                         boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
-                        
+
                         String peers = bitcoinController.getModel().getUserPreference(BitcoinModel.PEERS);
                         boolean singlePeerOverride = peers != null && peers.split(",").length == 1;
 
@@ -679,12 +669,19 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         if (numberOfPeers == 0) {
             builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
         } else {
-            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+            builder
+                .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy"))
+                .append(" ");
             builder.append(numberOfPeers);
             if (numberOfPeers > 1)
-                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ".");
+                builder
+                    .append(" ")
+                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peers"))
+                    .append(".");
             else
-                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ".");
+                builder.append(" ")
+                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peer"))
+                    .append(".");
         }
         return builder.toString();
     }
@@ -727,7 +724,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
 
     public String getMessageText1() {
         return confirmText1.getText();
-    }    
+    }
 
     public String getMessageText2() {
         return confirmText2.getText();
@@ -736,7 +733,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
     public void setWalletPassword(CharSequence password) {
         walletPasswordField.setText(password.toString());
     }
-    
+
     public boolean isWalletPasswordFieldEnabled() {
         return walletPasswordField.isEnabled();
     }
