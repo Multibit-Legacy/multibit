@@ -1,13 +1,18 @@
 ### Introduction
 
-MultiBit is a lightweight Bitcoin desktop client powered by the [Bitcoinj library](https://code.google.com/p/bitcoinj/).
+MultiBit is a Simplified Payment Verification (SPV) Bitcoin desktop client.
 
-### How to Build MultiBit
+MultiBit relies on the following technologies:
 
-MultiBit use Maven as the build system, so the usual Maven processes apply. If you're not familiar 
-with Maven then [download it first](http://maven.apache.com) and follow their installation instructions.
+* Maven as the build system, so the usual Maven processes apply. If you're not familiar
+with Maven then [download it first](http://maven.apache.org) and follow their installation instructions.
+* ZXing for QR codes
+* [Bitcoinj](https://code.google.com/p/bitcoinj/) for access to the Bitcoin network
+* IzPack for creating installers for Windows, Mac, Linux
+* [Bitcoinj Enforcer Rules](https://github.com/gary-rowe/BitcoinjEnforcerRules) to prevent dependency chain attacks
+* [XChange](https://github.com/timmolter/XChange) for access to several Bitcoin exchanges
 
-### Bitcoinj dependency
+#### A note on the Bitcoinj dependency
 
 MultiBit depends on a special fork of Bitcoinj for its Bitcoin support. This is due to legacy wallet serialization issues
 and the MultiBit team are working towards a complete integration. To build MultiBit you will need to clone this fork from
@@ -24,7 +29,9 @@ Once cloned, you should then install the custom Bitcoinj library using
 mvn clean install
 ```
 
-### Description of GitHub branches
+### Branching strategy
+
+This follows the  [master-develop](http://nvie.com/posts/a-successful-git-branching-model/) pattern.
 
 There are 2 main branches: `master` and `develop`. The `master` branch is exclusively for releases, while the `develop`
 is exclusively for release candidates. The `develop` branch always has a Maven version of `develop-SNAPSHOT`.
@@ -73,3 +80,15 @@ website](https://multibit.org/help.html)
 
 MultiBit is quite flexible and has several features only accessible to power users through the configuration file. This
 is discussed in more detail in [configuration.md](configuration.md)
+
+### Contributing
+
+MultiBit is a very active project and if you would like to contribute please feel free to get in touch using [jim@multibit.org](mailto:jim@multibit.org).
+We are particularly looking for developers with the following skills to contribute:
+
+* Experienced Java programmers
+* Web designers [for the website](https://github.com/jim618/multibit-website)
+* Translators using the [Crowdin site](http://translate.multibit.org/)
+* Beta testers for checking the latest pre-release
+
+All contributors get a mention in [AUTHORS.txt](AUTHORS.txt) and must be OK with releasing their work under the MIT license.
