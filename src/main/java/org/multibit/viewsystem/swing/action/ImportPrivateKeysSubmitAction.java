@@ -280,7 +280,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         final BitcoinController finalBitcoinController = super.bitcoinController;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
-            private String statusBarMessage = null;
+            private String statusBarMessage = null; // TODO Determine why this is never set
             private String uiMessage = null;
 
             @Override

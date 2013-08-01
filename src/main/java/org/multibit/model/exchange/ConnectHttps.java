@@ -48,12 +48,7 @@ public final class ConnectHttps {
             }
 
             public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                log.debug("checkServerTrusted certs = " + certs + ", authType = " + authType);
-//                if (certs != null) {
-//                    for (int i = 0; i < certs.length; i++) {
-//                        log.debug("certs[" + i + "] " + certs[i]);
-//                    }
-//                }
+                log.debug("checkServerTrusted authType = {}", authType);
             }
 
         } };
