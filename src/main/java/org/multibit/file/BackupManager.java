@@ -303,16 +303,16 @@ public enum BackupManager {
        
         if (destinationFile.exists()) {
             throw new IllegalArgumentException("The destination file '" + destinationFile.getAbsolutePath() + "' already exists.");            
+        } else {
+            // Attempt to create it
+            if (!destinationFile.createNewFile()) {
+                throw new IllegalArgumentException("The destination file '" + destinationFile.getAbsolutePath() + "' could not be created. Check permissions.");
+            }
         }
         
         // Read in the source file.
         byte[] sourceFileUnencrypted = FileHandler.read(sourceFile);
-        
-        // Create the destination file.
-        if (!destinationFile.exists()) {
-            destinationFile.createNewFile();
-        }
-        
+
         // Encrypt the data.
         byte[] salt = new byte[KeyCrypterScrypt.SALT_LENGTH];
         secureRandom.nextBytes(salt);
