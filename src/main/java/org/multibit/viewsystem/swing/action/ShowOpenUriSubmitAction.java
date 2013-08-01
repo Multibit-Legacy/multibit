@@ -15,11 +15,6 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.BitcoinModel;
@@ -28,6 +23,9 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * This {@link Action} processes the open uri command
@@ -102,7 +100,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_USE_URI, "true");
 
             // save as user preference whether to show dialog or not
-            controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, (new Boolean(showDialog)).toString());
+            controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, (Boolean.valueOf(showDialog)).toString());
 
             showOpenUriDialog.setVisible(false);
             controller.displayView(View.SEND_BITCOIN_VIEW);

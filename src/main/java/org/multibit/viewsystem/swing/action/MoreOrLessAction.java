@@ -15,16 +15,14 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-
 import org.multibit.controller.Controller;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * This {@link Action} represents the action to toggle the more or less button
@@ -60,7 +58,7 @@ public class MoreOrLessAction extends AbstractAction {
         //log.debug("showSidePanel = " + showSidePanel);
 
         // Put it in the user preferences - will then get loaded when view form loads.
-        controller.getModel().setUserPreference(BitcoinModel.SHOW_SIDE_PANEL, (new Boolean(showSidePanel)).toString());
+        controller.getModel().setUserPreference(BitcoinModel.SHOW_SIDE_PANEL, (Boolean.valueOf(showSidePanel)).toString());
         
         // Display the side panel (or not).
         abstractTradePanel.displaySidePanel();

@@ -1813,7 +1813,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     @Override
     public String getOpenUriDialog() {
-        return (new Boolean((askEveryTime.isSelected()))).toString();
+        return (Boolean.valueOf((askEveryTime.isSelected()))).toString();
     }
 
     @Override
@@ -1822,7 +1822,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         if (ignoreAll.isSelected()) {
             useUri = false;
         }
-        return (new Boolean(useUri)).toString();
+        return (Boolean.valueOf(useUri)).toString();
     }
 
     @Override
