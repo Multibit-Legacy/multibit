@@ -15,6 +15,9 @@
  */
 package org.multibit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,10 +27,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class ApplicationInstanceManager {
+public final class ApplicationInstanceManager {
 
     private static final Logger log = LoggerFactory.getLogger(ApplicationInstanceManager.class);
 
@@ -39,7 +39,9 @@ public class ApplicationInstanceManager {
      */
     public static final int MULTIBIT_NETWORK_SOCKET = 8331;
 
-    /** Multibit message start - must end with newline */
+    /**
+     * Multibit message start - must end with newline
+     */
     public static final String MESSAGE_START = "$$MultiBitMessageStart$$\n";
 
     /**
@@ -49,13 +51,18 @@ public class ApplicationInstanceManager {
     public static final String MESSAGE_END = "\n$$X9Q3J7MessageEnd$$\n";
 
     private static Thread instanceListenerThread;
-    
+
     private static boolean shutdownSocket = false;
-    
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private ApplicationInstanceManager() {}
+
     /**
      * Registers this instance of the application. Passing in the rawURI that
      * was passed in on the command line
-     * 
+     *
      * @return true if first instance, false if not.
      */
     public static boolean registerInstance(String rawURI) {
@@ -67,8 +74,8 @@ public class ApplicationInstanceManager {
         // if unable to open, connect to existing and send new instance message,
         // return false
         try {
-            final ServerSocket socket = new ServerSocket(MULTIBIT_NETWORK_SOCKET, 10, InetAddress.getByAddress(new byte[] { 127, 0,
-                    0, 1 }));
+            final ServerSocket socket = new ServerSocket(MULTIBIT_NETWORK_SOCKET, 10, InetAddress.getByAddress(new byte[]{127, 0,
+                0, 1}));
             log.debug("Listening for application instances on socket " + MULTIBIT_NETWORK_SOCKET);
             instanceListenerThread = new Thread(new Runnable() {
                 @Override
@@ -120,20 +127,20 @@ public class ApplicationInstanceManager {
                         }
                     }
                     // exited while due to shutdown request - shutdown socket
-                     
+
                     if (client != null) {
                         try {
-                           client.close();
+                            client.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }    
-                    
+                    }
+
                     if (socket != null) {
                         try {
                             socket.close();
                         } catch (IOException e) {
-                             e.printStackTrace();
+                            e.printStackTrace();
                         }
                     }
                     log.debug("Socket is shutdown.");
@@ -147,7 +154,7 @@ public class ApplicationInstanceManager {
         } catch (IOException e) {
             log.debug("Port is already taken.  Notifying first instance.");
             try {
-                Socket clientSocket = new Socket(InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 }), MULTIBIT_NETWORK_SOCKET);
+                Socket clientSocket = new Socket(InetAddress.getByAddress(new byte[]{127, 0, 0, 1}), MULTIBIT_NETWORK_SOCKET);
                 OutputStream out = clientSocket.getOutputStream();
                 out.write(MESSAGE_START.getBytes());
                 if (rawURI != null) {
@@ -179,7 +186,7 @@ public class ApplicationInstanceManager {
             subListener.newInstanceCreated(rawURI);
         }
     }
-    
+
     public static void shutdownSocket() {
         log.debug("Making request to shut down socket ...");
 

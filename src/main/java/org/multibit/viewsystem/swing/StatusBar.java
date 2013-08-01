@@ -33,38 +33,22 @@ package org.multibit.viewsystem.swing;
  * limitations under the License.
  */
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.LayoutManager2;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
+import com.google.bitcoin.core.Block;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageListener;
+import org.multibit.model.core.StatusEnum;
+import org.multibit.viewsystem.swing.action.MultiBitAction;
+import org.multibit.viewsystem.swing.view.components.BlinkLabel;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -72,31 +56,20 @@ import javax.swing.plaf.UIResource;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
-
-import org.multibit.controller.Controller;
-import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.message.Message;
-import org.multibit.message.MessageListener;
-import org.multibit.model.core.StatusEnum;
-import org.multibit.viewsystem.swing.action.MultiBitAction;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
-import org.multibit.viewsystem.swing.view.components.BlinkLabel;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.bitcoin.core.Block;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Timer;
 
 /**
  * StatusBar. <BR>
  * A status bar is made of multiple zones. A zone can be any JComponent.
- * 
+ * <p/>
  * In MultiBit the StatusBar is responsible for :
- * 
- * 1) Online/ Connecting/ Error status label 
+ * <p/>
+ * 1) Online/ Connecting/ Error status label
  * 2) Status messages - these are cleared after a period of time
  * 3) Synchronisatin progress bar
  */
@@ -109,7 +82,7 @@ public class StatusBar extends JPanel implements MessageListener {
     private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
     private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
     private static final int STATUSBAR_HEIGHT = 30;
-    
+
     private static final double TOLERANCE = 0.0000001;
 
     public static final int ONLINE_LABEL_WIDTH_DELTA = 10;
@@ -135,21 +108,20 @@ public class StatusBar extends JPanel implements MessageListener {
 
     private final Controller controller;
     private final BitcoinController bitcoinController;
-    
+
     private MultiBitFrame mainFrame;
-    
-    private JProgressBar syncProgressBar; 
-    
+
+    private JProgressBar syncProgressBar;
+
     private SimpleDateFormat dateFormatter;
 
     /**
      * Construct a new StatusBar
-     * 
      */
     public StatusBar(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
-        
+
         this.mainFrame = mainFrame;
 
         setLayout(LookAndFeelTweaks.createHorizontalPercentLayout(controller.getLocaliser().getLocale()));
@@ -162,7 +134,7 @@ public class StatusBar extends JPanel implements MessageListener {
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         final BitcoinController finalController = this.bitcoinController;
-        
+
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         onlineLabel = new MultiBitLabel("");
@@ -183,16 +155,16 @@ public class StatusBar extends JPanel implements MessageListener {
                             Block blockHeader = finalController.getMultiBitService().getChain().getChainHead().getHeader();
                             Date blockTime = blockHeader.getTime();
                             int numberOfPeers = 0;
-                            if ( finalController.getMultiBitService().getPeerGroup() != null && finalController.getMultiBitService().getPeerGroup().getConnectedPeers() != null) {
+                            if (finalController.getMultiBitService().getPeerGroup() != null && finalController.getMultiBitService().getPeerGroup().getConnectedPeers() != null) {
                                 numberOfPeers = finalController.getMultiBitService().getPeerGroup().getConnectedPeers().size();
                             }
-                            onlineLabel.setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[] {
-                                    finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
-                                            new Object[] { blockHeight }),
-                                            finalController.getLocaliser().getString("multiBitFrame.blockDate",
-                                                    new Object[] { dateFormatter.format(blockTime) }),
-                                            finalController.getLocaliser().getString("multiBitFrame.connectedTo",
-                                                    new Object[] { numberOfPeers })}));
+                            onlineLabel.setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[]{
+                                finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
+                                    new Object[]{blockHeight}),
+                                finalController.getLocaliser().getString("multiBitFrame.blockDate",
+                                    new Object[]{dateFormatter.format(blockTime)}),
+                                finalController.getLocaliser().getString("multiBitFrame.connectedTo",
+                                    new Object[]{numberOfPeers})}));
                         }
                     }
                 }
@@ -212,23 +184,23 @@ public class StatusBar extends JPanel implements MessageListener {
 
         // show messages action
         MultiBitAction showMessagesAction = new MultiBitAction(controller, null, null,
-                "messagesPanel.title", "messagesPanel.mnemonic", org.multibit.viewsystem.View.MESSAGES_VIEW);
+            "messagesPanel.title", "messagesPanel.mnemonic", org.multibit.viewsystem.View.MESSAGES_VIEW);
         statusLabel.setAction(showMessagesAction);
         statusLabel.setHorizontalAlignment(JButton.LEADING);
-        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
-                controller.getLocaliser().getString("multiBitFrame.statusBar.tooltip1"), "\n",
-                controller.getLocaliser().getString("multiBitFrame.statusBar.tooltip2") });
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[]{
+            controller.getLocaliser().getString("multiBitFrame.statusBar.tooltip1"), "\n",
+            controller.getLocaliser().getString("multiBitFrame.statusBar.tooltip2")});
         statusLabel.setToolTipText(tooltipText);
 
         int onlineWidth = Math.max(Math.max(
-                getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
-                        controller.getLocaliser().getString("multiBitFrame.onlineText")),
-                getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
-                        controller.getLocaliser().getString("multiBitFrame.offlineText"))),
-                        getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
-                                controller.getLocaliser().getString("multiBitFrame.errorText"))
-                        )
-                + ONLINE_LABEL_WIDTH_DELTA;
+            getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
+                controller.getLocaliser().getString("multiBitFrame.onlineText")),
+            getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
+                controller.getLocaliser().getString("multiBitFrame.offlineText"))),
+            getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
+                controller.getLocaliser().getString("multiBitFrame.errorText"))
+        )
+            + ONLINE_LABEL_WIDTH_DELTA;
 
         int onlineHeight = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + ONLINE_LABEL_HEIGHT_DELTA;
 
@@ -244,11 +216,11 @@ public class StatusBar extends JPanel implements MessageListener {
         syncProgressBar.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         syncProgressBar.setOpaque(true);
         syncProgressBar.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-       
+
         JPanel filler = new JPanel();
         filler.setOpaque(true);
         filler.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        
+
         addZone("online", onlineLabel, "" + onlineWidth, "left");
         addZone("progressBar", syncProgressBar, "" + 200, "left");
         addZone("network", statusLabel, "*", "");
@@ -275,7 +247,7 @@ public class StatusBar extends JPanel implements MessageListener {
 
     /**
      * Update online status text with new value.
-     * 
+     *
      * @param statusEnum
      */
     public void updateOnlineStatusText(final StatusEnum finalStatusEnum) {
@@ -293,7 +265,7 @@ public class StatusBar extends JPanel implements MessageListener {
 
     /**
      * Update online status text with new value.
-     * 
+     *
      * @param statusEnum
      */
     public void updateOnlineStatusTextOnSwingThread(final StatusEnum finalStatusEnum) {
@@ -317,9 +289,9 @@ public class StatusBar extends JPanel implements MessageListener {
         onlineLabel.setText(onlineStatus);
         if (finalStatusEnum == StatusEnum.ERROR) {
             // Set tooltip to look at Messages view
-            String toolTip = HelpContentsPanel.createMultilineTooltipText(new String[] {
-                    controller.getLocaliser().getString("multiBitFrame.statusBar.error1"),
-                    controller.getLocaliser().getString("multiBitFrame.statusBar.error2") });
+            String toolTip = HelpContentsPanel.createMultilineTooltipText(new String[]{
+                controller.getLocaliser().getString("multiBitFrame.statusBar.error1"),
+                controller.getLocaliser().getString("multiBitFrame.statusBar.error2")});
             onlineLabel.setToolTipText(toolTip);
         }
     }
@@ -332,9 +304,9 @@ public class StatusBar extends JPanel implements MessageListener {
                 syncProgressBar.setValue(0);
                 syncProgressBar.setVisible(true);
             }
-        });    
+        });
     }
-    
+
     synchronized private void finishSync() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -342,35 +314,35 @@ public class StatusBar extends JPanel implements MessageListener {
                 syncProgressBar.setValue(100);
                 syncProgressBar.setVisible(false);
             }
-        });    
+        });
     }
-    
+
     synchronized private void updateSync(final int percent, final String syncMessage) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 syncProgressBar.setValue(percent);
                 syncProgressBar.setToolTipText(HelpContentsPanel.createTooltipText(syncMessage));
-        
+
                 // when a language changes the progress bar needs to be made visible
                 syncProgressBar.setVisible(true);
             }
         });
     }
-    
+
     @Override
     public void newMessageReceived(final Message newMessage) {
         if (newMessage == null || !newMessage.isShowInStatusBar()) {
             return;
         }
-        
+
         if (newMessage.getPercentComplete() == Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
             updateStatusLabel(newMessage.getText(), newMessage.isClearAutomatically());
         } else {
             if (Math.abs(newMessage.getPercentComplete() - 0) < TOLERANCE) {
                 startSync();
             }
-            updateSync((int)newMessage.getPercentComplete(), newMessage.getText());
+            updateSync((int) newMessage.getPercentComplete(), newMessage.getText());
 
             if (Math.abs(newMessage.getPercentComplete() - 100) < TOLERANCE) {
                 finishSync();
@@ -397,12 +369,11 @@ public class StatusBar extends JPanel implements MessageListener {
 
     /**
      * Adds a new zone in the StatusBar
-     * 
+     *
      * @param id
      * @param zone
-     * @param constraints
-     *            one of the constraint support by the
-     *            com.l2fprod.common.swing.PercentLayout
+     * @param constraints one of the constraint support by the
+     *                    com.l2fprod.common.swing.PercentLayout
      */
     private void addZone(String id, Component zone, String constraints, String tweak) {
         // is there already a zone with this id?
@@ -420,7 +391,7 @@ public class StatusBar extends JPanel implements MessageListener {
                 if (jc instanceof JLabel) {
                     if ("left".equals(tweak)) {
                         jc.setBorder(new CompoundBorder(new EmptyBorder(0, 3, 0, 2), BorderFactory
-                                .createLineBorder(Color.lightGray)));
+                            .createLineBorder(Color.lightGray)));
                     } else {
                         if ("right".equals(tweak)) {
                             jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 1)));
@@ -447,23 +418,20 @@ public class StatusBar extends JPanel implements MessageListener {
 
     /**
      * For example:
-     * 
+     * <p/>
      * <code>
-     *  setZones(new String[]{"A","B"},
-     *           new JComponent[]{new JLabel(), new JLabel()},
-     *           new String[]{"33%","*"});
+     * setZones(new String[]{"A","B"},
+     * new JComponent[]{new JLabel(), new JLabel()},
+     * new String[]{"33%","*"});
      * </code>
-     * 
+     * <p/>
      * would construct a new status bar with two zones (two JLabels) named A and
      * B, the first zone A will occupy 33 percents of the overall size of the
      * status bar and B the left space.
-     * 
-     * @param ids
-     *            a value of type 'String[]'
-     * @param zones
-     *            a value of type 'JComponent[]'
-     * @param constraints
-     *            a value of type 'String[]'
+     *
+     * @param ids         a value of type 'String[]'
+     * @param zones       a value of type 'JComponent[]'
+     * @param constraints a value of type 'String[]'
      */
     public void setZones(String[] ids, Component[] zones, String[] constraints) {
         removeAll();
@@ -491,9 +459,9 @@ public class StatusBar extends JPanel implements MessageListener {
  * components use the "*" constraint the space will be divided among the
  * components.
  * </ul>
- * 
+ *
  * @javabean.class name="PercentLayout"
- *                 shortDescription="A layout supports constraints expressed in percent."
+ * shortDescription="A layout supports constraints expressed in percent."
  */
 class PercentLayout implements LayoutManager2 {
 
@@ -663,11 +631,9 @@ class PercentLayout implements LayoutManager2 {
 
     /**
      * Adds the specified component with the specified name to the layout.
-     * 
-     * @param name
-     *            the component name
-     * @param comp
-     *            the component to be added
+     *
+     * @param name the component name
+     * @param comp the component to be added
      */
     @Override
     public void addLayoutComponent(String name, Component comp) {
@@ -675,9 +641,8 @@ class PercentLayout implements LayoutManager2 {
 
     /**
      * Removes the specified component from the layout.
-     * 
-     * @param comp
-     *            the component ot be removed
+     *
+     * @param comp the component ot be removed
      */
     @Override
     public void removeLayoutComponent(Component comp) {
@@ -687,9 +652,8 @@ class PercentLayout implements LayoutManager2 {
     /**
      * Calculates the minimum size dimensions for the specified panel given the
      * components in the specified parent container.
-     * 
-     * @param parent
-     *            the component to be laid out
+     *
+     * @param parent the component to be laid out
      * @see #preferredLayoutSize
      */
     @Override
@@ -699,7 +663,7 @@ class PercentLayout implements LayoutManager2 {
 
     /**
      * Returns the maximum size of this component.
-     * 
+     *
      * @see java.awt.Component#getMinimumSize()
      * @see java.awt.Component#getPreferredSize()
      * @see java.awt.LayoutManager
@@ -769,7 +733,7 @@ class PercentLayout implements LayoutManager2 {
                 Constraint constraint = m_ComponentToConstraint.get(components[i]);
                 if (constraint == null || constraint == PREFERRED_SIZE) {
                     sizes[i] = (HORIZONTAL == orientation ? components[i].getPreferredSize().width : components[i]
-                            .getPreferredSize().height);
+                        .getPreferredSize().height);
                     availableSize -= sizes[i];
                 } else if (constraint instanceof NumberConstraint) {
                     sizes[i] = ((NumberConstraint) constraint).intValue();
@@ -855,19 +819,19 @@ class StatusClearTask extends TimerTask {
 
         if (previousLabelRepeats > StatusBar.NUMBER_OF_REPEATS) {
             if (currentStatusLabelText != null && !"".equals(currentStatusLabelText)
-                    && currentStatusLabelText.equals(previousStatusLabelText)) {
+                && currentStatusLabelText.equals(previousStatusLabelText)) {
                 if (StatusBar.clearAutomatically) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             // clear label
                             statusLabel.setText("");
-                          }
+                        }
                     });
                     previousStatusLabelText = "";
                     previousLabelRepeats = 0;
                     hasReset = true;
-               }
+                }
             }
         }
         if (currentStatusLabelText != null && !currentStatusLabelText.equals(previousStatusLabelText)) {
@@ -886,10 +850,9 @@ class StatusClearTask extends TimerTask {
 }
 
 /**
- * LookAndFeelTweaks. <br>
- * 
+ * LookAndFeelTweaks
  */
-class LookAndFeelTweaks {
+final class LookAndFeelTweaks {
 
     private static final Logger log = LoggerFactory.getLogger(LookAndFeelTweaks.class);
 
@@ -898,6 +861,12 @@ class LookAndFeelTweaks {
     // TODO These are never used
     public final static Border WINDOW_BORDER = BorderFactory.createEmptyBorder(4, 10, 10, 10);
     public final static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private LookAndFeelTweaks() {
+    }
 
     public static void tweak() {
         Object listFont = UIManager.get("List.font");
@@ -950,9 +919,9 @@ class LookAndFeelTweaks {
 
     public static void htmlize(JComponent component, Font font) {
         String stylesheet = "body { margin-top: 0; margin-bottom: 0; margin-left: 0; margin-right: 0; font-family: "
-                + font.getName() + "; font-size: " + font.getSize() + "pt; }"
-                + "a, p, li { margin-top: 0; margin-bottom: 0; margin-left: 0; margin-right: 0; font-family: " + font.getName()
-                + "; font-size: " + font.getSize() + "pt; }";
+            + font.getName() + "; font-size: " + font.getSize() + "pt; }"
+            + "a, p, li { margin-top: 0; margin-bottom: 0; margin-left: 0; margin-right: 0; font-family: " + font.getName()
+            + "; font-size: " + font.getSize() + "pt; }";
 
         try {
             HTMLDocument doc = null;
