@@ -1,19 +1,14 @@
 package org.multibit.network;
 
-import java.io.IOException;
-import java.util.Queue;
-import java.util.TimerTask;
-
-import javax.swing.SwingUtilities;
-
+import com.google.bitcoin.store.BlockStoreException;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.viewsystem.View;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.store.BlockStoreException;
+import java.io.IOException;
+import java.util.Queue;
+import java.util.TimerTask;
 
 
 
@@ -77,8 +72,5 @@ public class ReplayManagerTimerTask extends TimerTask {
     public void currentTaskIsTidyingUp(boolean currentTaskIsTidyingUp) {
         this.currentTaskIsTidyingUp = currentTaskIsTidyingUp;
     }
-    
-    public boolean isCurrentlyRunningATask() {
-        return isCurrentlyRunningATask() ? true : false;
-    }
+
 }

@@ -240,8 +240,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     }
                     
                     if (wasSuccessful) {
-                        shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] { new Integer(numberOfAddressesToCreate)});
-                        longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
+                        shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] {numberOfAddressesToCreate});
+                        longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyLong", new Object[] {numberOfAddressesToCreate, walletDescription});
                         if (privateKeysBackupFile != null) {
                             longMessage = longMessage + ".\n" + controller.getLocaliser().getString("changePasswordPanel.keysBackupSuccess", new Object[] { privateKeysBackupFile.getCanonicalPath() });
                         }
@@ -269,7 +269,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     
                     if (shortMessage != null) {
                         createNewReceivingAddressPanel.setMessageText(shortMessage);           
-                         if (createNewReceivingAddressPanel != null && createNewReceivingAddressDialog != null && createNewReceivingAddressDialog.isVisible()) {
+                         if (createNewReceivingAddressDialog != null && createNewReceivingAddressDialog.isVisible()) {
                              // Show short message in dialog, long in messages.
                             createNewReceivingAddressPanel.setMessageText(shortMessage);
                             Message logMessage = new Message(longMessage);
