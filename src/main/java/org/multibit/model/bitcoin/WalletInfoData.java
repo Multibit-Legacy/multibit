@@ -15,24 +15,9 @@
  */
 package org.multibit.model.bitcoin;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
 import org.multibit.MultiBit;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -41,9 +26,8 @@ import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
+import java.io.*;
+import java.util.*;
 
 /**
  * Wallet info is the companion info to the bitcoinj Wallet that multibit uses
@@ -380,10 +364,11 @@ public class WalletInfoData {
             walletPreferencesClone.remove("sendWasSuccessful");
             walletPreferencesClone.remove("earliestTransactionDate");
 
-            for (Object key : walletPreferencesClone.keySet()) {
+            for (Map.Entry entry : walletPreferencesClone.entrySet()) {
+
                 String columnOne = PROPERTY_MARKER;
-                String columnTwo = (String) key;
-                String encodedColumnThree = encodeURLString((String) walletPreferencesClone.get(key));
+                String columnTwo = (String) entry.getKey();
+                String encodedColumnThree = encodeURLString((String) walletPreferencesClone.get(entry.getKey()));
                 if (columnTwo == null) {
                     columnTwo = "";
                 }
