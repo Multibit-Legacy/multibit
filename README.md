@@ -6,7 +6,7 @@ MultiBit relies on the following technologies:
 
 * Maven as the build system, so the usual Maven processes apply. If you're not familiar
 with Maven then [download it first](http://maven.apache.org) and follow their installation instructions.
-* ZXing for QR codes
+* [ZXing ("Zebra Crossing")](https://code.google.com/p/zxing/) for QR codes
 * [Bitcoinj](https://code.google.com/p/bitcoinj/) for access to the Bitcoin network
 * IzPack for creating installers for Windows, Mac, Linux
 * [Bitcoinj Enforcer Rules](https://github.com/gary-rowe/BitcoinjEnforcerRules) to prevent dependency chain attacks
