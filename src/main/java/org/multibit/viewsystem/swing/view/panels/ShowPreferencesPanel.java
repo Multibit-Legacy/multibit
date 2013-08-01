@@ -1642,7 +1642,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         }
     }
 
-    class LanguageData implements Comparable<LanguageData> {
+    static class LanguageData implements Comparable<LanguageData> {
         public String languageCode;
         public String language;
         public ImageIcon image;
