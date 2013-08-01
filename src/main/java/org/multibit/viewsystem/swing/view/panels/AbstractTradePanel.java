@@ -1871,19 +1871,20 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     }
     
     private String createCenteredMultilineLabelText(String labelText) {
-        String centeredText = "<html><center>";
+        StringBuilder centeredText = new StringBuilder("<html><center>");
         String[] lines = labelText.split("\\|");
         if (lines != null) {
+
             for (int i = 0; i < lines.length ; i++) {
                 if ( i > 0) {
-                    centeredText += "<br>";
+                    centeredText.append("<br>");
                 }
-                centeredText += lines[i];
+                centeredText.append(lines[i]);
             }
         }
-        centeredText += "</center></html>";
+        centeredText.append("</center></html>");
         
-        return centeredText;
+        return centeredText.toString();
     }
 
     // CopyQRCodeImageDataProvider methods

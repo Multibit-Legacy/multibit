@@ -17,20 +17,8 @@ package org.multibit.viewsystem.swing.view.dialogs;
 
 
 
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.math.BigInteger;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
-
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.Wallet.SendRequest;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
@@ -40,12 +28,13 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
-import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+import org.multibit.viewsystem.swing.view.components.*;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * The validation error dialog - used to tell the user their input is invalid.
@@ -123,57 +112,57 @@ public class ValidationErrorDialog extends MultiBitDialog {
         }
 
         // Get localised validation messages.
-        String completeMessage = "";
+        StringBuilder completeMessage = new StringBuilder();
 
         int rows = 0;
         String longestRow = "";
 
         if (addressIsInvalidBoolean) {
-            completeMessage = controller.getLocaliser().getString("validationErrorView.addressInvalidMessage",
-                    new String[] { addressValue });
-            longestRow = completeMessage;
+            completeMessage.append(controller.getLocaliser().getString("validationErrorView.addressInvalidMessage",
+                    new String[] { addressValue }));
+            longestRow = completeMessage.toString();
             rows++;
         }
         if (amountIsMissingBoolean) {
-            if (!"".equals(completeMessage)) {
-                completeMessage = completeMessage + "\n";
+            if (completeMessage.length()>0) {
+                completeMessage.append("\n");
             }
             String textToAdd = controller.getLocaliser().getString("validationErrorView.amountIsMissingMessage");
             if (textToAdd.length() > longestRow.length()) {
                 longestRow = textToAdd;
             }
-            completeMessage = completeMessage + textToAdd;
+            completeMessage.append(textToAdd);
             rows++;
         }
         if (amountIsInvalidBoolean) {
-            if (!"".equals(completeMessage)) {
-                completeMessage = completeMessage + "\n";
+            if (completeMessage.length() > 0) {
+                completeMessage.append("\n");
             }
             String textToAdd = controller.getLocaliser().getString("validationErrorView.amountInvalidMessage",
                     new String[] { amountValue });
             if (textToAdd.length() > longestRow.length()) {
                 longestRow = textToAdd;
             }
-            completeMessage = completeMessage + textToAdd;
+            completeMessage.append(textToAdd);
 
             rows++;
         }
         if (amountIsNegativeOrZeroBoolean) {
-            if (!"".equals(completeMessage)) {
-                completeMessage = completeMessage + "\n";
+            if (completeMessage.length()>0) {
+                completeMessage.append("\n");
             }
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.amountIsNegativeOrZeroMessage");
             if (textToAdd.length() > longestRow.length()) {
                 longestRow = textToAdd;
             }
-            completeMessage = completeMessage + textToAdd;
+            completeMessage.append(textToAdd);
 
             rows++;
         }
         if (notEnoughFundsBoolean) {
-            if (!"".equals(completeMessage)) {
-                completeMessage = completeMessage + "\n";
+            if (completeMessage.length()>0) {
+                completeMessage.append("\n");
             }
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
@@ -192,9 +181,9 @@ public class ValidationErrorDialog extends MultiBitDialog {
                 }
                 if (lines[i] != null && lines[i].length() > 0) {
                     if (i == 0) {
-                        completeMessage = completeMessage + lines[i];
+                        completeMessage.append(lines[i]);
                     } else {
-                        completeMessage = completeMessage + "\n" + lines[i];
+                        completeMessage.append(completeMessage).append("\n").append(lines[i]);
                     }
                     rows++;
                 }
@@ -225,7 +214,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
         if (this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
             options = new Object[] { okButton, availableToSpendHelpButton};
         }
-        MultiBitTextArea completeMessageTextArea = new MultiBitTextArea("\n" + completeMessage + "\n", rows, 20, controller);
+        MultiBitTextArea completeMessageTextArea = new MultiBitTextArea("\n" + completeMessage.toString() + "\n", rows, 20, controller);
         completeMessageTextArea.setOpaque(false);
         completeMessageTextArea.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         completeMessageTextArea.setEditable(false);
