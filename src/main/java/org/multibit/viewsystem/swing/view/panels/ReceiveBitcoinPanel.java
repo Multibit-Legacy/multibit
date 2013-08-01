@@ -136,7 +136,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 0.1;
-        constraints.weightx = 0.2;
+        constraints.weighty = 0.2;
         constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -213,7 +213,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         constraints.weightx = 0.6;
         constraints.weighty = 1.0;
         constraints.gridwidth = 4;
-        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(labelScrollPane, constraints);
 

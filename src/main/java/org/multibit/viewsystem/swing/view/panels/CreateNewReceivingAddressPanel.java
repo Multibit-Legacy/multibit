@@ -196,7 +196,6 @@ public class CreateNewReceivingAddressPanel extends JPanel {
         constraints.weighty = 0.1;
         constraints.gridwidth = 4;
         constraints.gridheight = 1;
-        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(buttonPanel, constraints);
 
