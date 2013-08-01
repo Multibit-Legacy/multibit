@@ -53,7 +53,7 @@ public class VersionComparator implements Comparator<String> {
         }
         ordinal =  ordinal -  MAXIMIMUM_NUMBER_PER_CATEGORY / 5 * (isSnapshot * 4 + isAlpha * 3 + isBeta * 2 + isReleaseCandidate);
 
-        return new Long(ordinal);
+        return ordinal;
     }
     
     private int parseInt(String intString) {

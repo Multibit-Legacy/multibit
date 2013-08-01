@@ -15,20 +15,16 @@
  */
 package org.multibit.viewsystem.swing.view.dialogs;
 
-import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
-import org.multibit.viewsystem.swing.view.panels.CreateNewReceivingAddressPanel;
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-
-import javax.swing.JComboBox;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
+import org.multibit.viewsystem.swing.view.panels.CreateNewReceivingAddressPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The dialog for creating new receiving addresses.
@@ -70,7 +66,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
             FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         
             int minimumHeight = fontMetrics.getHeight() * 8 + HEIGHT_DELTA;
-            int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("createNewReceivingAddressDialog.message")), fontMetrics.stringWidth(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] { new Integer(100)}))) + WIDTH_DELTA;
+            int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("createNewReceivingAddressDialog.message")), fontMetrics.stringWidth(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] {100}))) + WIDTH_DELTA;
             setMinimumSize(new Dimension(minimumWidth, minimumHeight));
             positionDialogRelativeToParent(this, 0.5D, 0.47D);
         } catch (NullPointerException npe) {

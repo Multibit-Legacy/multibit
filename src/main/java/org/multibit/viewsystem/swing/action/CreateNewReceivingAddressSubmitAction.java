@@ -15,31 +15,17 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.Action;
-import javax.swing.JPasswordField;
-import javax.swing.SwingWorker;
-
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.WalletAddressBookData;
-import org.multibit.model.bitcoin.BitcoinModel;
-import org.multibit.model.bitcoin.WalletData;
-import org.multibit.model.bitcoin.WalletBusyListener;
-import org.multibit.model.bitcoin.WalletInfoData;
+import org.multibit.model.bitcoin.*;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
@@ -48,9 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This {@link Action} represents an action to actually create receiving
@@ -144,8 +134,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             int numberOfAddressesToCreate = createNewReceivingAddressPanel.getNumberOfAddressesToCreate();
             
             String walletDescription =  super.bitcoinController.getModel().getActiveWalletWalletInfo().getProperty(WalletInfoData.DESCRIPTION_PROPERTY);
-            String shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingShort", new Object[] { new Integer(numberOfAddressesToCreate)});
-            String longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
+            String shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingShort", new Object[] {numberOfAddressesToCreate});
+            String longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingLong", new Object[] {numberOfAddressesToCreate, walletDescription});
             createNewReceivingAddressPanel.setMessageText(shortMessage);
             MessageManager.INSTANCE.addMessage(new Message(" "));
             Message logMessage = new Message(longMessage);
