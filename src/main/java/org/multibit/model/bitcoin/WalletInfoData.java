@@ -368,7 +368,7 @@ public class WalletInfoData {
 
                 String columnOne = PROPERTY_MARKER;
                 String columnTwo = (String) entry.getKey();
-                String encodedColumnThree = encodeURLString((String) walletPreferencesClone.get(entry.getKey()));
+                String encodedColumnThree = encodeURLString((String) entry.getValue());
                 if (columnTwo == null) {
                     columnTwo = "";
                 }
