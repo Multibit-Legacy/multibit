@@ -15,28 +15,9 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
+import com.googlecode.jcsv.CSVStrategy;
+import com.googlecode.jcsv.writer.CSVWriter;
+import com.googlecode.jcsv.writer.internal.CSVWriterBuilder;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletTableDataEntryConverter;
@@ -54,9 +35,17 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.googlecode.jcsv.CSVStrategy;
-import com.googlecode.jcsv.writer.CSVWriter;
-import com.googlecode.jcsv.writer.internal.CSVWriterBuilder;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 /**
  * This {@link Action} exports transactions from a wallet.
@@ -123,7 +112,7 @@ public class ExportTransactionsSubmitAction extends AbstractAction {
             String defaultFileName;
             if (walletFilename != null) {
                 // Find stem of filename.
-                int suffixSeparatorLong = walletFilename.lastIndexOf(".");
+                int suffixSeparatorLong = walletFilename.lastIndexOf('.');
                 String stem = walletFilename.substring(0, suffixSeparatorLong);  
                 defaultFileName = stem + "." + BitcoinModel.CSV_FILE_EXTENSION;
             } else {
