@@ -16,29 +16,8 @@
 package org.multibit.viewsystem.swing.view.panels;
 
 
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Locale;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
+import com.google.bitcoin.core.Transaction;
+import com.xeiam.xchart.*;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.core.CoreModel;
@@ -50,18 +29,18 @@ import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Transaction;
-
-import com.xeiam.xchart.BitmapEncoder;
-import com.xeiam.xchart.Chart;
-import com.xeiam.xchart.SeriesColor;
-import com.xeiam.xchart.SeriesLineStyle;
-import com.xeiam.xchart.SeriesMarker;
-import com.xeiam.xchart.XChartPanel;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * The Charts view.
@@ -407,7 +386,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
     return View.CHARTS_VIEW;
   }
 
-  class ChartData {
+  static class ChartData {
 
     private Date date;
     private BigInteger value;

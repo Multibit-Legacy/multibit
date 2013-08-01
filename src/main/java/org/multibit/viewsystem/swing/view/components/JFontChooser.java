@@ -4,39 +4,13 @@
  ************************************************************/
 package org.multibit.viewsystem.swing.view.components;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import org.multibit.controller.Controller;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
@@ -47,12 +21,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
-
-import org.multibit.controller.Controller;
-import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.awt.*;
+import java.awt.event.*;
 
 /**
  * The <code>JFontChooser</code> class is a swing component for font selection.
@@ -461,7 +431,7 @@ public class JFontChooser extends JComponent {
         }
     }
 
-    protected class TextFieldKeyHandlerForListSelectionUpDown extends KeyAdapter {
+    protected static class TextFieldKeyHandlerForListSelectionUpDown extends KeyAdapter {
         private JList targetList;
 
         public TextFieldKeyHandlerForListSelectionUpDown(JList list) {
@@ -493,7 +463,7 @@ public class JFontChooser extends JComponent {
         }
     }
 
-    protected class ListSearchTextFieldDocumentHandler implements DocumentListener {
+    protected static class ListSearchTextFieldDocumentHandler implements DocumentListener {
         JList targetList;
 
         public ListSearchTextFieldDocumentHandler(JList targetList) {

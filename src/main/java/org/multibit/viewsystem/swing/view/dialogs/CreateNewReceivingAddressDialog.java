@@ -66,7 +66,12 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
             FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         
             int minimumHeight = fontMetrics.getHeight() * 8 + HEIGHT_DELTA;
-            int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("createNewReceivingAddressDialog.message")), fontMetrics.stringWidth(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] {100}))) + WIDTH_DELTA;
+            int minimumWidth = Math.max(
+                fontMetrics.stringWidth(
+                    controller.getLocaliser().getString("createNewReceivingAddressDialog.message")),
+                fontMetrics.stringWidth(
+                    controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort",
+                        new Object[] {100}))) + WIDTH_DELTA;
             setMinimumSize(new Dimension(minimumWidth, minimumHeight));
             positionDialogRelativeToParent(this, 0.5D, 0.47D);
         } catch (NullPointerException npe) {

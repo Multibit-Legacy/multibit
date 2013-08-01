@@ -786,7 +786,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         }
     }
 
-    class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
+    static class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
         MultiBitLabel label = new MultiBitLabel("");
@@ -813,7 +813,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         }
     }
 
-    class LeftJustifiedRenderer extends DefaultTableCellRenderer {
+    static class LeftJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549115L;
 
         MultiBitLabel label = new MultiBitLabel("");
@@ -840,7 +840,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         }
     }
 
-    class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
+    static class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1999545L;
 
         MultiBitLabel label = new MultiBitLabel("");
@@ -867,7 +867,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         }
     }
 
-    class RightJustifiedRenderer extends DefaultTableCellRenderer {
+    static class RightJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 2299545L;
 
         MultiBitLabel label = new MultiBitLabel("");
