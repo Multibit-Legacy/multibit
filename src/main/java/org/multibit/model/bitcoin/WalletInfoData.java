@@ -653,8 +653,7 @@ public class WalletInfoData {
             // If there are any spaces convert them to %20s.
             stringToDecode = stringToDecode.replace(ENCODED_SPACE_CHARACTER, "+");
 
-            String decodedText = java.net.URLDecoder.decode(stringToDecode, "UTF-8");
-            return decodedText;
+            return java.net.URLDecoder.decode(stringToDecode, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             // Should not happen - UTF-8 is a valid encoding.
             throw new WalletLoadException("Could not decode string '" + stringToDecode + "'", e);

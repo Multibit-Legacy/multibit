@@ -71,15 +71,12 @@ public class ExchangeController extends AbstractController<CoreController> {
     
     private static class EventHandler extends AbstractEventHandler<ExchangeController> {
 
-        private volatile URI rawBitcoinURI = null;
-
         public EventHandler(ExchangeController controller) {
             super(controller);
         }
 
         @Override
         public void handleOpenURIEvent(URI rawBitcoinURI) {
-            this.rawBitcoinURI = rawBitcoinURI;
             // do nothing
 
         }

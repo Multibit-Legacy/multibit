@@ -233,8 +233,6 @@ public class CoreController extends BaseController<CoreController> implements Ge
     
     private static class EventHandler extends AbstractEventHandler<CoreController> {
 
-        private volatile URI rawBitcoinURI = null;
-        
         public EventHandler(CoreController coreController){
             super(coreController);
         }
