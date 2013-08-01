@@ -907,7 +907,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
             return null;
         }
         
-        int suffixSeparator = walletFilename.lastIndexOf(".");
+        int suffixSeparator = walletFilename.lastIndexOf('.');
         String stem = walletFilename.substring(0, suffixSeparator + 1);
         return stem + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION;
     }

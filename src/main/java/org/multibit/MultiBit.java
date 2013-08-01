@@ -614,7 +614,7 @@ public final class MultiBit {
             // This a really limited approach (no consideration of
             // "amount=10.0&label=Black & White")
             // but should be OK for early use cases.
-            int queryParamIndex = rawURI.indexOf("?");
+            int queryParamIndex = rawURI.indexOf('?');
             if (queryParamIndex > 0 && !rawURI.contains("%")) {
                 // Possibly encoded but more likely not
                 String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");

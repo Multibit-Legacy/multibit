@@ -627,7 +627,7 @@ public class WalletInfoData {
                 isEncoded = false;
             } else {
                 // See if there is a % followed by non hex - not encoded.
-                int percentPosition = stringToDecode.indexOf("%");
+                int percentPosition = stringToDecode.indexOf('%');
                 if (percentPosition > -1) {
                     int nextCharacterPosition = percentPosition + 1;
                     int nextNextCharacterPosition = nextCharacterPosition + 1;
@@ -639,7 +639,7 @@ public class WalletInfoData {
                         String nextNextCharacter = stringToDecode.substring(nextNextCharacterPosition,
                                 nextNextCharacterPosition + 1).toLowerCase();
 
-                        if (VALID_HEX_CHARACTERS.indexOf(nextCharacter) < 0 || VALID_HEX_CHARACTERS.indexOf(nextNextCharacter) < 0) {
+                        if (!VALID_HEX_CHARACTERS.contains(nextCharacter) || !VALID_HEX_CHARACTERS.contains(nextNextCharacter)) {
                             isEncoded = false;
                         }
                     }

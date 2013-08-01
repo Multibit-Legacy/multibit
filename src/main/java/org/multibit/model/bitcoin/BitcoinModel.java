@@ -15,15 +15,9 @@
  */
 package org.multibit.model.bitcoin;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import com.google.bitcoin.core.*;
+import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.bitcoin.store.BlockStoreException;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.AbstractModel;
@@ -32,19 +26,8 @@ import org.multibit.model.core.CoreModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Block;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.Sha256Hash;
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionInput;
-import com.google.bitcoin.core.TransactionOutput;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.store.BlockStoreException;
+import java.math.BigInteger;
+import java.util.*;
 
 /**
  * Model containing the MultiBit data.
@@ -222,11 +205,10 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Set a wallet preference from the active wallet.
      *
-     * @return
      */
     public void setActiveWalletPreference(String key, String value) {
         if (BitcoinModel.SEND_AMOUNT.equals(key)) {
-            if (value.indexOf(",") > -1) {
+            if (value.contains(",")) {
                 boolean bad = true;
                 bad = !bad;
             }
@@ -240,7 +222,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Get the estimated balance of the active wallet.
      *
-     * @return
+     * @return The estimated balance
      */
     public BigInteger getActiveWalletEstimatedBalance() {
         if (activeWalletModelData.getWallet() == null) {
@@ -253,7 +235,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Get the available balance (plus boomeranged change) of the active wallet.
      *
-     * @return
+     * @return the available balance
      */
     public BigInteger getActiveWalletAvailableBalance() {
         if (activeWalletModelData.getWallet() == null) {
@@ -266,25 +248,21 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Get the wallet data for the active wallet.
      *
-     * @return
+     * @return the table data list
      */
     public List<WalletTableData> getActiveWalletWalletData() {
         return activeWalletModelData.getWalletTableDataList();
     }
 
     /**
-     * Get the wallet info for the active wallet.
-     *
-     * @return
+     * @return the wallet info for the active wallet
      */
     public WalletInfoData getActiveWalletWalletInfo() {
         return activeWalletModelData.getWalletInfo();
     }
 
     /**
-     * Get the active wallet.
-     *
-     * @return
+     * @return the active wallet
      */
     public Wallet getActiveWallet() {
         return activeWalletModelData.getWallet();
@@ -293,7 +271,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Set the active wallet, given a wallet filename.
      *
-     * @param wallet
+     * @param walletFilename the wallet filename
      */
     public void setActiveWalletByFilename(String walletFilename) {
         if (walletFilename == null) {
@@ -316,7 +294,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
      * Removal is determined by matching the wallet filename. Use FileHandler to
      * do that.
      *
-     * @param perWalletModeData
+     * @param perWalletModelDataToRemove The wallet data
      */
     public void remove(WalletData perWalletModelDataToRemove) {
         if (perWalletModelDataToRemove == null) {
@@ -339,7 +317,8 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Set a wallet description, given a wallet filename.
      *
-     * @param wallet
+     * @param walletFilename The wallet file name
+     * @param walletDescription The wallet description
      */
     public void setWalletDescriptionByFilename(String walletFilename, String walletDescription) {
         if (walletFilename == null) {

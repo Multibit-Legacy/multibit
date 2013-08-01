@@ -166,10 +166,10 @@ public enum BackupManager {
         createDirectoryIfNecessary(topLevelBackupDirectoryName);
 
         // Find suffix and stems of filename.
-        int suffixSeparatorLong = filenameLong.lastIndexOf(".");
+        int suffixSeparatorLong = filenameLong.lastIndexOf('.');
         String stemLong = filenameLong.substring(0, suffixSeparatorLong);
 
-        int suffixSeparatorShort= filenameShort.lastIndexOf(".");
+        int suffixSeparatorShort= filenameShort.lastIndexOf('.');
         String stemShort = filenameShort.substring(0, suffixSeparatorShort);
 
         String suffix;
