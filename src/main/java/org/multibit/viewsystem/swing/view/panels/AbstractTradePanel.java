@@ -114,6 +114,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.uri.BitcoinURI;
+import com.google.bitcoin.uri.BitcoinURIParseException;
 
 
 /**
@@ -1719,7 +1720,14 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
             // i.e be lenient
             String uriString = decodedString.toString().replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
-            BitcoinURI bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
+            BitcoinURI bitcoinURI = null;
+            try { 
+                bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
+            } catch (BitcoinURIParseException e) {
+                Message message = new Message(e.getClass().getName() +  " " + e.getMessage());
+                MessageManager.INSTANCE.addMessage(message);
+                return false;
+            }
 
             log.debug("AbstractTradePanel - ping 1");
             Address address = bitcoinURI.getAddress();

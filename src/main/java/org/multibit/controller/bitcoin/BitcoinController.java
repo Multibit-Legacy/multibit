@@ -237,10 +237,10 @@ public class BitcoinController extends AbstractController<CoreController> implem
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
     }
-
+    
     @Override
-    public void onKeyAdded(ECKey ecKey) {
-        log.debug("Key added : " + ecKey.toString());
+    public void onKeysAdded(Wallet wallet, List<ECKey> keys) {
+        log.debug("Keys added : " + keys.toString());
     }
 
     @Override
@@ -381,24 +381,10 @@ public class BitcoinController extends AbstractController<CoreController> implem
         }
     }
 
-    @Override
     public void onConfidenceChanged(Transaction tx) {
-//        log.debug("onConfidenceChanged for tx " + tx.getHashAsString() + ", identityHash = " + System.identityHashCode(tx));
-//        TransactionConfidence transactionConfidence = tx.getConfidence();
-//        if (transactionConfidence != null) {
-//            log.debug("number of peers = " + transactionConfidence.getBroadcastByCount());
-//        } else {
-//            log.debug("No transaction confidence");
-//        }
-//        List<WalletData> walletDataList = this.getModel().getPerWalletModelDataList();
-//        if (walletDataList != null) {
-//            for (WalletData walletData : walletDataList) {
-//                Transaction txInWallet = walletData.getWallet().getTransaction(tx.getHash());
-//                if (txInWallet != null) {
-//                    log.debug("onConfidenceChanged for wallet = '" + walletData.getWallet().getDescription() + "', tx = " + tx.getHashAsString() + ", identityHash = " + System.identityHashCode(tx));
-//                    onTransactionConfidenceChanged(walletData.getWallet(), tx);
-//                }
-//            }
-//        }
+    }
+
+    @Override
+    public void onConfidenceChanged(Transaction tx, ChangeReason reason) {
     }
 }

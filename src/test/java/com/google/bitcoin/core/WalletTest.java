@@ -254,7 +254,7 @@ public class WalletTest {
         assertEquals("Incorrect confirmed tx ALL pool size", 1, wallet.getPoolSize(WalletTransaction.Pool.ALL));
     }
 
-    private void basicSanityChecks(Wallet wallet, Transaction t, Address fromAddress, Address destination) throws ScriptException {
+    private void basicSanityChecks(Wallet wallet, Transaction t, Address fromAddress, Address destination) throws ScriptException, VerificationException {
         assertEquals("Wrong number of tx inputs", 1, t.getInputs().size());
         assertEquals(fromAddress, t.getInputs().get(0).getScriptSig().getFromAddress(wallet.getNetworkParameters()));
         assertEquals(t.getConfidence().getConfidenceType(), TransactionConfidence.ConfidenceType.PENDING);
@@ -463,7 +463,8 @@ public class WalletTest {
         // Make a fresh copy of the tx to ensure we're testing realistically.
         flags[0] = flags[1] = false;
         notifiedTx[0].getConfidence().addEventListener(new TransactionConfidence.Listener() {
-            public void onConfidenceChanged(Transaction tx) {
+            @Override
+            public void onConfidenceChanged(Transaction tx, ChangeReason reason) {
                 flags[1] = true;
             }
         });

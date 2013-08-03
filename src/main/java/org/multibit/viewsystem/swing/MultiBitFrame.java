@@ -1699,10 +1699,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
     }
 
-    @Override
-    public void onKeyAdded(ECKey key) {        
-    }
-
     public JPanel getHeaderPanel() {
         return headerPanel;
     }
@@ -1768,5 +1764,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public FileChangeTimerTask getFileChangeTimerTask() {
         return fileChangeTimerTask;
+    }
+
+    @Override
+    public void onKeysAdded(Wallet wallet, List<ECKey> keys) {
     }
 }
