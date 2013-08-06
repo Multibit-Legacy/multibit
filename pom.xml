@@ -221,7 +221,7 @@
                                     <directory>.</directory>
                                     <includes>
                                         <include>release_notes.txt</include>
-                                        <include>configuration.txt</include>
+                                        <include>configuration.md</include>
                                         <include>COPYING</include>
                                         <include>AUTHORS.txt</include>
                                     </includes>
@@ -274,7 +274,7 @@
                                     <directory>.</directory>
                                     <includes>
                                         <include>release_notes.txt</include>
-                                        <include>configuration.txt</include>
+                                        <include>configuration.md</include>
                                         <include>COPYING</include>
                                         <include>AUTHORS.txt</include>
                                     </includes>
@@ -327,7 +327,7 @@
                                         <include>multibit-exe.jar</include>
                                         <include>multibit.checkpoints</include>
                                         <include>release_notes.txt</include>
-                                        <include>configuration.txt</include>
+                                        <include>configuration.md</include>
                                         <include>COPYING</include>
                                         <include>AUTHORS.txt</include>
                                     </includes>
@@ -747,24 +747,6 @@
 
     <reporting>
         <plugins>
-            <!-- PMD checking -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <linkXRef>true</linkXRef>
-                    <sourceEncoding>utf-8</sourceEncoding>
-                    <minimumTokens>100</minimumTokens>
-                    <targetJdk>1.6</targetJdk>
-                </configuration>
-            </plugin>
-            <!-- Findbugs checking -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.2</version>
-            </plugin>
             <!-- Generate cross-referenced HTML source code listing -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -17,6 +17,7 @@ package org.multibit.viewsystem.swing.view.panels;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.uri.BitcoinURI;
+import com.google.bitcoin.uri.BitcoinURIParseException;
 import org.joda.money.Money;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -137,7 +138,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     protected static final int TEXTFIELD_VERTICAL_DELTA = 16;
     protected static final int HELP_BUTTON_INDENT = 6;
-    protected static final int AMOUNT_BTC_INDENT = 4;
 
     private static final int STENT_DELTA = 4;
 
@@ -243,9 +243,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 "sendBitcoinPanel.amountLabel", "receiveBitcoinPanel.addressLabel", "receiveBitcoinPanel.labelLabel",
                 "receiveBitcoinPanel.amountLabel" };
 
-        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
-
-        return stentWidth;
+        return MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
     }
 
     /**
@@ -513,7 +511,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(createNewButton, constraints);
 
-        int offset = 0;
+        int offset;
         deleteAddressAction = getDeleteAddressAction();
         if (isReceiveBitcoin()) {
             // Put in a stent
@@ -786,33 +784,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         }
     }
 
-    static class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
-        private static final long serialVersionUID = 1549545L;
-
-        MultiBitLabel label = new MultiBitLabel("");
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
-            label.setHorizontalAlignment(SwingConstants.LEADING);
-            label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
-
-            label.setText((String) value);
-
-            if (isSelected) {
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
-            } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
-                label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
-            }
-            return label;
-        }
-    }
-
     static class LeftJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549115L;
 
@@ -822,33 +793,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
-            label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
-
-            label.setText((String) value);
-
-            if (isSelected) {
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
-            } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
-                label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
-            }
-            return label;
-        }
-    }
-
-    static class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
-        private static final long serialVersionUID = 1999545L;
-
-        MultiBitLabel label = new MultiBitLabel("");
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
-            label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
 
@@ -1236,12 +1180,10 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         amountUnitFiatLabel = new MultiBitLabel("");
         int fiatCurrencySymbolPosition = 4;   // Prefix is default.
         int stentPosition = 5;
-        if (currencyInfo != null) {
-            amountUnitFiatLabel.setText(currencyInfo.getCurrencySymbol());
-            if (!currencyInfo.isPrefix()) {
-                stentPosition = 7;
-                fiatCurrencySymbolPosition = 8;
-            }
+        amountUnitFiatLabel.setText(currencyInfo.getCurrencySymbol());
+        if (!currencyInfo.isPrefix()) {
+            stentPosition = 7;
+            fiatCurrencySymbolPosition = 8;
         }
         
         constraints2.fill = GridBagConstraints.NONE;
@@ -1467,7 +1409,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                     addressTextField.setText(address);
                 }
             }
-            String amount = "";
+            String amount;
             
             if (amountBTCTextField != null) {
                 CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
@@ -1666,9 +1608,15 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             // Early MultiBit versions did not URL encode the label hence may
             // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
             // i.e be lenient
-            String uriString = decodedString.toString().replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
-            BitcoinURI bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
-
+            String uriString = decodedString.replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
+            BitcoinURI bitcoinURI;
+            try {
+                bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
+            } catch (BitcoinURIParseException e) {
+                Message message = new Message(e.getClass().getName() +  " " + e.getMessage());
+                MessageManager.INSTANCE.addMessage(message);
+                return false;
+            }
             log.debug("AbstractTradePanel - ping 1");
             Address address = bitcoinURI.getAddress();
             log.debug("AbstractTradePanel - ping 2");
@@ -1829,10 +1777,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         return labelTextArea;
     }
 
-    public JLabel getQRCodeLabel() {
-        return qrCodeLabel;
-    }
-
     private BufferedImage toBufferedImage(Image image, int width, int height) {
         log.debug("toBufferedImage - 1");
         if (image == null) {
@@ -1971,9 +1915,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                     if (converterResult.isBtcMoneyValid()) {
                         parsedAmountBTC = converterResult.getBtcMoney();
                         updateFiatAmount();
-                    } else {
-                        // If the conversion fails this is probably an error in one the amount fields so just leave it.
                     }
+                    // If the conversion fails this is probably an error in one the amount fields so just leave it.
                 }
             }});
     }   
