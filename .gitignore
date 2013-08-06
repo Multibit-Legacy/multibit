@@ -15,4 +15,5 @@
 /multibit-testnet.info
 /swatch.png
 .project
-.idea/.name
+/.idea
+multibit.iml
