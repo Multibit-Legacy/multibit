@@ -16,29 +16,12 @@
 package org.multibit.viewsystem.swing.action;
 
 
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.math.BigInteger;
-import java.util.Timer;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.joda.money.CurrencyUnit;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
-import org.multibit.message.Message;
-import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ExchangeData;
@@ -48,10 +31,13 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
-import com.google.bitcoin.core.Utils;
+import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.Timer;
 
 /**
  * This {@link Action} applies changes to the preferences panel.
@@ -280,9 +266,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 restartTickerTimer = true;
             } 
 
-            controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, new Boolean(showTicker).toString());
+            controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW, Boolean.valueOf(showTicker).toString());
             controller.getModel().setUserPreference(ExchangeModel.SHOW_BITCOIN_CONVERTED_TO_FIAT,
-                    new Boolean(showBitcoinConvertedToFiat).toString());
+              Boolean.valueOf(showBitcoinConvertedToFiat).toString());
 
             String columnsToShow = "";
             if (showCurrency)
@@ -336,8 +322,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 restartTickerTimer = true;
             }
 
-            String previousShowSecondRow = new Boolean(dataProvider.getPreviousShowSecondRow()).toString();
-            String newShowSecondRow = new Boolean(dataProvider.getNewShowSecondRow()).toString();
+            String previousShowSecondRow = Boolean.valueOf(dataProvider.getPreviousShowSecondRow()).toString();
+            String newShowSecondRow = Boolean.valueOf(dataProvider.getNewShowSecondRow()).toString();
             if (newShowSecondRow != null && !newShowSecondRow.equals(previousShowSecondRow)) {
                 // New show second row is set on model.
                 controller.getModel().setUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW, newShowSecondRow);

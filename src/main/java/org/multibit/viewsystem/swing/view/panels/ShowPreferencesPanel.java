@@ -15,49 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.exchange.ExchangeController;
@@ -81,15 +38,22 @@ import org.multibit.viewsystem.swing.action.ChooseFontAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
 import org.multibit.viewsystem.swing.action.UndoPreferencesChangesSubmitAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.components.*;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The show preferences view.
@@ -97,8 +61,6 @@ import org.slf4j.LoggerFactory;
 public class ShowPreferencesPanel extends JPanel implements Viewable, PreferencesDataProvider {
     private static final Logger log = LoggerFactory.getLogger(ShowPreferencesPanel.class);
 
-    public static String UNPARSEABLE_FEE = "UNPARSEABLE_FEE";
-    
     private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
 
     private static final int LANGUAGE_CODE_IMAGE_HEIGHT = 20;
@@ -508,7 +470,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                 startingIndex++;
             }
             if (languageCodeIndex != 0) {
-                languageComboBox.setSelectedItem(languageCodeIndex.intValue());
+                languageComboBox.setSelectedItem(languageCodeIndex);
                 languageComboBox.setEnabled(true);
             }
         }
@@ -801,19 +763,19 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             tickerColumnsToShow = TickerTableModel.DEFAULT_COLUMNS_TO_SHOW;
         }
 
-        originalShowCurrency = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_CURRENCY) > -1;
+        originalShowCurrency = tickerColumnsToShow.contains(TickerTableModel.TICKER_COLUMN_CURRENCY);
         showCurrency.setSelected(originalShowCurrency);
 
-        originalShowRate = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_LAST_PRICE) > -1;
+        originalShowRate = tickerColumnsToShow.contains(TickerTableModel.TICKER_COLUMN_LAST_PRICE);
         showLastPrice.setSelected(originalShowRate);
 
-        originalShowBid = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_BID) > -1;
+        originalShowBid = tickerColumnsToShow.contains(TickerTableModel.TICKER_COLUMN_BID);
         showBid.setSelected(originalShowBid);
 
-        originalShowAsk = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_ASK) > -1;
+        originalShowAsk = tickerColumnsToShow.contains(TickerTableModel.TICKER_COLUMN_ASK);
         showAsk.setSelected(originalShowAsk);
 
-        originalShowExchange = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_EXCHANGE) > -1;
+        originalShowExchange = tickerColumnsToShow.contains(TickerTableModel.TICKER_COLUMN_EXCHANGE);
         showExchange.setSelected(originalShowExchange);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -1680,7 +1642,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         }
     }
 
-    class LanguageData implements Comparable<LanguageData> {
+    static class LanguageData implements Comparable<LanguageData> {
         public String languageCode;
         public String language;
         public ImageIcon image;
@@ -1800,9 +1762,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
             if (selectedLanguageIndex != null) {
                 int loopIndex = 0;
                 for (LanguageData languageData : languageDataSet) {
-                    if (selectedLanguageIndex.intValue() == loopIndex) {
-                        String newLanguageCode = languageData.languageCode;
-                        return newLanguageCode;
+                    if (selectedLanguageIndex == loopIndex) {
+                        return languageData.languageCode;
                     }
                     loopIndex++;
                 }
@@ -1813,7 +1774,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     @Override
     public String getOpenUriDialog() {
-        return (new Boolean((askEveryTime.isSelected()))).toString();
+        return (Boolean.valueOf((askEveryTime.isSelected()))).toString();
     }
 
     @Override
@@ -1822,7 +1783,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         if (ignoreAll.isSelected()) {
             useUri = false;
         }
-        return (new Boolean(useUri)).toString();
+        return (Boolean.valueOf(useUri)).toString();
     }
 
     @Override

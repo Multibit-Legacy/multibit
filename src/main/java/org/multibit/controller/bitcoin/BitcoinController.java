@@ -15,16 +15,9 @@
  */
 package org.multibit.controller.bitcoin;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.bitcoin.core.*;
+import com.google.bitcoin.uri.BitcoinURI;
+import com.google.bitcoin.uri.BitcoinURIParseException;
 import org.multibit.controller.AbstractController;
 import org.multibit.controller.AbstractEventHandler;
 import org.multibit.controller.core.CoreController;
@@ -40,14 +33,15 @@ import org.multibit.viewsystem.swing.action.ExitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.PeerEventListener;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletEventListener;
-import com.google.bitcoin.uri.BitcoinURI;
-import com.google.bitcoin.uri.BitcoinURIParseException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The MVC controller for MultiBit.
@@ -287,7 +281,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
             
             return;
         }
-        if (this.eventHandler.rawBitcoinURI == null || this.eventHandler.rawBitcoinURI.equals("")) {
+        if (this.eventHandler.rawBitcoinURI == null || this.eventHandler.rawBitcoinURI.toString().equals("")) {
             log.debug("No Bitcoin URI found to handle");
             // displayView(getCurrentView());
             return;
@@ -300,7 +294,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
         // be lenient
         String uriString = this.eventHandler.rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
-        BitcoinURI bitcoinURI = null;
+        BitcoinURI bitcoinURI;
         try {
             bitcoinURI = new BitcoinURI(this.getModel().getNetworkParameters(), uriString);
         } catch (BitcoinURIParseException pe) {

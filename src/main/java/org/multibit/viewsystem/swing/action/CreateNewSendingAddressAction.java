@@ -15,18 +15,16 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.Action;
-
-import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.bitcoin.WalletAddressBookData;
 import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletAddressBookData;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * This {@link Action} represents an action to create a sending address.
@@ -84,7 +82,7 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
         
         controller.displayView(controller.getCurrentView());
 
-        if (sendBitcoinPanel != null && sendBitcoinPanel.getLabelTextArea() != null) {
+        if (sendBitcoinPanel.getLabelTextArea() != null) {
             sendBitcoinPanel.getLabelTextArea().requestFocusInWindow();
         }
     }

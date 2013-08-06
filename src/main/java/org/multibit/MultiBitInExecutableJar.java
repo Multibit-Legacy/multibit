@@ -15,17 +15,16 @@
  */
 package org.multibit;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 
 /**
  * Main MultiBit entry class for when running in an executable jar - put console
@@ -34,12 +33,19 @@ import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
  * @author jim
  * 
  */
-public class MultiBitInExecutableJar {
+public final class MultiBitInExecutableJar {
+
     public static final String OUTPUT_DIRECTORY = "log";
     public static final String CONSOLE_OUTPUT_FILENAME = "multibit_console.log";
     public static final String DEBUG_OUTPUT_FILENAME = "multibit_debug.log";
 
     private static Logger log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private MultiBitInExecutableJar() {
+    }
 
     /**
      * Start multibit user interface when running in a jar

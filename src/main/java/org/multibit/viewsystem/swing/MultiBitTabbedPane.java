@@ -1,28 +1,5 @@
 package org.multibit.viewsystem.swing;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.ToolTipManager;
-import javax.swing.border.Border;
-import javax.swing.plaf.TabbedPaneUI;
-
 import org.multibit.controller.Controller;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
@@ -32,15 +9,23 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import javax.swing.plaf.TabbedPaneUI;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+
 public class MultiBitTabbedPane extends JTabbedPane {
 
     private static final long serialVersionUID = 6530125716859367873L;
 
     private ImageIcon closeTabIcon;
     private Dimension closeButtonSize;
-    private final int CLOSE_ICON_WIDTH = 10;
-    private final int CLOSE_ICON_HEIGHT = 10;
-    private final int SEPARATION_DISTANCE = 2;
+
+    private static final int CLOSE_ICON_WIDTH = 10;
+    private static final int CLOSE_ICON_HEIGHT = 10;
+    private static final int SEPARATION_DISTANCE = 2;
 
     private int tabCounter = 0;
 

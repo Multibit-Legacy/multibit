@@ -16,15 +16,13 @@
 package org.multibit.file;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Collection;
-import java.util.Iterator;
-
-import junit.framework.TestCase;
-
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
@@ -38,22 +36,24 @@ import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.protobuf.ByteString;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Collection;
+import java.util.Iterator;
 
-public class FileHandlerTest extends TestCase {
-    private final String WALLET_TESTDATA_DIRECTORY = "wallets";
+import static junit.framework.Assert.*;
+
+public class FileHandlerTest {
+
+    private static final String WALLET_TESTDATA_DIRECTORY = "wallets";
 
     private static final String WALLET_FUTURE = "future.wallet";
 
-    private final String TEST_CREATE_UNENCRYPTED_PROTOBUF_PREFIX = "testCreateUnencryptedProtobuf";
+    private static final String TEST_CREATE_UNENCRYPTED_PROTOBUF_PREFIX = "testCreateUnencryptedProtobuf";
 
-    private final String TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX = "testCreateEncryptedProtobuf";
+    private static final String TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX = "testCreateEncryptedProtobuf";
 
     private static final String TEST_CREATE_PROTOBUF_PREFIX = "testCreateProtobuf";
 
@@ -71,7 +71,6 @@ public class FileHandlerTest extends TestCase {
     private FileHandler fileHandler;
     
     @Before
-    @Override
     public void setUp() throws Exception {
         secureRandom = new SecureRandom();
         

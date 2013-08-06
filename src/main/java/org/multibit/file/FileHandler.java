@@ -15,26 +15,10 @@
  */
 package org.multibit.file;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
+import com.google.bitcoin.core.BlockChain;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -53,10 +37,9 @@ import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.BlockChain;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.util.*;
 
 /**
  * Class consolidating the File IO in MultiBit for wallets and wallet infos.
@@ -264,15 +247,14 @@ public class FileHandler {
                 // Report failure to user.
                 String messageText = bitcoinController.getLocaliser().getString("fileHandler.unableToLoadWalletOrBackups", new String[] {walletFilenameToUseInModel});
                 if (!errorMessages.isEmpty()) {
-                    String errorMessagesAsString = "";
+                    StringBuilder errorMessagesAsString = new StringBuilder();
                     for (String errorText : errorMessages) {
-                        if (!"".equals(errorMessagesAsString)) {
-                            errorMessagesAsString = errorMessagesAsString + "\n";
-                            
+                        if (errorMessagesAsString.length()>0) {
+                            errorMessagesAsString.append("\n");
                         }
-                        errorMessagesAsString = errorMessagesAsString + errorText;
+                        errorMessagesAsString.append(errorText);
                     }
-                    messageText = messageText + "\n" + bitcoinController.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new String[]{errorMessagesAsString});
+                    messageText = messageText + "\n" + bitcoinController.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new String[]{errorMessagesAsString.toString()});
                 }
                 MessageManager.INSTANCE.addMessage(new Message(messageText));
             }

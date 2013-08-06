@@ -15,24 +15,8 @@
  */
 package org.multibit;
 
-import java.awt.Cursor;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
-
+import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.core.Wallet;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;
@@ -48,11 +32,7 @@ import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ConnectHttps;
 import org.multibit.model.exchange.ExchangeModel;
-import org.multibit.network.AlertManager;
-import org.multibit.network.MultiBitCheckpointManager;
-import org.multibit.network.MultiBitService;
-import org.multibit.network.ReplayManager;
-import org.multibit.network.ReplayTask;
+import org.multibit.network.*;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
@@ -67,15 +47,25 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.Wallet;
+import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.List;
 
 /**
  * Main MultiBit entry class.
  * 
  * @author jim
  */
-public class MultiBit {
+public final class MultiBit {
+
     private static final Logger log = LoggerFactory.getLogger(MultiBit.class);
 
     private static Controller controller = null;
@@ -83,7 +73,13 @@ public class MultiBit {
     private static CoreController coreController = null;
     private static BitcoinController bitcoinController = null;
     private static ExchangeController exchangeController = null;
-    
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private MultiBit() {
+    }
+
     /**
      * Start MultiBit user interface.
      * 
@@ -618,7 +614,7 @@ public class MultiBit {
             // This a really limited approach (no consideration of
             // "amount=10.0&label=Black & White")
             // but should be OK for early use cases.
-            int queryParamIndex = rawURI.indexOf("?");
+            int queryParamIndex = rawURI.indexOf('?');
             if (queryParamIndex > 0 && !rawURI.contains("%")) {
                 // Possibly encoded but more likely not
                 String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");

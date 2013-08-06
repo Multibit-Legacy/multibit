@@ -15,17 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.message.Message;
@@ -41,6 +30,9 @@ import org.multibit.viewsystem.swing.browser.Browser;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class HelpContentsPanel extends JPanel implements Viewable {
     private static final Logger log = LoggerFactory.getLogger(HelpContentsPanel.class);
@@ -158,18 +150,19 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         } else {
             fontCSS = fontCSS + "font-weight:normal;";
         }
-        String toolTipText = "<html><font face=\"sansserif\" style= \"" + fontCSS + "\">";
+        StringBuilder toolTipText = new StringBuilder("<html><font face=\"sansserif\" style= \"").append(fontCSS).append("\">");
 
         if (toolTips != null) {
             for (int i = 0; i < toolTips.length - 1; i++) {
                 if (toolTips[i] != null && !"".equals(toolTips[i])) {
-                    toolTipText = toolTipText + toolTips[i] + "<br>";
+                    toolTipText.append(toolTips[i]).append("<br>");
                 }
             }
+            toolTipText.append(toolTips[toolTips.length - 1]);
         }
-        toolTipText = toolTipText + toolTips[toolTips.length - 1] + "</font></html>";
+        toolTipText.append("</font></html>");
 
-        return toolTipText;
+        return toolTipText.toString();
     }
 
     @Override

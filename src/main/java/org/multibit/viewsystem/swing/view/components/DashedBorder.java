@@ -15,17 +15,12 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Graphics;
-import java.awt.Insets;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.util.Locale;
 
-import javax.swing.border.Border;
-
 public class DashedBorder implements Border {
-    public static final int THICKNESS = 2;
+    public static final int THICKNESS = 2; // TODO Consider if dashWidth should be used instead
     Color color;
     int dashWidth;
     int dashHeight;

@@ -15,39 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Locale;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.BitcoinModel;
@@ -62,13 +30,14 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.components.*;
 
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Locale;
 
 
 /**
@@ -88,7 +57,6 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     private MultiBitLabel walletDescriptionLabel;
 
     private String chooseFilenameButtonText;
-    private JFileChooser fileChooser;
 
     private MultiBitLabel outputFilenameLabel;
 
@@ -858,7 +826,7 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
     private void chooseFile() {
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
-        fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser();
         fileChooser.setLocale(controller.getLocaliser().getLocale());
         fileChooser.setDialogTitle(chooseFilenameButtonText);
         adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
@@ -939,10 +907,9 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
             return null;
         }
         
-        int suffixSeparator = walletFilename.lastIndexOf(".");
+        int suffixSeparator = walletFilename.lastIndexOf('.');
         String stem = walletFilename.substring(0, suffixSeparator + 1);
-        String defaultKeyFilename = stem + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION;
-        return defaultKeyFilename;
+        return stem + BitcoinModel.PRIVATE_KEY_FILE_EXTENSION;
     }
 
     class ChangePasswordProtectListener implements ItemListener {
@@ -1007,13 +974,16 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
             clearMessages();
 
-            // clear the password arrays
-            for (int i = 0; i < password1.length; i++) {
-                password1[i] = 0;
+            // clear the password arrays (if necessary)
+            if (password1 != null) {
+                for (int i = 0; i < password1.length; i++) {
+                    password1[i] = 0;
+                }
             }
-
-            for (int i = 0; i < password2.length; i++) {
-                password2[i] = 0;
+            if (password2 != null) {
+                for (int i = 0; i < password2.length; i++) {
+                    password2[i] = 0;
+                }
             }
         }
     }
@@ -1089,14 +1059,14 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         }
     }
   
-    private void setFileChooserFont(Component[] comp) {
-        for (int x = 0; x < comp.length; x++) {
-            if (comp[x] instanceof Container)
-                setFileChooserFont(((Container) comp[x]).getComponents());
+    private void setFileChooserFont(Component[] components) {
+        for (Component component : components) {
+            if (component instanceof Container)
+                setFileChooserFont(((Container) component).getComponents());
             try {
-                comp[x].setFont(adjustedFont);
+                component.setFont(adjustedFont);
             } catch (Exception e) {
-            }// do nothing
+            } // TODO Why there is an empty catch block here?
         }
     }
 }

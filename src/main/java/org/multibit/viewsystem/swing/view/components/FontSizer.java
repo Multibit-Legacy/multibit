@@ -15,11 +15,11 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
-import java.awt.Font;
-
 import org.multibit.controller.Controller;
 import org.multibit.model.core.CoreModel;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+
+import java.awt.*;
 
 public enum FontSizer {
         INSTANCE;
@@ -61,8 +61,7 @@ public enum FontSizer {
             fontName = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
         }
 
-        Font font = new Font(fontName, fontStyle, unadjustedFontSize);
-        return font;
+        return new Font(fontName, fontStyle, unadjustedFontSize);
     }
     
     public Font getAdjustedDefaultFont() {
@@ -74,7 +73,6 @@ public enum FontSizer {
      * @param delta Delta from default font, in point size
      */
     public Font getAdjustedDefaultFontWithDelta(int delta) {
-        Font scaledFont = adjustedDefaultFont.deriveFont(adjustedDefaultFont.getStyle(), adjustedDefaultFont.getSize() + delta);
-        return scaledFont;
+        return adjustedDefaultFont.deriveFont(adjustedDefaultFont.getStyle(), adjustedDefaultFont.getSize() + delta);
     }
 }

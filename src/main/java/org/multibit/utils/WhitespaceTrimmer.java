@@ -42,8 +42,7 @@ public class WhitespaceTrimmer {
         Matcher mEnd = whiteEnd.matcher(text);
         if (mEnd.find()) {
             int matchStart = mEnd.start();
-            String trimText = text.substring(0, matchStart);
-            return trimText;
+            return text.substring(0, matchStart);
         } else {
             return text;
         }
