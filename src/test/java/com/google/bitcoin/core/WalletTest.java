@@ -24,6 +24,7 @@ import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.MemoryBlockStore;
 import com.google.bitcoin.utils.BriefLogFormatter;
+import com.google.bitcoin.utils.Threading;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
@@ -266,6 +267,7 @@ public class WalletTest {
         t.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{1,2,3,4})));
         t.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10,2,3,4})));
         wallet.commitTx(t);
+        Threading.waitForUserCode();
         assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.PENDING));
         assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.SPENT));
         assertEquals(2, wallet.getPoolSize(WalletTransaction.Pool.ALL));
