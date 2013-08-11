@@ -88,6 +88,8 @@ public final class MultiBit {
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
         log.info("Starting MultiBit at " + (new Date()).toGMTString());
+        log.info("java.home is '" + System.getProperty( "java.home" ) + "'");
+        log.info("java.version is '" + System.getProperty( "java.version" ) + "'");
 
         ViewSystem swingViewSystem = null;
         // Enclosing try to enable graceful closure for unexpected errors.

@@ -4,15 +4,7 @@
 /out
 /target
 /.classpath
-/multibit-prod.wallet
-/multibit-testnet.blockchain
-/multibit-testnet.wallet
-/multibit.blockchain
-/multibit.info
-/multibit.properties
-/multibit.wallet
 /bin
-/multibit-testnet.info
-/swatch.png
 .project
-.idea/.name
+.idea
+multibit.iml
