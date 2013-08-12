@@ -155,7 +155,7 @@
                 </executions>
             </plugin>
 
-            <!-- Create main executable jar -->
+            <!-- Create main executable jar - all classes -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2.1</version>
@@ -177,6 +177,35 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.0.6</version>
+                <executions>
+                    <execution>
+                        <id>package-with-proguard</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                        <configuration>
+                            <maxMemory>256m</maxMemory>
+                            <attach>false</attach>
+                            <addMavenDescriptor>false</addMavenDescriptor>
+                            <proguardInclude>src/main/proguard/multibit-exe.pro</proguardInclude>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.proguard</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>4.9</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <!-- Produce staging directory with all resources used in creation of 
