@@ -17,6 +17,7 @@ package org.multibit;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import org.multibit.file.FileHandler;
 import org.slf4j.Logger;
@@ -114,8 +115,15 @@ public class ApplicationDataDirectoryLocator {
      * @TODO when running locally it is possible that the working directory directory and installation directory are different. Fix.
      */
     public String getInstallationDirectory() throws IOException {
-        File installationDirectory = new File("");
-        return installationDirectory.getCanonicalPath();
+        String operatingSystemName = System.getProperty("os.name");
+        if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
+            // With the bundled JRE the location of the MultiBit jar is specified in the java.library.path property.
+            return System.getProperty("java.library.path");
+        } else {
+            File installationDirectory = new File("");
+            log.debug("installationDirectory from file create = " + installationDirectory.getCanonicalPath());
+            return installationDirectory.getCanonicalPath();
+        }
     }
 }
 

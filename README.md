@@ -21,7 +21,7 @@ here:
 https://code.google.com/r/jimburton618-bitcoinj-coinbase-tx/source/checkout
 ```
 
-The branch you should use is: `bcj-master-mb-alice`
+The branch you should use for the MultiBit develop code is: `bcj-0.10-mb-alice`
 
 Once cloned, you should then install the custom Bitcoinj library using
 
@@ -76,6 +76,11 @@ After some processing, you will have the following artifacts in the target direc
 To run MultiBit from these artifacts you can follow the instructions [provided on the main MultiBit
 website](https://multibit.org/help.html)
 
+### MultiBit contains cut down JREs so is a large clone
+
+The MultiBit installers contain cut down JREs so the project clone is quite large.
+(100 to 200 MB).
+
 ### Custom configuration
 
 MultiBit is quite flexible and has several features only accessible to power users through the configuration file. This
@@ -91,4 +96,4 @@ We are particularly looking for developers with the following skills to contribu
 * Translators using the [Crowdin site](http://translate.multibit.org/)
 * Beta testers for checking the latest pre-release
 
-All contributors get a mention in [AUTHORS.txt](AUTHORS.txt) and must be OK with releasing their work under the MIT license.
+All contributors must be OK with releasing their work under the MIT license.

@@ -334,8 +334,8 @@
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <!-- skeleton app -->
-                                    <directory>src/app-resources/MultiBit.app</directory>
+                                    <!-- skeleton app including JRE -->
+                                    <directory>src/main/skeleton/mac/MultiBit.app</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -347,7 +347,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java
+                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Java
                             </outputDirectory>
                             <resources>
                                 <resource>
@@ -422,14 +422,17 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <!-- Make the JavaApplicationStub in the Mac application bundle executable 
+                                <!-- Make the JavaAppLauncher in the Mac application bundle executable
                        									(it loses its 'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                    file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaAppLauncher"
                                     perm="777" />
 
-                                <mkdir
-                                    dir="${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                <!-- The multibit-exe.jar needs to be called JavaFxApp.jar for the launcher -->
+                                <move
+                                    file="${basedir}/target/MultiBit.app/Contents/Java/multibit-exe.jar"
+                                    tofile="${basedir}/target/MultiBit.app/Contents/Java/JavaFxApp.jar" />
+
                                 <copy
                                     todir="${basedir}/target/MultiBit-mac/MultiBit.app">
                                     <fileset dir="${basedir}/target/MultiBit.app"
@@ -437,6 +440,14 @@
                                 </copy>
                                 <copy file="${basedir}/src/main/izpack/mac/readme.txt"
                                       todir="${basedir}/target/MultiBit-mac" />
+
+                                <!-- ensure the libjli.dylib is an alias an not the actual file -->
+                                <delete file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/MacOS/libjli.dylib" />
+
+                                <exec executable="ln" os="'Mac OS X'">
+                                    <arg
+                                            line="-s ../Home/jre/lib/jli/libjli.dylib ${basedir}/target/MultiBit-mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/MacOS/libjli.dylib" />
+                                </exec>
 
 
                                 <!-- Create Applications Symbolic link -->
@@ -446,10 +457,10 @@
                                         line="-s /Applications ${basedir}/target/MultiBit-mac/Applications" />
                                 </exec>
 
-                                <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 
+                                <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
                        									'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                    file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaAppLauncher"
                                     perm="777" />
 
                                 <!-- Sign the Mac app -->
@@ -466,9 +477,12 @@
                                 <!-- create a DMG file -->
                                 <exec executable="hdiutil" os="'Mac OS X'">
                                     <arg value="create" />
+                                    <arg value="-noanyowners"/>
+                                    <arg value="-imagekey"/>
+                                    <arg value="zlib-level=9" />
                                     <arg value="-srcfolder" />
                                     <arg value="${basedir}/target/MultiBit-mac" />
-                                    <arg path="${basedir}/target/multibit-${project.version}.dmg" />
+                                    <arg value="${basedir}/target/multibit-${project.version}.dmg" />
                                 </exec>
 
                                 <!-- IMPORTANT! -->
