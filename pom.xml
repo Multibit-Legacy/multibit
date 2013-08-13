@@ -252,7 +252,7 @@
                                         <include>release_notes.txt</include>
                                         <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -305,7 +305,7 @@
                                         <include>release_notes.txt</include>
                                         <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -358,7 +358,7 @@
                                         <include>release_notes.txt</include>
                                         <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                                 <resource>
