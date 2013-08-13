@@ -38,7 +38,7 @@ import junit.framework.TestCase;
 public class MtGoxMarketdataTest  extends TestCase  {
 
   /**
-   * Test the basic access to the MtGox data works ok in the MultiBit environment
+   * Test the basic access to the MtGox data works ok in the MultiBitInternal environment
    */
   public void testBasicLookup() {
       

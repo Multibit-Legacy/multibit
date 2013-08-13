@@ -64,7 +64,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             // set the application data directory to be the one we just created
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-            // Create MultiBit controller.
+            // Create MultiBitInternal controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
             controller = controllers.bitcoinController;
 
@@ -77,7 +77,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             simpleViewSystem = new SimpleViewSystem();
             controllers.coreController.registerViewSystem(simpleViewSystem);
 
-            // MultiBit runtime is now setup and running
+            // MultiBitInternal runtime is now setup and running
             // Wait a little while to get two connections.
             try {
                 Thread.sleep(8000);
@@ -126,7 +126,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
     }
 
     /**
-     * Create a working, portable runtime of MultiBit in a temporary directory.
+     * Create a working, portable runtime of MultiBitInternal in a temporary directory.
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
@@ -134,7 +134,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         File multiBitDirectory = FileHandler.createTempDirectory("CreateAndDeleteWalletsTest");
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
 
-        System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
+        System.out.println("Building MultiBitInternal runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // Create an empty multibit.properties.
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");

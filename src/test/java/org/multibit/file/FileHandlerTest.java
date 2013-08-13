@@ -79,7 +79,7 @@ public class FileHandlerTest {
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
         
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         controller = controllers.bitcoinController;
         fileHandler = new FileHandler(controller);
@@ -365,7 +365,7 @@ public class FileHandlerTest {
     
     @Test
     public void testCannotLoadOrSaveFutureWalletVersions() throws IOException {
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         controller = controllers.bitcoinController;
 
@@ -415,7 +415,7 @@ public class FileHandlerTest {
     
     @Test
     public void testWalletVersion2a() throws IOException {
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         controller = controllers.bitcoinController;
 
@@ -452,7 +452,7 @@ public class FileHandlerTest {
     
     @Test
     public void testWalletVersion2b() throws IOException {
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         controller = controllers.bitcoinController;
 

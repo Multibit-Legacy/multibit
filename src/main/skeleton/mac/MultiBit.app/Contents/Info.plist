@@ -33,7 +33,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>org.multibit</string>
 	<key>JVMMainClassName</key>
-	<string>org.multibit.MultiBitInExecutableJar</string>
+	<string>org.multibit.MultiBit</string>
 	<key>JVMOptions</key>
 	<array/>
 	<key>JVMInfo</key>

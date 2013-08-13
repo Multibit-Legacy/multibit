@@ -258,7 +258,7 @@ public enum BackupManager {
                 // Keep the very first and last wallets always.
             } else {
                 // If there is a data directory for the backup then it may have been opened
-                // in MultiBit so we will skip considering it for deletion.
+                // in MultiBitInternal so we will skip considering it for deletion.
                 String possibleDataDirectory = calculateTopLevelBackupDirectoryName(backupWallets.get(i));
                 boolean theWalletHasADataDirectory = (new File(possibleDataDirectory)).exists();
 

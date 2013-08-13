@@ -63,14 +63,14 @@ public class BackupManagerTest extends TestCase {
     @Before
     @Override
     public void setUp() throws Exception {       
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         controller = controllers.bitcoinController;
     }
      
     @Test
     public void testFileCopyAndEncrypt() throws IOException {
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         controller = controllers.bitcoinController;
 
@@ -188,7 +188,7 @@ public class BackupManagerTest extends TestCase {
     
     @Test
     public void testBackupWalletUnencrypted() throws IOException {
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         controller = controllers.bitcoinController;
 
@@ -242,7 +242,7 @@ public class BackupManagerTest extends TestCase {
     
     @Test
     public void testBackupWalletEncrypted() throws IOException {
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         controller = controllers.bitcoinController;
 

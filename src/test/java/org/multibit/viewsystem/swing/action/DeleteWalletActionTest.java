@@ -34,7 +34,7 @@ public class DeleteWalletActionTest extends TestCase {
             return;
         }
         
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         BitcoinController controller = controllers.bitcoinController;
 

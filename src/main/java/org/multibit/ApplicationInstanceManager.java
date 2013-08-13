@@ -34,7 +34,7 @@ public final class ApplicationInstanceManager {
     private static ApplicationInstanceListener subListener;
 
     /**
-     * MultiBit port number, as specified in
+     * MultiBitInternal port number, as specified in
      * http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
      */
     public static final int MULTIBIT_NETWORK_SOCKET = 8331;

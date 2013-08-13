@@ -30,7 +30,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 public class SendBitcoinConfirmActionTest extends TestCase {
     @Test
     public void testNoWalletSelected() throws Exception {
-        // Create MultiBit controller.
+        // Create MultiBitInternal controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         BitcoinController controller = controllers.bitcoinController;
 

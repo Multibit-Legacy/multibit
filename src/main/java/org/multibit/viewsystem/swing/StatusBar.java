@@ -67,7 +67,7 @@ import java.util.Timer;
  * StatusBar. <BR>
  * A status bar is made of multiple zones. A zone can be any JComponent.
  * <p/>
- * In MultiBit the StatusBar is responsible for :
+ * In MultiBitInternal the StatusBar is responsible for :
  * <p/>
  * 1) Online/ Connecting/ Error status label
  * 2) Status messages - these are cleared after a period of time

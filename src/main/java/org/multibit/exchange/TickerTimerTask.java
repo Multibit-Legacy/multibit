@@ -270,7 +270,7 @@ public class TickerTimerTask extends TimerTask {
                     }
                 }
 
-                // Fire exchange rate data changed - used by rest of MultiBit.
+                // Fire exchange rate data changed - used by rest of MultiBitInternal.
                 mainFrame.fireExchangeDataChanged();
             }
         } catch (Exception e) {
@@ -369,11 +369,11 @@ public class TickerTimerTask extends TimerTask {
             return exchangeToReturn;
         } catch (com.xeiam.xchange.ExchangeException e) {
             // Probably xchange is not on classpath - ticker will not run
-            // but error should not spread out from here to rest of MultiBit.
+            // but error should not spread out from here to rest of MultiBitInternal.
             log.error(e.getClass().getName() + " " + e.getMessage());
         }catch (NoClassDefFoundError e) {
             // Probably xchange is not on classpath - ticker will not run
-            // but error should not spread out from here to rest of MultiBit.
+            // but error should not spread out from here to rest of MultiBitInternal.
             log.error(e.getClass().getName() + " " + e.getMessage());
         } catch (NullPointerException e) {
             log.error(e.getClass().getName() + " " + e.getMessage());

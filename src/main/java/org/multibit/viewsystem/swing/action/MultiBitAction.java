@@ -26,7 +26,7 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
- * This {@link Action} represents a localised MultiBit action that just displays a view
+ * This {@link Action} represents a localised MultiBitInternal action that just displays a view
  */
 public class MultiBitAction extends AbstractAction {
 

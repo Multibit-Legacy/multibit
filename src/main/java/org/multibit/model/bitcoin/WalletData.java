@@ -48,7 +48,7 @@ public class WalletData {
 
     /**
      * The files that store the WalletData have been changed by some
-     * other process i.e. NOT this copy of MultiBit.
+     * other process i.e. NOT this copy of MultiBitInternal.
      */
     private transient boolean filesHaveBeenChangedByAnotherProcess;
 

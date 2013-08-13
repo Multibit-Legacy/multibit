@@ -43,10 +43,10 @@ import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * ReplayManager is responsible for updating Wallets that are not updated to
- * MultiBit's main BlockStore. This happens when: 1) The user imports some
+ * MultiBitInternal's main BlockStore. This happens when: 1) The user imports some
  * private keys 2) They do a 'Reset blockchain and transactions' 3) An out of
  * date wallet is opened 4) Encrypted wallets are opened when the user has used
- * an older version of MultiBit that does not understand them (they then get out
+ * an older version of MultiBitInternal that does not understand them (they then get out
  * of date).
  */
 public enum ReplayManager {

@@ -18,7 +18,7 @@ package org.multibit.model.bitcoin;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
-import org.multibit.MultiBit;
+import org.multibit.MultiBitInternal;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.store.MultiBitWalletVersion;
@@ -175,7 +175,7 @@ public class WalletInfoData {
         if (wallet != null) {
             for (ECKey key : wallet.getKeys()) {
                 if (receivingAddress.getAddress().equals(
-                        key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()))) {
+                        key.toAddress(MultiBitInternal.getBitcoinController().getModel().getNetworkParameters()))) {
                     addressMatchesKey = true;
                     break;
                 }
@@ -200,7 +200,7 @@ public class WalletInfoData {
                 WalletAddressBookData walletAddressBookData = iterator.next();
                 for (ECKey key : wallet.getKeys()) {
                     if (walletAddressBookData.getAddress().equals(
-                            key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()).toString())) {
+                            key.toAddress(MultiBitInternal.getBitcoinController().getModel().getNetworkParameters()).toString())) {
                         addressMatchesKey = true;
                         break;
                     }

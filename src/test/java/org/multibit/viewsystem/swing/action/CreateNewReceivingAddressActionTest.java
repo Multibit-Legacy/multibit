@@ -36,7 +36,7 @@ public class CreateNewReceivingAddressActionTest extends TestCase {
         String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
         if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
 
-            // Create MultiBit controller.
+            // Create MultiBitInternal controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers();
             final BitcoinController controller = controllers.bitcoinController;
 

@@ -161,7 +161,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
         try {
             if (importPrivateKeysPanel.multiBitFileChooser.accept(importFile)) {
-                log.debug("Regular MultiBit import.");
+                log.debug("Regular MultiBitInternal import.");
 
                 PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(super.bitcoinController.getModel().getNetworkParameters());
                 importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

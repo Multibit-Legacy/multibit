@@ -78,9 +78,9 @@ public class CreateControllers {
         
         CurrencyConverter.INSTANCE.initialise(coreController);
 
-        MultiBit.setCoreController(coreController);
-        MultiBit.setBitcoinController(bitcoinController);
-        MultiBit.setExchangeController(exchangeController);
+        MultiBitInternal.setCoreController(coreController);
+        MultiBitInternal.setBitcoinController(bitcoinController);
+        MultiBitInternal.setExchangeController(exchangeController);
         
         return new Controllers(coreController, bitcoinController, exchangeController);
     }

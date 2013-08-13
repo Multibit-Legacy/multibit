@@ -43,7 +43,7 @@ public class ApplicationDataDirectoryLocator {
      * 
      * This is worked out as follows:
      * 
-     * 1. See if there is a multibit.properties in MultiBit's current working
+     * 1. See if there is a multibit.properties in MultiBitInternal's current working
      * directory If there is, use this directory as the application data
      * directory This is for backwards compatibility and for running everything
      * from a USB drive
@@ -109,7 +109,7 @@ public class ApplicationDataDirectoryLocator {
     
     /**
      * Get the installation directory.
-     * This is the directory into which MultiBit was installed.
+     * This is the directory into which MultiBitInternal was installed.
      * @throws IOException 
      * 
      * @TODO when running locally it is possible that the working directory directory and installation directory are different. Fix.
@@ -117,7 +117,7 @@ public class ApplicationDataDirectoryLocator {
     public String getInstallationDirectory() throws IOException {
         String operatingSystemName = System.getProperty("os.name");
         if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
-            // With the bundled JRE the location of the MultiBit jar is specified in the java.library.path property.
+            // With the bundled JRE the location of the MultiBitInternal jar is specified in the java.library.path property.
             return System.getProperty("java.library.path");
         } else {
             File installationDirectory = new File("");

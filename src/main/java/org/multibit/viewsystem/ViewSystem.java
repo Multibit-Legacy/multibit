@@ -21,7 +21,7 @@ import org.multibit.model.core.StatusEnum;
 import com.google.bitcoin.core.WalletEventListener;
 
 /**
- * An interface describing a collection of views that are used to render the MultiBit application.
+ * An interface describing a collection of views that are used to render the MultiBitInternal application.
  * @author jim
  *
  */
@@ -62,7 +62,7 @@ public interface ViewSystem extends WalletEventListener {
     public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData);
 
     /**
-     * A method called when MultiBit online status changes between online, connecting. error.
+     * A method called when MultiBitInternal online status changes between online, connecting. error.
      */
     public void setOnlineStatus(StatusEnum statusEnum);
    

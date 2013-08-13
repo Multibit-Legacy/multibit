@@ -20,7 +20,7 @@ import java.awt.*;
 
 /***
  * Class containing constants for the colors and fonts used as default in
- * MultiBit
+ * MultiBitInternal
  * 
  * @author jim
  * 

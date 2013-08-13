@@ -28,7 +28,7 @@ public class BitcoinControllerTest extends TestCase {
 
     @Test
     public void testWalletBusyListener() throws Exception {       
-        // Create MultiBit controller
+        // Create MultiBitInternal controller
         Controllers controllers = CreateControllers.createControllers();
         BitcoinController controller = controllers.bitcoinController;
         

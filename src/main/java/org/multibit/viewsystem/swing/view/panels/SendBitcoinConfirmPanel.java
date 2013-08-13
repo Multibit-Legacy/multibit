@@ -20,7 +20,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet.SendRequest;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-import org.multibit.MultiBit;
+import org.multibit.MultiBitInternal;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
@@ -590,7 +590,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
             @Override
             public void run() {
                 if (thisPanel != null && thisPanel.isVisible()) {
-                    final BitcoinController bitcoinController = MultiBit.getBitcoinController();
+                    final BitcoinController bitcoinController = MultiBitInternal.getBitcoinController();
                     if (bitcoinController != null) {
                         String singleNodeConnection = bitcoinController.getModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
                         boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
@@ -616,14 +616,14 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
                         MultiBitLabel confirmText1 = thisPanel.confirmText1;
                         if (enableSend) {
                             if (confirmText1 != null) {
-                                if (MultiBit.getController().getLocaliser()
+                                if (MultiBitInternal.getController().getLocaliser()
                                         .getString("sendBitcoinConfirmView.multibitMustBeOnline").equals(confirmText1.getText())) {
                                     confirmText1.setText(" ");
                                 }
                             }
                         } else {
                             if (confirmText1 != null) {
-                                confirmText1.setText(MultiBit.getController().getLocaliser()
+                                confirmText1.setText(MultiBitInternal.getController().getLocaliser()
                                         .getString("sendBitcoinConfirmView.multibitMustBeOnline"));
                             }
                         }
@@ -666,20 +666,20 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
     private String getConfidenceToolTip(int numberOfPeers) {
         StringBuilder builder = new StringBuilder("");
         if (numberOfPeers == 0) {
-            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
+            builder.append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
         } else {
             builder
-                .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy"))
+                .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.seenBy"))
                 .append(" ");
             builder.append(numberOfPeers);
             if (numberOfPeers > 1)
                 builder
                     .append(" ")
-                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peers"))
+                    .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.peers"))
                     .append(".");
             else
                 builder.append(" ")
-                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peer"))
+                    .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.peer"))
                     .append(".");
         }
         return builder.toString();

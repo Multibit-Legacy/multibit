@@ -457,7 +457,7 @@
                                         line="-s /Applications ${basedir}/target/MultiBit-mac/Applications" />
                                 </exec>
 
-                                <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
+                                <!-- Make the JavaAppLauncher in the MultiBitInternal app (it loses its
                        									'x' permission after the copy) -->
                                 <chmod
                                     file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaAppLauncher"

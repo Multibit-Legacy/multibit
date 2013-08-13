@@ -22,7 +22,7 @@ import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
- * button used in MultiBit Swing UI
+ * button used in MultiBitInternal Swing UI
  * @author jim
  *
  */

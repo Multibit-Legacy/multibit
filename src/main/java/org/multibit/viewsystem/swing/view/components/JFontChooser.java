@@ -1,6 +1,6 @@
 /************************************************************
  * Copyright 2004-2005,2007-2008 Masahiko SAWAI All Rights Reserved. 
- * release under MIT license - same as MultiBit
+ * release under MIT license - same as MultiBitInternal
  ************************************************************/
 package org.multibit.viewsystem.swing.view.components;
 

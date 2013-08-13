@@ -30,7 +30,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 /**
- * Model containing the MultiBit data.
+ * Model containing the MultiBitInternal data.
  * 
  * Most of the methods act on the single, active wallet in the model.
  * 
@@ -43,7 +43,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
 
     // Constants used in the multibit.properties.
 
-    // MultiBit start up.
+    // MultiBitInternal start up.
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
     public static final String TEST_NETWORK_VALUE = "test";
     public static final String TESTNET3_VALUE = "testnet3";

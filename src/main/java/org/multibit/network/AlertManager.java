@@ -95,7 +95,7 @@ public enum AlertManager {
     }
 
     /**
-     * Check the version on the MultiBit server and show an alert dialog if
+     * Check the version on the MultiBitInternal server and show an alert dialog if
      * there is a newer version available.
      */
     public void checkVersion() {
@@ -259,12 +259,12 @@ public enum AlertManager {
 
     /**
      * Parse the version text returned from the server and see if the version is
-     * higher than the current MultiBit version. If so, return true.
+     * higher than the current MultiBitInternal version. If so, return true.
      * 
-     * @return true if version is later than the current version of MultiBit.
+     * @return true if version is later than the current version of MultiBitInternal.
      * 
      *         The version file format is: <first line> Version of current
-     *         MultiBit. <second line> message The first line of any message
+     *         MultiBitInternal. <second line> message The first line of any message
      *         <third line> message The second line of any message <fourth line>
      *         message The third line of any message
      * 
@@ -323,7 +323,7 @@ public enum AlertManager {
 
         VersionComparator versionComparator = new VersionComparator();
 
-        log.debug("Current version of local MultiBit = '" + localVersion + "', version on server = '" + versionOnServer + "'");
+        log.debug("Current version of local MultiBitInternal = '" + localVersion + "', version on server = '" + versionOnServer + "'");
         boolean newVersionIsAvailable = versionComparator.compare(localVersion, versionOnServer) < 0;
         ParseResult parseResult = new ParseResult();
         parseResult.setNewVersionIsAvailable(newVersionIsAvailable);

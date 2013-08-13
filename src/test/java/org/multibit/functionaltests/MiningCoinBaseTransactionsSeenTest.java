@@ -89,7 +89,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
             log.debug("applicationDataDirectoryLocator = " + applicationDataDirectoryLocator);
             
-            // Create MultiBit controller.
+            // Create MultiBitInternal controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
 
             log.debug("Creating Bitcoin service");
@@ -107,7 +107,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             ReplayManager.INSTANCE.initialise(controllers.bitcoinController, true);
 
             //
-            // MultiBit runtime is now setup and running.
+            // MultiBitInternal runtime is now setup and running.
             //
 
             String miningWalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "mining.wallet";
@@ -202,7 +202,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
     }
 
     /**
-     * Create a working, portable runtime of MultiBit in a temporary directory.
+     * Create a working, portable runtime of MultiBitInternal in a temporary directory.
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
@@ -210,7 +210,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         File multiBitDirectory = FileHandler.createTempDirectory("multibit");
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
 
-        System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
+        System.out.println("Building MultiBitInternal runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // Create an empty multibit.properties.
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");

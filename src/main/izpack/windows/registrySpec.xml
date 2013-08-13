@@ -17,7 +17,7 @@ Windows Registry Editor Version 5.00
 [HKEY_CLASSES_ROOT\bitcoin\shell\open]
 
 [HKEY_CLASSES_ROOT\bitcoin\shell\open\command]
-@="\"C:\\Program Files\\MultiBit-0.2.0beta4\\multibit.exe\" \"%1\""
+@="\"C:\\Program Files\\MultiBitInternal-0.2.0beta4\\multibit.exe\" \"%1\""
 
 
 -->
