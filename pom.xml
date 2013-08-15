@@ -28,9 +28,8 @@
     <url>https://multibit.org</url>
     <!-- Use "mvn clean package" to build the code packaged into a basic multibit.jar 
   		Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
-  		to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
-  		generate a complete website under target/site Use "mvn site:run" to run a 
-  		local webserver localhost:8080/index.html -->
+  		to build the executable jar, Linux installer and Mac DMG.
+  		For the build of the Windows installer see the windows-build.xml ANT file.-->
     <licenses>
         <license>
             <name>MIT</name>
@@ -134,28 +133,10 @@
                             <outputDirectory>${staging.linux.dir}</outputDirectory>
                         </configuration>
                     </execution>
-
-                    <!-- Put izPack2app into windows staging dir for production of windows installer later -->
-                    <execution>
-                        <id>unpack-shared-resources-ipack2app-windows</id>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <phase>install</phase>
-                        <configuration>
-                            <includeGroupIds>org.codehaus.izpack</includeGroupIds>
-                            <includeArtifactIds>izpack-standalone-compiler
-                            </includeArtifactIds>
-                            <classifier>izpack2app</classifier>
-                            <type>zip</type>
-                            <excludeTransitive>true</excludeTransitive>
-                            <outputDirectory>${staging.windows.dir}</outputDirectory>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
-            <!-- Create main executable jar - all classes (before proguard) -->
+            <!-- Create main executable jar - all classes are included (i.e. before proguard) -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2.1</version>
@@ -227,7 +208,7 @@
                                 <includes>
                                     <include>**/*.*</include>
                                 </includes>
-                                <outputDirectory>target/multibit-exe.dir</outputDirectory>
+                                <outputDirectory>target/windows/multibit-exe.dir</outputDirectory>
                             </fileset>
                         </configuration>
                     </execution>
@@ -250,7 +231,7 @@
                             <outputDirectory>${staging.linux.dir}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/izpack/linux</directory>
+                                    <directory>src/main/installer/linux</directory>
                                     <filtering>true</filtering>
                                     <includes>
                                         <include>install.xml</include>
@@ -278,7 +259,7 @@
                                         <include>release_notes.txt</include>
                                         <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -291,8 +272,8 @@
                         </configuration>
                     </execution>
 
-                    <!-- Produce staging directory with all resources used in creation of 
-              						the windows IzPack installer -->
+                    <!-- Produce staging directory with all resources used in creation of
+              		     the windows installer (except for the unpacked executable exe -->
                     <execution>
                         <id>copy-resources-to-staging-windows</id>
                         <phase>install</phase>
@@ -300,22 +281,19 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${staging.windows.dir}</outputDirectory>
+                            <outputDirectory>target/windows/staging</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/izpack/windows</directory>
+                                    <directory>src/main/installer/windows</directory>
                                     <filtering>true</filtering>
                                     <includes>
-                                        <include>install.xml</include>
                                         <include>readme.txt</include>
-                                        <include>shortcutSpec.xml</include>
                                         <include>registrySpec.xml</include>
                                     </includes>
                                 </resource>
                                 <resource>
                                     <directory>${basedir}/src/main/resources/images</directory>
                                     <includes>
-                                        <include>installerLeft.png</include>
                                         <include>multibit.ico</include>
                                     </includes>
                                 </resource>
@@ -331,24 +309,17 @@
                                         <include>release_notes.txt</include>
                                         <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
-                                    </includes>
-                                </resource>
-                                <resource>
-                                    <directory>target</directory>
-                                    <includes>
-                                        <include>multibit.exe</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
 
-                    <!-- produce a Mac application bundle -->
-                    <!-- this plugin copies a skeleton App and then copies in the resources 
-              						from the linux staging directory -->
-                    <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ 
-              						but cannot get extra resources into my Java directory in the app -->
+
+                    <!-- Produce a Mac application bundle. -->
+                    <!-- This plugin copies a skeleton App and then copies in the resources
+              						from the linux staging directory. -->
                     <execution>
                         <id>create-skeleton-Mac-application-bundle</id>
                         <phase>install</phase>
@@ -360,8 +331,8 @@
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <!-- Skeleton app including JRE -->
-                                    <directory>src/main/skeleton/mac/MultiBit.app</directory>
+                                    <!-- Skeleton app -->
+                                    <directory>src/app-resources/MultiBit.app</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -373,22 +344,22 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Java
+                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/target/staging.linux</directory>
+                                    <directory>${staging.linux.dir}</directory>
                                     <includes>
                                         <include>multibit-exe.jar</include>
                                         <include>multibit.checkpoints</include>
                                         <include>release_notes.txt</include>
                                         <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/src/main/izpack/mac</directory>
+                                    <directory>${basedir}/src/main/installer/mac</directory>
                                     <includes>
                                         <include>readme.txt</include>
                                     </includes>
@@ -396,6 +367,7 @@
                             </resources>
                         </configuration>
                     </execution>
+
                 </executions>
             </plugin>
 
@@ -414,18 +386,6 @@
                         <configuration>
                             <izpackBasedir>${staging.linux.dir}</izpackBasedir>
                             <installerFile>target/${project.build.finalName}-${project.version}-linux.jar
-                            </installerFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-windows-installer</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>izpack</goal>
-                        </goals>
-                        <configuration>
-                            <izpackBasedir>${staging.windows.dir}</izpackBasedir>
-                            <installerFile>target/${project.build.finalName}-windows.jar
                             </installerFile>
                         </configuration>
                     </execution>
@@ -448,33 +408,19 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <!-- Make the JavaAppLauncher in the Mac application bundle executable
+                                <!-- Make the JavaApplicationStub in the Mac application bundle executable
                        									(it loses its 'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaAppLauncher"
+                                    file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub"
                                     perm="777" />
-
-                                <!-- The multibit-exe.jar needs to be called JavaFxApp.jar for the launcher -->
-                                <move
-                                    file="${basedir}/target/MultiBit.app/Contents/Java/multibit-exe.jar"
-                                    tofile="${basedir}/target/MultiBit.app/Contents/Java/JavaFxApp.jar" />
 
                                 <copy
                                     todir="${basedir}/target/MultiBit-mac/MultiBit.app">
                                     <fileset dir="${basedir}/target/MultiBit.app"
                                              includes="**" />
                                 </copy>
-                                <copy file="${basedir}/src/main/izpack/mac/readme.txt"
+                                <copy file="${basedir}/src/main/installer/mac/readme.txt"
                                       todir="${basedir}/target/MultiBit-mac" />
-
-                                <!-- ensure the libjli.dylib is an alias an not the actual file -->
-                                <delete file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/MacOS/libjli.dylib" />
-
-                                <exec executable="ln" os="'Mac OS X'">
-                                    <arg
-                                            line="-s ../Home/jre/lib/jli/libjli.dylib ${basedir}/target/MultiBit-mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/MacOS/libjli.dylib" />
-                                </exec>
-
 
                                 <!-- Create Applications Symbolic link -->
                                 <!-- WARNING, do not remove this symbolic link by Java(ant) -->
@@ -486,7 +432,7 @@
                                 <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
                        									'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaAppLauncher"
+                                    file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
                                     perm="777" />
 
                                 <!-- Sign the Mac app -->
@@ -527,50 +473,6 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                    <!-- Produce a Win32 exe from the multibit-exe.jar (no Maven plugin 
-              						for JSmooth so drop down to ant) -->
-                    <execution>
-                        <id>jsmooth-installer2exe-exe</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <tasks>
-                                <path id="jsmooth-classpathref">
-                                    <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar" />
-                                    <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar" />
-                                </path>
-                                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
-                                         classpathref="jsmooth-classpathref" />
-                                <jsmoothgen project="src/main/jsmooth/exe.jsmooth"
-                                            skeletonroot="src/main/jsmooth/skeletons" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-
-                    <!-- Produce a Win32 exe from the windows IzPack installer (no Maven 
-              						plugin for JSmooth so drop down to ant) -->
-                    <execution>
-                        <id>jsmooth-installer2exe-installer</id>
-                        <phase>install</phase>
-                        <configuration>
-                            <tasks>
-                                <path id="jsmooth-classpathref">
-                                    <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar" />
-                                    <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar" />
-                                </path>
-                                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
-                                         classpathref="jsmooth-classpathref" />
-                                <jsmoothgen project="src/main/jsmooth/installer.jsmooth"
-                                            skeletonroot="src/main/jsmooth/skeletons" />
-                                <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows.exe" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
@@ -581,12 +483,12 @@
                 </dependencies>
             </plugin>
             <!-- Use the Enforcer to verify build integrity -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.2</version>
-        <executions>
-          <execution>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
             <id>enforce</id>
             <phase>verify</phase>
             <goals>
@@ -670,7 +572,7 @@
           </dependency>
         </dependencies>
 
-      </plugin>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -830,7 +732,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Location of staging directory for creation of linux IzPack installer -->
-        <staging.linux.dir>${project.build.directory}/staging.linux
+        <staging.linux.dir>${project.build.directory}/linux-staging
         </staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
@@ -841,9 +743,5 @@
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
-
-        <!-- Location of staging directory for creation of windows IzPack installer -->
-        <staging.windows.dir>${project.build.directory}/staging.windows
-        </staging.windows.dir>
     </properties>
 </project>
