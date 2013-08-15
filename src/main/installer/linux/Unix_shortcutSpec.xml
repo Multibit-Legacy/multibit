@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<shortcuts>
+
+  <programGroup defaultName="MultiBit"
+  location="applications"/>
+
+   <shortcut
+     name="MultiBit ${project.version}"
+     programGroup="yes"
+     desktop="yes"
+     applications="no"
+     startMenu="no"
+     startup="no"
+     target="/usr/bin/java"
+     commandLine="-jar $INSTALL_PATH/multibit-exe.jar"
+     initialState="normal"
+     iconFile="$INSTALL_PATH/multibit48.png"
+     workingDirectory="$INSTALL_PATH"
+     type="Application"
+     encoding="UTF-8"
+     description="MultiBit ${project.version}">
+   </shortcut>
+   <shortcut
+     name="Uninstall MultiBit ${project.version}"
+     programGroup="yes"
+     desktop="yes"
+     applications="no"
+     startMenu="no"
+     startup="no"
+     target="/usr/bin/java"
+     commandLine="-jar $INSTALL_PATH/Uninstaller/uninstaller.jar"
+     initialState="normal"
+     workingDirectory="$INSTALL_PATH"
+     type="Application"
+     encoding="UTF-8"
+     description="Uninstall MultiBit ${project.version}">
+   </shortcut>
+</shortcuts>
+
