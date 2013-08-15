@@ -155,7 +155,7 @@
                 </executions>
             </plugin>
 
-            <!-- Create main executable jar - all classes -->
+            <!-- Create main executable jar - all classes (before proguard) -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2.1</version>
@@ -179,6 +179,7 @@
                 </executions>
             </plugin>
 
+            <!-- Proguard the executable jar file to remove unnecessary classes -->
             <plugin>
                 <groupId>com.github.wvengen</groupId>
                 <artifactId>proguard-maven-plugin</artifactId>
@@ -206,6 +207,31 @@
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <!-- Unpack the proguarded executable jar for use in the Windows exe build. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>truezip-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>unpack-executable-jar</id>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <fileset>
+                                <directory>target/multibit-exe.jar</directory>
+                                <includes>
+                                    <include>**/*.*</include>
+                                </includes>
+                                <outputDirectory>target/multibit-exe.dir</outputDirectory>
+                            </fileset>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Produce staging directory with all resources used in creation of 
@@ -334,7 +360,7 @@
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <!-- skeleton app including JRE -->
+                                    <!-- Skeleton app including JRE -->
                                     <directory>src/main/skeleton/mac/MultiBit.app</directory>
                                 </resource>
                             </resources>
