@@ -11,8 +11,8 @@
         <fx:application id="multibitApp" mainClass="org.multibit.MultiBit" toolkit="swing"/>
 
         <!-- Create executable jar file -->
-        <fx:jar destfile="target/multibit-win-exe.jar">
-            <fileset dir="target/multibit-exe.dir"/>
+        <fx:jar destfile="target/windows/multibit-win-exe.jar">
+            <fileset dir="target/windows/multibit-exe.dir"/>
             <fx:application refid="multibitApp" name="MultiBit"/>
             <manifest> 
                 <attribute name="Implementation-Vendor" value="multibit.org developers"/>
@@ -28,7 +28,7 @@
                   outfile="multibit">
             <fx:application refId="multibitApp"/>
             <fx:resources> 
-                <fx:fileset dir="target" includes="multibit-win-exe.jar"/>
+                <fx:fileset dir="target/windows" includes="multibit-win-exe.jar"/>
                 <fx:fileset dir="target/windows/staging" includes="**/*.*"/>
             </fx:resources>
             <fx:permissions/>
