@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="multibit" default="make-exe">
+    <property name="build.dir" value="."/>
+
+    <property file="win-build.properties"/>
+
+    <target name="make-exe"  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath="${jdk.home.1.7}/lib/ant-javafx.jar"/>
+
+        <!-- Mark application as Swing-based --> 
+        <fx:application id="multibitApp" mainClass="org.multibit.MultiBit" toolkit="swing"/>
+
+        <!-- Create executable jar file -->
+        <fx:jar destfile="target/multibit-win-exe.jar">
+            <fileset dir="target/multibit-exe.dir"/>
+            <fx:application refid="multibitApp" name="MultiBit"/>
+            <manifest> 
+                <attribute name="Implementation-Vendor" value="multibit.org developers"/>
+                <attribute name="Implementation-Title" value="multibit"/>
+                <attribute name="Implementation-Version" value="0.5.x"/>
+            </manifest> 
+        </fx:jar>
+
+       <!-- generate JNLPs, HTML and native bundles --> 
+       <fx:deploy width="960" height="720" includeDT="true" 
+                  nativeBundles="all" 
+                  outdir="target-win" embedJNLP="true"
+                  outfile="multibit">
+            <fx:application refId="multibitApp"/>
+            <fx:resources> 
+                <fx:fileset dir="target" includes="multibit-win-exe.jar"/>
+                <fx:fileset dir="target/windows/staging" includes="**/*.*"/>
+            </fx:resources>
+            <fx:permissions/>
+        </fx:deploy> 
+    </target>
+</project>
