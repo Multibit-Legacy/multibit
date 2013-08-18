@@ -34,7 +34,7 @@ import javax.swing.SwingWorker;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.ApplicationDataDirectoryLocator;
-import org.multibit.MultiBitInternal;
+import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.BackupManager;
@@ -325,7 +325,7 @@ public class MultiBitService {
     public void createNewPeerGroup() {
         peerGroup = new MultiBitPeerGroup(bitcoinController, networkParameters, blockChain);
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
-        peerGroup.setUserAgent("MultiBitInternal", controller.getLocaliser().getVersionNumber());
+        peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
         boolean peersSpecified = false;
         String singleNodeConnection = controller.getModel().getUserPreference(BitcoinModel.SINGLE_NODE_CONNECTION);
@@ -388,7 +388,7 @@ public class MultiBitService {
     }
 
     public static String getFilePrefix() {
-        BitcoinController bitcoinController = MultiBitInternal.getBitcoinController();
+        BitcoinController bitcoinController = MultiBit.getBitcoinController();
         // testnet3
         if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET3_PREFIX;
@@ -505,7 +505,7 @@ public class MultiBitService {
                 blockChain.addWallet(wallet);
             } else {
                 log.error("Could not add wallet '" + walletFilename + "' to the blockChain as the blockChain is missing.\n"
-                        + "This is bad. MultiBitInternal is currently looking for a blockChain at '" + blockchainFilename + "'");
+                        + "This is bad. MultiBit is currently looking for a blockChain at '" + blockchainFilename + "'");
             }
 
             // Add wallet to peergroup.
@@ -669,7 +669,7 @@ public class MultiBitService {
                                     loopPerWalletModelData.setDirty(true);
                                 }
                                 if (loopWallet.getTransaction(sendTransaction.getHash()) == null) {
-                                    log.debug("MultiBitInternal adding a new pending transaction for the wallet '"
+                                    log.debug("MultiBit adding a new pending transaction for the wallet '"
                                             + loopPerWalletModelData.getWalletDescription() + "'\n" + sendTransaction.toString());
                                     loopWallet.receivePending(sendTransaction, null);
                                 }

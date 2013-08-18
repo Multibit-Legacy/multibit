@@ -76,7 +76,7 @@ public class FileChangeTimerTask extends TimerTask {
                         WalletData loopModelData = iterator.next();
                         if (bitcoinController.getFileHandler() != null) {
                             // See if the files have been changed by another
-                            // process (non MultiBitInternal).
+                            // process (non MultiBit).
                             boolean haveFilesChanged = bitcoinController.getFileHandler().haveFilesChanged(loopModelData);
                             if (haveFilesChanged) {
                                 boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();

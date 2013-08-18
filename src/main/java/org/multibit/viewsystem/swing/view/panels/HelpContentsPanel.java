@@ -15,7 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import org.multibit.MultiBitInternal;
+import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -106,9 +106,9 @@ public class HelpContentsPanel extends JPanel implements Viewable {
     
     public static String createTooltipTextForMenuItem(String tooltip) {
         // Mac menu items when they are on the top row of the screen dont render in HTML so dont wrap the tooltip text
-        // Get property apple.laf.useScreenMenuBar - this is set in src/app-resources/MultiBitInternal.app/info.plist
+        // Get property apple.laf.useScreenMenuBar - this is set in src/app-resources/MultiBit.app/info.plist
         String useScreenMenuBar = System.getProperty("apple.laf.useScreenMenuBar");
-        String lookAndFeel = "" + MultiBitInternal.getController().getModel().getUserPreference(CoreModel.LOOK_AND_FEEL);
+        String lookAndFeel = "" + MultiBit.getController().getModel().getUserPreference(CoreModel.LOOK_AND_FEEL);
 
         //log.debug("apple.laf.useScreenMenuBar = " + useScreenMenuBar + ", lookAndFeel = " + lookAndFeel);
 
@@ -131,7 +131,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
         boolean isItalic = false;
         boolean isBold = false;
-        FontSizer.INSTANCE.initialise(MultiBitInternal.getController());
+        FontSizer.INSTANCE.initialise(MultiBit.getController());
         Font adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
         if (adjustedFont != null) {
             fontSize = adjustedFont.getSize();

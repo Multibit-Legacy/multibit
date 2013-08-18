@@ -50,7 +50,7 @@ public class WalletInfoTest extends TestCase {
        
     @Test
     public void testRoundTrip() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final BitcoinController controller = controllers.bitcoinController;
 
@@ -111,7 +111,7 @@ public class WalletInfoTest extends TestCase {
 
     @Test
     public void testloadNonExistentInfoFile() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final BitcoinController controller = controllers.bitcoinController;
         

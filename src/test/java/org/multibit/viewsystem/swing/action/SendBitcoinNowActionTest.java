@@ -66,7 +66,7 @@ public class SendBitcoinNowActionTest extends TestCase {
             // set the application data directory to be the one we just created
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-            // Create MultiBitInternal controller.
+            // Create MultiBit controller.
             final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
             controller = controllers.bitcoinController;
 
@@ -79,7 +79,7 @@ public class SendBitcoinNowActionTest extends TestCase {
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
             controllers.coreController.registerViewSystem(simpleViewSystem);
 
-            // MultiBitInternal runtime is now setup and running
+            // MultiBit runtime is now setup and running
             // Wait for a peer connection.
             log.debug("Waiting for peer connection. . . ");
             while (!simpleViewSystem.isOnline()) {
@@ -274,7 +274,7 @@ public class SendBitcoinNowActionTest extends TestCase {
     }
     
     /**
-     * Create a working, portable runtime of MultiBitInternal in a temporary directory.
+     * Create a working, portable runtime of MultiBit in a temporary directory.
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
@@ -282,7 +282,7 @@ public class SendBitcoinNowActionTest extends TestCase {
         File multiBitDirectory = FileHandler.createTempDirectory("multibit");
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
 
-        System.out.println("Building MultiBitInternal runtime in : " + multiBitDirectory.getAbsolutePath());
+        System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // Create an empty multibit.properties.
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");

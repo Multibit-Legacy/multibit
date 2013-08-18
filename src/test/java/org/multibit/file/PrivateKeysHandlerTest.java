@@ -66,7 +66,7 @@ public class PrivateKeysHandlerTest extends TestCase {
     
     @Test
     public void testExport() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final BitcoinController controller = controllers.bitcoinController;
 

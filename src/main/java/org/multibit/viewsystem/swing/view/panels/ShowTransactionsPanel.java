@@ -18,7 +18,7 @@ package org.multibit.viewsystem.swing.view.panels;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
-import org.multibit.MultiBitInternal;
+import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
@@ -705,13 +705,13 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             if (transaction != null) {
                 if (transaction.getLockTime() > 0) {
                     // Non standard transaction.
-                    transactionTrustfulness = MultiBitInternal.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ".";
+                    transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ".";
                 } else {
                     // Normal transaction.
                     if (transaction != null && transaction.isCoinBase()) {
-                        transactionTrustfulness = MultiBitInternal.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndCoinbase") + ".";
+                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndCoinbase") + ".";
                     } else {
-                        transactionTrustfulness = MultiBitInternal.getController().getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".";
+                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".";
                     }
                 }
             }
@@ -723,22 +723,22 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             }
             StringBuilder builder = new StringBuilder();
             if (peers == 0) {
-                builder.append(MultiBitInternal.getController().getLocaliser()
+                builder.append(MultiBit.getController().getLocaliser()
                         .getString("transactionConfidence.seenByUnknownNumberOfPeers"));
             } else {
                 builder
-                    .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.seenBy"))
+                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy"))
                     .append(" ");
                 builder.append(peers);
                 if (peers > 1)
                     builder
                         .append(" ")
-                        .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.peers"))
+                        .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peers"))
                         .append(". ");
                 else
                     builder
                         .append(" ")
-                        .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.peer"))
+                        .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peer"))
                         .append(". ");
             }
 

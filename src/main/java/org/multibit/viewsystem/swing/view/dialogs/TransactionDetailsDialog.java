@@ -16,7 +16,7 @@
 package org.multibit.viewsystem.swing.view.dialogs;
 
 import com.google.bitcoin.core.*;
-import org.multibit.MultiBitInternal;
+import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
@@ -506,7 +506,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private String createStatusText(Transaction transaction) {
         if (transaction.getLockTime() > 0) {
             // Non standard transaction.
-            String transactionTrustfulness = MultiBitInternal.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ". ";
+            String transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ". ";
             return transactionTrustfulness + transactionConfidenceToStringLocalised(transaction.getConfidence()); 
         } else {
             return transactionConfidenceToStringLocalised(transaction.getConfidence());   
@@ -637,36 +637,36 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private String transactionConfidenceToStringLocalised(TransactionConfidence transactionConfidence) {
         StringBuilder builder = new StringBuilder();
 
-        if (MultiBitInternal.getController() != null && MultiBitInternal.getController().getLocaliser() != null) {
+        if (MultiBit.getController() != null && MultiBit.getController().getLocaliser() != null) {
             int peers = transactionConfidence.getBroadcastByCount();
             if (peers > 0) {
                 builder
-                    .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.seenBy"))
+                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy"))
                     .append(" ");
                 builder.append(peers);
                 if (peers > 1)
                     builder
                         .append(" ")
-                        .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.peers"))
+                        .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peers"))
                         .append(". ");
                 else
                     builder
                         .append(" ")
-                        .append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.peer"))
+                        .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peer"))
                         .append(". ");
             }
             switch (transactionConfidence.getConfidenceType()) {
             case UNKNOWN:
-                builder.append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.unknownConfidenceLevel"));
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.unknownConfidenceLevel"));
                 break;
             case DEAD:
-                builder.append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.dead"));
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.dead"));
                 break;
             case PENDING:
-                builder.append(MultiBitInternal.getController().getLocaliser().getString("transactionConfidence.pending"));
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.pending"));
                 break;
             case BUILDING:
-                builder.append(MultiBitInternal.getController().getLocaliser()
+                builder.append(MultiBit.getController().getLocaliser()
                         .getString("transactionConfidence.appearedInBestChain", new Object[] { transactionConfidence.getAppearedAtChainHeight() }));
                 break;
             }

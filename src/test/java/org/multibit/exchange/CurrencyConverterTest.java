@@ -35,7 +35,7 @@ import org.multibit.model.exchange.ExchangeModel;
 public class CurrencyConverterTest extends TestCase {
     @Test
     public void testBasic() throws IOException {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final BitcoinController controller = controllers.bitcoinController;
 
@@ -66,7 +66,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test
     public void testConvert() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final BitcoinController controller = controllers.bitcoinController;
         
@@ -89,7 +89,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testFormatter() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final BitcoinController controller = controllers.bitcoinController;
         
@@ -108,7 +108,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringEnglish() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.ENGLISH));
         final BitcoinController controller = controllers.bitcoinController;
         
@@ -135,7 +135,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringGerman() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.GERMAN));
         final BitcoinController controller = controllers.bitcoinController;
         
@@ -163,7 +163,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testGetBTCAsLocalisedStringFrench() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.FRENCH));
         final BitcoinController controller = controllers.bitcoinController;
         
@@ -195,7 +195,7 @@ public class CurrencyConverterTest extends TestCase {
     
     @Test 
     public void testAllCurrencies() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(new Localiser(Locale.FRENCH));
         final BitcoinController controller = controllers.bitcoinController;
         

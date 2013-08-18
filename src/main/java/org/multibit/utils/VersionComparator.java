@@ -3,7 +3,7 @@ package org.multibit.utils;
 import java.util.Comparator;
 
 /**
- * Class to compare MultiBitInternal version numbers. Version numbers are ordered as
+ * Class to compare MultiBit version numbers. Version numbers are ordered as
  * follows 0.4.0 0.4.1-SNAPSHOT 0.4.1alpha1 0.4.1beta1 0.4.1beta2 0.4.1rc1 0.4.1
  */
 public class VersionComparator implements Comparator<String> {

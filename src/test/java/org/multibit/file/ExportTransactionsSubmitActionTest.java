@@ -45,7 +45,7 @@ public class ExportTransactionsSubmitActionTest extends TestCase {
 
     @Test
     public void testExportTransactions() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         final BitcoinController bitcoinController = controllers.bitcoinController;
 

@@ -42,7 +42,7 @@ import java.nio.channels.FileChannel;
 import java.util.*;
 
 /**
- * Class consolidating the File IO in MultiBitInternal for wallets and wallet infos.
+ * Class consolidating the File IO in MultiBit for wallets and wallet infos.
  * 
  * @author jim
  * 
@@ -399,7 +399,7 @@ public class FileHandler {
                     } else {
                         throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
                                 + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString()
-                                + "' but this version of MultiBitInternal does not understand that format.");
+                                + "' but this version of MultiBit does not understand that format.");
                     }
                 }
                 log.debug("... done saving wallet file.");
@@ -495,7 +495,7 @@ public class FileHandler {
                     } else {
                         throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
                                 + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString()
-                                + "' but this version of MultiBitInternal does not understand that format.");
+                                + "' but this version of MultiBit does not understand that format.");
                     }
                 }
                 log.debug("... done saving wallet file.");
@@ -867,7 +867,7 @@ public class FileHandler {
     /**
      * To support multiple users on the same machine, the checkpoints file is
      * installed into the program installation directory and is then copied to
-     * the user's application data directory when MultiBitInternal is first used.
+     * the user's application data directory when MultiBit is first used.
      * 
      * Thus each user has their own copy of the blockchain.
      */
@@ -915,7 +915,7 @@ public class FileHandler {
     /**
      * To support multiple users on the same machine, the block chain is
      * installed into the program installation directory and is then copied to
-     * the user's application data directory when MultiBitInternal is first used.
+     * the user's application data directory when MultiBit is first used.
      * 
      * Thus each user has their own copy of the blockchain.
      */

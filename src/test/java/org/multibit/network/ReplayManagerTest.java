@@ -72,7 +72,7 @@ public class ReplayManagerTest extends TestCase {
         // Set the application data directory to be the one we just created.
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-        // Create MultiBitInternal controller
+        // Create MultiBit controller
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
         controller = controllers.bitcoinController;
 
@@ -179,7 +179,7 @@ public class ReplayManagerTest extends TestCase {
     }
 
     /**
-     * Create a working, portable runtime of MultiBitInternal in a temporary directory.
+     * Create a working, portable runtime of MultiBit in a temporary directory.
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
@@ -187,7 +187,7 @@ public class ReplayManagerTest extends TestCase {
         File multiBitDirectory = FileHandler.createTempDirectory("multibit");
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
 
-        System.out.println("Building MultiBitInternal runtime in : " + multiBitDirectory.getAbsolutePath());
+        System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // Create an empty multibit.properties.
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");

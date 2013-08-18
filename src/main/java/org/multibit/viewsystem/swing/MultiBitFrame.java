@@ -120,7 +120,7 @@ import com.google.bitcoin.core.Wallet;
 
 
 /*
- * JFrame displaying Swing version of MultiBitInternal
+ * JFrame displaying Swing version of MultiBit
  */
 public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener, WalletBusyListener, CurrencyConverterListener {
 

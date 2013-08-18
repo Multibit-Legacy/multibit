@@ -1605,7 +1605,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             // TODO Consider handling the possible runtime exception at a
             // suitable level for recovery
 
-            // Early MultiBitInternal versions did not URL encode the label hence may
+            // Early MultiBit versions did not URL encode the label hence may
             // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
             // i.e be lenient
             String uriString = decodedString.replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);

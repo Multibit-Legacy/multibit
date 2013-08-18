@@ -47,7 +47,7 @@
 #-printseeds out.seeds
 
 # Preserve the MultiBit app
--keep public class org.multibit.MultiBit {
+-keep public class org.multibit.MultiBitInExecutableJar {
     public static void main(java.lang.String[]);
 }
 

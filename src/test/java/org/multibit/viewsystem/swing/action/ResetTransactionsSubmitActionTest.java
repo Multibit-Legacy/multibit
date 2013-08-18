@@ -31,7 +31,7 @@ public class ResetTransactionsSubmitActionTest extends TestCase {
 
     @Test
     public void testNoWalletSelected() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         BitcoinController controller = controllers.bitcoinController;
 

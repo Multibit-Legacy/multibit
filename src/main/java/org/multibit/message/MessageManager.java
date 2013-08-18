@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Enum singleton to manage MultiBitInternal (and in future system wide) messages.
+ * Enum singleton to manage MultiBit (and in future system wide) messages.
  * @author jim
  */
 public enum MessageManager {

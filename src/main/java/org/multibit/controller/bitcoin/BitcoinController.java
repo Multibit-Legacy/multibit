@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * The MVC controller for MultiBitInternal.
+ * The MVC controller for MultiBit.
  * 
  * @author jim
  */
@@ -290,7 +290,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
         // TODO Consider handling the possible runtime exception at a suitable
         // level for recovery.
 
-        // Early MultiBitInternal versions did not URL encode the label hence may
+        // Early MultiBit versions did not URL encode the label hence may
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
         // be lenient
         String uriString = this.eventHandler.rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);

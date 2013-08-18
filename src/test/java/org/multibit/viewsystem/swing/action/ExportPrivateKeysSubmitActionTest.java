@@ -56,7 +56,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     
     @Test
     public void testExportPrivateKeysWithNonEncryptedWallet() throws Exception { 
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         BitcoinController controller = controllers.bitcoinController;
         
@@ -168,7 +168,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     
     @Test
     public void testExportPrivateKeysWithEncryptedWallet() throws Exception { 
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         BitcoinController controller = controllers.bitcoinController;
         
@@ -299,7 +299,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
     
     @Test
     public void testNoWalletSelected() throws Exception {
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         BitcoinController controller = controllers.bitcoinController;
 

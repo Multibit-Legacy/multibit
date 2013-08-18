@@ -43,7 +43,7 @@ public class ApplicationDataDirectoryLocator {
      * 
      * This is worked out as follows:
      * 
-     * 1. See if there is a multibit.properties in MultiBitInternal's current working
+     * 1. See if there is a multibit.properties in MultiBit's current working
      * directory If there is, use this directory as the application data
      * directory This is for backwards compatibility and for running everything
      * from a USB drive
@@ -54,17 +54,17 @@ public class ApplicationDataDirectoryLocator {
      * 
      * 2. Otherwise set the working directory as follows:
      * 
-     * PC System.getenv("APPDATA")/MultiBit
+     * PC System.getenv("APPDATA")/MultiBitInExecutableJar
      * 
-     * e.g. C:/Documents and Settings/Administrator/Application Data/MultiBit
+     * e.g. C:/Documents and Settings/Administrator/Application Data/MultiBitInExecutableJar
      * 
-     * Mac System.getProperty("user.home")/Library/Application Support/MultiBit
+     * Mac System.getProperty("user.home")/Library/Application Support/MultiBitInExecutableJar
      * 
-     * e.g. /Users/jim/Library/Application Support/MultiBit
+     * e.g. /Users/jim/Library/Application Support/MultiBitInExecutableJar
      * 
-     * Linux System.getProperty("user.home")/MultiBit
+     * Linux System.getProperty("user.home")/MultiBitInExecutableJar
      * 
-     * e.g. /Users/jim/MultiBit
+     * e.g. /Users/jim/MultiBitInExecutableJar
      */
     public String getApplicationDataDirectory() {
         if (applicationDataDirectory != null) {
@@ -79,18 +79,18 @@ public class ApplicationDataDirectoryLocator {
             String operatingSystemName = System.getProperty("os.name");
             if (operatingSystemName.startsWith("Windows")) {
                 // Windows os
-                applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiBit";
+                applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiBitInExecutableJar";
             } else {
                 if (operatingSystemName.startsWith("Mac")) {
                     // Mac os
                     if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
                         applicationDataDirectory = new File("../../../..").getAbsolutePath();
                     } else {
-                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiBit";
+                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiBitInExecutableJar";
                     }
                 } else {
                     // treat as Linux/ unix variant
-                    applicationDataDirectory = System.getProperty("user.home") + "/MultiBit";
+                    applicationDataDirectory = System.getProperty("user.home") + "/MultiBitInExecutableJar";
                 }
             }
             
@@ -109,7 +109,7 @@ public class ApplicationDataDirectoryLocator {
     
     /**
      * Get the installation directory.
-     * This is the directory into which MultiBitInternal was installed.
+     * This is the directory into which MultiBit was installed.
      * @throws IOException 
      * 
      * @TODO when running locally it is possible that the working directory directory and installation directory are different. Fix.
@@ -117,7 +117,7 @@ public class ApplicationDataDirectoryLocator {
     public String getInstallationDirectory() throws IOException {
         String operatingSystemName = System.getProperty("os.name");
         if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
-            // With the bundled JRE the location of the MultiBitInternal jar is specified in the java.library.path property.
+            // With the bundled JRE the location of the MultiBit jar is specified in the java.library.path property.
             return System.getProperty("java.library.path");
         } else {
             File installationDirectory = new File("");

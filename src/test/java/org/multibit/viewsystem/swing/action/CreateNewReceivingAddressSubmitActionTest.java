@@ -33,7 +33,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
    
     @Test
     public void testAddReceivingAddressesWithEncryptedWallet() throws Exception {   
-        // Create MultiBitInternal controller.
+        // Create MultiBit controller.
         final CreateControllers.Controllers controllers = CreateControllers.createControllers();
         BitcoinController controller = controllers.bitcoinController;
         

@@ -33,7 +33,7 @@ public class AlertManagerTest extends TestCase {
     
     @Before
     public void setUp() throws Exception {
-        // Create MultiBitInternal controller
+        // Create MultiBit controller
         final Localiser localiser = new TestLocaliser();
         final CreateControllers.Controllers controllers = CreateControllers.createControllers(localiser);
         controller = controllers.bitcoinController;

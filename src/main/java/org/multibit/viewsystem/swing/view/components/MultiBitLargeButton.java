@@ -22,7 +22,7 @@ import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 
 /**
- * button used in toolbar on MultiBitInternal Swing UI
+ * button used in toolbar on MultiBit Swing UI
  * @author jim
  *
  */
