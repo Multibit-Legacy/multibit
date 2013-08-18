@@ -71,7 +71,7 @@ import java.util.Timer;
  * <p/>
  * 1) Online/ Connecting/ Error status label
  * 2) Status messages - these are cleared after a period of time
- * 3) Synchronisatin progress bar
+ * 3) Synchronisati0n progress bar
  */
 public class StatusBar extends JPanel implements MessageListener {
 
@@ -116,7 +116,7 @@ public class StatusBar extends JPanel implements MessageListener {
     private SimpleDateFormat dateFormatter;
 
     /**
-     * Construct a new StatusBar
+     * Construct a new StatusBar.
      */
     public StatusBar(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
         this.bitcoinController = bitcoinController;
@@ -248,7 +248,7 @@ public class StatusBar extends JPanel implements MessageListener {
     /**
      * Update online status text with new value.
      *
-     * @param statusEnum
+     * @param finalStatusEnum
      */
     public void updateOnlineStatusText(final StatusEnum finalStatusEnum) {
         if (EventQueue.isDispatchThread()) {
@@ -266,7 +266,7 @@ public class StatusBar extends JPanel implements MessageListener {
     /**
      * Update online status text with new value.
      *
-     * @param statusEnum
+     * @param finalStatusEnum
      */
     public void updateOnlineStatusTextOnSwingThread(final StatusEnum finalStatusEnum) {
         this.statusEnum = finalStatusEnum;
@@ -413,7 +413,7 @@ public class StatusBar extends JPanel implements MessageListener {
     }
 
     public Component getZone(String id) {
-        return (Component) idToZones.get(id);
+        return idToZones.get(id);
     }
 
     /**
@@ -520,12 +520,6 @@ class PercentLayout implements LayoutManager2 {
     // Consider using HashMap
     private Hashtable<Component, Constraint> m_ComponentToConstraint;
 
-    /**
-     * Creates a new HORIZONTAL PercentLayout with a gap of 0.
-     */
-    public PercentLayout(Locale locale) {
-        this(HORIZONTAL, 0, locale);
-    }
 
     public PercentLayout(int orientation, int gap, Locale locale) {
         setOrientation(orientation);
@@ -558,10 +552,6 @@ class PercentLayout implements LayoutManager2 {
      */
     public int getOrientation() {
         return orientation;
-    }
-
-    public Constraint getConstraint(Component component) {
-        return m_ComponentToConstraint.get(component);
     }
 
     public void setConstraint(Component component, Object constraints) {
@@ -854,13 +844,7 @@ class StatusClearTask extends TimerTask {
  */
 final class LookAndFeelTweaks {
 
-    private static final Logger log = LoggerFactory.getLogger(LookAndFeelTweaks.class);
-
     public final static Border PANEL_BORDER = BorderFactory.createMatteBorder(3, 3, 3, 3, ColorAndFontConstants.BACKGROUND_COLOR);
-
-    // TODO These are never used
-    public final static Border WINDOW_BORDER = BorderFactory.createEmptyBorder(4, 10, 10, 10);
-    public final static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 
     /**
      * Utility class should not have a public constructor
@@ -868,83 +852,13 @@ final class LookAndFeelTweaks {
     private LookAndFeelTweaks() {
     }
 
-    public static void tweak() {
-        Object listFont = UIManager.get("List.font");
-        UIManager.put("Table.font", listFont);
-        UIManager.put("ToolTip.font", listFont);
-        UIManager.put("TextField.font", listFont);
-        UIManager.put("FormattedTextField.font", listFont);
-        UIManager.put("Viewport.background", "Table.background");
-    }
-
-    public static PercentLayout createVerticalPercentLayout(Locale locale) {
-        return new PercentLayout(PercentLayout.VERTICAL, 8, locale);
-    }
-
     public static PercentLayout createHorizontalPercentLayout(Locale locale) {
         return new PercentLayout(PercentLayout.HORIZONTAL, 4, locale);
-    }
-
-    public static BorderLayout createBorderLayout() {
-        return new BorderLayout(8, 8);
     }
 
     public static void setBorder(JComponent component) {
         if (component instanceof JPanel) {
             component.setBorder(PANEL_BORDER);
         }
-    }
-
-    public static void setBorderLayout(Container container) {
-        container.setLayout(new BorderLayout(3, 3));
-    }
-
-    public static void makeBold(JComponent component) {
-        component.setFont(component.getFont().deriveFont(Font.BOLD));
-    }
-
-    public static void makeMultilineLabel(JTextComponent area) {
-        area.setFont(UIManager.getFont("Label.font"));
-        area.setEditable(false);
-        area.setOpaque(false);
-        if (area instanceof JTextArea) {
-            ((JTextArea) area).setWrapStyleWord(true);
-            ((JTextArea) area).setLineWrap(true);
-        }
-    }
-
-    public static void htmlize(JComponent component) {
-        htmlize(component, UIManager.getFont("Button.font"));
-    }
-
-    public static void htmlize(JComponent component, Font font) {
-        String stylesheet = "body { margin-top: 0; margin-bottom: 0; margin-left: 0; margin-right: 0; font-family: "
-            + font.getName() + "; font-size: " + font.getSize() + "pt; }"
-            + "a, p, li { margin-top: 0; margin-bottom: 0; margin-left: 0; margin-right: 0; font-family: " + font.getName()
-            + "; font-size: " + font.getSize() + "pt; }";
-
-        try {
-            HTMLDocument doc = null;
-            if (component instanceof JEditorPane) {
-                if (((JEditorPane) component).getDocument() instanceof HTMLDocument) {
-                    doc = (HTMLDocument) ((JEditorPane) component).getDocument();
-                }
-            } else {
-                View v = (View) component.getClientProperty(javax.swing.plaf.basic.BasicHTML.propertyKey);
-                if (v != null && v.getDocument() instanceof HTMLDocument) {
-                    doc = (HTMLDocument) v.getDocument();
-                }
-            }
-            if (doc != null) {
-                doc.getStyleSheet().loadRules(new java.io.StringReader(stylesheet), null);
-            } // end of if (doc != null)
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-
-        }
-    }
-
-    public static Border addMargin(Border border) {
-        return new CompoundBorder(border, PANEL_BORDER);
     }
 }

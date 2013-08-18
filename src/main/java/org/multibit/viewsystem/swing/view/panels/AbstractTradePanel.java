@@ -587,7 +587,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         addressesTableModel = new AddressBookTableModel(this.bitcoinController, isReceiveBitcoin());
         addressesTable = new JTable(addressesTableModel);
         addressesTable.setOpaque(true);
-        addressesTable.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesTable.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         addressesTable.setShowGrid(false);
         addressesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         addressesTable.setRowSelectionAllowed(true);
@@ -685,7 +685,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     }
     
     private void setupScrollPane() {
-        addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         addressesScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         addressesScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         addressesScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);

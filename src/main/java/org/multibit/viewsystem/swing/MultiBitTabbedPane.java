@@ -61,7 +61,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
             return;
         }
 
-        log.debug("Set selected index = " + index);
+        //log.debug("Set selected index = " + index);
 
         try {
             // Get current tab.

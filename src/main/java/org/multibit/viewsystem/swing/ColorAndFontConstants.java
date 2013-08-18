@@ -42,13 +42,11 @@ public final class ColorAndFontConstants {
 
     public static Color CREDIT_FOREGROUND_COLOR = Color.GREEN.darker().darker();
     public static Color DEBIT_FOREGROUND_COLOR = Color.RED.darker();
-    public static Color SELECTION_CREDIT_FOREGROUND_COLOR = SystemColor.textHighlightText;
-    public static Color SELECTION_DEBIT_FOREGROUND_COLOR = SystemColor.textHighlightText;
 
     public static Color DEFAULT_ALTERNATE_TABLE_COLOR = new Color(230, 230, 233);
     public static Color ALTERNATE_TABLE_COLOR;
 
-    public static final int BRIGHTEN_CONSTANT = 3;
+    public static final int BRIGHTEN_CONSTANT = 5;
 
     /**
      * Utility class should not have a public constructor

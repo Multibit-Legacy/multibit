@@ -57,11 +57,11 @@ public final class MultiBitInExecutableJar {
             String consoleOutputFilename;
             
             if ("".equals(applicationDataDirectoryLocator.getApplicationDataDirectory())) {
-                // Use defaults
+                // Use defaults.
                 outputDirectory = OUTPUT_DIRECTORY;
                 consoleOutputFilename = OUTPUT_DIRECTORY + File.separator + CONSOLE_OUTPUT_FILENAME;
             } else {
-                // Use defined data directory as the root
+                // Use defined data directory as the root.
                 outputDirectory = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
                         + OUTPUT_DIRECTORY;
                 consoleOutputFilename = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
@@ -87,14 +87,17 @@ public final class MultiBitInExecutableJar {
         } catch (FileNotFoundException e) {
             if (log != null) {
                 log.error("Error in IO Redirection", e);
+            } else {
+                System.out.println("MultiBit start up : Error in IO Redirection : " + e.getClass().getCanonicalName() + " " + e.getMessage());
             }
         } catch (Exception e) {
-            // Gets printed in the file.
             if (log != null) {
-                log.debug("Error in redirecting output & exceptions to file", e);
+                log.error("Error in redirecting output & exceptions to file", e);
+            } else {
+                System.out.println("MultiBit start up : Error in redirecting output & exceptions to file : " + e.getClass().getCanonicalName() + " " + e.getMessage());
             }
         } finally {
-            // call the main MultiBit code
+            // Call the main MultiBit code.
             MultiBit.main(args);
         }
     }

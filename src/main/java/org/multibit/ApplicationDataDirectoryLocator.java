@@ -30,12 +30,10 @@ public class ApplicationDataDirectoryLocator {
 
     public ApplicationDataDirectoryLocator() {
         this.applicationDataDirectory = getApplicationDataDirectory();
-        log.info("Application data directory.1 = '{}'",applicationDataDirectory);
     }
     
     public ApplicationDataDirectoryLocator(File applicationDataDirectory) {
         this.applicationDataDirectory = applicationDataDirectory.getAbsolutePath();
-        log.info("Application data directory.2 = '{}'",applicationDataDirectory);
     }
     
     /**
@@ -116,12 +114,12 @@ public class ApplicationDataDirectoryLocator {
      */
     public String getInstallationDirectory() throws IOException {
         String operatingSystemName = System.getProperty("os.name");
-        if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
-            // With the bundled JRE the location of the MultiBit jar is specified in the java.library.path property.
-            return System.getProperty("java.library.path");
+
+        if (operatingSystemName.equals("Windows 8")) {
+            // Something like: C:\Users\jim\AppData\Local\MultiBit\app.
+            return System.getProperty("user.dir");
         } else {
             File installationDirectory = new File("");
-            log.debug("installationDirectory from file create = " + installationDirectory.getCanonicalPath());
             return installationDirectory.getCanonicalPath();
         }
     }

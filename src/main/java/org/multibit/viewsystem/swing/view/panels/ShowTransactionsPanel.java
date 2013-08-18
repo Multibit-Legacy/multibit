@@ -170,7 +170,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
-        table.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        table.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         // No row is currently selected.
         selectedRow = -1;
@@ -410,8 +410,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     }
     
     private void scrollPaneSetup() {
-        scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        scrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        scrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         scrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
@@ -442,10 +442,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
     @Override
     public void navigateAwayFromView() {
-    }
-
-    public WalletTableModel getWalletTableModel() {
-        return walletTableModel;
     }
 
     class ImageRenderer extends DefaultTableCellRenderer {
@@ -548,7 +544,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 } else {
                     int numberOfBlocksEmbedded = bitcoinController.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
                     if (transaction != null && transaction.isCoinBase()) {
-                        // Coinbase tx mature slower than regular blocks
+                        // Coinbase tx mature slower than regular blocks.
                         numberOfBlocksEmbedded = numberOfBlocksEmbedded / 20;
                     }
                     ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, transaction);
@@ -708,7 +704,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                     transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ".";
                 } else {
                     // Normal transaction.
-                    if (transaction != null && transaction.isCoinBase()) {
+                    if (transaction.isCoinBase()) {
                         transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndCoinbase") + ".";  
                     } else {
                         transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".";  
@@ -792,7 +788,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
             label.setText(value + SPACER);
 
-            if ((value + "").indexOf("-") > -1) {
+            if ((value + "").contains("-")) {
                 // Debit.
                 if (isSelected) {
                     label.setForeground(table.getSelectionForeground());
@@ -1011,7 +1007,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 // log.debug("pane.getText = " + pane.getText());
             }
 
-            if ((value.toString()).indexOf("-") > -1) {
+            if ((value.toString()).contains("-")) {
                 // debit
                 if (isSelected) {
                     pane.setForeground(table.getSelectionForeground());

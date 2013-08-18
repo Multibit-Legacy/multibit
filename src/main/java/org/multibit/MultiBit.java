@@ -231,6 +231,18 @@ public final class MultiBit {
             log.debug("Registering with controller");
             coreController.registerViewSystem(swingViewSystem);
 
+            String userDataString = "The user data directory is '" + applicationDataDirectoryLocator.getApplicationDataDirectory() + "'";
+            log.debug(userDataString);
+            Message directoryMessage1 = new Message(userDataString);
+            directoryMessage1.setShowInStatusBar(false);
+            MessageManager.INSTANCE.addMessage(directoryMessage1);
+
+            String installationDirString = "The installation directory is '" + applicationDataDirectoryLocator.getInstallationDirectory() + "'";
+            log.debug(installationDirString);
+            Message directoryMessage2 = new Message(installationDirString);
+            directoryMessage2.setShowInStatusBar(false);
+            MessageManager.INSTANCE.addMessage(directoryMessage2);
+
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
             MultiBitService multiBitService = new MultiBitService(bitcoinController);
