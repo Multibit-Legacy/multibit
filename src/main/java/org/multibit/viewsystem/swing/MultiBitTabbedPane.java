@@ -1,6 +1,7 @@
 package org.multibit.viewsystem.swing;
 
 import org.multibit.controller.Controller;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.Viewable;
@@ -26,13 +27,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
     private static final int CLOSE_ICON_WIDTH = 10;
     private static final int CLOSE_ICON_HEIGHT = 10;
     private static final int SEPARATION_DISTANCE = 2;
-
-    private int tabCounter = 0;
+    private static final int INDENT = 3;
 
     private Controller controller;
 
     private final MultiBitTabbedPane thisTabbedPane;
-    
+
     private static boolean enableUpdates = false;
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitTabbedPane.class);
@@ -40,7 +40,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
     public MultiBitTabbedPane(final Controller controller) {
         thisTabbedPane = this;
         this.controller = controller;
-        
+
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // Create an image icon of the small 'X' for use with a close
@@ -49,19 +49,17 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
         // Create a Dimension that can be used to size the close buttons.
         closeButtonSize = new Dimension(CLOSE_ICON_WIDTH + SEPARATION_DISTANCE, CLOSE_ICON_HEIGHT + SEPARATION_DISTANCE);
-        
+
         ToolTipManager.sharedInstance().registerComponent(this);
     }
-    
+
     @Override
     public void setSelectedIndex(int index) {
         super.setSelectedIndex(index);
-        
+
         if (!enableUpdates) {
             return;
         }
-
-        //log.debug("Set selected index = " + index);
 
         try {
             // Get current tab.
@@ -102,21 +100,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
             log.error(e.getClass().getName() + " " + e.getMessage());
         }
     }
-    
-    public Viewable getCurrentlyShownView() {
-        // Get current tab.
-        JPanel tabComponent = (JPanel) getSelectedComponent();
-        if (tabComponent != null) {
-            Component[] childComponents = tabComponent.getComponents();
-            Viewable selectedView = null;
-            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof Viewable) {
-                selectedView = ((Viewable) childComponents[0]);
-                return selectedView;
-            }
-        }
-        return null;
-    }
-    
+
     @Override
     public void addTab(String title, Icon icon, Component component) {
         addTab(title, icon, "", component, false);
@@ -128,7 +112,15 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     public void addTab(String title, Icon icon, String tooltip, Component component, boolean isCloseable) {
         final Component finalComponent = component;
-       
+
+        // Don't add padding for Mac with System/ Mac look and feel
+        boolean addPadding = true;
+        if (("System".equalsIgnoreCase(controller.getModel().getUserPreference((CoreModel.LOOK_AND_FEEL))) ||
+                (controller.getModel().getUserPreference((CoreModel.LOOK_AND_FEEL) + "").startsWith("Mac"))) &&
+                System.getProperty("os.name").startsWith("Mac")) {
+            addPadding = false;
+        }
+
         // Create a panel that represents the tab and ensure that it is
         // transparent.
         JPanel tab = new JPanel(new GridBagLayout());
@@ -144,15 +136,32 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // create an action listener that will locate the tab and
         // remote it from the tabbed pane.
 
+        if (addPadding) {
+            JPanel fill0 = new JPanel();
+            fill0.setOpaque(false);
+            fill0.setMinimumSize(new Dimension(INDENT, INDENT));
+            fill0.setPreferredSize(new Dimension(INDENT, INDENT));
+            fill0.setMaximumSize(new Dimension(INDENT, INDENT));
+
+            constraints.fill = GridBagConstraints.BOTH;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.weightx = 0.05;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.CENTER;
+            tab.add(fill0, constraints);
+        }
+
         JLabel tabLabel = new JLabel(title);
         tabLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tabLabel.setIcon(icon);
         tabLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        tabCounter++;
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.weightx = 0.8;
@@ -181,7 +190,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     }
                 }
             });
-            
+
             JPanel fill1 = new JPanel();
             fill1.setOpaque(false);
             fill1.setMinimumSize(new Dimension(4, 4));
@@ -189,8 +198,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
             fill1.setMaximumSize(new Dimension(4, 4));
 
             constraints.fill = GridBagConstraints.BOTH;
-            constraints.gridx = 1;
-            constraints.gridy = 0;
+            constraints.gridx = 2;
+            constraints.gridy = 1;
             constraints.gridwidth = 1;
             constraints.gridheight = 1;
             constraints.weightx = 0.05;
@@ -199,8 +208,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
             tab.add(fill1, constraints);
 
             constraints.fill = GridBagConstraints.NONE;
-            constraints.gridx = 2;
-            constraints.gridy = 0;
+            constraints.gridx = 3;
+            constraints.gridy = 1;
             constraints.gridwidth = 1;
             constraints.gridheight = 1;
             constraints.weightx = 0.2;
@@ -209,23 +218,41 @@ public class MultiBitTabbedPane extends JTabbedPane {
             tab.add(tabCloseButton, constraints);
         }
 
+        if (addPadding) {
+            JPanel fill2 = new JPanel();
+            fill2.setOpaque(false);
+            fill2.setMinimumSize(new Dimension(INDENT, INDENT));
+            fill2.setPreferredSize(new Dimension(INDENT, INDENT));
+            fill2.setMaximumSize(new Dimension(INDENT, INDENT));
+
+            constraints.fill = GridBagConstraints.BOTH;
+            constraints.gridx = isCloseable ? 2 : 4;
+            constraints.gridy = 2;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.weightx = 0.05;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.CENTER;
+            tab.add(fill2, constraints);
+        }
+
         // Add the tab to the tabbed pane. Note that the first
         // parameter, which would ordinarily be a String that
         // represents the tab title, is null.
-        addTab(null, component);    
-        
+        addTab(null, component);
+
         // Instead of using a String/Icon combination for the tab,
         // use our panel instead.
         ToolTipManager.sharedInstance().unregisterComponent(tab);
         setTabComponentAt(getTabCount() - 1, tab);
     }
-    
+
     @Override
     public String getToolTipText(MouseEvent e) {
-        int index = ((TabbedPaneUI)ui).tabForCoordinate(this, e.getX(), e.getY());
+        int index = ((TabbedPaneUI) ui).tabForCoordinate(this, e.getX(), e.getY());
 
         if (index != -1) {
-            JComponent selectedTab = (JComponent)getComponentAt(index);
+            JComponent selectedTab = (JComponent) getComponentAt(index);
             Component[] components = selectedTab.getComponents();
             if (components != null && components.length > 0 && components[0] instanceof Viewable) {
                 return HelpContentsPanel.createTooltipText(((Viewable) components[0]).getViewTooltip());
@@ -240,10 +267,6 @@ public class MultiBitTabbedPane extends JTabbedPane {
         for (int i = 0; i < tabCount; i++) {
             this.removeTabAt(0);
         }
-    }
-    
-    public static boolean isEnableUpdates() {
-        return enableUpdates;
     }
 
     public static void setEnableUpdates(boolean enableUpdates) {
