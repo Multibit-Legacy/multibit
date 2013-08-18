@@ -207,6 +207,7 @@
                                 <directory>target/multibit-exe.jar</directory>
                                 <includes>
                                     <include>**/*.*</include>
+                                    <include>org/joda/**/*</include>
                                 </includes>
                                 <outputDirectory>target/windows/multibit-exe.dir</outputDirectory>
                             </fileset>
