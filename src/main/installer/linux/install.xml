@@ -81,7 +81,7 @@
             <file src="multibit.checkpoints" targetdir="$INSTALL_PATH"/>
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
             <file src="COPYING" targetdir="$INSTALL_PATH"/>
-            <file src="AUTHORS.txt" targetdir="$INSTALL_PATH"/>
+            <file src="authors.txt" targetdir="$INSTALL_PATH"/>
             <file src="multibit-exe.jar" targetdir="$INSTALL_PATH"/>
             <file src="multibit-protocol-handler.sh" targetdir="$INSTALL_PATH" os="linux"/>
             <parsable targetfile="$INSTALL_PATH/multibit-protocol-handler.sh"  os="linux"/>

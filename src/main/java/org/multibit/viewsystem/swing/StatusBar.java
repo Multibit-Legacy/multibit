@@ -43,7 +43,6 @@ import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +52,6 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.UIResource;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.View;
-import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -85,10 +81,10 @@ public class StatusBar extends JPanel implements MessageListener {
 
     private static final double TOLERANCE = 0.0000001;
 
-    public static final int ONLINE_LABEL_WIDTH_DELTA = 10;
+    public static final int ONLINE_LABEL_WIDTH_DELTA = 12;
     public static final int ONLINE_LABEL_HEIGHT_DELTA = 8;
 
-    private MultiBitLabel onlineLabel;
+    private JLabel onlineLabel;
     final private MultiBitButton statusLabel;
     private StatusEnum statusEnum;
 
@@ -97,11 +93,6 @@ public class StatusBar extends JPanel implements MessageListener {
 
     private Timer statusClearTimer;
     static boolean clearAutomatically = true;
-
-    /**
-     * The key used to identified the default zone
-     */
-    public final static String DEFAULT_ZONE = "default";
 
     private HashMap<String, Component> idToZones;
     private Border zoneBorder;
@@ -137,8 +128,9 @@ public class StatusBar extends JPanel implements MessageListener {
 
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
-        onlineLabel = new MultiBitLabel("");
-        onlineLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        onlineLabel = new JLabel("");
+        onlineLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        onlineLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         onlineLabel.setOpaque(true);
 
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -386,12 +378,13 @@ public class StatusBar extends JPanel implements MessageListener {
         if (zone instanceof JComponent) {
             JComponent jc = (JComponent) zone;
             jc.setOpaque(true);
-            jc.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+            //jc.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
             if (jc.getBorder() == null || jc.getBorder() instanceof UIResource) {
                 if (jc instanceof JLabel) {
                     if ("left".equals(tweak)) {
-                        jc.setBorder(new CompoundBorder(new EmptyBorder(0, 3, 0, 2), BorderFactory
-                            .createLineBorder(Color.lightGray)));
+                        Border border = new CompoundBorder(BorderFactory.createMatteBorder(0, 3, 0, 2, ColorAndFontConstants.BACKGROUND_COLOR), BorderFactory
+                                .createLineBorder(Color.lightGray));
+                        jc.setBorder(border);
                     } else {
                         if ("right".equals(tweak)) {
                             jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 1)));
@@ -414,31 +407,6 @@ public class StatusBar extends JPanel implements MessageListener {
 
     public Component getZone(String id) {
         return idToZones.get(id);
-    }
-
-    /**
-     * For example:
-     * <p/>
-     * <code>
-     * setZones(new String[]{"A","B"},
-     * new JComponent[]{new JLabel(), new JLabel()},
-     * new String[]{"33%","*"});
-     * </code>
-     * <p/>
-     * would construct a new status bar with two zones (two JLabels) named A and
-     * B, the first zone A will occupy 33 percents of the overall size of the
-     * status bar and B the left space.
-     *
-     * @param ids         a value of type 'String[]'
-     * @param zones       a value of type 'JComponent[]'
-     * @param constraints a value of type 'String[]'
-     */
-    public void setZones(String[] ids, Component[] zones, String[] constraints) {
-        removeAll();
-        idToZones.clear();
-        for (int i = 0, c = zones.length; i < c; i++) {
-            addZone(ids[i], zones[i], constraints[i], "");
-        }
     }
 }
 

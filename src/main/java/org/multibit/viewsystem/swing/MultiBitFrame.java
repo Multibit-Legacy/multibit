@@ -132,8 +132,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
     public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 00.12345678 BTC (000.01 XYZ)";
 
-    public static final int WIDTH_OF_LONG_FIELDS = 300;
-    public static final int WIDTH_OF_AMOUNT_FIELD = 150;
     public static final int WALLET_WIDTH_DELTA = 25;
 
     public static final int SCROLL_BAR_DELTA = 20;
@@ -141,7 +139,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int HEIGHT_OF_HEADER = 70;
     
     public static final int WIDTH_OF_SPLIT_PANE_DIVIDER = 9;
-   
+
+    public static final int MENU_HORIZONTAL_INSET = 8;
+    public static final int MENU_VERTICAL_INSET = 1;
+
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
     public static final String SEPARATOR = " - ";
@@ -377,7 +378,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private void initUI(View initialView) {
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridBagLayout());
-        contentPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        contentPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         GridBagConstraints constraints = new GridBagConstraints();
         GridBagConstraints constraints2 = new GridBagConstraints();
 
@@ -388,7 +389,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         headerPanel = new JPanel();
-        headerPanel.setOpaque(false);
+        headerPanel.setOpaque(true);
         headerPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         headerPanel.setLayout(new GridBagLayout());
         headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -421,8 +422,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Create the tabbedpane that holds the views.
         viewTabbedPane = new MultiBitTabbedPane(controller);
-        viewTabbedPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        
+        viewTabbedPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+
         // Add the send bitcoin tab.
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
         Viewable sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
@@ -462,7 +463,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         splitPane.setOneTouchExpandable(false);
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
-        splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        splitPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        splitPane.setOpaque(true);
         
         BasicSplitPaneDivider divider = ( ( javax.swing.plaf.basic.BasicSplitPaneUI)splitPane.getUI()).getDivider();
         divider.setDividerSize(WIDTH_OF_SPLIT_PANE_DIVIDER);
@@ -504,6 +506,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setOpaque(false);
         headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         headerPanel.setLayout(new GridBagLayout());
+        headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         GridBagConstraints constraints = new GridBagConstraints();
         
         constraints.gridx = 0;
@@ -738,10 +741,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Create the menu bar.
         JMenuBar menuBar = new JMenuBar();
         menuBar.setComponentOrientation(componentOrientation);
-        
-        // Create the toolBar.
-        JPanel toolBarPanel = new JPanel();
-        toolBarPanel.setOpaque(false);
+        menuBar.setOpaque(false);
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -749,8 +749,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JMenu fileMenu = new JMenu(localiser.getString("multiBitFrame.fileMenuText"));
         fileMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         fileMenu.setComponentOrientation(componentOrientation);
-
         fileMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.fileMenuMnemonic"));
+        tweakAppearance(fileMenu);
         menuBar.add(fileMenu);
 
         // Build the Trade menu.
@@ -758,6 +758,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         tradeMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tradeMenu.setComponentOrientation(componentOrientation);
         tradeMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.tradeMenuMnemonic"));
+        tweakAppearance(tradeMenu);
         menuBar.add(tradeMenu);
 
         // Build the View menu.
@@ -765,6 +766,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         viewMenu.setComponentOrientation(componentOrientation);
         viewMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.viewMenuMnemonic"));
+        tweakAppearance(viewMenu);
         menuBar.add(viewMenu);
 
         // Build the Tools menu.
@@ -772,6 +774,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         toolsMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         toolsMenu.setComponentOrientation(componentOrientation);
         toolsMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.toolsMenuMnemonic"));
+        tweakAppearance(toolsMenu);
         menuBar.add(toolsMenu);
 
         // Build the Help menu.
@@ -779,8 +782,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         helpMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         helpMenu.setComponentOrientation(componentOrientation);
         helpMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.helpMenuMnemonic"));
+        tweakAppearance(helpMenu);
         menuBar.add(helpMenu);
-
         // Create new wallet action.
         CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.bitcoinController,
                 ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), this);
@@ -1082,6 +1085,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setJMenuBar(menuBar);
 
         return;
+    }
+
+    private void tweakAppearance(JMenu menu) {
+        menu.setMargin(new Insets(MENU_HORIZONTAL_INSET, MENU_VERTICAL_INSET, MENU_HORIZONTAL_INSET, MENU_VERTICAL_INSET));
     }
 
     /**
