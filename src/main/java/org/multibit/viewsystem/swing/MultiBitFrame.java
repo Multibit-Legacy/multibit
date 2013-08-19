@@ -455,9 +455,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Create a split pane with the two scroll panes in it.
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, walletsView, viewTabbedPane);
         } else {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewTabbedPane, (JPanel) walletsView);
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewTabbedPane, walletsView);
             splitPane.setResizeWeight(1.0);
         }
 
@@ -499,16 +499,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private JPanel createBalancePanel() {
+        tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
+
         JPanel headerPanel = new JPanel();
 
-        headerPanel.setMinimumSize(new Dimension(700, HEIGHT_OF_HEADER));
-        headerPanel.setPreferredSize(new Dimension(700, HEIGHT_OF_HEADER));
+        int heightOfHeaderToUse = Math.max(HEIGHT_OF_HEADER, tickerTablePanel.getIdealHeight());
+
+        headerPanel.setMinimumSize(new Dimension(700, heightOfHeaderToUse));
+        headerPanel.setPreferredSize(new Dimension(700, heightOfHeaderToUse));
         headerPanel.setOpaque(false);
         headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         headerPanel.setLayout(new GridBagLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         GridBagConstraints constraints = new GridBagConstraints();
-        
+
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
@@ -659,8 +663,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 8;
         constraints.gridy = 2;
-        constraints.weightx = 10000;
-        constraints.weighty = 10000;
+        constraints.weightx = 1000;
+        constraints.weighty = 1000;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
@@ -702,14 +706,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(filler3, constraints);
 
         // Add ticker panel.
-        tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 9;
         constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
+        constraints.weightx = 10;
+        constraints.weighty = 10000;
         constraints.gridwidth = 1;
-        constraints.gridheight = 3;
+        constraints.gridheight = 4;
 
         constraints.anchor = GridBagConstraints.CENTER;
         headerPanel.add(tickerTablePanel, constraints);

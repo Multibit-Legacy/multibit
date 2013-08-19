@@ -24,10 +24,8 @@ import javax.swing.*;
 public final class ImageLoader {
     private static final Logger log = LoggerFactory.getLogger(ImageLoader.class);
 
-    public static final String ACCEPT_ICON_FILE = "/images/accept.png";
     public static final String ADD_ICON_FILE = "/images/add.png";
     public static final String ADD_PASSWORD_ICON_FILE = "/images/lockAdd.png";
-    public static final String CANCEL_ICON_FILE = "/images/cancel.png";
     public static final String CHANGE_PASSWORD_ICON_FILE = "/images/lockChange.png";
     public static final String CHART_LINE_ICON_FILE = "/images/chartLine.png";
     public static final String CLOSE_TAB_ICON_FILE = "/images/closeTab.png";

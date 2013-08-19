@@ -40,7 +40,6 @@ public class TickerTableModel extends AbstractTableModel {
     private static final int MAX_NUMBER_OF_COLUMNS = 5;
 
     public static final String DEFAULT_COLUMNS_TO_SHOW = "currency lastPrice exchange";
-    public static final String DEFAULT_CURRENCY = "USD";
 
     private static final long serialVersionUID = -775886012854496208L;
 
