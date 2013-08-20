@@ -151,13 +151,14 @@ public class TickerTablePanel extends JPanel {
         table.getTableHeader().setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, Color.LIGHT_GRAY));
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1));
 
-        int tableHeaderVerticalInsets = table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom;
+        int tableHeaderHeight = Math.max(fontMetrics.getHeight() + table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom,
+                (table.getTableHeader().getHeaderRect(0) != null ? 0 : (int)table.getTableHeader().getHeaderRect(0).getHeight()));
 
         int tickerWidth = setupColumnWidths();
         setupTableHeaders();
 
         idealHeight =  (fontMetrics.getHeight() + table.getRowMargin()) * tickerTableModel.getRowCount()
-                + fontMetrics.getHeight() + tableHeaderVerticalInsets + tickerTableModel.getRowCount() + 10;
+                + tableHeaderHeight + tickerTableModel.getRowCount() + 10;
 
         setPreferredSize(new Dimension(tickerWidth, idealHeight));
 
