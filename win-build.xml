@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="multibit" default="make-exe">
+<project name="multibit-0.5.14" default="make-exe">
     <property name="build.dir" value="."/>
 
     <property file="win-build.properties"/>
@@ -8,7 +8,7 @@
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath=".:package/windows:${jdk.home.1.7}/lib/ant-javafx.jar"/>
 
         <!-- Mark application as Swing-based --> 
-        <fx:application id="multibitApp" mainClass="org.multibit.MultiBitInExecutableJar" toolkit="swing" name="MultiBit" version="0.5.14"/>
+        <fx:application id="multibitApp" mainClass="org.multibit.MultiBitInExecutableJar" toolkit="swing" name="MultiBit-${multibit-version}" version=""/>
 
         <!-- Create executable jar file -->
         <fx:jar destfile="target/windows/multibit-win-exe.jar">
@@ -16,8 +16,8 @@
             <fx:application refid="multibitApp"/>
             <manifest> 
                 <attribute name="Implementation-Vendor" value="multibit.org developers"/>
-                <attribute name="Implementation-Title" value="multibit"/>
-                <attribute name="Implementation-Version" value="0.5.14"/>
+                <attribute name="Implementation-Title" value="multibit-${multibit-version}"/>
+                <attribute name="Implementation-Version" value="${multibit-version}"/>
             </manifest> 
         </fx:jar>
 
@@ -25,7 +25,7 @@
        <fx:deploy width="960" height="720" includeDT="true" 
                   nativeBundles="all" 
                   outdir="target-win" embedJNLP="true" verbose="true"
-                  outfile="multibit">
+                  outfile="MultiBit-${multibit-version}">
             <fx:application refId="multibitApp"/>
             <fx:resources> 
                 <fx:fileset dir="target/windows" includes="multibit-win-exe.jar"/>
