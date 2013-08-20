@@ -167,7 +167,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                     new String[] { amountPlusConversionToFiat});
-            if (this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+            if (bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
                         new String[] { amountPlusConversionToFiat});
             }
@@ -183,7 +183,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
                     if (i == 0) {
                         completeMessage.append(lines[i]);
                     } else {
-                        completeMessage.append(completeMessage).append("\n").append(lines[i]);
+                        completeMessage.append("\n").append(lines[i]);
                     }
                     rows++;
                 }
