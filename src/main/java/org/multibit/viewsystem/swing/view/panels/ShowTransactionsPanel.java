@@ -606,7 +606,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 primaryLabel.setForeground(table.getForeground());
                 extraLabel.setForeground(table.getForeground());
                 combinationPanel.setForeground(table.getForeground());
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     primaryLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     extraLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     combinationPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -807,7 +807,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
             } else {
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
                     label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -846,7 +846,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
             } else {
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
                     label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -900,7 +900,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 label.setForeground(table.getSelectionForeground());
             } else {
                 label.setForeground(table.getForeground());
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
                     label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -935,7 +935,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 label.setForeground(table.getSelectionForeground());
             } else {
                 label.setForeground(table.getForeground());
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
                     label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -1030,7 +1030,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 filler.setBackground(table.getSelectionBackground());
                 pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, table.getSelectionBackground()));
             } else {
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -1048,7 +1048,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             }
 
             StyleConstants.setForeground(style, pane.getForeground());
-            if (row % 2 == 0 || isSelected) {
+            if (row % 2 == 1 || isSelected) {
                 StyleConstants.setBackground(style, pane.getBackground());
             } else {
                 StyleConstants.setBackground(style, ColorAndFontConstants.ALTERNATE_TABLE_COLOR);

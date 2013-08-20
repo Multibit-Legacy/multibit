@@ -70,6 +70,8 @@ public class TickerTablePanel extends JPanel {
     private static final int SCROLLBAR_WIDTH = 20;
     private static final int PER_COLUMN_DELTA = 6;
 
+    private int moduloRow = 0;
+
     FontMetrics fontMetrics;
     Font font;
 
@@ -83,6 +85,13 @@ public class TickerTablePanel extends JPanel {
 
         font = FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1);
         fontMetrics = getFontMetrics(font);
+
+        // Switch the dark and light row highlighting for Windows.
+        if (System.getProperty("os.name").startsWith("Win")) {
+            moduloRow = 1;
+        } else {
+            moduloRow = 0;
+        }
 
         initUI();
 
@@ -274,7 +283,7 @@ public class TickerTablePanel extends JPanel {
             label.setFont(font);
             label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
 
-            Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+            Color backgroundColor = (row % 2 == moduloRow ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                     : ColorAndFontConstants.BACKGROUND_COLOR);
             label.setBackground(backgroundColor);
             label.setForeground(table.getForeground());
@@ -298,7 +307,7 @@ public class TickerTablePanel extends JPanel {
             label.setFont(font);
             label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.LIGHT_GRAY));
 
-            Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+            Color backgroundColor = (row % 2 == moduloRow ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                     : ColorAndFontConstants.BACKGROUND_COLOR);
             label.setBackground(backgroundColor);
             label.setForeground(table.getForeground());
