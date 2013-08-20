@@ -150,7 +150,7 @@ public class TickerTablePanel extends JPanel {
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1));
 
         int tableHeaderHeight = Math.max(fontMetrics.getHeight() + table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom,
-                (table.getTableHeader().getHeaderRect(0) != null ? 0 : (int)table.getTableHeader().getHeaderRect(0).getHeight()));
+                (table.getTableHeader().getPreferredSize() != null ? 0 : (int)table.getTableHeader().getPreferredSize().getHeight()));
 
         int tickerWidth = setupColumnWidths();
         setupTableHeaders();
@@ -170,7 +170,7 @@ public class TickerTablePanel extends JPanel {
 
         setupScrollPane(tickerWidth);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
