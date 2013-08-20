@@ -136,12 +136,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public static final int SCROLL_BAR_DELTA = 20;
 
-    public static final int HEIGHT_OF_HEADER = 70;
-    
     public static final int WIDTH_OF_SPLIT_PANE_DIVIDER = 9;
 
     public static final int MENU_HORIZONTAL_INSET = 8;
     public static final int MENU_VERTICAL_INSET = 1;
+
+    public static final int BALANCE_SPACER = 8;
 
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
@@ -499,11 +499,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private JPanel createBalancePanel() {
+        FontMetrics fontMetrics = this.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        int availableToSpendWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("multiBitFrame.availableToSpend2"));
+        int availableToSpendHeight = fontMetrics.getHeight();
+
         tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
 
         JPanel headerPanel = new JPanel();
 
-        int heightOfHeaderToUse = Math.max(HEIGHT_OF_HEADER, tickerTablePanel.getIdealHeight());
+        int heightOfBalances =  2 * availableToSpendHeight + 3 * BALANCE_SPACER + 3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE;
+        int heightOfHeaderToUse = Math.max(heightOfBalances, tickerTablePanel.getIdealHeight());
 
         headerPanel.setMinimumSize(new Dimension(700, heightOfHeaderToUse));
         headerPanel.setPreferredSize(new Dimension(700, heightOfHeaderToUse));
@@ -520,7 +525,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(8, 8), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -536,10 +541,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, headerPanel);
 
         headerPanel.add(MultiBitTitledPanel.createStent(stentWidth, 1), constraints);
-
-        FontMetrics fontMetrics = this.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        int availableToSpendWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("multiBitFrame.availableToSpend2"));
-        int availableToSpendHeight = fontMetrics.getHeight();
 
         estimatedBalanceLabelLabel = new MultiBitLabel(controller.getLocaliser().getString("multiBitFrame.balanceLabel"), JTextField.RIGHT);
         estimatedBalanceLabelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
@@ -561,6 +562,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 0.01;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER), constraints);
 
         estimatedBalanceBTCLabel = new BlinkLabel(controller, true);
         estimatedBalanceBTCLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
@@ -610,7 +620,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         availableBalanceLabelButton.setBorder(BorderFactory.createEmptyBorder());
 
         constraints.gridx = 3;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.weightx = 0.6;
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
@@ -621,7 +631,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(MultiBitTitledPanel.createStent(availableToSpendWidth, availableToSpendHeight), constraints);
 
         constraints.gridx = 5;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.weightx = 0.6;
         constraints.weighty = 0.01;
         constraints.gridwidth = 1;
@@ -634,7 +644,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(availableBalanceBTCButton, constraints);
 
         constraints.gridx = 7;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.weightx = 0.6;
         constraints.weighty = 0.01;
         constraints.gridwidth = 1;
@@ -650,11 +660,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(availableBalanceFiatButton, constraints);
 
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.weightx = 0.01;
         constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(8, 8), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER), constraints);
  
         JPanel forcer1 = new JPanel();
         forcer1.setOpaque(false);
@@ -712,7 +722,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.weightx = 10;
         constraints.weighty = 10000;
         constraints.gridwidth = 1;
-        constraints.gridheight = 4;
+        constraints.gridheight = 5;
 
         constraints.anchor = GridBagConstraints.CENTER;
         headerPanel.add(tickerTablePanel, constraints);

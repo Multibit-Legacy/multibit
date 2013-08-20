@@ -64,8 +64,6 @@ public class TickerTablePanel extends JPanel {
     private TickerTableModel tickerTableModel;
     private JScrollPane scrollPane;
 
-    private static final String SPACER = "  "; // 2 spaces
-
     private static final int HORIZONTAL_DELTA = 30;
     private static final int SCROLLBAR_WIDTH = 20;
     private static final int PER_COLUMN_DELTA = 6;
@@ -243,7 +241,7 @@ public class TickerTablePanel extends JPanel {
     private void setupScrollPane(int tickerWidth) {
         scrollPane.getViewport().setPreferredSize(
                 new Dimension(tickerWidth, idealHeight));
-        scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, MultiBitFrame.HEIGHT_OF_HEADER)));
+        scrollPane.setMinimumSize(new Dimension(tickerWidth, idealHeight));
 
         scrollPane.setOpaque(false);
         scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
