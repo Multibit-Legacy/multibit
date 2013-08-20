@@ -8,7 +8,7 @@
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpath=".:package/windows:${jdk.home.1.7}/lib/ant-javafx.jar"/>
 
         <!-- Mark application as Swing-based --> 
-        <fx:application id="multibitApp" mainClass="org.multibit.MultiBit" toolkit="swing" name="MultiBit" version="0.5.14"/>
+        <fx:application id="multibitApp" mainClass="org.multibit.MultiBitInExecutableJar" toolkit="swing" name="MultiBit" version="0.5.14"/>
 
         <!-- Create executable jar file -->
         <fx:jar destfile="target/windows/multibit-win-exe.jar">
@@ -30,7 +30,8 @@
             <fx:resources> 
                 <fx:fileset dir="target/windows" includes="multibit-win-exe.jar"/>
                 <fx:fileset dir="target/windows/staging" includes="**/*.*"/>
-                <fx:fileset dir="${jdk.home.1.7}/jre/lib/ext" includes="**/*.*"/>
+                <fx:fileset dir="${jdk.home.1.7}\\jre\\lib\\ext" includes="*.*"/>
+                <fx:fileset dir="${jdk.home.1.7}\\jre\\lib\\ext" includes="*"/>
                 <fx:fileset dir="package/windows" includes="license.rtf" type="license"/>
             </fx:resources>
             <fx:permissions/>

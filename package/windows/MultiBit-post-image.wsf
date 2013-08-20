@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>  
+<package>  
+   <job id="postImage">  
+    <script language="JScript">  
+     <![CDATA[  
+        var oFSO = new ActiveXObject("Scripting.FileSystemObject");  
+        var oFolder = oFSO.getFolder(".");
+        var appFolderPath = oFolder.path + "\\MultiBit\\app";
+        var from1 = appFolderPath + "\\access-bridge-32.jar";
+        var from2 = appFolderPath + "\\dnsns.jar";
+        var from3 = appFolderPath + "\\jaccess.jar";
+        var from4 = appFolderPath + "\\localedata.jar";
+        var from5 = appFolderPath + "\\meta-index";
+        var from6 = appFolderPath + "\\sunec.jar";
+        var from7 = appFolderPath + "\\sunjce_provider.jar";
+        var from8 = appFolderPath + "\\sunmscapi.jar";
+        var from9 = appFolderPath + "\\sunpkcs11.jar";
+        var from10 =appFolderPath + "\\zipfs.jar";
+
+        var to = oFolder.path + "\\MultiBit\\runtime\\jre\\lib\\ext";
+        if (!oFSO.FolderExists(to)) {  
+          oFSO.CreateFolder(to);  
+        }  
+        to += "\\";  
+        oFSO.MoveFile(from1, to + "access-bridge-32.jar" );
+        oFSO.MoveFile(from2, to + "dnsns.jar");
+        oFSO.MoveFile(from3, to + "jaccess.jar");
+        oFSO.MoveFile(from4, to + "localedata.jar");
+        oFSO.MoveFile(from5, to + "meta-index");
+        oFSO.MoveFile(from6, to + "sunec.jar");
+        oFSO.MoveFile(from7, to + "sunjce_provider.jar");
+        oFSO.MoveFile(from8, to + "sunmscapi.jar");
+        oFSO.MoveFile(from9, to + "sunpkcs11.jar");
+        oFSO.MoveFile(from10, to + "zipfs.jar");
+
+        // Wait a few seconds.
+        var start = new Date().getTime();
+        for (var i=0; i < 1000000; i++) {
+            if ((new Date().getTime() - start) > 3000) {
+                break;
+            }
+        }
+     ]]>
+    </script>  
+   </job>  
+</package> 
