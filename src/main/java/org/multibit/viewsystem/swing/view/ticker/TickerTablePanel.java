@@ -15,14 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.ticker;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -36,7 +29,6 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
-import org.joda.money.BigMoney;
 import org.multibit.controller.Controller;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.viewsystem.View;
@@ -66,7 +58,9 @@ public class TickerTablePanel extends JPanel {
 
     private static final int HORIZONTAL_DELTA = 30;
     private static final int SCROLLBAR_WIDTH = 20;
-    private static final int PER_COLUMN_DELTA = 6;
+    private static final int PER_COLUMN_HORIZONTAL_DELTA = 8;
+
+    private static final int WINDOWS_TABLE_HEADER_HEIGHT_TWEAK = 4;
 
     private int moduloRow = 0;
 
@@ -133,6 +127,7 @@ public class TickerTablePanel extends JPanel {
         table.setShowGrid(true);
         table.setGridColor(Color.lightGray);
         table.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        table.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, SystemColor.windowBorder));
 
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         table.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
@@ -146,11 +141,14 @@ public class TickerTablePanel extends JPanel {
         table.addMouseListener(viewPreferencesMouseListener);
         table.getTableHeader().addMouseListener(viewPreferencesMouseListener);
         table.getTableHeader().setToolTipText(tickerTooltipText);
-        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, Color.LIGHT_GRAY));
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1));
 
-        int tableHeaderHeight = Math.max(fontMetrics.getHeight() + table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom,
-                (table.getTableHeader().getPreferredSize() != null ? 0 : (int)table.getTableHeader().getPreferredSize().getHeight()));
+        int tableHeaderHeight = fontMetrics.getHeight() + table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom;
+
+        // Windows 8 has slightly taller headers so add a tweak for that.
+        if (System.getProperty("os.name").startsWith("Win")) {
+            tableHeaderHeight = tableHeaderHeight + WINDOWS_TABLE_HEADER_HEIGHT_TWEAK;
+        }
 
         int tickerWidth = setupColumnWidths();
         setupTableHeaders();
@@ -197,17 +195,17 @@ public class TickerTablePanel extends JPanel {
             int columnWidth;
 
             if (TickerTableModel.TICKER_COLUMN_CURRENCY.equals(columnVariables[i])) {
-                columnWidth = PER_COLUMN_DELTA + Math.max(Math.max(
+                columnWidth = PER_COLUMN_HORIZONTAL_DELTA + Math.max(Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
                         fontMetrics.stringWidth((String)tickerTableModel.getValueAt(0, i))),
                         fontMetrics.stringWidth((String)tickerTableModel.getValueAt(1, i)));
             } else if (TickerTableModel.TICKER_COLUMN_EXCHANGE.equals(columnVariables[i])) {
-                columnWidth = PER_COLUMN_DELTA + Math.max(Math.max(
+                columnWidth = PER_COLUMN_HORIZONTAL_DELTA + Math.max(Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
                         fontMetrics.stringWidth((String)tickerTableModel.getValueAt(0, i))),
                         fontMetrics.stringWidth((String)tickerTableModel.getValueAt(1, i)));
             } else {
-                columnWidth = PER_COLUMN_DELTA + Math.max(
+                columnWidth = PER_COLUMN_HORIZONTAL_DELTA + Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
                         fontMetrics.stringWidth("000000.00000"));
             }
@@ -280,7 +278,6 @@ public class TickerTablePanel extends JPanel {
             label.setOpaque(true);
             label.setText((String) value);
             label.setFont(font);
-            label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
 
             Color backgroundColor = (row % 2 == moduloRow ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                     : ColorAndFontConstants.BACKGROUND_COLOR);
@@ -304,7 +301,6 @@ public class TickerTablePanel extends JPanel {
             label.setOpaque(true);
             label.setText((String) value);
             label.setFont(font);
-            label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.LIGHT_GRAY));
 
             Color backgroundColor = (row % 2 == moduloRow ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                     : ColorAndFontConstants.BACKGROUND_COLOR);
