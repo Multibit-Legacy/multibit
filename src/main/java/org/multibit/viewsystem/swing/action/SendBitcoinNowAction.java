@@ -107,6 +107,9 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     @Override
     public void actionPerformed(ActionEvent event) {
         sendBitcoinConfirmPanel.setMessageText(" ", " ");
+        sendBitcoinConfirmPanel.invalidate();
+        sendBitcoinConfirmPanel.validate();
+        sendBitcoinConfirmPanel.repaint();
 
         // check to see if the wallet files have changed
         WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
