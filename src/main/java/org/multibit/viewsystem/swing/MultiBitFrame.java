@@ -97,11 +97,7 @@ import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.ViewFactory;
-import org.multibit.viewsystem.swing.view.components.BlinkLabel;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.components.*;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
@@ -505,7 +501,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
 
-        JPanel headerPanel = new JPanel();
+        HorizontalGradientPanel headerPanel = new HorizontalGradientPanel(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         int heightOfBalances =  2 * availableToSpendHeight + 3 * BALANCE_SPACER + 3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE;
         int heightOfHeaderToUse = Math.max(heightOfBalances, tickerTablePanel.getIdealHeight());
@@ -513,7 +509,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setMinimumSize(new Dimension(700, heightOfHeaderToUse));
         headerPanel.setPreferredSize(new Dimension(700, heightOfHeaderToUse));
         headerPanel.setOpaque(false);
-        headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        //headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         headerPanel.setLayout(new GridBagLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         GridBagConstraints constraints = new GridBagConstraints();

@@ -37,6 +37,7 @@ import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
+import org.multibit.protocolhandler.ProtocolHandlerManager;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.ViewSystem;
@@ -194,7 +195,11 @@ public final class MultiBit {
             
             // Initialise replay manager.
             ReplayManager.INSTANCE.initialise(bitcoinController, false);
-            
+
+            // Initialise the protocol handler manager.
+            // (This sets up the correct registry settings in Windows).
+            ProtocolHandlerManager.INSTANCE.initialise();
+
             log.debug("Setting look and feel");
             try {
                 String lookAndFeel = userPreferences.getProperty(CoreModel.LOOK_AND_FEEL);
