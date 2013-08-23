@@ -15,11 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 
 import javax.swing.JPanel;
 
@@ -31,10 +27,17 @@ public class HorizontalGradientPanel extends JPanel {
 
     private static final double PROPORTION_TO_FILL = 0.618; // golden ratio
     private ComponentOrientation componentOrientation;
+
+    private double proportionToFill;
     
-    public HorizontalGradientPanel(ComponentOrientation componentOrientation) {
+    public HorizontalGradientPanel(ComponentOrientation componentOrientation, double proportionToFill) {
+        this.proportionToFill = proportionToFill;
         this.componentOrientation = componentOrientation;
         setOpaque(false);
+    }
+
+    public HorizontalGradientPanel(ComponentOrientation componentOrientation) {
+        this(componentOrientation, PROPORTION_TO_FILL);
     }
     
     @Override
@@ -42,12 +45,15 @@ public class HorizontalGradientPanel extends JPanel {
         Graphics2D g2d = (Graphics2D)g;
         Dimension d = this.getSize();
 
+        Color color1 = ColorAndFontConstants.BACKGROUND_COLOR;
+        Color color2 = ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR;
+
         if (ComponentOrientation.LEFT_TO_RIGHT == componentOrientation) {
-            g2d.setPaint(new GradientPaint(0, 0,  ColorAndFontConstants.BACKGROUND_COLOR,
-                    ((int)(d.width * PROPORTION_TO_FILL)), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR, false));           
+            g2d.setPaint(new GradientPaint(0, 0,  color1,
+                    ((int)(d.width * proportionToFill)), 0, color2, false));
         } else {
-            g2d.setPaint(new GradientPaint(((int)(d.width * (1 - PROPORTION_TO_FILL))), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR,
-                    d.width, 0,  ColorAndFontConstants.BACKGROUND_COLOR, false));           
+            g2d.setPaint(new GradientPaint(((int)(d.width * (1 - proportionToFill))), 0, color2,
+                    d.width, 0,  color1, false));
         }
 
          g2d.fillRect(0, 0, d.width , d.height);

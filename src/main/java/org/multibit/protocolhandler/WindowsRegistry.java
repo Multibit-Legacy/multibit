@@ -16,9 +16,22 @@ import java.io.StringWriter;
  * @author Jim Burton
  */
 public class WindowsRegistry {
-    //public static final String HKEY_CURRENT_USER = "HKCU";
-    //public static final String HKEY_LOCAL_MACHINE = "HKLM";
     public static final String HKEY_CLASSES_ROOT = "HKCR";
+
+    public static final String REG_COMMAND = "REG";
+
+    public static final String QUERY_TOKEN = "QUERY";
+    public static final String ADD_TOKEN = "ADD";
+
+    public static final String VALUE_TOKEN = " /v ";
+    public static final String VALUE_EMPTY_TOKEN = " /ve ";
+    public static final String DATA_TOKEN = " /d ";
+    public static final String TYPE_TOKEN = " /t ";
+    public static final String SPACE = " ";
+
+    public static final String TYPE_STRING = "REG_SZ";
+    public static final String TYPE_DWORD = "REG_DWORD";
+
 
     private static final Logger log = LoggerFactory.getLogger(WindowsRegistry.class);
 
@@ -33,9 +46,16 @@ public class WindowsRegistry {
      */
     public static final String readRegistry(String location, String key){
         try {
-            // Run reg query, then read output with StreamReader (internal class)
-            Process process = Runtime.getRuntime().exec("reg query " +
-                    '"'+ location + "\" /v " + key);
+            // Run reg query, then read output with StreamReader (internal class).
+            String command = REG_COMMAND + SPACE + QUERY_TOKEN + SPACE + "\"" + location + "\"";
+            if (key == null || key.equals("")) {
+                // If key is blank or null, run REG with /ve and no key - this reads the default value.
+                command = command + VALUE_EMPTY_TOKEN;
+            } else {
+                command = command + VALUE_TOKEN + key;
+            }
+            log.debug("command = " + command);
+            Process process = Runtime.getRuntime().exec(command);
 
             StreamReader reader = new StreamReader(process.getInputStream());
             reader.start();
@@ -43,17 +63,19 @@ public class WindowsRegistry {
             reader.join();
             String output = reader.getResult();
 
-            System.out.println("WindowsRegistry#readRegistry read '" + output + "'.");
+            log.debug("output =  '" + output + "'.");
 
-            // Output has the following format:
-            // \n<Version information>\n\n<key>\t<registry type>\t<value>
-            if( ! output.contains("\t")){
-                return null;
-            }
+            // Output has various formats.
+            // No key specified:
+            //HKEY_CLASSES_ROOT\bitcoin
+            //        (Default)    REG_SZ    URL:Bitcoin Protocol
+            //URL Protocol    REG_SZ
+            //UseOriginalUrlEncoding    REG_DWORD    0x1
 
-            // Parse out the value
-            String[] parsed = output.split("\t");
-            return parsed[parsed.length-1];
+            // Key specified:
+            // TODO
+
+            return output;
         }
         catch (Exception e) {
             log.error(e.getClass().getCanonicalName() + e.getMessage());
@@ -67,11 +89,32 @@ public class WindowsRegistry {
      * @param value value to set key to
      */
     public static void setRegistry(String location, String key, String value){
+        setRegistry(location, key, value, TYPE_STRING);
+    }
+
+        /**
+         * @param location path in the registry
+         * @param key registry key
+         * @param value value to set key to
+         * @param type type of value
+         */
+    public static void setRegistry(String location, String key, String value, String type){
         try {
             // Run reg add, then read output with StreamReader (internal class)
             // Example command line: REG ADD HKCU\Software\SS64 /v Sample /d "some test data"
-            Process process = Runtime.getRuntime().exec("reg add " + location + " /v " + key
-                    + " /d " + value);
+            String command = REG_COMMAND + SPACE + ADD_TOKEN + SPACE + "\"" + location + "\"";
+            if (key == null || key.equals("")) {
+                // If key is blank or null, run REG with /ve and no key - this sets the default value.
+                command = command + VALUE_EMPTY_TOKEN;
+            } else {
+                command = command + VALUE_TOKEN + key;
+            }
+            if (TYPE_DWORD.equalsIgnoreCase(type)) {
+                command = command + TYPE_TOKEN + TYPE_DWORD + SPACE;
+            }
+            command = command + DATA_TOKEN + value;
+            log.debug("command = " + command);
+            Process process = Runtime.getRuntime().exec(command);
 
             StreamReader reader = new StreamReader(process.getInputStream());
             reader.start();
@@ -79,8 +122,7 @@ public class WindowsRegistry {
             reader.join();
             String output = reader.getResult();
 
-            System.out.println("WindowsRegistry#setRegistry set of location = " + location + ", key = " + key + ", value = " + value + ".\n Result = '" + output + "'.");
-
+            log.debug("output =  '" + output + "'.");
         }
         catch (Exception e) {
             log.error(e.getClass().getCanonicalName() + e.getMessage());

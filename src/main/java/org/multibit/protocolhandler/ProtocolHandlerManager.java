@@ -64,6 +64,7 @@ public enum ProtocolHandlerManager {
 
             log.debug("Before HKCR\\bitcoin = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", ""));
             log.debug("Before HKCR\\bitcoin, URL Protocol = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", "URL Protocol"));
+            log.debug("Before HKCR\\bitcoin, UseOriginalUrlEncoding = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", "UseOriginalUrlEncoding"));
             log.debug("Before HKCR\\bitcoin, DefaultIcon = " + WindowsRegistry.readRegistry("HKCR\\bitcoin\\DefaultIcon", ""));
             log.debug("Before HKCR\\bitcoin\\shell\\open\\command = " + WindowsRegistry.readRegistry("HKCR\\bitcoin\\shell\\open\\command", ""));
 
@@ -73,6 +74,8 @@ public enum ProtocolHandlerManager {
             WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "", "URL:Bitcoin Protocol");
             log.debug("setRegistry bitcoin.2 ...");
             WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "URL Protocol", "");
+            log.debug("setRegistry bitcoin.3 ...");
+            WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "UseOriginalUrlEncoding", "0x1");
 
             //log.debug("createKey bitcoin\\DefaultIcon ...");
             //WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin\\DefaultIcon");
@@ -90,10 +93,10 @@ public enum ProtocolHandlerManager {
             log.debug("setRegistry bitcoin\\shell\\open\\command " + openCommand + "...");
             WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin\\shell\\open\\command", "", openCommand);
             log.debug("done");
-            // TODO - set name="UseOriginalUrlEncoding" - uses set of dword
 
             log.debug("After HKCR\\bitcoin = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", ""));
             log.debug("After HKCR\\bitcoin, URL Protocol = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", "URL Protocol"));
+            log.debug("After HKCR\\bitcoin, UseOriginalUrlEncoding = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", "UseOriginalUrlEncoding"));
             log.debug("After HKCR\\bitcoin, DefaultIcon = " + WindowsRegistry.readRegistry("HKCR\\bitcoin\\DefaultIcon", ""));
             log.debug("After HKCR\\bitcoin\\shell\\open\\command = " + WindowsRegistry.readRegistry("HKCR\\bitcoin\\shell\\open\\command", ""));
         } catch (IOException e) {

@@ -35,6 +35,7 @@ public final class ColorAndFontConstants {
             .get("Label.background");
     public static Color DARK_BACKGROUND_COLOR;
     public static Color DEFAULT_VERY_LIGHT_BACKGROUND_COLOR = new Color(251, 251, 254);
+    public static Color MID_BACKGROUND_COLOR;
     public static Color VERY_LIGHT_BACKGROUND_COLOR;
 
     public static Color SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
@@ -72,6 +73,10 @@ public final class ColorAndFontConstants {
         DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
         ALTERNATE_TABLE_COLOR = DEFAULT_ALTERNATE_TABLE_COLOR;
         VERY_LIGHT_BACKGROUND_COLOR = DEFAULT_VERY_LIGHT_BACKGROUND_COLOR;
+
+        MID_BACKGROUND_COLOR = new Color((VERY_LIGHT_BACKGROUND_COLOR.getRed() + BACKGROUND_COLOR.getRed())/2,
+                (VERY_LIGHT_BACKGROUND_COLOR.getGreen() + BACKGROUND_COLOR.getGreen())/2,
+                (VERY_LIGHT_BACKGROUND_COLOR.getGreen() + BACKGROUND_COLOR.getGreen())/2) ;
 
         SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
         SELECTION_BACKGROUND_COLOR = SystemColor.textHighlight;

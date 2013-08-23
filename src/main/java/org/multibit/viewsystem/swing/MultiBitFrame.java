@@ -15,19 +15,7 @@
  */
 package org.multibit.viewsystem.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -501,19 +489,22 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
 
-        HorizontalGradientPanel headerPanel = new HorizontalGradientPanel(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        //HorizontalGradientPanel headerPanel = new HorizontalGradientPanel(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        JPanel headerPanel = new JPanel();
 
         int heightOfBalances =  2 * availableToSpendHeight + 3 * BALANCE_SPACER + 3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE;
         int heightOfHeaderToUse = Math.max(heightOfBalances, tickerTablePanel.getIdealHeight());
 
         headerPanel.setMinimumSize(new Dimension(700, heightOfHeaderToUse));
         headerPanel.setPreferredSize(new Dimension(700, heightOfHeaderToUse));
-        headerPanel.setOpaque(false);
-        //headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        headerPanel.setOpaque(true);
+        headerPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
+        headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         headerPanel.setLayout(new GridBagLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         GridBagConstraints constraints = new GridBagConstraints();
 
+        // Top row filler.
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
@@ -562,7 +553,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.weightx = 0.01;
-        constraints.weighty = 0.6;
+        constraints.weighty = 2;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -655,13 +646,28 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         headerPanel.add(availableBalanceFiatButton, constraints);
 
+        // Bottom Filler
         constraints.gridx = 0;
         constraints.gridy = 4;
         constraints.weightx = 0.01;
-        constraints.weighty = 0.6;
+        constraints.weighty = 10;
+        constraints.fill = GridBagConstraints.BOTH;
+
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER), constraints);
- 
+
+        JPanel forcerBottom = new JPanel();
+        forcerBottom.setOpaque(false);
+        //forcerBottom.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.weightx = 0.01;
+        constraints.weighty = 40;
+
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(forcerBottom, constraints);
+
         JPanel forcer1 = new JPanel();
         forcer1.setOpaque(false);
         //forcer1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
