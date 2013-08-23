@@ -82,7 +82,13 @@ public class ApplicationDataDirectoryLocator {
                 if (operatingSystemName.startsWith("Mac")) {
                     // Mac os
                     if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
-                        applicationDataDirectory = new File("../../../..").getAbsolutePath();
+                        try {
+                            // Use a canonical path as it resolves the ..
+                            applicationDataDirectory = new File("../../../..").getCanonicalPath();
+                        } catch (IOException e) {
+                            // Use a less tidy absolute path.
+                            applicationDataDirectory = new File("../../../..").getAbsolutePath();
+                        }
                     } else {
                         applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiBit";
                     }
@@ -92,7 +98,7 @@ public class ApplicationDataDirectoryLocator {
                 }
             }
             
-            // create the application data directory if it does not exist
+            // Create the application data directory if it does not exist.
             File directory = new File(applicationDataDirectory);
             if (!directory.exists()) {
                 boolean created = directory.mkdir();
