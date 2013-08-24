@@ -484,8 +484,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     protected JPanel createAddressesHeaderPanel() {
         JPanel addressesHeaderPanel = new JPanel();
-        addressesHeaderPanel.setOpaque(false);
-        addressesHeaderPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesHeaderPanel.setOpaque(true);
+        addressesHeaderPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
         addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
         addressesHeaderPanel.setLayout(new GridBagLayout());

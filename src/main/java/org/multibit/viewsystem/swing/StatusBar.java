@@ -118,9 +118,9 @@ public class StatusBar extends JPanel implements MessageListener {
         setLayout(LookAndFeelTweaks.createHorizontalPercentLayout(controller.getLocaliser().getLocale()));
         idToZones = new HashMap<String, Component>();
         setZoneBorder(BorderFactory.createEmptyBorder());
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         setOpaque(true);
-        setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, ColorAndFontConstants.BACKGROUND_COLOR));
+        setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, ColorAndFontConstants.MID_BACKGROUND_COLOR));
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -164,7 +164,7 @@ public class StatusBar extends JPanel implements MessageListener {
         });
 
         statusLabel = new MultiBitButton("");
-        statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        statusLabel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         statusLabel.setOpaque(true);
         statusLabel.setBorderPainted(false);
         statusLabel.setForeground(Color.BLACK);
@@ -205,13 +205,13 @@ public class StatusBar extends JPanel implements MessageListener {
         syncProgressBar.setValue(0);
         syncProgressBar.setStringPainted(false);
         syncProgressBar.setVisible(false);
-        syncProgressBar.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        syncProgressBar.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         syncProgressBar.setOpaque(true);
         syncProgressBar.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         JPanel filler = new JPanel();
         filler.setOpaque(true);
-        filler.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        filler.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
         addZone("online", onlineLabel, "" + onlineWidth, "left");
         addZone("progressBar", syncProgressBar, "" + 200, "left");
@@ -812,7 +812,7 @@ class StatusClearTask extends TimerTask {
  */
 final class LookAndFeelTweaks {
 
-    public final static Border PANEL_BORDER = BorderFactory.createMatteBorder(3, 3, 3, 3, ColorAndFontConstants.BACKGROUND_COLOR);
+    public final static Border PANEL_BORDER = BorderFactory.createMatteBorder(3, 3, 3, 3, ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
     /**
      * Utility class should not have a public constructor

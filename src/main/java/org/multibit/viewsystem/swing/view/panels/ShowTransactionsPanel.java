@@ -341,7 +341,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
         buttonPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
         buttonPanel.setOpaque(true);
-        buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        buttonPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         Action helpAction;
