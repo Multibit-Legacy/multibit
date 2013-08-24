@@ -265,7 +265,14 @@ public class BitcoinController extends AbstractController<CoreController> implem
     }
 
     public synchronized void handleOpenURI() {
-        log.debug("handleOpenURI called and rawBitcoinURI ='" + this.eventHandler.rawBitcoinURI + "'");
+        log.debug("handleOpenURI.1 called and rawBitcoinURI ='" + eventHandler.rawBitcoinURI + "'");
+        if (eventHandler.rawBitcoinURI != null) {
+            handleOpenURI(eventHandler.rawBitcoinURI.toString());
+        }
+    }
+
+    public synchronized void handleOpenURI(String rawBitcoinURIString) {
+        log.debug("handleOpenURI.2 called and rawBitcoinURIString ='" + rawBitcoinURIString + "'");
 
         // get the open URI configuration information
         String showOpenUriDialogText = getModel().getUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG);
@@ -281,9 +288,8 @@ public class BitcoinController extends AbstractController<CoreController> implem
             
             return;
         }
-        if (this.eventHandler.rawBitcoinURI == null || this.eventHandler.rawBitcoinURI.toString().equals("")) {
+        if (rawBitcoinURIString == null || rawBitcoinURIString.equals("")) {
             log.debug("No Bitcoin URI found to handle");
-            // displayView(getCurrentView());
             return;
         }
         // Process the URI
@@ -293,10 +299,10 @@ public class BitcoinController extends AbstractController<CoreController> implem
         // Early MultiBit versions did not URL encode the label hence may
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
         // be lenient
-        String uriString = this.eventHandler.rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
+        String uriString = rawBitcoinURIString.replace(" ", ENCODED_SPACE_CHARACTER);
         BitcoinURI bitcoinURI;
         try {
-            bitcoinURI = new BitcoinURI(this.getModel().getNetworkParameters(), uriString);
+            bitcoinURI = new BitcoinURI(getModel().getNetworkParameters(), uriString);
         } catch (BitcoinURIParseException pe) {
             log.error("Could not parse the uriString '" + uriString + "', aborting");
             return;
@@ -373,9 +379,6 @@ public class BitcoinController extends AbstractController<CoreController> implem
         public void handleQuitEvent(ExitAction exitAction) {
             exitAction.setBitcoinController(super.controller);
         }
-    }
-
-    public void onConfidenceChanged(Transaction tx) {
     }
 
     @Override

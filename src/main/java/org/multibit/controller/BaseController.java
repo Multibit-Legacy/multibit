@@ -178,7 +178,4 @@ public abstract class BaseController<C extends BaseController<C>> implements Con
     abstract public void displayHelpContext(String helpContextToDisplay);
     
     abstract protected void addEventHandler(AbstractEventHandler eventHandler);
-
-    
-
 }

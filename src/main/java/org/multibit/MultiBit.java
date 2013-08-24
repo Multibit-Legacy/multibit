@@ -75,6 +75,8 @@ public final class MultiBit {
     private static BitcoinController bitcoinController = null;
     private static ExchangeController exchangeController = null;
 
+    private static String rememberedRawBitcoinURI;
+
     /**
      * Utility class should not have a public constructor
      */
@@ -131,6 +133,7 @@ public final class MultiBit {
             String rawURI = null;
             if (args != null && args.length > 0) {
                 rawURI = args[0];
+                log.debug("The args[0] passed into MultiBit = '" + args[0] +"'");
             }
             if (!ApplicationInstanceManager.registerInstance(rawURI)) {
                 // Instance already running.
@@ -143,7 +146,7 @@ public final class MultiBit {
                 @Override
                 public void newInstanceCreated(String rawURI) {
                     final String finalRawUri = rawURI;
-                    log.debug("New instance of MultiBit detected...");
+                    log.debug("New instance of MultiBit detected, rawURI = " + rawURI + " ...");
                     Runnable doProcessCommandLine = new Runnable() {
                         @Override
                         public void run() {
@@ -207,6 +210,7 @@ public final class MultiBit {
                 // If not set on Windows use 'Windows' L&F as system can be rendered as metal.
                 if ((lookAndFeel == null || lookAndFeel.equals("")) && System.getProperty("os.name").startsWith("Win")) {
                     lookAndFeel = "Windows";
+                    userPreferences.setProperty(CoreModel.LOOK_AND_FEEL, lookAndFeel);
                 }
 
                 if (lookAndFeel != null && !lookAndFeel.equals("")) {
@@ -529,7 +533,7 @@ public final class MultiBit {
             coreController.setApplicationStarting(false);
 
             // Check for any pending URI operations.
-            bitcoinController.handleOpenURI();
+            bitcoinController.handleOpenURI(rememberedRawBitcoinURI);
 
             // Check to see if there is a new version.
             AlertManager.INSTANCE.initialise(bitcoinController, (MultiBitFrame) swingViewSystem);
@@ -613,7 +617,7 @@ public final class MultiBit {
                 multiBitService.downloadBlockChain();
             }
         } catch (Exception e) {
-            // An unexcepted, unrecoverable error occurred.
+            // An odd unrecoverable error occurred.
             e.printStackTrace();
 
             log.error("An unexpected error caused MultiBit to quit.");
@@ -700,5 +704,13 @@ public final class MultiBit {
      
      public static void setExchangeController(ExchangeController exchangeController) {
         MultiBit.exchangeController = exchangeController;
+    }
+
+    public static String getRememberedRawBitcoinURI() {
+        return rememberedRawBitcoinURI;
+    }
+
+    public static void setRememberedRawBitcoinURI(String rememberedRawBitcoinURI) {
+        MultiBit.rememberedRawBitcoinURI = rememberedRawBitcoinURI;
     }
 }
