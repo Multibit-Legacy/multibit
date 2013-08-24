@@ -203,8 +203,13 @@ public final class MultiBit {
             log.debug("Setting look and feel");
             try {
                 String lookAndFeel = userPreferences.getProperty(CoreModel.LOOK_AND_FEEL);
- 
-                if (lookAndFeel != null && lookAndFeel != "") {
+
+                // If not set on Windows use 'Windows' L&F as system can be rendered as metal.
+                if ((lookAndFeel == null || lookAndFeel.equals("")) && System.getProperty("os.name").startsWith("Win")) {
+                    lookAndFeel = "Windows";
+                }
+
+                if (lookAndFeel != null && !lookAndFeel.equals("")) {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (lookAndFeel.equalsIgnoreCase(info.getName())) {
                             UIManager.setLookAndFeel(info.getClassName());

@@ -115,10 +115,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
         // Don't add padding for Mac with System/ Mac look and feel
         boolean addPadding = true;
-        if (("System".equalsIgnoreCase(controller.getModel().getUserPreference((CoreModel.LOOK_AND_FEEL))) ||
-                (controller.getModel().getUserPreference((CoreModel.LOOK_AND_FEEL) + "").startsWith("Mac"))) &&
-                System.getProperty("os.name").startsWith("Mac")) {
-            addPadding = false;
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            if (controller == null || controller.getModel() == null || controller.getModel().getUserPreference(CoreModel.LOOK_AND_FEEL) == null ||
+            "System".equalsIgnoreCase(controller.getModel().getUserPreference((CoreModel.LOOK_AND_FEEL))) ||
+                (controller.getModel().getUserPreference((CoreModel.LOOK_AND_FEEL)).startsWith("Mac"))) {
+                addPadding = false;
+            }
         }
 
         // Create a panel that represents the tab and ensure that it is

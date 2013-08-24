@@ -16,13 +16,37 @@
 
 package org.multibit.protocolhandler;
 
+import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
+import com.google.bitcoin.core.Wallet;
 import org.multibit.MultiBit;
+import org.multibit.file.BackupManager;
+import org.multibit.file.FileHandler;
+import org.multibit.file.WalletLoadException;
+import org.multibit.file.WalletSaveException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.network.MultiBitCheckpointManager;
+import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
+import org.multibit.store.WalletVersionException;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
+import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -39,48 +63,61 @@ public enum ProtocolHandlerManager {
     public void initialise() {
         // Windows only.
         // Mac is done in the plist file and Linux is done by a script in the installer.
-        if (!(System.getProperty("os.name").startsWith("Win"))) {
+        if (System.getProperty("os.name") == null || !(System.getProperty("os.name").startsWith("Win"))) {
             return;
         }
 
-        try {
-            log.debug("Starting Windows registry changes at " + (new Date()).toString());
-            // Set up the Windows registry entries to handle the bitcoin: protocol using this executable.
+        initialiseInBackground();
+    }
 
-            // Work out the directory the windows executable is in.
-            // With the Oracle based installer the Jar executable file is in a directory "app" and the
-            // Windows executable is in the parent directory.
-            // Work out the name of the executable.
-            // This is of format "MultiBit-"<version>.exe
-            String executableFilename = "MultiBit-" + MultiBit.getBitcoinController().getLocaliser().getVersionNumber() + ".exe";
+    /**
+     * Initialise the registry in a background thread.
+     */
+    private void initialiseInBackground() {
+        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    log.debug("Starting Windows registry changes at " + (new Date()).toString());
+                    // Set up the Windows registry entries to handle the bitcoin: protocol using this executable.
 
-            String installationDirectoryPath = MultiBit.getBitcoinController().getApplicationDataDirectoryLocator().getInstallationDirectory();
-            File installationDirectory = new File(installationDirectoryPath);
-            File executableDirectory = installationDirectory.getParentFile();
-            String fullExecutablePath = executableDirectory.getAbsolutePath() + File.separator + executableFilename;
+                    // Work out the directory the windows executable is in.
+                    // With the Oracle based installer the Jar executable file is in a directory "app" and the
+                    // Windows executable is in the parent directory.   The name of the parent directory is something like MultiBit-0.5.14
+                    // Work out the name of the executable.
+                    // This is of format "MultiBit-"<version>.exe
 
-            log.debug("executableFilename = " + executableFilename);
-            log.debug("fullExecutablePath = " + fullExecutablePath);
+                    String installationDirectoryPath = MultiBit.getBitcoinController().getApplicationDataDirectoryLocator().getInstallationDirectory();
+                    File installationDirectory = new File(installationDirectoryPath);
+                    File executableDirectory = installationDirectory.getParentFile();
+                    String multiBitNameWithVersionSuffix = executableDirectory.getName();
+                    String executableFilename = multiBitNameWithVersionSuffix + ".exe";
+                    String fullExecutablePath = executableDirectory.getAbsolutePath() + File.separator + executableFilename;
 
-            log.debug("Before HKCR\\bitcoin = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", ""));
-            log.debug("Before HKCR\\bitcoin, URL Protocol = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", "URL Protocol"));
-            log.debug("Before HKCR\\bitcoin, UseOriginalUrlEncoding = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", "UseOriginalUrlEncoding"));
-            log.debug("Before HKCR\\bitcoin, DefaultIcon = " + WindowsRegistry.readRegistry("HKCR\\bitcoin\\DefaultIcon", ""));
-            log.debug("Before HKCR\\bitcoin\\shell\\open\\command = " + WindowsRegistry.readRegistry("HKCR\\bitcoin\\shell\\open\\command", ""));
+                    log.debug("executableFilename = " + executableFilename);
+                    log.debug("fullExecutablePath = " + fullExecutablePath);
 
-            //log.debug("createKey bitcoin ...");
-            //WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin");
-            log.debug("setRegistry bitcoin.1 ...");
-            WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "", "URL:Bitcoin Protocol");
-            log.debug("setRegistry bitcoin.2 ...");
-            WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "URL Protocol", "");
-            log.debug("setRegistry bitcoin.3 ...");
-            WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "UseOriginalUrlEncoding", "0x1");
+                    log.debug("Registry values before:");
+                    // Command, return and errors are logged in WindowsRegistry.
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin", "");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin", "URL Protocol");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin", "UseOriginalUrlEncoding");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin\\DefaultIcon", "");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin\\shell\\open\\command", "");
 
-            //log.debug("createKey bitcoin\\DefaultIcon ...");
-            //WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin\\DefaultIcon");
-            log.debug("writeStringValue bitcoin\\DefaultIcon ...");
-            WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin\\DefaultIcon", "", executableFilename + ",1");
+                    //log.debug("createKey bitcoin ...");
+                    //WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin");
+                    log.debug("setRegistry bitcoin.1 ...");
+                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "", "URL:Bitcoin Protocol");
+                    log.debug("setRegistry bitcoin.2 ...");
+                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "URL Protocol", "");
+                    log.debug("setRegistry bitcoin.3 ...");
+                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "UseOriginalUrlEncoding", "0x1");
+
+                    //log.debug("createKey bitcoin\\DefaultIcon ...");
+                    //WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin\\DefaultIcon");
+                    log.debug("writeStringValue bitcoin\\DefaultIcon ...");
+                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin\\DefaultIcon", "", executableFilename + ",1");
 
 //            log.debug("createKey bitcoin\\shell ...");
 //            WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin\\shell");
@@ -89,27 +126,49 @@ public enum ProtocolHandlerManager {
 //            log.debug("createKey bitcoin\\shell\\open\\command ...");
 //            WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin\\shell\\open\\command");
 
-            String openCommand = "\"" + fullExecutablePath + "\" \"%1\"";
-            log.debug("setRegistry bitcoin\\shell\\open\\command " + openCommand + "...");
-            WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin\\shell\\open\\command", "", openCommand);
-            log.debug("done");
+                    String openCommand = "\"" + fullExecutablePath + "\" \"%1\"";
+                    log.debug("setRegistry bitcoin\\shell\\open\\command " + openCommand + "...");
+                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin\\shell\\open\\command", "", openCommand);
+                    log.debug("Done.");
 
-            log.debug("After HKCR\\bitcoin = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", ""));
-            log.debug("After HKCR\\bitcoin, URL Protocol = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", "URL Protocol"));
-            log.debug("After HKCR\\bitcoin, UseOriginalUrlEncoding = " + WindowsRegistry.readRegistry("HKCR\\bitcoin", "UseOriginalUrlEncoding"));
-            log.debug("After HKCR\\bitcoin, DefaultIcon = " + WindowsRegistry.readRegistry("HKCR\\bitcoin\\DefaultIcon", ""));
-            log.debug("After HKCR\\bitcoin\\shell\\open\\command = " + WindowsRegistry.readRegistry("HKCR\\bitcoin\\shell\\open\\command", ""));
-        } catch (IOException e) {
-            log.error(e.getClass().getCanonicalName() + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            log.error(e.getClass().getCanonicalName() + e.getMessage());
-        } catch (Exception e) {
-            log.error(e.getClass().getCanonicalName() + e.getMessage());
-        } finally {
-            log.debug("Ending Windows registry changes at " + (new Date()).toString());
-        }
+                    log.debug("Registry values after:");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin", "");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin", "URL Protocol");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin", "UseOriginalUrlEncoding");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin\\DefaultIcon", "");
+                    WindowsRegistry.readRegistry("HKCR\\bitcoin\\shell\\open\\command", "");
+                    return Boolean.TRUE;
+                } catch (IOException e) {
+                    log.error(e.getClass().getCanonicalName() + e.getMessage());
+                    return Boolean.FALSE;
+                } catch (IllegalArgumentException e) {
+                    log.error(e.getClass().getCanonicalName() + e.getMessage());
+                    return Boolean.FALSE;
+                } catch (Exception e) {
+                    log.error(e.getClass().getCanonicalName() + e.getMessage());
+                    return Boolean.FALSE;
+                } finally {
+                    log.debug("Ending Windows registry changes at " + (new Date()).toString());
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    Boolean wasSuccessful = get();
+                    log.debug("wasSuccessful = " + wasSuccessful);
+                } catch (InterruptedException e) {
+                    log.error(e.getClass().getCanonicalName() + e.getMessage());
+                } catch (ExecutionException e) {
+                    log.error(e.getClass().getCanonicalName() + e.getMessage());
+                }
+            }
+        };
+        worker.execute();
     }
+
 }
+
 
 //<!--
 //        Require the following structure on Windows

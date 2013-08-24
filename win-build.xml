@@ -35,6 +35,10 @@
                 <fx:fileset dir="package/windows" includes="license.rtf" type="license"/>
             </fx:resources>
             <fx:permissions/>
-        </fx:deploy> 
+        </fx:deploy>
+
+        <!-- The installer file is called, say, MultiBit-0.5.14-.exe (note the trailing dash) but for compatibility
+             with the older installer name, rename it to, say, multibit-0.5.14-windows.exe -->
+        <move file="target-win/bundles/MultiBit-${multibit-version}-.exe" tofile="target-win/bundles/multibit-${multibit-version}-windows.exe"/>
     </target>
 </project>
