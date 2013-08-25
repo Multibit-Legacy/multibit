@@ -125,7 +125,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int MENU_HORIZONTAL_INSET = 8;
     public static final int MENU_VERTICAL_INSET = 1;
 
-    public static final int BALANCE_SPACER = 8;
+    public static final int BALANCE_SPACER = 7;
+
+    public static final String SPENDABLE_TEXT_IN_ENGLISH = "Spendable";
 
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
@@ -483,16 +485,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private JPanel createBalancePanel() {
+        // Change the 'available to spend' text in English to 'Spendable'.
+        // This is not in the localisation files as it is a synonym and I did not want the localisers to have to reenter their text.
+        String spendableText;
+        if (controller.getLocaliser().getLocale().getLanguage().equals("en")) {
+            spendableText = SPENDABLE_TEXT_IN_ENGLISH;
+        } else {
+            spendableText = controller.getLocaliser().getString("multiBitFrame.availableToSpend2");
+        }
         FontMetrics fontMetrics = this.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        int availableToSpendWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("multiBitFrame.availableToSpend2"));
-        int availableToSpendHeight = fontMetrics.getHeight();
+        int spendableWidth = fontMetrics.stringWidth(spendableText);
+        int spendableHeight = fontMetrics.getHeight();
 
         tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
 
         //HorizontalGradientPanel headerPanel = new HorizontalGradientPanel(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         JPanel headerPanel = new JPanel();
 
-        int heightOfBalances =  2 * availableToSpendHeight + 3 * BALANCE_SPACER + 3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE;
+        int heightOfBalances =  2 * spendableHeight + 3 * BALANCE_SPACER -2 + 3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE;
         int heightOfHeaderToUse = Math.max(heightOfBalances, tickerTablePanel.getIdealHeight());
 
         headerPanel.setMinimumSize(new Dimension(700, heightOfHeaderToUse));
@@ -523,9 +533,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
-        String[] keys = new String[] { "multiBitFrame.balanceLabel", "multiBitFrame.availableToSpend2"};
-
-        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, headerPanel);
+        int stentWidth = Math.max(spendableWidth, fontMetrics.stringWidth(controller.getLocaliser().getString("multiBitFrame.balanceLabel")));
 
         headerPanel.add(MultiBitTitledPanel.createStent(stentWidth, 1), constraints);
 
@@ -541,23 +549,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         headerPanel.add(estimatedBalanceLabelLabel, constraints);
-        headerPanel.add(MultiBitTitledPanel.createStent(availableToSpendWidth, availableToSpendHeight), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(spendableWidth, spendableHeight), constraints);
 
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
         constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER), constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.weightx = 0.01;
-        constraints.weighty = 2;
+        constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER - 2), constraints);
 
         estimatedBalanceBTCLabel = new BlinkLabel(controller, true);
         estimatedBalanceBTCLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
@@ -596,6 +604,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         Action availableBalanceHelpAction = new HelpContextAction(controller, null, "multiBitFrame.availableToSpend2",
                 "multiBitFrame.availableToSpend.tooltip", "multiBitFrame.helpMenuText", HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
+        if (controller.getLocaliser().getLocale().getLanguage().equals("en")) {
+            availableBalanceHelpAction.putValue(Action.NAME, SPENDABLE_TEXT_IN_ENGLISH);
+        }
         availableBalanceLabelButton = new HelpButton(availableBalanceHelpAction, controller);
         availableBalanceLabelButton.setHorizontalAlignment(JLabel.RIGHT);
         availableBalanceLabelButton.setBorder(BorderFactory.createEmptyBorder());
@@ -615,7 +626,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         constraints.anchor = GridBagConstraints.LINE_END;
         headerPanel.add(availableBalanceLabelButton, constraints);
-        headerPanel.add(MultiBitTitledPanel.createStent(availableToSpendWidth, availableToSpendHeight), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(spendableWidth, spendableHeight), constraints);
 
         constraints.gridx = 5;
         constraints.gridy = 3;
@@ -663,7 +674,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridx = 0;
         constraints.gridy = 4;
         constraints.weightx = 0.01;
-        constraints.weighty = 40;
+        constraints.weighty = 1000;
 
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(forcerBottom, constraints);

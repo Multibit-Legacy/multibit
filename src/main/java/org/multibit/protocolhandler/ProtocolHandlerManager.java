@@ -86,16 +86,35 @@ public enum ProtocolHandlerManager {
                     // Windows executable is in the parent directory.   The name of the parent directory is something like MultiBit-0.5.14
                     // Work out the name of the executable.
                     // This is of format "MultiBit-"<version>.exe
+                    //
+                    // MultiBit-0.5.14    <<< top level directory
+                    //     MultiBit-0.5.14.exe
+                    //     app
+                    //         multibit-win-exe.jar    <<< installation directory
+                    //     runtime
+                    //         jre
+                    //             bin
+                    //                 javaw.exe
+                    //
+                    // The actual invocation command when the parameter %1 is resolved is something like:
+                    // "C:\Users\jim\AppData\Local\MultiBit-0.5.14\runtime\jre\bin\javaw.exe" -jar C:\Users\jim\AppData\Local\MultiBit-0.5.14\
+                    // app\multibit-win-exe.jar "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit_org"
+
 
                     String installationDirectoryPath = MultiBit.getBitcoinController().getApplicationDataDirectoryLocator().getInstallationDirectory();
                     File installationDirectory = new File(installationDirectoryPath);
-                    File executableDirectory = installationDirectory.getParentFile();
-                    String multiBitNameWithVersionSuffix = executableDirectory.getName();
+                    File topLevelDirectory = installationDirectory.getParentFile();
+                    String multiBitNameWithVersionSuffix = topLevelDirectory.getName();
                     String executableFilename = multiBitNameWithVersionSuffix + ".exe";
-                    String fullExecutablePath = executableDirectory.getAbsolutePath() + File.separator + executableFilename;
 
-                    log.debug("executableFilename = " + executableFilename);
-                    log.debug("fullExecutablePath = " + fullExecutablePath);
+                    String javaExecutablePath = topLevelDirectory.getAbsolutePath() + File.separator + "runtime" + File.separator
+                            + "jre" + File.separator + "bin" + File.separator + "javaw.exe";
+                    String multibitExecutableJarPath = topLevelDirectory.getAbsolutePath() + File.separator + "app" + File.separator + "multibit-win-exe.jar";
+                    String invocationCommand = "\"" + javaExecutablePath + "\" -jar " + multibitExecutableJarPath + " \"%1\"";
+
+                    log.debug("javaExecutablePath = " + javaExecutablePath);
+                    log.debug("multibitExecutableJarPath = " + multibitExecutableJarPath);
+                    log.debug("invocationCommand = " + invocationCommand);
 
                     log.debug("Registry values before:");
                     // Command, return and errors are logged in WindowsRegistry.
@@ -112,7 +131,7 @@ public enum ProtocolHandlerManager {
                     log.debug("setRegistry bitcoin.2 ...");
                     WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "URL Protocol", "");
                     log.debug("setRegistry bitcoin.3 ...");
-                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "UseOriginalUrlEncoding", "0x1");
+                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin", "UseOriginalUrlEncoding", "0x1", WindowsRegistry.TYPE_DWORD);
 
                     //log.debug("createKey bitcoin\\DefaultIcon ...");
                     //WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin\\DefaultIcon");
@@ -126,9 +145,8 @@ public enum ProtocolHandlerManager {
 //            log.debug("createKey bitcoin\\shell\\open\\command ...");
 //            WindowsRegistryUtils.createKey(WindowsRegistryUtils.HKEY_CLASSES_ROOT, "bitcoin\\shell\\open\\command");
 
-                    String openCommand = "\"" + fullExecutablePath + "\" \"%1\"";
-                    log.debug("setRegistry bitcoin\\shell\\open\\command " + openCommand + "...");
-                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin\\shell\\open\\command", "", openCommand);
+                    log.debug("setRegistry bitcoin\\shell\\open\\command " + invocationCommand + "...");
+                    WindowsRegistry.setRegistry(WindowsRegistry.HKEY_CLASSES_ROOT + "\\bitcoin\\shell\\open\\command", "", invocationCommand, WindowsRegistry.TYPE_EXPAND_STRING);
                     log.debug("Done.");
 
                     log.debug("Registry values after:");

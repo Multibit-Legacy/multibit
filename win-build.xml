@@ -32,6 +32,7 @@
                 <fx:fileset dir="target/windows/staging" includes="**/*.*"/>
                 <fx:fileset dir="${jdk.home.1.7}\\jre\\lib\\ext" includes="*.*"/>
                 <fx:fileset dir="${jdk.home.1.7}\\jre\\lib\\ext" includes="*"/>
+                <fx:fileset dir="${jdk.home.1.7}\\jre\\bin" includes="javaw.exe"/>
                 <fx:fileset dir="package/windows" includes="license.rtf" type="license"/>
             </fx:resources>
             <fx:permissions/>

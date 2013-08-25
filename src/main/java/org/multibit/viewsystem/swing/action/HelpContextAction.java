@@ -41,7 +41,7 @@ public class HelpContextAction extends AbstractAction {
      * @param textKey The localisation key for the text of the action
      * @param tooltipKey The localisation key for the tooltip of the action
      * @param mnemonicKey The localisation key for the mnemonic of the action
-     * @param viewToDisplay The help context to display on action activation.   A path in the help
+     * @param helpContextToDisplay The help context to display on action activation.   A path in the help
      */
     public HelpContextAction(Controller controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, String helpContextToDisplay) {
         super(controller.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));

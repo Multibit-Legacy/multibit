@@ -17,21 +17,29 @@
         var from9 = appFolderPath + "\\sunpkcs11.jar";
         var from10 =appFolderPath + "\\zipfs.jar";
 
-        var to = oFolder.path + "\\MultiBit\\runtime\\jre\\lib\\ext";
-        if (!oFSO.FolderExists(to)) {  
-          oFSO.CreateFolder(to);  
+        var toExtDir = oFolder.path + "\\MultiBit\\runtime\\jre\\lib\\ext";
+        if (!oFSO.FolderExists(toExtDir)) {
+          oFSO.CreateFolder(toExtDir);
         }  
-        to += "\\";  
-        oFSO.MoveFile(from1, to + "access-bridge-32.jar" );
-        oFSO.MoveFile(from2, to + "dnsns.jar");
-        oFSO.MoveFile(from3, to + "jaccess.jar");
-        oFSO.MoveFile(from4, to + "localedata.jar");
-        oFSO.MoveFile(from5, to + "meta-index");
-        oFSO.MoveFile(from6, to + "sunec.jar");
-        oFSO.MoveFile(from7, to + "sunjce_provider.jar");
-        oFSO.MoveFile(from8, to + "sunmscapi.jar");
-        oFSO.MoveFile(from9, to + "sunpkcs11.jar");
-        oFSO.MoveFile(from10, to + "zipfs.jar");
+        toExtDir += "\\";
+        oFSO.MoveFile(from1, toExtDir + "access-bridge-32.jar" );
+        oFSO.MoveFile(from2, toExtDir + "dnsns.jar");
+        oFSO.MoveFile(from3, toExtDir + "jaccess.jar");
+        oFSO.MoveFile(from4, toExtDir + "localedata.jar");
+        oFSO.MoveFile(from5, toExtDir + "meta-index");
+        oFSO.MoveFile(from6, toExtDir + "sunec.jar");
+        oFSO.MoveFile(from7, toExtDir + "sunjce_provider.jar");
+        oFSO.MoveFile(from8, toExtDir + "sunmscapi.jar");
+        oFSO.MoveFile(from9, toExtDir + "sunpkcs11.jar");
+        oFSO.MoveFile(from10, toExtDir + "zipfs.jar");
+
+        var javaExe =appFolderPath + "\\javaw.exe";
+        var toBinDir  = oFolder.path + "\\MultiBit\\runtime\\jre\\bin";
+        if (!oFSO.FolderExists(toBinDir)) {
+            oFSO.CreateFolder(toBinDir);
+        }
+        toBinDir += "\\";
+        oFSO.MoveFile(javaExe, toBinDir + "javaw.exe" );
 
         // Wait a few seconds.
         var start = new Date().getTime();

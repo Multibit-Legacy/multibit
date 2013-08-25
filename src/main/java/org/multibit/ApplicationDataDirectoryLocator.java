@@ -121,9 +121,16 @@ public class ApplicationDataDirectoryLocator {
     public String getInstallationDirectory() throws IOException {
         String operatingSystemName = System.getProperty("os.name");
 
-        if (operatingSystemName.equals("Windows 8")) {
-            // Something like: C:\Users\jim\AppData\Local\MultiBit\app.
-            return System.getProperty("user.dir");
+        if (operatingSystemName != null && operatingSystemName.startsWith("Windows")) {
+            // Something like: java.class.path = C:\Users\jim\AppData\Local\MultiBit\app\multibit-win-exe.jar
+            String javaClassPath = System.getProperty("java.class.path");
+            if (javaClassPath != null && !javaClassPath.equals("")) {
+                File multibitInstallationDirectory = new File(javaClassPath).getParentFile();
+                return multibitInstallationDirectory.getCanonicalPath();
+            } else {
+                File installationDirectory = new File("");
+                return installationDirectory.getCanonicalPath();
+            }
         } else {
             File installationDirectory = new File("");
             return installationDirectory.getCanonicalPath();
