@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit;
+package org.multibit.javafx;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import org.multibit.ApplicationDataDirectoryLocator;
+import org.multibit.MultiBit;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,36 +30,68 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Main MultiBit entry class for when running in an executable jar - put console
  * output to a file.
+ * <p/>
+ * This uses Javafx to start up so that the args passed on the command line by the
+ * Windows executable can be accessed.
  */
-public final class MultiBitInExecutableJar {
+public final class MultiBitJavaFx extends Application {
 
     public static final String OUTPUT_DIRECTORY = "log";
     public static final String CONSOLE_OUTPUT_FILENAME = "multibit.log";
 
-    private static Logger log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
+    private static Logger log = LoggerFactory.getLogger(MultiBitJavaFx.class);
+
+    private static String[] argsPassedInMain = null;
 
     static {
         java.awt.Toolkit.getDefaultToolkit();
     }
 
     /**
-     * Hidden constructor
+     * Constructor used by JavaFX
      */
-    private MultiBitInExecutableJar() {
+    public MultiBitJavaFx() {
     }
 
-    /**
-     * Start multibit user interface when running in a jar.
-     * This will adjust the logging framework output to ensure that console output is sent
-     * to a file appender in the client.
-     *
-     * @param args The optional command line arguments ([0] can be a Bitcoin URI
-     */
-    public static void main(String[] args) {
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        String[] argsToUse = null;
+
+        URL fxml = MultiBitFrame.class.getResource("/sample.fxml");
+        log.debug("fxml = " + fxml);
+        Parent root = FXMLLoader.load(fxml);
+        primaryStage.setTitle("Hello World");
+        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.show();
+
+        // Normally the args passed into the Main are used.
+        // However when MultiBit is packaged on Windows the bitcoin URI is passed
+        // to the exe file but only 'comes in' via Javafx parameters.
+
+        if (argsPassedInMain != null) {
+            for (String arg : argsPassedInMain) {
+                log.debug("argsPassedInMain = " + arg);
+                primaryStage.setTitle("argsPassedTo main = " + arg);
+            }
+            argsToUse = argsPassedInMain;
+        } else {
+            // See if there is a parameter available in JavaFx.
+            List<String> unNamedParameters = getParameters().getUnnamed();
+            if (unNamedParameters != null && unNamedParameters.size() > 0) {
+                for (String arg : unNamedParameters) {
+                    log.debug("unNamedParameters = " + arg);
+                    primaryStage.setTitle("unNamedParameters" + arg);
+                }
+                argsToUse = (String[]) unNamedParameters.toArray();
+            }
+        }
+
         // Redirect the console output to a file.
         PrintStream fileStream;
         try {
@@ -73,7 +113,7 @@ public final class MultiBitInExecutableJar {
                         + OUTPUT_DIRECTORY + File.separator + CONSOLE_OUTPUT_FILENAME;
             }
 
-            log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
+            log = LoggerFactory.getLogger(MultiBitJavaFx.class);
 
             // Create output directory.
             (new File(outputDirectory)).mkdir();
@@ -103,7 +143,22 @@ public final class MultiBitInExecutableJar {
             }
         } finally {
             // Call the main MultiBit code.
-            MultiBit.main(args);
+            MultiBit.main(argsToUse);
+
+            //Thread.sleep(5000);
         }
+    }
+
+
+    /**
+     * Start multibit user interface when running in a jar.
+     * This will adjust the logging framework output to ensure that console output is sent
+     * to a file appender in the client.
+     *
+     * @param args The optional command line arguments ([0] can be a Bitcoin URI
+     */
+    public static void main(String[] args) {
+        argsPassedInMain = args;
+        launch(args);
     }
 }
