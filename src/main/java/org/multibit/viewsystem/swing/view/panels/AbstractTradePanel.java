@@ -484,8 +484,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     protected JPanel createAddressesHeaderPanel() {
         JPanel addressesHeaderPanel = new JPanel();
-        addressesHeaderPanel.setOpaque(false);
-        addressesHeaderPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesHeaderPanel.setOpaque(true);
+        addressesHeaderPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
         addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
         addressesHeaderPanel.setLayout(new GridBagLayout());
@@ -587,7 +587,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         addressesTableModel = new AddressBookTableModel(this.bitcoinController, isReceiveBitcoin());
         addressesTable = new JTable(addressesTableModel);
         addressesTable.setOpaque(true);
-        addressesTable.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesTable.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         addressesTable.setShowGrid(false);
         addressesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         addressesTable.setRowSelectionAllowed(true);
@@ -685,7 +685,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     }
     
     private void setupScrollPane() {
-        addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         addressesScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         addressesScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         addressesScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
@@ -802,7 +802,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                Color backgroundColor = (row % 2 == 1 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                         : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
@@ -829,7 +829,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                Color backgroundColor = (row % 2 == 1 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                         : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());

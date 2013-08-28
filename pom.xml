@@ -102,14 +102,14 @@
             </resource>
         </resources>
         <plugins>
-            <!-- Standard compile to ensure Java7 is used in all environments (e.g. Jenkins) -->
+            <!-- Standard compile to ensure Java6 is used in all environments (e.g. Jenkins) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                 </configuration>
@@ -179,6 +179,7 @@
                 </executions>
             </plugin>
 
+            <!-- Proguard the executable jar file to remove unnecessary classes -->
             <plugin>
                 <groupId>com.github.wvengen</groupId>
                 <artifactId>proguard-maven-plugin</artifactId>
@@ -335,7 +336,7 @@
                             <resources>
                                 <resource>
                                     <!-- skeleton app including JRE -->
-                                    <directory>src/main/skeleton/mac/MultiBit.app</directory>
+                                    <directory>src/app-resources/MultiBit.app</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -347,7 +348,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Java
+                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java
                             </outputDirectory>
                             <resources>
                                 <resource>
@@ -422,58 +423,44 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <!-- Make the JavaAppLauncher in the Mac application bundle executable
+                                <!-- Make the JavaApplicationStub in the Mac application bundle executable
                        									(it loses its 'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaAppLauncher"
-                                    perm="777" />
-
-                                <!-- The multibit-exe.jar needs to be called JavaFxApp.jar for the launcher -->
-                                <move
-                                    file="${basedir}/target/MultiBit.app/Contents/Java/multibit-exe.jar"
-                                    tofile="${basedir}/target/MultiBit.app/Contents/Java/JavaFxApp.jar" />
+                                        file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                        perm="777" />
 
                                 <copy
-                                    todir="${basedir}/target/MultiBit-mac/MultiBit.app">
+                                        todir="${basedir}/target/MultiBit-mac/MultiBit.app">
                                     <fileset dir="${basedir}/target/MultiBit.app"
                                              includes="**" />
                                 </copy>
                                 <copy file="${basedir}/src/main/izpack/mac/readme.txt"
                                       todir="${basedir}/target/MultiBit-mac" />
 
-                                <!-- ensure the libjli.dylib is an alias an not the actual file -->
-                                <delete file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/MacOS/libjli.dylib" />
-
-                                <exec executable="ln" os="'Mac OS X'">
-                                    <arg
-                                            line="-s ../Home/jre/lib/jli/libjli.dylib ${basedir}/target/MultiBit-mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/MacOS/libjli.dylib" />
-                                </exec>
-
-
                                 <!-- Create Applications Symbolic link -->
                                 <!-- WARNING, do not remove this symbolic link by Java(ant) -->
                                 <exec executable="ln" os="'Mac OS X'">
                                     <arg
-                                        line="-s /Applications ${basedir}/target/MultiBit-mac/Applications" />
+                                            line="-s /Applications ${basedir}/target/MultiBit-mac/Applications" />
                                 </exec>
 
                                 <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
                        									'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaAppLauncher"
-                                    perm="777" />
+                                        file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                        perm="777" />
 
                                 <!-- Sign the Mac app -->
-                               <exec executable="codesign" os="'Mac OS X'">
+                                <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                        line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                            line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit.app" />
                                 </exec>
                                 <!-- Verify it is signed ok -->
-                               <exec executable="codesign" os="'Mac OS X'">
+                                <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                        line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit.app" />
-                                </exec>                            
-                                    
+                                            line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                </exec>
+
                                 <!-- create a DMG file -->
                                 <exec executable="hdiutil" os="'Mac OS X'">
                                     <arg value="create" />

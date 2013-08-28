@@ -305,7 +305,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                 BorderFactory.createEmptyBorder(2, 0, 2, 0)
                ));
         buttonPanel.setOpaque(true);
-        buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        buttonPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
         CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.bitcoinController, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);

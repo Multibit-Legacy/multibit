@@ -43,7 +43,6 @@ import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +52,6 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.UIResource;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.View;
-import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -71,7 +67,7 @@ import java.util.Timer;
  * <p/>
  * 1) Online/ Connecting/ Error status label
  * 2) Status messages - these are cleared after a period of time
- * 3) Synchronisatin progress bar
+ * 3) Synchronisation progress bar
  */
 public class StatusBar extends JPanel implements MessageListener {
 
@@ -85,10 +81,10 @@ public class StatusBar extends JPanel implements MessageListener {
 
     private static final double TOLERANCE = 0.0000001;
 
-    public static final int ONLINE_LABEL_WIDTH_DELTA = 10;
+    public static final int ONLINE_LABEL_WIDTH_DELTA = 12;
     public static final int ONLINE_LABEL_HEIGHT_DELTA = 8;
 
-    private MultiBitLabel onlineLabel;
+    private JLabel onlineLabel;
     final private MultiBitButton statusLabel;
     private StatusEnum statusEnum;
 
@@ -97,11 +93,6 @@ public class StatusBar extends JPanel implements MessageListener {
 
     private Timer statusClearTimer;
     static boolean clearAutomatically = true;
-
-    /**
-     * The key used to identified the default zone
-     */
-    public final static String DEFAULT_ZONE = "default";
 
     private HashMap<String, Component> idToZones;
     private Border zoneBorder;
@@ -116,7 +107,7 @@ public class StatusBar extends JPanel implements MessageListener {
     private SimpleDateFormat dateFormatter;
 
     /**
-     * Construct a new StatusBar
+     * Construct a new StatusBar.
      */
     public StatusBar(BitcoinController bitcoinController, MultiBitFrame mainFrame) {
         this.bitcoinController = bitcoinController;
@@ -127,9 +118,9 @@ public class StatusBar extends JPanel implements MessageListener {
         setLayout(LookAndFeelTweaks.createHorizontalPercentLayout(controller.getLocaliser().getLocale()));
         idToZones = new HashMap<String, Component>();
         setZoneBorder(BorderFactory.createEmptyBorder());
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         setOpaque(true);
-        setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, ColorAndFontConstants.BACKGROUND_COLOR));
+        setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, ColorAndFontConstants.MID_BACKGROUND_COLOR));
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -137,8 +128,9 @@ public class StatusBar extends JPanel implements MessageListener {
 
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
-        onlineLabel = new MultiBitLabel("");
-        onlineLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        onlineLabel = new JLabel("");
+        onlineLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        onlineLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         onlineLabel.setOpaque(true);
 
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -172,7 +164,7 @@ public class StatusBar extends JPanel implements MessageListener {
         });
 
         statusLabel = new MultiBitButton("");
-        statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        statusLabel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         statusLabel.setOpaque(true);
         statusLabel.setBorderPainted(false);
         statusLabel.setForeground(Color.BLACK);
@@ -213,13 +205,13 @@ public class StatusBar extends JPanel implements MessageListener {
         syncProgressBar.setValue(0);
         syncProgressBar.setStringPainted(false);
         syncProgressBar.setVisible(false);
-        syncProgressBar.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        syncProgressBar.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         syncProgressBar.setOpaque(true);
         syncProgressBar.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         JPanel filler = new JPanel();
         filler.setOpaque(true);
-        filler.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        filler.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
         addZone("online", onlineLabel, "" + onlineWidth, "left");
         addZone("progressBar", syncProgressBar, "" + 200, "left");
@@ -248,7 +240,7 @@ public class StatusBar extends JPanel implements MessageListener {
     /**
      * Update online status text with new value.
      *
-     * @param statusEnum
+     * @param finalStatusEnum
      */
     public void updateOnlineStatusText(final StatusEnum finalStatusEnum) {
         if (EventQueue.isDispatchThread()) {
@@ -266,7 +258,7 @@ public class StatusBar extends JPanel implements MessageListener {
     /**
      * Update online status text with new value.
      *
-     * @param statusEnum
+     * @param finalStatusEnum
      */
     public void updateOnlineStatusTextOnSwingThread(final StatusEnum finalStatusEnum) {
         this.statusEnum = finalStatusEnum;
@@ -386,12 +378,13 @@ public class StatusBar extends JPanel implements MessageListener {
         if (zone instanceof JComponent) {
             JComponent jc = (JComponent) zone;
             jc.setOpaque(true);
-            jc.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+            //jc.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
             if (jc.getBorder() == null || jc.getBorder() instanceof UIResource) {
                 if (jc instanceof JLabel) {
                     if ("left".equals(tweak)) {
-                        jc.setBorder(new CompoundBorder(new EmptyBorder(0, 3, 0, 2), BorderFactory
-                            .createLineBorder(Color.lightGray)));
+                        Border border = new CompoundBorder(BorderFactory.createMatteBorder(0, 3, 0, 2, ColorAndFontConstants.BACKGROUND_COLOR), BorderFactory
+                                .createLineBorder(Color.lightGray));
+                        jc.setBorder(border);
                     } else {
                         if ("right".equals(tweak)) {
                             jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 1)));
@@ -413,32 +406,7 @@ public class StatusBar extends JPanel implements MessageListener {
     }
 
     public Component getZone(String id) {
-        return (Component) idToZones.get(id);
-    }
-
-    /**
-     * For example:
-     * <p/>
-     * <code>
-     * setZones(new String[]{"A","B"},
-     * new JComponent[]{new JLabel(), new JLabel()},
-     * new String[]{"33%","*"});
-     * </code>
-     * <p/>
-     * would construct a new status bar with two zones (two JLabels) named A and
-     * B, the first zone A will occupy 33 percents of the overall size of the
-     * status bar and B the left space.
-     *
-     * @param ids         a value of type 'String[]'
-     * @param zones       a value of type 'JComponent[]'
-     * @param constraints a value of type 'String[]'
-     */
-    public void setZones(String[] ids, Component[] zones, String[] constraints) {
-        removeAll();
-        idToZones.clear();
-        for (int i = 0, c = zones.length; i < c; i++) {
-            addZone(ids[i], zones[i], constraints[i], "");
-        }
+        return idToZones.get(id);
     }
 }
 
@@ -520,12 +488,6 @@ class PercentLayout implements LayoutManager2 {
     // Consider using HashMap
     private Hashtable<Component, Constraint> m_ComponentToConstraint;
 
-    /**
-     * Creates a new HORIZONTAL PercentLayout with a gap of 0.
-     */
-    public PercentLayout(Locale locale) {
-        this(HORIZONTAL, 0, locale);
-    }
 
     public PercentLayout(int orientation, int gap, Locale locale) {
         setOrientation(orientation);
@@ -558,10 +520,6 @@ class PercentLayout implements LayoutManager2 {
      */
     public int getOrientation() {
         return orientation;
-    }
-
-    public Constraint getConstraint(Component component) {
-        return m_ComponentToConstraint.get(component);
     }
 
     public void setConstraint(Component component, Object constraints) {
@@ -854,13 +812,7 @@ class StatusClearTask extends TimerTask {
  */
 final class LookAndFeelTweaks {
 
-    private static final Logger log = LoggerFactory.getLogger(LookAndFeelTweaks.class);
-
-    public final static Border PANEL_BORDER = BorderFactory.createMatteBorder(3, 3, 3, 3, ColorAndFontConstants.BACKGROUND_COLOR);
-
-    // TODO These are never used
-    public final static Border WINDOW_BORDER = BorderFactory.createEmptyBorder(4, 10, 10, 10);
-    public final static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
+    public final static Border PANEL_BORDER = BorderFactory.createMatteBorder(3, 3, 3, 3, ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
     /**
      * Utility class should not have a public constructor
@@ -868,83 +820,13 @@ final class LookAndFeelTweaks {
     private LookAndFeelTweaks() {
     }
 
-    public static void tweak() {
-        Object listFont = UIManager.get("List.font");
-        UIManager.put("Table.font", listFont);
-        UIManager.put("ToolTip.font", listFont);
-        UIManager.put("TextField.font", listFont);
-        UIManager.put("FormattedTextField.font", listFont);
-        UIManager.put("Viewport.background", "Table.background");
-    }
-
-    public static PercentLayout createVerticalPercentLayout(Locale locale) {
-        return new PercentLayout(PercentLayout.VERTICAL, 8, locale);
-    }
-
     public static PercentLayout createHorizontalPercentLayout(Locale locale) {
         return new PercentLayout(PercentLayout.HORIZONTAL, 4, locale);
-    }
-
-    public static BorderLayout createBorderLayout() {
-        return new BorderLayout(8, 8);
     }
 
     public static void setBorder(JComponent component) {
         if (component instanceof JPanel) {
             component.setBorder(PANEL_BORDER);
         }
-    }
-
-    public static void setBorderLayout(Container container) {
-        container.setLayout(new BorderLayout(3, 3));
-    }
-
-    public static void makeBold(JComponent component) {
-        component.setFont(component.getFont().deriveFont(Font.BOLD));
-    }
-
-    public static void makeMultilineLabel(JTextComponent area) {
-        area.setFont(UIManager.getFont("Label.font"));
-        area.setEditable(false);
-        area.setOpaque(false);
-        if (area instanceof JTextArea) {
-            ((JTextArea) area).setWrapStyleWord(true);
-            ((JTextArea) area).setLineWrap(true);
-        }
-    }
-
-    public static void htmlize(JComponent component) {
-        htmlize(component, UIManager.getFont("Button.font"));
-    }
-
-    public static void htmlize(JComponent component, Font font) {
-        String stylesheet = "body { margin-top: 0; margin-bottom: 0; margin-left: 0; margin-right: 0; font-family: "
-            + font.getName() + "; font-size: " + font.getSize() + "pt; }"
-            + "a, p, li { margin-top: 0; margin-bottom: 0; margin-left: 0; margin-right: 0; font-family: " + font.getName()
-            + "; font-size: " + font.getSize() + "pt; }";
-
-        try {
-            HTMLDocument doc = null;
-            if (component instanceof JEditorPane) {
-                if (((JEditorPane) component).getDocument() instanceof HTMLDocument) {
-                    doc = (HTMLDocument) ((JEditorPane) component).getDocument();
-                }
-            } else {
-                View v = (View) component.getClientProperty(javax.swing.plaf.basic.BasicHTML.propertyKey);
-                if (v != null && v.getDocument() instanceof HTMLDocument) {
-                    doc = (HTMLDocument) v.getDocument();
-                }
-            }
-            if (doc != null) {
-                doc.getStyleSheet().loadRules(new java.io.StringReader(stylesheet), null);
-            } // end of if (doc != null)
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-
-        }
-    }
-
-    public static Border addMargin(Border border) {
-        return new CompoundBorder(border, PANEL_BORDER);
     }
 }
