@@ -79,18 +79,18 @@ public class ApplicationDataDirectoryLocator {
             String operatingSystemName = System.getProperty("os.name");
             if (operatingSystemName.startsWith("Windows")) {
                 // Windows os
-                applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiBitInExecutableJar";
+                applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiBit";
             } else {
                 if (operatingSystemName.startsWith("Mac")) {
                     // Mac os
                     if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
                         applicationDataDirectory = new File("../../../..").getAbsolutePath();
                     } else {
-                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiBitInExecutableJar";
+                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiBit";
                     }
                 } else {
                     // treat as Linux/ unix variant
-                    applicationDataDirectory = System.getProperty("user.home") + "/MultiBitInExecutableJar";
+                    applicationDataDirectory = System.getProperty("user.home") + "/MultiBit";
                 }
             }
             
@@ -115,15 +115,8 @@ public class ApplicationDataDirectoryLocator {
      * @TODO when running locally it is possible that the working directory directory and installation directory are different. Fix.
      */
     public String getInstallationDirectory() throws IOException {
-        String operatingSystemName = System.getProperty("os.name");
-        if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
-            // With the bundled JRE the location of the MultiBit jar is specified in the java.library.path property.
-            return System.getProperty("java.library.path");
-        } else {
-            File installationDirectory = new File("");
-            log.debug("installationDirectory from file create = " + installationDirectory.getCanonicalPath());
-            return installationDirectory.getCanonicalPath();
-        }
+        File installationDirectory = new File("");
+        return installationDirectory.getCanonicalPath();
     }
 }
 

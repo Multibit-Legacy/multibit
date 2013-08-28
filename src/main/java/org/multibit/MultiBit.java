@@ -87,14 +87,11 @@ public final class MultiBit {
      */
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
-        log.info("Starting MultiBitInExecutableJar at " + (new Date()).toGMTString());
-        log.info("java.home is '" + System.getProperty( "java.home" ) + "'");
-        log.info("java.version is '" + System.getProperty( "java.version" ) + "'");
-
+        log.info("Starting MultiBit at " + (new Date()).toGMTString());
         // Print out all the system properties.
-        //for (Map.Entry<?,?> e : System.getProperties().entrySet()) {
-        //    log.debug(String.format("%s = %s", e.getKey(), e.getValue()));
-        //}
+        for (Map.Entry<?,?> e : System.getProperties().entrySet()) {
+            log.debug(String.format("%s = %s", e.getKey(), e.getValue()));
+        }
 
         ViewSystem swingViewSystem = null;
         // Enclosing try to enable graceful closure for unexpected errors.
@@ -133,6 +130,7 @@ public final class MultiBit {
             String rawURI = null;
             if (args != null && args.length > 0) {
                 rawURI = args[0];
+                log.debug("The args[0] passed into MultiBit = '" + args[0] +"'");
             }
             if (!ApplicationInstanceManager.registerInstance(rawURI)) {
                 // Instance already running.
@@ -145,7 +143,7 @@ public final class MultiBit {
                 @Override
                 public void newInstanceCreated(String rawURI) {
                     final String finalRawUri = rawURI;
-                    log.debug("New instance of MultiBit detected...");
+                    log.debug("New instance of MultiBit detected, rawURI = " + rawURI + " ...");
                     Runnable doProcessCommandLine = new Runnable() {
                         @Override
                         public void run() {
@@ -201,8 +199,15 @@ public final class MultiBit {
             log.debug("Setting look and feel");
             try {
                 String lookAndFeel = userPreferences.getProperty(CoreModel.LOOK_AND_FEEL);
- 
-                if (lookAndFeel != null && lookAndFeel != "") {
+
+                // If not set on Windows use 'Windows' L&F as system can be rendered as metal.
+                if ((lookAndFeel == null || lookAndFeel.equals("")) &&
+                        (System.getProperty("os.name") != null && System.getProperty("os.name").startsWith("Win"))) {
+                    lookAndFeel = "Windows";
+                    userPreferences.setProperty(CoreModel.LOOK_AND_FEEL, lookAndFeel);
+                }
+
+                if (lookAndFeel != null && !lookAndFeel.equals("")) {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (lookAndFeel.equalsIgnoreCase(info.getName())) {
                             UIManager.setLookAndFeel(info.getClassName());
@@ -233,6 +238,18 @@ public final class MultiBit {
 
             log.debug("Registering with controller");
             coreController.registerViewSystem(swingViewSystem);
+
+            String userDataString = localiser.getString("multibit.userDataDirectory", new String[] {applicationDataDirectoryLocator.getApplicationDataDirectory()});
+            log.debug(userDataString);
+            Message directoryMessage1 = new Message(userDataString);
+            directoryMessage1.setShowInStatusBar(false);
+            MessageManager.INSTANCE.addMessage(directoryMessage1);
+
+            String installationDirString = localiser.getString("multibit.installationDirectory", new String[]{applicationDataDirectoryLocator.getInstallationDirectory()});
+            log.debug(installationDirString);
+            Message directoryMessage2 = new Message(installationDirString);
+            directoryMessage2.setShowInStatusBar(false);
+            MessageManager.INSTANCE.addMessage(directoryMessage2);
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
@@ -594,7 +611,7 @@ public final class MultiBit {
                 multiBitService.downloadBlockChain();
             }
         } catch (Exception e) {
-            // An unexcepted, unrecoverable error occurred.
+            // An odd unrecoverable error occurred.
             e.printStackTrace();
 
             log.error("An unexpected error caused MultiBit to quit.");
