@@ -24,6 +24,7 @@ import org.joda.money.BigMoney;
 
 import com.xeiam.xchange.bitstamp.BitstampExchange;
 import com.xeiam.xchange.btce.BTCEExchange;
+//import com.xeiam.xchange.btcchina.BTCChinaExchange;
 import com.xeiam.xchange.campbx.CampBXExchange;
 import com.xeiam.xchange.oer.OERExchange;
 import com.xeiam.xchange.virtex.VirtExExchange;
@@ -36,16 +37,18 @@ import com.xeiam.xchange.virtex.VirtExExchange;
 public class ExchangeData {
 
     public static final String EXCHANGE_NOT_SET = "NoExchangeSetYet";
-    public static final String MT_GOX_EXCHANGE_NAME = "MtGox";
-    public static final String BITCOIN_CHARTS_EXCHANGE_NAME = "BitcoinCharts";
-    public static final String VIRTEX_EXCHANGE_NAME = "VirtEx";
-    public static final String BTCE_EXCHANGE_NAME = "BTC-E";
-    public static final String OPEN_EXCHANGE_RATES_EXCHANGE_NAME = "OpenExchangeRates";
-    public static final String BITSTAMP_EXCHANGE_NAME = "Bitstamp";
-    public static final String BITCOIN_CENTRAL_EXCHANGE_NAME = "BitcoinCentral";
-    public static final String CAMPBX_EXCHANGE_NAME = "CampBX";
-    public static final String BITFLOOR_EXCHANGE_NAME = "Bitfloor";
+
+    public static final String BTCCHINA_EXCHANGE_NAME = "BTCChina";
     public static final String BITCOIN_24_EXCHANGE_NAME = "Bitcoin-24";
+    public static final String BITCOIN_CENTRAL_EXCHANGE_NAME = "BitcoinCentral";
+    public static final String BITCOIN_CHARTS_EXCHANGE_NAME = "BitcoinCharts";
+    public static final String BITFLOOR_EXCHANGE_NAME = "Bitfloor";
+    public static final String BITSTAMP_EXCHANGE_NAME = "Bitstamp";
+    public static final String BTCE_EXCHANGE_NAME = "BTC-E";
+    public static final String CAMPBX_EXCHANGE_NAME = "CampBX";
+    public static final String OPEN_EXCHANGE_RATES_EXCHANGE_NAME = "OpenExchangeRates";
+    public static final String MT_GOX_EXCHANGE_NAME = "MtGox";
+    public static final String VIRTEX_EXCHANGE_NAME = "VirtEx";
 
     public static final String DEFAULT_EXCHANGE = MT_GOX_EXCHANGE_NAME;
     
@@ -133,6 +136,7 @@ public class ExchangeData {
             //BITFLOOR_EXCHANGE_NAME,
             BITSTAMP_EXCHANGE_NAME,
             BTCE_EXCHANGE_NAME,
+            //BTCCHINA_EXCHANGE_NAME,
             CAMPBX_EXCHANGE_NAME,
             OPEN_EXCHANGE_RATES_EXCHANGE_NAME,
             VIRTEX_EXCHANGE_NAME};
@@ -160,10 +164,10 @@ public class ExchangeData {
             return "com.xeiam.xchange.mtgox.v2.MtGoxExchange";
         //} else if (BITCOIN_CHARTS_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
         //    return  BitcoinChartsExchange.class.getName();
-        } else if (VIRTEX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-            return  VirtExExchange.class.getName();
         } else if (BTCE_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  BTCEExchange.class.getName();
+        //} else if (BTCCHINA_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+        //    return  BTCChinaExchange.class.getName();
         } else if (OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  OERExchange.class.getName();
         //} else if (BITCOIN_CENTRAL_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
@@ -176,6 +180,8 @@ public class ExchangeData {
        //     return  BitfloorExchange.class.getName();
        // } else if (BITCOIN_24_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
        //     return  Bitcoin24Exchange.class.getName();
+        } else if (VIRTEX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+            return  VirtExExchange.class.getName();
         } else {
             // Unidentified exchange.
             return null;
