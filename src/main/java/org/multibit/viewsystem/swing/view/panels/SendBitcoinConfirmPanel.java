@@ -76,6 +76,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
 
     private JPasswordField walletPasswordField;
     private MultiBitLabel walletPasswordPromptLabel;
+    private MultiBitLabel explainLabel;
 
     private static SendBitcoinConfirmPanel thisPanel = null;
 
@@ -179,7 +180,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(MultiBitTitledPanel.createStent(STENT_WIDTH), constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(STENT_WIDTH, STENT_WIDTH), constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 7;
@@ -191,17 +192,18 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(MultiBitTitledPanel.createStent(STENT_WIDTH), constraints);
 
-        MultiBitLabel explainLabel = new MultiBitLabel("");
+        explainLabel = new MultiBitLabel("");
         explainLabel.setText(controller.getLocaliser().getString("sendBitcoinConfirmView.message"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 1;
         constraints.weightx = 0.8;
-        constraints.weighty = 1.0;
+        constraints.weighty = 0.4;
         constraints.gridwidth = 5;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(explainLabel, constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(explainLabel.getPreferredSize().width, explainLabel.getPreferredSize().height), constraints);
 
         JPanel detailPanel = new JPanel(new GridBagLayout());
         detailPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -367,6 +369,8 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(walletPasswordPromptLabel, constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(walletPasswordPromptLabel.getPreferredSize().width, walletPasswordPromptLabel.getPreferredSize().height), constraints);
+
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 4;
@@ -413,6 +417,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(walletPasswordField, constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(200, 20), constraints);
 
         JPanel filler5 = new JPanel();
         filler4.setOpaque(false);
@@ -440,6 +445,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
+        //buttonPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 10;
@@ -570,11 +576,14 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
         repaint();
     }
 
-    public void clearPassword() {
+    public void clearAfterSend() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 walletPasswordField.setText("");
+                walletPasswordField.setVisible(false);
+                explainLabel.setVisible(false);
+                walletPasswordPromptLabel.setVisible(false);
             }});
     }
 
