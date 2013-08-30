@@ -121,7 +121,7 @@ public class WalletInfoData {
      * @return
      */
     public String getProperty(String key) {
-        return (String) walletPreferences.getProperty(key);
+        return walletPreferences.getProperty(key);
     }
 
     /**
@@ -141,8 +141,8 @@ public class WalletInfoData {
         return sendingAddresses;
     }
 
-    public void setSendingAddresses(ArrayList<WalletAddressBookData> sendingAddresses) {
-        this.sendingAddresses = sendingAddresses;
+    public void setReceivingAddresses(ArrayList<WalletAddressBookData> receivingAddresses) {
+        this.receivingAddresses = receivingAddresses;
     }
 
     /**
@@ -175,7 +175,7 @@ public class WalletInfoData {
         if (wallet != null) {
             for (ECKey key : wallet.getKeys()) {
                 if (receivingAddress.getAddress().equals(
-                        key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()))) {
+                        key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()).toString())) {
                     addressMatchesKey = true;
                     break;
                 }

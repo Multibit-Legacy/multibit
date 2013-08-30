@@ -44,8 +44,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     private static final int DELAY_TO_COMPLETE_IMPORT = 5000; // milliseconds
     
     public static final CharSequence WALLET_PASSWORD = "the unbelievable lightness of being";
-    public static final CharSequence WRONG_PASSWORD = "this is the wrong password";
-    
+
     @Test
     public void testImportUnencryptedPrivateKeysWithUnencryptedWallet() throws Exception { 
         // Create MultiBit controller.
@@ -93,6 +92,9 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
               
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
+
+        // Check the label on the original key is still there.
+        assertEquals("The label on the original address was not correct after import", ActionTestUtils.LABEL_OF_ADDRESS_ADDED, controller.getModel().getActivePerWalletModelData().getWalletInfo().getReceivingAddresses().get(0).getLabel());
     }
     
     @Test
@@ -149,6 +151,9 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
                
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
+
+        // Check the label on the original key is still there.
+        assertEquals("The label on the original address was not correct after import", ActionTestUtils.LABEL_OF_ADDRESS_ADDED, controller.getModel().getActivePerWalletModelData().getWalletInfo().getReceivingAddresses().get(0).getLabel());
     }
     
     @Test
@@ -213,6 +218,9 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
+
+        // Check the label on the original key is still there.
+        assertEquals("The label on the original address was not correct after import", ActionTestUtils.LABEL_OF_ADDRESS_ADDED, controller.getModel().getActivePerWalletModelData().getWalletInfo().getReceivingAddresses().get(0).getLabel());
     }
     
     @Test
@@ -284,6 +292,9 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
+
+        // Check the label on the original key is still there.
+        assertEquals("The label on the original address was not correct after import", ActionTestUtils.LABEL_OF_ADDRESS_ADDED, controller.getModel().getActivePerWalletModelData().getWalletInfo().getReceivingAddresses().get(0).getLabel());
     }
     
     @Test

@@ -496,11 +496,27 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
                 NetworkParameters networkParameters = getNetworkParameters();
                 if (networkParameters != null) {
                     if (perWalletModelData.getWalletInfo() != null) {
+                        // Keep a copy of the existing receiving addresses - labels will be recycled.
+                        List<WalletAddressBookData> currentReceivingAddresses = perWalletModelData.getWalletInfo().getReceivingAddresses();
+
                         // Clear the existing receiving addresses.
-                        perWalletModelData.getWalletInfo().getReceivingAddresses().clear();
+                        ArrayList<WalletAddressBookData> newReceivingAddresses = new ArrayList<WalletAddressBookData>();
+                        perWalletModelData.getWalletInfo().setReceivingAddresses(newReceivingAddresses);
+
+                        // Add the new receiving addresses from the keys, checking if there is an old label.
                         for (ECKey key : keyChain) {
                             Address address = key.toAddress(getNetworkParameters());
-                            perWalletModelData.getWalletInfo().addReceivingAddressOfKey(address);
+                            String addressString = address.toString();
+                            WalletAddressBookData addressBookData = new WalletAddressBookData(null, addressString);
+
+                            for (WalletAddressBookData loopAddressBookData : currentReceivingAddresses) {
+                                if (loopAddressBookData.getAddress().equals(addressString)) {
+                                    // Recycle label.
+                                    addressBookData.setLabel(loopAddressBookData.getLabel());
+                                    break;
+                                }
+                            }
+                            perWalletModelData.getWalletInfo().addReceivingAddress(addressBookData, false);
                         }
                     }
                 }
