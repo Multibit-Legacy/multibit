@@ -21,8 +21,8 @@
             </manifest> 
         </fx:jar>
 
-       <!-- generate JNLPs, HTML and native bundles --> 
-       <fx:deploy width="960" height="720" includeDT="true" 
+        <!-- generate JNLPs, HTML and native bundles --> 
+        <fx:deploy width="960" height="720" includeDT="true" 
                   nativeBundles="all" 
                   outdir="target-win" embedJNLP="true" verbose="true"
                   outfile="MultiBit-${multibit-version}">
@@ -39,7 +39,7 @@
         </fx:deploy>
 
         <!-- The installer file is called, say, MultiBit-0.5.14-.exe (note the trailing dash) but for compatibility
-             with the older installer name, rename it to, say, multibit-0.5.14-windows.exe -->
-        <move file="target-win/bundles/MultiBit-${multibit-version}-.exe" tofile="target-win/bundles/multibit-${multibit-version}-windows.exe"/>
+             with the older installer name and to get automatic rights elevation, rename it to, say, multibit-0.5.14-windows-setup.exe -->
+        <move file="target-win/bundles/MultiBit-${multibit-version}-.exe" tofile="target-win/bundles/multibit-${multibit-version}-windows-setup.exe"/>
     </target>
 </project>

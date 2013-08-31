@@ -1,0 +1,6 @@
+signtool.exe verify /v /pa  Application.exe
+
+http://msdn.microsoft.com/en-us/library/windows/desktop/aa388170(v=vs.85).aspx
+
+signtool.exe sign /fMyPfxFile.pfx /pMyPrivatePassword /d"My Product name" /t"http://timestamp.verisign.com/scripts/timestamp.dll 
+[/tr "http://www.startssl.com/timestamp] "myInstaller.msi"
