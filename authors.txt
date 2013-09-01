@@ -1,0 +1,14 @@
+MultiBit
+
+Developers:
+-----------
+Gary Rowe
+Jim Burton
+Jonny Heggheim
+Tim Molter
+
+Internationalisation:
+---------------------
+http://translate.multibit.org
+
+Thanks to all the MultiBit localisers.
