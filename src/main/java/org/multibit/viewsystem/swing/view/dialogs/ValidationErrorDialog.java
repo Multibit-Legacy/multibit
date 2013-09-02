@@ -183,7 +183,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
                     if (i == 0) {
                         completeMessage.append(lines[i]);
                     } else {
-                        completeMessage.append(completeMessage).append("\n").append(lines[i]);
+                        completeMessage.append("\n").append(lines[i]);
                     }
                     rows++;
                 }
