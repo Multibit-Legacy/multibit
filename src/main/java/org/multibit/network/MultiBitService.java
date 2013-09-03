@@ -554,7 +554,9 @@ public class MultiBitService {
         if (blockChain != null) {
             List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
             for (WalletData loopPerWalletModelData : perWalletModelDataList) {
-                blockChain.addWallet(loopPerWalletModelData.getWallet());
+                if (loopPerWalletModelData.getWallet() != null) {
+                    blockChain.addWallet(loopPerWalletModelData.getWallet());
+                }
             }
         }  
         return blockChain.getBestChainHeight();

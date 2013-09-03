@@ -131,6 +131,7 @@ public class ReplayManagerTest extends TestCase {
             perWalletModelData.setWallet(replayWallet);
             perWalletModelData.setWalletFilename(replayWalletPath);
             perWalletModelData.setWalletDescription("testReplayManagerSyncSingleWallet test");
+            controller.getModel().getPerWalletModelDataList().add(perWalletModelData);
 
             log.debug("Replay wallet before replay = \n" + replayWallet.toString());
 
@@ -156,9 +157,9 @@ public class ReplayManagerTest extends TestCase {
                 // We are done.
             } else {
                 // Run for a while longer.
-                log.debug("Twiddling thumbs for another 120 seconds ...");
-                Thread.sleep(120000);
-                log.debug("... 120 seconds later.");
+                log.debug("Twiddling thumbs for another 60 seconds ...");
+                Thread.sleep(60000);
+                log.debug("... 60 seconds later.");
                 if (replayWallet.getTransactions(true).size() > 0) {
                     // We are done.
                 } else {
