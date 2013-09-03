@@ -12,9 +12,15 @@ import org.joda.time.DateTimeZone;
  * @since 0.0.1
  *         
  */
-public class DateUtils {
-  
-  public static DateTime nowUtc() {
-    return new DateTime().withZone(DateTimeZone.UTC);
-  }
+public final class DateUtils {
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private DateUtils() {
+    }
+
+    public static DateTime nowUtc() {
+        return new DateTime().withZone(DateTimeZone.UTC);
+    }
 }

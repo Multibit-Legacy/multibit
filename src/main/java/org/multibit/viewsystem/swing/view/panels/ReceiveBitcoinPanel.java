@@ -15,28 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.ArrayList;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -50,22 +28,16 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
-import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
-import org.multibit.viewsystem.swing.action.DeleteSendingAddressAction;
-import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.action.MoreOrLessAction;
-import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
-import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-
+import org.multibit.viewsystem.swing.action.*;
+import org.multibit.viewsystem.swing.view.components.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.util.ArrayList;
 
 public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable {
 
@@ -164,7 +136,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 0.1;
-        constraints.weightx = 0.2;
+        constraints.weighty = 0.2;
         constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -241,7 +213,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         constraints.weightx = 0.6;
         constraints.weighty = 1.0;
         constraints.gridwidth = 4;
-        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(labelScrollPane, constraints);
 
@@ -407,7 +379,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
         // pick
         // the address book's first receiving address
         boolean pickFirstReceivingAddress = false;
-        if (address == null || address == "") {
+        if (address == null || address.equals("")) {
             pickFirstReceivingAddress = true;
         } else {
             WalletInfoData addressBook = this.bitcoinController.getModel().getActiveWalletWalletInfo();

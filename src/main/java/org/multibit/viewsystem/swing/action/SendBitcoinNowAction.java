@@ -108,7 +108,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     public void actionPerformed(ActionEvent event) {
         sendBitcoinConfirmPanel.setMessageText(" ", " ");
 
-        // check to see if the wallet files have changed
+        // Check to see if the wallet files have changed.
         WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
@@ -223,7 +223,6 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             message = e.getMessage();
         } finally {
             // Save the wallet.
-
             try {
                 this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             } catch (WalletSaveException e) {
@@ -237,7 +236,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                     sendBitcoinConfirmPanel.setMessageText(
                             controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"));
                     sendBitcoinConfirmPanel.showOkButton();
-                    sendBitcoinConfirmPanel.clearPassword();
+                    sendBitcoinConfirmPanel.clearAfterSend();
                 } else {
                     MessageManager.INSTANCE.addMessage(new Message(successMessage));
                 }

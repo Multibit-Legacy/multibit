@@ -15,24 +15,8 @@
  */
 package org.multibit;
 
-import java.awt.Cursor;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
-
+import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.core.Wallet;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;
@@ -48,11 +32,7 @@ import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ConnectHttps;
 import org.multibit.model.exchange.ExchangeModel;
-import org.multibit.network.AlertManager;
-import org.multibit.network.MultiBitCheckpointManager;
-import org.multibit.network.MultiBitService;
-import org.multibit.network.ReplayManager;
-import org.multibit.network.ReplayTask;
+import org.multibit.network.*;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
@@ -67,15 +47,25 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.Wallet;
+import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.List;
 
 /**
  * Main MultiBit entry class.
  * 
  * @author jim
  */
-public class MultiBit {
+public final class MultiBit {
+
     private static final Logger log = LoggerFactory.getLogger(MultiBit.class);
 
     private static Controller controller = null;
@@ -83,7 +73,13 @@ public class MultiBit {
     private static CoreController coreController = null;
     private static BitcoinController bitcoinController = null;
     private static ExchangeController exchangeController = null;
-    
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private MultiBit() {
+    }
+
     /**
      * Start MultiBit user interface.
      * 
@@ -92,7 +88,12 @@ public class MultiBit {
     @SuppressWarnings("deprecation")
     public static void main(String args[]) {
         log.info("Starting MultiBit at " + (new Date()).toGMTString());
+        // Print out all the system properties.
+        for (Map.Entry<?,?> e : System.getProperties().entrySet()) {
+            log.debug(String.format("%s = %s", e.getKey(), e.getValue()));
+        }
 
+        ViewSystem swingViewSystem = null;
         // Enclosing try to enable graceful closure for unexpected errors.
         try {
             // Set any bespoke system properties.
@@ -105,8 +106,6 @@ public class MultiBit {
             } catch (SecurityException se) {
                 log.error(se.getClass().getName() + " " + se.getMessage());
             }
-            
-            ViewSystem swingViewSystem = null;
 
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
 
@@ -131,6 +130,7 @@ public class MultiBit {
             String rawURI = null;
             if (args != null && args.length > 0) {
                 rawURI = args[0];
+                log.debug("The args[0] passed into MultiBit = '" + args[0] +"'");
             }
             if (!ApplicationInstanceManager.registerInstance(rawURI)) {
                 // Instance already running.
@@ -143,7 +143,7 @@ public class MultiBit {
                 @Override
                 public void newInstanceCreated(String rawURI) {
                     final String finalRawUri = rawURI;
-                    log.debug("New instance of MultiBit detected...");
+                    log.debug("New instance of MultiBit detected, rawURI = " + rawURI + " ...");
                     Runnable doProcessCommandLine = new Runnable() {
                         @Override
                         public void run() {
@@ -199,8 +199,15 @@ public class MultiBit {
             log.debug("Setting look and feel");
             try {
                 String lookAndFeel = userPreferences.getProperty(CoreModel.LOOK_AND_FEEL);
- 
-                if (lookAndFeel != null && lookAndFeel != "") {
+
+                // If not set on Windows use 'Windows' L&F as system can be rendered as metal.
+                if ((lookAndFeel == null || lookAndFeel.equals("")) &&
+                        (System.getProperty("os.name") != null && System.getProperty("os.name").startsWith("Win"))) {
+                    lookAndFeel = "Windows";
+                    userPreferences.setProperty(CoreModel.LOOK_AND_FEEL, lookAndFeel);
+                }
+
+                if (lookAndFeel != null && !lookAndFeel.equals("")) {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (lookAndFeel.equalsIgnoreCase(info.getName())) {
                             UIManager.setLookAndFeel(info.getClassName());
@@ -231,6 +238,18 @@ public class MultiBit {
 
             log.debug("Registering with controller");
             coreController.registerViewSystem(swingViewSystem);
+
+            String userDataString = localiser.getString("multibit.userDataDirectory", new String[] {applicationDataDirectoryLocator.getApplicationDataDirectory()});
+            log.debug(userDataString);
+            Message directoryMessage1 = new Message(userDataString);
+            directoryMessage1.setShowInStatusBar(false);
+            MessageManager.INSTANCE.addMessage(directoryMessage1);
+
+            String installationDirString = localiser.getString("multibit.installationDirectory", new String[]{applicationDataDirectoryLocator.getInstallationDirectory()});
+            log.debug(installationDirString);
+            Message directoryMessage2 = new Message(installationDirString);
+            directoryMessage2.setShowInStatusBar(false);
+            MessageManager.INSTANCE.addMessage(directoryMessage2);
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
@@ -592,7 +611,7 @@ public class MultiBit {
                 multiBitService.downloadBlockChain();
             }
         } catch (Exception e) {
-            // An unexcepted, unrecoverable error occurred.
+            // An odd unrecoverable error occurred.
             e.printStackTrace();
 
             log.error("An unexpected error caused MultiBit to quit.");
@@ -602,7 +621,7 @@ public class MultiBit {
 
             // Try saving any dirty wallets.
             if (controller != null) {
-                ExitAction exitAction = new ExitAction(controller, null);
+                ExitAction exitAction = new ExitAction(controller, (MultiBitFrame)swingViewSystem);
                 exitAction.actionPerformed(null);
             }
         }
@@ -619,7 +638,7 @@ public class MultiBit {
             // This a really limited approach (no consideration of
             // "amount=10.0&label=Black & White")
             // but should be OK for early use cases.
-            int queryParamIndex = rawURI.indexOf("?");
+            int queryParamIndex = rawURI.indexOf('?');
             if (queryParamIndex > 0 && !rawURI.contains("%")) {
                 // Possibly encoded but more likely not
                 String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");

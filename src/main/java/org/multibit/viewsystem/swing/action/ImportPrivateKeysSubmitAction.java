@@ -280,7 +280,6 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         final BitcoinController finalBitcoinController = super.bitcoinController;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
-            private String statusBarMessage = null;
             private String uiMessage = null;
 
             @Override
@@ -454,11 +453,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     }
 
                     if (wasSuccessful) {
-                        log.debug(statusBarMessage);
                         finalImportPanel.clearPasswords();
-                    } else {
-                        MessageManager.INSTANCE.addMessage(new Message(statusBarMessage));
-                        log.error(statusBarMessage);
                     }
                 } catch (Exception e) {
                     // Not really used but caught so that SwingWorker shuts down cleanly.
@@ -472,7 +467,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
     /**
      * Determine whether the key is already in the wallet.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException
      */
     private boolean keyChainContainsPrivateKey(Collection<byte[]> unencryptedPrivateKeys, ECKey keyToAdd, CharSequence walletPassword) throws KeyCrypterException {
         if (unencryptedPrivateKeys == null || keyToAdd == null) {

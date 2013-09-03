@@ -1,5 +1,9 @@
 package org.multibit.model.exchange;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -10,17 +14,7 @@ import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class ConnectHttps {
+public final class ConnectHttps {
     private static final Logger log = LoggerFactory.getLogger(ConnectHttps.class);
 
     public static void main(String[] args) throws Exception {
@@ -29,6 +23,12 @@ public class ConnectHttps {
 
         httpGet("https://multibit.org/version.txt");
         httpGet("https://data.mtgox.com/api/2/BTCUSD/money/ticker");
+    }
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private ConnectHttps() {
     }
 
     public static void trustAllCerts() {
@@ -48,12 +48,7 @@ public class ConnectHttps {
             }
 
             public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                log.debug("checkServerTrusted certs = " + certs + ", authType = " + authType);
-//                if (certs != null) {
-//                    for (int i = 0; i < certs.length; i++) {
-//                        log.debug("certs[" + i + "] " + certs[i]);
-//                    }
-//                }
+                log.debug("checkServerTrusted authType = {}", authType);
             }
 
         } };

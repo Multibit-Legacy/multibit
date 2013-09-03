@@ -10,7 +10,7 @@
 <classPath>../../../target/multibit-windows.jar</classPath>
 <embeddedJar>true</embeddedJar>
 <executableName>../../../target/multibit-windows.exe</executableName>
-<iconLocation>../resources/images/multibit32.png</iconLocation>
+<iconLocation>../resources/images/multibit.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
 <jarLocation>../../../target/multibit-windows.jar</jarLocation>
 <mainClassName>com.izforge.izpack.installer.Installer</mainClassName>

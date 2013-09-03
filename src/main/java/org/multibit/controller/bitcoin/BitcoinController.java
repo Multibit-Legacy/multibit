@@ -15,16 +15,9 @@
  */
 package org.multibit.controller.bitcoin;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.bitcoin.core.*;
+import com.google.bitcoin.uri.BitcoinURI;
+import com.google.bitcoin.uri.BitcoinURIParseException;
 import org.multibit.controller.AbstractController;
 import org.multibit.controller.AbstractEventHandler;
 import org.multibit.controller.core.CoreController;
@@ -40,14 +33,15 @@ import org.multibit.viewsystem.swing.action.ExitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.PeerEventListener;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletEventListener;
-import com.google.bitcoin.uri.BitcoinURI;
-import com.google.bitcoin.uri.BitcoinURIParseException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The MVC controller for MultiBit.
@@ -237,10 +231,10 @@ public class BitcoinController extends AbstractController<CoreController> implem
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
     }
-
+    
     @Override
-    public void onKeyAdded(ECKey ecKey) {
-        log.debug("Key added : " + ecKey.toString());
+    public void onKeysAdded(Wallet wallet, List<ECKey> keys) {
+        log.debug("Keys added : " + keys.toString());
     }
 
     @Override
@@ -287,7 +281,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
             
             return;
         }
-        if (this.eventHandler.rawBitcoinURI == null || this.eventHandler.rawBitcoinURI.equals("")) {
+        if (this.eventHandler.rawBitcoinURI == null || this.eventHandler.rawBitcoinURI.toString().equals("")) {
             log.debug("No Bitcoin URI found to handle");
             // displayView(getCurrentView());
             return;
@@ -300,7 +294,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
         // be lenient
         String uriString = this.eventHandler.rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
-        BitcoinURI bitcoinURI = null;
+        BitcoinURI bitcoinURI;
         try {
             bitcoinURI = new BitcoinURI(this.getModel().getNetworkParameters(), uriString);
         } catch (BitcoinURIParseException pe) {
@@ -381,24 +375,10 @@ public class BitcoinController extends AbstractController<CoreController> implem
         }
     }
 
-    @Override
     public void onConfidenceChanged(Transaction tx) {
-//        log.debug("onConfidenceChanged for tx " + tx.getHashAsString() + ", identityHash = " + System.identityHashCode(tx));
-//        TransactionConfidence transactionConfidence = tx.getConfidence();
-//        if (transactionConfidence != null) {
-//            log.debug("number of peers = " + transactionConfidence.getBroadcastByCount());
-//        } else {
-//            log.debug("No transaction confidence");
-//        }
-//        List<WalletData> walletDataList = this.getModel().getPerWalletModelDataList();
-//        if (walletDataList != null) {
-//            for (WalletData walletData : walletDataList) {
-//                Transaction txInWallet = walletData.getWallet().getTransaction(tx.getHash());
-//                if (txInWallet != null) {
-//                    log.debug("onConfidenceChanged for wallet = '" + walletData.getWallet().getDescription() + "', tx = " + tx.getHashAsString() + ", identityHash = " + System.identityHashCode(tx));
-//                    onTransactionConfidenceChanged(walletData.getWallet(), tx);
-//                }
-//            }
-//        }
+    }
+
+    @Override
+    public void onConfidenceChanged(Transaction tx, ChangeReason reason) {
     }
 }

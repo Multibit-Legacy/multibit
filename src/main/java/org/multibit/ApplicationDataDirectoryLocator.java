@@ -17,6 +17,7 @@ package org.multibit;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import org.multibit.file.FileHandler;
 import org.slf4j.Logger;
@@ -53,17 +54,17 @@ public class ApplicationDataDirectoryLocator {
      * 
      * 2. Otherwise set the working directory as follows:
      * 
-     * PC System.getenv("APPDATA")/MultiBit
+     * PC System.getenv("APPDATA")/MultiBitInExecutableJar
      * 
-     * e.g. C:/Documents and Settings/Administrator/Application Data/MultiBit
+     * e.g. C:/Documents and Settings/Administrator/Application Data/MultiBitInExecutableJar
      * 
-     * Mac System.getProperty("user.home")/Library/Application Support/MultiBit
+     * Mac System.getProperty("user.home")/Library/Application Support/MultiBitInExecutableJar
      * 
-     * e.g. /Users/jim/Library/Application Support/MultiBit
+     * e.g. /Users/jim/Library/Application Support/MultiBitInExecutableJar
      * 
-     * Linux System.getProperty("user.home")/MultiBit
+     * Linux System.getProperty("user.home")/MultiBitInExecutableJar
      * 
-     * e.g. /Users/jim/MultiBit
+     * e.g. /Users/jim/MultiBitInExecutableJar
      */
     public String getApplicationDataDirectory() {
         if (applicationDataDirectory != null) {
@@ -76,11 +77,11 @@ public class ApplicationDataDirectoryLocator {
             applicationDataDirectory = "";
         } else {
             String operatingSystemName = System.getProperty("os.name");
-            if (operatingSystemName.startsWith("Windows")) {
+            if (operatingSystemName != null && operatingSystemName.startsWith("Windows")) {
                 // Windows os
                 applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiBit";
             } else {
-                if (operatingSystemName.startsWith("Mac")) {
+                if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
                     // Mac os
                     if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
                         applicationDataDirectory = new File("../../../..").getAbsolutePath();

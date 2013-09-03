@@ -15,55 +15,9 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextPane;
-import javax.swing.SortOrder;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.TabSet;
-import javax.swing.text.TabStop;
-
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -81,21 +35,32 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
 import org.multibit.viewsystem.swing.WalletTableModel;
+import org.multibit.viewsystem.swing.action.ExportTransactionsSubmitAction;
+import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ShowTransactionDetailsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.HelpButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.*;
+import javax.swing.text.*;
+import java.awt.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.List;
+import java.util.Timer;
 
 public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
-
-    private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
 
     private final Controller controller;
     private final BitcoinController bitcoinController;
@@ -132,7 +97,14 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     private static final String PICKAXE_ICON_FILE = "/images/pickaxe.png";
     private static final String SMALL_EXCLAMATION_MARK_ICON_FILE = "/images/smallExclamationMark.png";
 
+    private ListSelectionModel listSelectionModel;
     private int selectedRow = -1;
+    
+    private Action showTransactionDetailsAction;
+    private MultiBitButton showTransactionsButton;
+    
+    private Action exportTransactionsSubmitAction;
+    private MultiBitButton exportTransactionsButton;
     
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 1000; // milliseconds
     
@@ -162,7 +134,14 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     }
 
     private void initUI() {
-        createWalletPanel();
+        setLayout(new BorderLayout());
+        JPanel buttonPanel = createButtonPanel();
+
+        JPanel transactionsPanel = createTransactionsPanel();
+        add(transactionsPanel, BorderLayout.CENTER);
+        
+        buttonPanel.setMinimumSize(new Dimension(60, 60));
+        add(buttonPanel, BorderLayout.SOUTH);
     }
     
     public static void updateTransactions() {
@@ -171,13 +150,15 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         }
     }
 
-    private void createWalletPanel() {
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        setLayout(new GridBagLayout());
-        setOpaque(true);
+    private JPanel createTransactionsPanel() {
+        JPanel transactionsPanel = new JPanel();
+        transactionsPanel.setMinimumSize(new Dimension(550, 160));
+        transactionsPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        transactionsPanel.setLayout(new GridBagLayout());
+        transactionsPanel.setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
 
-        walletTableModel = new WalletTableModel(this.bitcoinController);
+        walletTableModel = new WalletTableModel(bitcoinController);
         table = new JTable(walletTableModel);
         table.setOpaque(false);
         table.setBorder(BorderFactory.createEmptyBorder());
@@ -186,18 +167,18 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
         // Use status icons.
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
-
-        // Set popup for displaying transaction contents.
-        table.addMouseListener(new PopClickListener());
-
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
-        table.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        table.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         // No row is currently selected.
         selectedRow = -1;
 
+        // Listener for row selections.
+        listSelectionModel = table.getSelectionModel();
+        listSelectionModel.addListSelectionListener(new SharedListSelectionHandler(showTransactionDetailsAction));
+        
         // Date right justified.
         table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedDateRenderer());
 
@@ -330,6 +311,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPaneSetup();   
+        
+        showTransactionDetailsAction.setEnabled(table.getSelectedRow() > -1);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -338,7 +321,9 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         constraints.weightx = 1;
         constraints.weighty = 1;
 
-        add(scrollPane, constraints);
+        transactionsPanel.add(scrollPane, constraints);
+        
+        return transactionsPanel;
     }
     
     private void justifyColumnHeaders() {
@@ -348,14 +333,91 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());       
     }
     
+    private JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        buttonPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
+        buttonPanel.setOpaque(true);
+        buttonPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
+        buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        Action helpAction;
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_TRANSACTIONS_URL);
+        } else {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_TRANSACTIONS_URL);
+        }
+        HelpButton helpButton = new HelpButton(helpAction, controller);
+        helpButton.setText("");
+        helpButton.setToolTipText(controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip"));
+        helpButton.setHorizontalAlignment(SwingConstants.LEADING);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        buttonPanel.add(helpButton, constraints);
+        
+        showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, this);
+        showTransactionsButton = new MultiBitButton(showTransactionDetailsAction, controller);
+        showTransactionsButton.setEnabled(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        buttonPanel.add(showTransactionsButton, constraints);
+
+        exportTransactionsSubmitAction = new ExportTransactionsSubmitAction(bitcoinController, mainFrame);
+        exportTransactionsButton = new MultiBitButton(exportTransactionsSubmitAction, controller);
+        showTransactionsButton.setEnabled(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        buttonPanel.add(exportTransactionsButton, constraints);
+
+        JPanel fill1 = new JPanel();
+        fill1.setOpaque(false);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.weightx = 200;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        buttonPanel.add(fill1, constraints);
+
+        return buttonPanel;
+    }
+    
     private void scrollPaneSetup() {
-        scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        scrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        scrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         scrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         scrollPane.setOpaque(true);
         scrollPane.getViewport().setOpaque(true);
+        scrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, SystemColor.windowBorder));
     }
 
     @Override
@@ -376,16 +438,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
-
-        //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
     @Override
     public void navigateAwayFromView() {
-    }
-
-    public WalletTableModel getWalletTableModel() {
-        return walletTableModel;
     }
 
     class ImageRenderer extends DefaultTableCellRenderer {
@@ -488,7 +544,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 } else {
                     int numberOfBlocksEmbedded = bitcoinController.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
                     if (transaction != null && transaction.isCoinBase()) {
-                        // Coinbase tx mature slower than regular blocks
+                        // Coinbase tx mature slower than regular blocks.
                         numberOfBlocksEmbedded = numberOfBlocksEmbedded / 20;
                     }
                     ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, transaction);
@@ -550,7 +606,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 primaryLabel.setForeground(table.getForeground());
                 extraLabel.setForeground(table.getForeground());
                 combinationPanel.setForeground(table.getForeground());
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     primaryLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     extraLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     combinationPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -648,10 +704,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                     transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ".";
                 } else {
                     // Normal transaction.
-                    if (transaction != null && transaction.isCoinBase()) {
-                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndCoinbase") + ".";  
+                    if (transaction.isCoinBase()) {
+                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndCoinbase") + ".";
                     } else {
-                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".";  
+                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".";
                     }
                 }
             }
@@ -666,12 +722,20 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 builder.append(MultiBit.getController().getLocaliser()
                         .getString("transactionConfidence.seenByUnknownNumberOfPeers"));
             } else {
-                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+                builder
+                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy"))
+                    .append(" ");
                 builder.append(peers);
                 if (peers > 1)
-                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ". ");
+                    builder
+                        .append(" ")
+                        .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peers"))
+                        .append(". ");
                 else
-                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ". ");
+                    builder
+                        .append(" ")
+                        .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peer"))
+                        .append(". ");
             }
 
             return HelpContentsPanel.createMultilineTooltipText(new String[] {
@@ -724,15 +788,15 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
 
             label.setText(value + SPACER);
 
-            if ((value + "").indexOf("-") > -1) {
-                // debit
+            if ((value + "").contains("-")) {
+                // Debit.
                 if (isSelected) {
                     label.setForeground(table.getSelectionForeground());
                 } else {
                     label.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
                 }
             } else {
-                // debit
+                // Credit.
                 if (isSelected) {
                     label.setForeground(table.getSelectionForeground()); 
                 } else {
@@ -743,7 +807,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
             } else {
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
                     label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -782,7 +846,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
             } else {
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
                     label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -836,7 +900,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 label.setForeground(table.getSelectionForeground());
             } else {
                 label.setForeground(table.getForeground());
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
                     label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -871,7 +935,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 label.setForeground(table.getSelectionForeground());
             } else {
                 label.setForeground(table.getForeground());
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
                     label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -943,7 +1007,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 // log.debug("pane.getText = " + pane.getText());
             }
 
-            if ((value.toString()).indexOf("-") > -1) {
+            if ((value.toString()).contains("-")) {
                 // debit
                 if (isSelected) {
                     pane.setForeground(table.getSelectionForeground());
@@ -966,7 +1030,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 filler.setBackground(table.getSelectionBackground());
                 pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, table.getSelectionBackground()));
             } else {
-                if (row % 2 == 0) {
+                if (row % 2 == 1) {
                     pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -984,7 +1048,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             }
 
             StyleConstants.setForeground(style, pane.getForeground());
-            if (row % 2 == 0 || isSelected) {
+            if (row % 2 == 1 || isSelected) {
                 StyleConstants.setBackground(style, pane.getBackground());
             } else {
                 StyleConstants.setBackground(style, ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
@@ -1006,51 +1070,45 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             return outerPanel;
         }
     }
-
-    class TransactionPopUp extends JPopupMenu {
-        private static final long serialVersionUID = 1022706046979674798L;
-        JMenuItem showTransactionsDetailsMenuItem;
-
-        public TransactionPopUp(WalletTableData rowTableData) {
-            Action showTransactionDetailsAction = new ShowTransactionDetailsAction(bitcoinController, mainFrame, rowTableData);
-            showTransactionsDetailsMenuItem = new JMenuItem(showTransactionDetailsAction);
-            showTransactionsDetailsMenuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-
-            add(showTransactionsDetailsMenuItem);
+    
+    class SharedListSelectionHandler implements ListSelectionListener {
+        private Action showTransactionDetailsAction;
+        
+        SharedListSelectionHandler (Action action) {
+            this.showTransactionDetailsAction = action;
+        }
+        
+        public void valueChanged(ListSelectionEvent e) { 
+            ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+            if (lsm.isSelectionEmpty()) {
+                showTransactionDetailsAction.setEnabled(false);
+                showTransactionsButton.invalidate();
+                showTransactionsButton.validate();
+                showTransactionsButton.repaint();
+            } else {
+                // Find out which indexes are selected.
+                int minIndex = lsm.getMinSelectionIndex();
+                int maxIndex = lsm.getMaxSelectionIndex();
+                for (int i = minIndex; i <= maxIndex; i++) {
+                    if (lsm.isSelectedIndex(i)) {
+                        showTransactionDetailsAction.setEnabled(true);
+                        showTransactionsButton.invalidate();
+                        showTransactionsButton.validate();
+                        showTransactionsButton.repaint();
+                        break;
+                    }
+                }
+            }
         }
     }
 
-    class PopClickListener extends MouseAdapter {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (e.isPopupTrigger())
-                doPop(e);
-        }
+    public WalletTableData getSelectedRowData() {
+        int row = table.getSelectedRow();
+        return walletTableModel.getRow(rowSorter.convertRowIndexToModel(row));
+    }
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if (e.isPopupTrigger())
-                doPop(e);
-        }
-
-        private void doPop(MouseEvent e) {
-            JTable table = (JTable) (e.getSource());
-            Point p = e.getPoint();
-            int row = table.rowAtPoint(p);
-            int col = table.columnAtPoint(p);
-
-            // The autoscroller can generate drag events outside the Table's
-            // range.
-            if ((col != -1) && (row != -1)) {
-                selectedRow = row;
-                table.setRowSelectionInterval(row, row);
-            }
-
-            // get the transaction on the row
-            WalletTableData rowTableData = walletTableModel.getRow(rowSorter.convertRowIndexToModel(row));
-            TransactionPopUp menu = new TransactionPopUp(rowTableData);
-            menu.show(e.getComponent(), e.getX(), e.getY());
-        }
+    public JTable getTable() {
+        return table;
     }
 
     @Override
@@ -1074,8 +1132,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     }
 
     @Override
-    public void lostExchangeRate(ExchangeRate exchangeRate) {
-        // TODO Auto-generated method stub    
+    public void lostExchangeRate(ExchangeRate exchangeRate) {  
     }
 
     @Override

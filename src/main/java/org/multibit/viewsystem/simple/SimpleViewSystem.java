@@ -1,6 +1,7 @@
 package org.multibit.viewsystem.simple;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.StatusEnum;
@@ -90,10 +91,6 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void onKeyAdded(ECKey key) {        
-    }
-
-    @Override
     public void onWalletChanged(Wallet wallet) {
         System.out.println("SIMPLE. onWalletChanged");        
     }
@@ -101,5 +98,9 @@ public class SimpleViewSystem implements ViewSystem {
     @Override
     public void recreateAllViews(boolean initUI, View initialView) {
         System.out.println("SIMPLE. All views were recreated");
+    }
+
+    @Override
+    public void onKeysAdded(Wallet wallet, List<ECKey> keys) { 
     }
 }

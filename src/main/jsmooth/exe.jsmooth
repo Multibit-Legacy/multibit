@@ -13,7 +13,7 @@
 <iconLocation>../resources/images/multibit32.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
 <jarLocation>../../../target/multibit-exe.jar</jarLocation>
-<mainClassName>org.multibit.MultiBitInExecutableJar</mainClassName>
+<mainClassName>org.multibit.MultiBit</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
 <minimumVersion>1.6</minimumVersion>

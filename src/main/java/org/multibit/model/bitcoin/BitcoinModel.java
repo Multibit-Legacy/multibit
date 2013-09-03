@@ -15,15 +15,9 @@
  */
 package org.multibit.model.bitcoin;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import com.google.bitcoin.core.*;
+import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.bitcoin.store.BlockStoreException;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.AbstractModel;
@@ -32,19 +26,8 @@ import org.multibit.model.core.CoreModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Block;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.Sha256Hash;
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionInput;
-import com.google.bitcoin.core.TransactionOutput;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.store.BlockStoreException;
+import java.math.BigInteger;
+import java.util.*;
 
 /**
  * Model containing the MultiBit data.
@@ -130,6 +113,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
 
     public static final String WALLET_FILE_EXTENSION = "wallet";
+    public static final String CSV_FILE_EXTENSION = "csv";
 
     // Private key import and export.
     public static final String PRIVATE_KEY_FILE_EXTENSION = "key";
@@ -221,11 +205,10 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Set a wallet preference from the active wallet.
      *
-     * @return
      */
     public void setActiveWalletPreference(String key, String value) {
         if (BitcoinModel.SEND_AMOUNT.equals(key)) {
-            if (value.indexOf(",") > -1) {
+            if (value.contains(",")) {
                 boolean bad = true;
                 bad = !bad;
             }
@@ -239,7 +222,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Get the estimated balance of the active wallet.
      *
-     * @return
+     * @return The estimated balance
      */
     public BigInteger getActiveWalletEstimatedBalance() {
         if (activeWalletModelData.getWallet() == null) {
@@ -252,7 +235,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Get the available balance (plus boomeranged change) of the active wallet.
      *
-     * @return
+     * @return the available balance
      */
     public BigInteger getActiveWalletAvailableBalance() {
         if (activeWalletModelData.getWallet() == null) {
@@ -265,25 +248,21 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Get the wallet data for the active wallet.
      *
-     * @return
+     * @return the table data list
      */
     public List<WalletTableData> getActiveWalletWalletData() {
         return activeWalletModelData.getWalletTableDataList();
     }
 
     /**
-     * Get the wallet info for the active wallet.
-     *
-     * @return
+     * @return the wallet info for the active wallet
      */
     public WalletInfoData getActiveWalletWalletInfo() {
         return activeWalletModelData.getWalletInfo();
     }
 
     /**
-     * Get the active wallet.
-     *
-     * @return
+     * @return the active wallet
      */
     public Wallet getActiveWallet() {
         return activeWalletModelData.getWallet();
@@ -292,7 +271,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Set the active wallet, given a wallet filename.
      *
-     * @param wallet
+     * @param walletFilename the wallet filename
      */
     public void setActiveWalletByFilename(String walletFilename) {
         if (walletFilename == null) {
@@ -315,7 +294,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
      * Removal is determined by matching the wallet filename. Use FileHandler to
      * do that.
      *
-     * @param perWalletModeData
+     * @param perWalletModelDataToRemove The wallet data
      */
     public void remove(WalletData perWalletModelDataToRemove) {
         if (perWalletModelDataToRemove == null) {
@@ -338,7 +317,8 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     /**
      * Set a wallet description, given a wallet filename.
      *
-     * @param wallet
+     * @param walletFilename The wallet file name
+     * @param walletDescription The wallet description
      */
     public void setWalletDescriptionByFilename(String walletFilename, String walletDescription) {
         if (walletFilename == null) {
@@ -391,7 +371,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
             wallet.addEventListener(bitcoinController);
         }
 
-        createWalletData(bitcoinController, walletFilename);
+        createWalletTableData(bitcoinController, walletFilename);
         createAddressBookReceivingAddresses(walletFilename);
 
         return newPerWalletModelData;
@@ -412,14 +392,14 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
      * to show to the user in tabular form.
      */
     public ArrayList<WalletTableData> createActiveWalletData(final BitcoinController bitcoinController) {
-        return createWalletDataInternal(bitcoinController, this.getActivePerWalletModelData());
+        return createWalletTableData(bitcoinController, this.getActivePerWalletModelData());
     }
     
     /**
      * Convert the wallet info into walletdata records as they are easier
      * to show to the user in tabular form.
      */
-    public ArrayList<WalletTableData> createWalletData(final BitcoinController bitcoinController, String walletFilename) {
+    public ArrayList<WalletTableData> createWalletTableData(final BitcoinController bitcoinController, String walletFilename) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (walletFilename == null) {
@@ -436,10 +416,10 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
             }
         }
         
-        return createWalletDataInternal(bitcoinController, perWalletModelData);
+        return createWalletTableData(bitcoinController, perWalletModelData);
     }
 
-    public ArrayList<WalletTableData> createWalletDataInternal(final BitcoinController bitcoinController, WalletData perWalletModelData) {
+    public ArrayList<WalletTableData> createWalletTableData(final BitcoinController bitcoinController, WalletData perWalletModelData) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (perWalletModelData == null || perWalletModelData.getWallet() == null) {
@@ -516,11 +496,27 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
                 NetworkParameters networkParameters = getNetworkParameters();
                 if (networkParameters != null) {
                     if (perWalletModelData.getWalletInfo() != null) {
+                        // Keep a copy of the existing receiving addresses - labels will be recycled.
+                        List<WalletAddressBookData> currentReceivingAddresses = perWalletModelData.getWalletInfo().getReceivingAddresses();
+
                         // Clear the existing receiving addresses.
-                        perWalletModelData.getWalletInfo().getReceivingAddresses().clear();
+                        ArrayList<WalletAddressBookData> newReceivingAddresses = new ArrayList<WalletAddressBookData>();
+                        perWalletModelData.getWalletInfo().setReceivingAddresses(newReceivingAddresses);
+
+                        // Add the new receiving addresses from the keys, checking if there is an old label.
                         for (ECKey key : keyChain) {
                             Address address = key.toAddress(getNetworkParameters());
-                            perWalletModelData.getWalletInfo().addReceivingAddressOfKey(address);
+                            String addressString = address.toString();
+                            WalletAddressBookData addressBookData = new WalletAddressBookData(null, addressString);
+
+                            for (WalletAddressBookData loopAddressBookData : currentReceivingAddresses) {
+                                if (loopAddressBookData.getAddress().equals(addressString)) {
+                                    // Recycle label.
+                                    addressBookData.setLabel(loopAddressBookData.getLabel());
+                                    break;
+                                }
+                            }
+                            perWalletModelData.getWalletInfo().addReceivingAddress(addressBookData, false);
                         }
                     }
                 }
@@ -582,7 +578,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
                 if (perWalletModelData.getWalletInfo() != null) {
                     label = perWalletModelData.getWalletInfo().lookupLabelForReceivingAddress(addressString);
                 }
-                if (label != null && label != "") {
+                if (label != null && !label.equals("")) {
                     toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
                             new Object[]{addressString, label});
                 } else {
@@ -605,7 +601,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
                     if (perWalletModelData.getWalletInfo() != null) {
                         label = perWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);
                     }
-                    if (label != null && label != "") {
+                    if (label != null && !label.equals("")) {
                         toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
                                 new Object[]{addressString, label});
                     } else {

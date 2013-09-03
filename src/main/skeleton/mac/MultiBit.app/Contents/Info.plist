@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleIconFile</key>
+	<string>GenericApp.icns</string>
+	<key>CFBundleExecutable</key>
+	<string>JavaAppLauncher</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleDisplayName</key>
+	<string>MultiBit</string>
+	<key>CFBundleName</key>
+	<string>MultiBit</string>
+	<key>CFBundleGetInfoString</key>
+	<string>MultiBit, © 2013 MultiBit developers</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>LSApplicationCategoryType</key>
+	<string>unknown</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright MultiBit developers 2013</string>
+	<key>JVMRuntime</key>
+	<string>jdk1.7.0_25.jdk</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.multibit</string>
+	<key>JVMMainClassName</key>
+	<string>org.multibit.MultiBit</string>
+	<key>JVMOptions</key>
+	<array/>
+	<key>JVMInfo</key>
+	<dict>
+		<key>Properties</key>
+		<dict>
+			<key>apple.laf.useScreenMenuBar</key>
+			<string>true</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

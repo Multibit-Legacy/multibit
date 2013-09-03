@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multibit</artifactId>
-    <version>0.5.13</version>
+    <version>0.5.14</version>
     <name>MultiBit</name>
     <description>A Java Swing client for Bitcoin</description>
     <url>https://multibit.org</url>
@@ -65,7 +65,7 @@
         <repository>
             <id>bitcoinj-release</id>
             <releases />
-            <url>http://nexus.bitcoinj.org/content/repositories/releases</url>
+            <url>http://distribution.bitcoinj.googlecode.com/git/releases</url>
         </repository>
         <repository>
             <id>bitcoinj-snapshot</id>
@@ -155,7 +155,7 @@
                 </executions>
             </plugin>
 
-            <!-- Create main executable jar -->
+            <!-- Create main executable jar - all classes -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2.1</version>
@@ -177,6 +177,36 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Proguard the executable jar file to remove unnecessary classes -->
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.0.6</version>
+                <executions>
+                    <execution>
+                        <id>package-with-proguard</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                        <configuration>
+                            <maxMemory>256m</maxMemory>
+                            <attach>false</attach>
+                            <addMavenDescriptor>false</addMavenDescriptor>
+                            <proguardInclude>src/main/proguard/multibit-exe.pro</proguardInclude>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.proguard</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>4.9</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <!-- Produce staging directory with all resources used in creation of 
@@ -221,9 +251,9 @@
                                     <directory>.</directory>
                                     <includes>
                                         <include>release_notes.txt</include>
-                                        <include>configuration.txt</include>
+                                        <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -274,9 +304,9 @@
                                     <directory>.</directory>
                                     <includes>
                                         <include>release_notes.txt</include>
-                                        <include>configuration.txt</include>
+                                        <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -305,7 +335,7 @@
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <!-- skeleton app -->
+                                    <!-- skeleton app including JRE -->
                                     <directory>src/app-resources/MultiBit.app</directory>
                                 </resource>
                             </resources>
@@ -327,9 +357,9 @@
                                         <include>multibit-exe.jar</include>
                                         <include>multibit.checkpoints</include>
                                         <include>release_notes.txt</include>
-                                        <include>configuration.txt</include>
+                                        <include>configuration.md</include>
                                         <include>COPYING</include>
-                                        <include>AUTHORS.txt</include>
+                                        <include>authors.txt</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -393,53 +423,53 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <!-- Make the JavaApplicationStub in the Mac application bundle executable 
+                                <!-- Make the JavaApplicationStub in the Mac application bundle executable
                        									(it loses its 'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub"
-                                    perm="777" />
+                                        file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                        perm="777" />
 
-                                <mkdir
-                                    dir="${basedir}/target/MultiBit-mac/MultiBit.app" />
                                 <copy
-                                    todir="${basedir}/target/MultiBit-mac/MultiBit.app">
+                                        todir="${basedir}/target/MultiBit-mac/MultiBit.app">
                                     <fileset dir="${basedir}/target/MultiBit.app"
                                              includes="**" />
                                 </copy>
                                 <copy file="${basedir}/src/main/izpack/mac/readme.txt"
                                       todir="${basedir}/target/MultiBit-mac" />
 
-
                                 <!-- Create Applications Symbolic link -->
                                 <!-- WARNING, do not remove this symbolic link by Java(ant) -->
                                 <exec executable="ln" os="'Mac OS X'">
                                     <arg
-                                        line="-s /Applications ${basedir}/target/MultiBit-mac/Applications" />
+                                            line="-s /Applications ${basedir}/target/MultiBit-mac/Applications" />
                                 </exec>
 
-                                <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 
+                                <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
                        									'x' permission after the copy) -->
                                 <chmod
-                                    file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
-                                    perm="777" />
+                                        file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                        perm="777" />
 
                                 <!-- Sign the Mac app -->
-                               <exec executable="codesign" os="'Mac OS X'">
+                                <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                        line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                            line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit.app" />
                                 </exec>
                                 <!-- Verify it is signed ok -->
-                               <exec executable="codesign" os="'Mac OS X'">
+                                <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                        line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit.app" />
-                                </exec>                            
-                                    
+                                            line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                </exec>
+
                                 <!-- create a DMG file -->
                                 <exec executable="hdiutil" os="'Mac OS X'">
                                     <arg value="create" />
+                                    <arg value="-noanyowners"/>
+                                    <arg value="-imagekey"/>
+                                    <arg value="zlib-level=9" />
                                     <arg value="-srcfolder" />
                                     <arg value="${basedir}/target/MultiBit-mac" />
-                                    <arg path="${basedir}/target/multibit-${project.version}.dmg" />
+                                    <arg value="${basedir}/target/multibit-${project.version}.dmg" />
                                 </exec>
 
                                 <!-- IMPORTANT! -->
@@ -495,7 +525,7 @@
                                          classpathref="jsmooth-classpathref" />
                                 <jsmoothgen project="src/main/jsmooth/installer.jsmooth"
                                             skeletonroot="src/main/jsmooth/skeletons" />
-                                <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows.exe" />
+                                <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows-setup.exe" />
                             </tasks>
                         </configuration>
                         <goals>
@@ -511,6 +541,97 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <!-- Use the Enforcer to verify build integrity -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <digestRule implementation="uk.co.froot.maven.enforcer.DigestRule">
+
+                  <!-- Create a snapshot to build the list of URNs below -->
+                  <buildSnapshot>true</buildSnapshot>
+
+                  <!-- List of required hashes -->
+                  <!-- Format is URN of groupId:artifactId:version:type:classifier:scope:hash -->
+                  <!-- classifier is "null" if not present -->
+                  <urns>
+                    <urn>ch.qos.logback:logback-classic:1.0.9:jar:null:compile:258c3d8f956e7c8723f13fdea6b81e3d74201f68</urn>
+                    <urn>ch.qos.logback:logback-core:1.0.9:jar:null:compile:41916886a1df068ad1dfea9bcc649a7b8ea4553e</urn>
+                    <urn>com.fasterxml.jackson.core:jackson-annotations:2.1.1:jar:null:compile:0b01cc83e745fc4425a3968fafbf8e5b8254a6dd</urn>
+                    <urn>com.fasterxml.jackson.core:jackson-core:2.1.1:jar:null:compile:82ad1c5f92f6dcc6291f5c46ebacb975eaa844de</urn>
+                    <urn>com.fasterxml.jackson.core:jackson-databind:2.1.1:jar:null:compile:38d2b3c0c89af5b937fd98c3e558bf6b58c14aa2</urn>
+                    <urn>com.github.mmazi:rescu:1.1.0:jar:null:compile:f28cdef5ddfa743e2f925f4aa2beb618d19fb23a</urn>
+                    <urn>com.google.code.findbugs:jsr305:1.3.9:jar:null:compile:40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf</urn>
+                    <urn>com.google.guava:guava:13.0.1:jar:null:compile:0d6f22b1e60a2f1ef99e22c9f5fde270b2088365</urn>
+                    <urn>com.google.protobuf:protobuf-java:2.4.1:jar:null:compile:0c589509ec6fd86d5d2fda37e07c08538235d3b9</urn>
+                    <urn>com.google.zxing:core:1.6:jar:null:compile:f6d1452ca591861d139c8d5b82a75444b7c2434a</urn>
+                    <urn>com.google.zxing:javase:1.6:jar:null:compile:a247611f2d7decb734c6eb796b02b902341312e3</urn>
+                    <urn>com.lambdaworks:scrypt:1.3.2:jar:null:compile:b144d80b2b915a900730dd156ae749a88c0e2555</urn>
+                    <urn>com.madgag:sc-light-jdk15on:1.47.0.2:jar:null:compile:d5c98671cc97fa0d928be1c7eb5edd3fb95d3234</urn>
+                    <urn>com.toedter:jcalendar:1.3.2:jar:null:compile:323a672aeacb5f5f4461be3b7f7d9d3e4bda80d4</urn>
+                    <urn>com.xeiam.xchange:xchange-bitstamp:1.7.0:jar:null:compile:8d0974cc531e4a297383abb21b889fcc9b5d05de</urn>
+                    <urn>com.xeiam.xchange:xchange-btce:1.7.0:jar:null:compile:fd1eaa0db2dd04a0e84a971ef11a943823e3d7ce</urn>
+                    <urn>com.xeiam.xchange:xchange-campbx:1.7.0:jar:null:compile:7d09f12cc34689671347981537e31958da39f406</urn>
+                    <urn>com.xeiam.xchange:xchange-cavirtex:1.7.0:jar:null:compile:b4e04ec1b466d23136711b0d35b533c1311d0a61</urn>
+                    <urn>com.xeiam.xchange:xchange-core:1.7.0:jar:null:compile:731476908c5adb4dc2b1feed01a6fa1d430c9041</urn>
+                    <urn>com.xeiam.xchange:xchange-mtgox:1.7.0:jar:null:compile:b74144f11b35519821de8e65aa7ee73aeea3b5a6</urn>
+                    <urn>com.xeiam.xchange:xchange-openexchangerates:1.7.0:jar:null:compile:6914f3b1ee26b8e613143d040ebeb3a5fb8c2e6a</urn>
+                    <urn>com.xeiam.xchart:xchart:2.2.0:jar:null:compile:3e3d4f50597c0b64b12c1c5eec335e940dce9501</urn>
+                    <urn>commons-codec:commons-codec:1.4:jar:null:compile:4216af16d38465bbab0f3dff8efa14204f7a399a</urn>
+                    <urn>io.netty:netty:3.6.3.Final:jar:null:compile:1eebfd2f79dd72c44d09d9917c549c60322462b8</urn>
+                    <urn>javax.ws.rs:jsr311-api:1.1.1:jar:null:compile:59033da2a1afd56af1ac576750a8d0b1830d59e6</urn>
+                    <urn>joda-time:joda-time:2.1:jar:null:compile:8f79e353ef77da6710e1f10d34fc3698eaaacbca</urn>
+                    <urn>junit:junit:4.8.2:jar:null:test:c94f54227b08100974c36170dcb53329435fe5ad</urn>
+                    <urn>net.jcip:jcip-annotations:1.0:jar:null:compile:afba4942caaeaf46aab0b976afd57cc7c181467e</urn>
+                    <urn>org.apache.maven.plugins:maven-antrun-plugin:1.3:maven-plugin:null:runtime:a1481166aa4a16c3a37e65f40847e238cc878709</urn>
+                    <urn>org.apache.maven.plugins:maven-assembly-plugin:2.2.1:maven-plugin:null:runtime:701da181eb3d2976ad900e4b58f48101c4d7f25a</urn>
+                    <urn>org.apache.maven.plugins:maven-clean-plugin:2.4.1:maven-plugin:null:runtime:c3ad1d9e5ee3daeac15f8e18e987a214bbaa343a</urn>
+                    <urn>org.apache.maven.plugins:maven-compiler-plugin:2.3.2:maven-plugin:null:runtime:e511c0bc38ae8a4d32b735a8c22ce94e51324c1d</urn>
+                    <urn>org.apache.maven.plugins:maven-dependency-plugin:2.1:maven-plugin:null:runtime:e9541b722e060535ff338c6347f1205508f128ad</urn>
+                    <urn>org.apache.maven.plugins:maven-deploy-plugin:2.7:maven-plugin:null:runtime:6dadfb75679ca010b41286794f737088ebfe12fd</urn>
+                    <urn>org.apache.maven.plugins:maven-enforcer-plugin:1.2:maven-plugin:null:runtime:6b755a9a0d618f8f57c0b5c4a0737a012e710a46</urn>
+                    <urn>org.apache.maven.plugins:maven-install-plugin:2.3.1:maven-plugin:null:runtime:fe692c15450a75d330510bffe9491264918f58e0</urn>
+                    <urn>org.apache.maven.plugins:maven-jar-plugin:2.3.2:maven-plugin:null:runtime:2e98edb5ec61e210b104bcf78fe4be2295526fc9</urn>
+                    <urn>org.apache.maven.plugins:maven-resources-plugin:2.5:maven-plugin:null:runtime:4d0907396ac6a770e05c81f6e8ed6348740f86a0</urn>
+                    <urn>org.apache.maven.plugins:maven-site-plugin:3.0:maven-plugin:null:runtime:39e1d8d4dae56f948e0028890c426c2002331e8c</urn>
+                    <urn>org.apache.maven.plugins:maven-surefire-plugin:2.10:maven-plugin:null:runtime:311b64c90d02f51585713f1bfd927f54eb5cc7ba</urn>
+                    <urn>org.codehaus.izpack:izpack-maven-plugin:1.0-alpha-5:maven-plugin:null:runtime:928863d35f15562af9f2570b3a80f491e5182f6c</urn>
+                    <urn>org.codehaus.izpack:izpack:5.0.0-beta8:pom:null:compile:4d7aa42807ef2f36a0289941271d984d049325c3</urn>
+                    <urn>org.codehaus.jackson:jackson-core-asl:1.9.5:jar:null:compile:af39988dc5ec30dba5f327791676d67501e79f93</urn>
+                    <urn>org.codehaus.jackson:jackson-mapper-asl:1.9.5:jar:null:compile:a731291051b447bbf8da50f232688e34d3d1d53c</urn>
+                    <urn>org.java-websocket:Java-WebSocket:1.3.0:jar:null:compile:db2658f013fb163de4a99274c2eb9e17efe535d2</urn>
+                    <urn>org.joda:joda-money:0.8:jar:null:compile:29e5cdf8cb4af8fffb0b013b1dc63d493cb02115</urn>
+                    <urn>org.simplericity.macify:macify:1.6:jar:null:compile:969fedd5d187e92bec18cf4a88cf82fa9668c8d3</urn>
+                    <urn>org.slf4j:slf4j-api:1.6.2:jar:null:compile:8619e95939167fb37245b5670135e4feb0ec7d50</urn>
+                  
+                    <!-- A check for the rules themselves -->
+                    <urn>uk.co.froot.maven.enforcer:digest-enforcer-rules:0.0.1:jar:null:runtime:16a9e04f3fe4bb143c42782d07d5faf65b32106f</urn>
+                  </urns>
+                </digestRule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+
+        <!-- Ensure we download the enforcer rules -->
+        <dependencies>
+          <dependency>
+            <groupId>uk.co.froot.maven.enforcer</groupId>
+            <artifactId>digest-enforcer-rules</artifactId>
+            <version>0.0.1</version>
+          </dependency>
+        </dependencies>
+
+      </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -606,7 +727,7 @@
         <dependency>
             <groupId>com.xeiam.xchart</groupId>
             <artifactId>xchart</artifactId>
-            <version>2.2.0</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.izpack</groupId>
@@ -647,28 +768,15 @@
             <artifactId>scrypt</artifactId>
             <version>1.3.2</version>
         </dependency>
+        <dependency>
+        <groupId>com.googlecode.jcsv</groupId>
+            <artifactId>jcsv</artifactId>
+            <version>1.4.0</version>
+        </dependency>
     </dependencies>
 
     <reporting>
         <plugins>
-            <!-- PMD checking -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <linkXRef>true</linkXRef>
-                    <sourceEncoding>utf-8</sourceEncoding>
-                    <minimumTokens>100</minimumTokens>
-                    <targetJdk>1.6</targetJdk>
-                </configuration>
-            </plugin>
-            <!-- Findbugs checking -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.2</version>
-            </plugin>
             <!-- Generate cross-referenced HTML source code listing -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -687,10 +795,10 @@
         </staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
-        <bitcoinj.version>0.9-MB-ALICE-SNAPSHOT</bitcoinj.version>
+        <bitcoinj.version>0.10.1-MB-ALICE</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
-        <xchange.version>1.7.0</xchange.version>
+        <xchange.version>1.8.0</xchange.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>

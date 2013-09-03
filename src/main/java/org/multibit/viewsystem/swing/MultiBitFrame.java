@@ -15,19 +15,7 @@
  */
 package org.multibit.viewsystem.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -97,11 +85,7 @@ import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.ViewFactory;
-import org.multibit.viewsystem.swing.view.components.BlinkLabel;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.components.*;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
@@ -132,16 +116,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
     public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical text 00.12345678 BTC (000.01 XYZ)";
 
-    public static final int WIDTH_OF_LONG_FIELDS = 300;
-    public static final int WIDTH_OF_AMOUNT_FIELD = 150;
     public static final int WALLET_WIDTH_DELTA = 25;
 
     public static final int SCROLL_BAR_DELTA = 20;
 
-    public static final int HEIGHT_OF_HEADER = 70;
-    
     public static final int WIDTH_OF_SPLIT_PANE_DIVIDER = 9;
-   
+
+    public static final int MENU_HORIZONTAL_INSET = 8;
+    public static final int MENU_VERTICAL_INSET = 1;
+
+    public static final int BALANCE_SPACER = 7;
+
+    public static final String SPENDABLE_TEXT_IN_ENGLISH = "Spendable";
+
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
     public static final String SEPARATOR = " - ";
@@ -377,7 +364,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private void initUI(View initialView) {
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridBagLayout());
-        contentPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        contentPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         GridBagConstraints constraints = new GridBagConstraints();
         GridBagConstraints constraints2 = new GridBagConstraints();
 
@@ -388,7 +375,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         headerPanel = new JPanel();
-        headerPanel.setOpaque(false);
+        headerPanel.setOpaque(true);
         headerPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         headerPanel.setLayout(new GridBagLayout());
         headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -421,8 +408,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Create the tabbedpane that holds the views.
         viewTabbedPane = new MultiBitTabbedPane(controller);
-        viewTabbedPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        
+        viewTabbedPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+
         // Add the send bitcoin tab.
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
         Viewable sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
@@ -454,15 +441,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Create a split pane with the two scroll panes in it.
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, walletsView, viewTabbedPane);
         } else {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewTabbedPane, (JPanel) walletsView);
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewTabbedPane, walletsView);
             splitPane.setResizeWeight(1.0);
         }
 
         splitPane.setOneTouchExpandable(false);
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
-        splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        splitPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        splitPane.setOpaque(true);
         
         BasicSplitPaneDivider divider = ( ( javax.swing.plaf.basic.BasicSplitPaneUI)splitPane.getUI()).getDivider();
         divider.setDividerSize(WIDTH_OF_SPLIT_PANE_DIVIDER);
@@ -497,15 +485,36 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private JPanel createBalancePanel() {
+        // Change the 'available to spend' text in English to 'Spendable'.
+        // This is not in the localisation files as it is a synonym and I did not want the localisers to have to reenter their text.
+        String spendableText;
+        if (controller.getLocaliser().getLocale().getLanguage().equals("en")) {
+            spendableText = SPENDABLE_TEXT_IN_ENGLISH;
+        } else {
+            spendableText = controller.getLocaliser().getString("multiBitFrame.availableToSpend2");
+        }
+        FontMetrics fontMetrics = this.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        int spendableWidth = fontMetrics.stringWidth(spendableText);
+        int spendableHeight = fontMetrics.getHeight();
+
+        tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
+
+        //HorizontalGradientPanel headerPanel = new HorizontalGradientPanel(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         JPanel headerPanel = new JPanel();
 
-        headerPanel.setMinimumSize(new Dimension(700, HEIGHT_OF_HEADER));
-        headerPanel.setPreferredSize(new Dimension(700, HEIGHT_OF_HEADER));
-        headerPanel.setOpaque(false);
+        int heightOfBalances =  2 * spendableHeight + 3 * BALANCE_SPACER -2 + 3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE;
+        int heightOfHeaderToUse = Math.max(heightOfBalances, tickerTablePanel.getIdealHeight());
+
+        headerPanel.setMinimumSize(new Dimension(700, heightOfHeaderToUse));
+        headerPanel.setPreferredSize(new Dimension(700, heightOfHeaderToUse));
+        headerPanel.setOpaque(true);
+        headerPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         headerPanel.setLayout(new GridBagLayout());
+        headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         GridBagConstraints constraints = new GridBagConstraints();
-        
+
+        // Top row filler.
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
@@ -513,7 +522,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(8, 8), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -524,15 +533,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
-        String[] keys = new String[] { "multiBitFrame.balanceLabel", "multiBitFrame.availableToSpend2"};
-
-        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, headerPanel);
+        int stentWidth = Math.max(spendableWidth, fontMetrics.stringWidth(controller.getLocaliser().getString("multiBitFrame.balanceLabel")));
 
         headerPanel.add(MultiBitTitledPanel.createStent(stentWidth, 1), constraints);
-
-        FontMetrics fontMetrics = this.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        int availableToSpendWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("multiBitFrame.availableToSpend2"));
-        int availableToSpendHeight = fontMetrics.getHeight();
 
         estimatedBalanceLabelLabel = new MultiBitLabel(controller.getLocaliser().getString("multiBitFrame.balanceLabel"), JTextField.RIGHT);
         estimatedBalanceLabelLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
@@ -546,14 +549,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         headerPanel.add(estimatedBalanceLabelLabel, constraints);
-        headerPanel.add(MultiBitTitledPanel.createStent(availableToSpendWidth, availableToSpendHeight), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(spendableWidth, spendableHeight), constraints);
 
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
         constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER), constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 0.01;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER - 2), constraints);
 
         estimatedBalanceBTCLabel = new BlinkLabel(controller, true);
         estimatedBalanceBTCLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
@@ -592,6 +604,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         Action availableBalanceHelpAction = new HelpContextAction(controller, null, "multiBitFrame.availableToSpend2",
                 "multiBitFrame.availableToSpend.tooltip", "multiBitFrame.helpMenuText", HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
+        if (controller.getLocaliser().getLocale().getLanguage().equals("en")) {
+            availableBalanceHelpAction.putValue(Action.NAME, SPENDABLE_TEXT_IN_ENGLISH);
+        }
         availableBalanceLabelButton = new HelpButton(availableBalanceHelpAction, controller);
         availableBalanceLabelButton.setHorizontalAlignment(JLabel.RIGHT);
         availableBalanceLabelButton.setBorder(BorderFactory.createEmptyBorder());
@@ -603,7 +618,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         availableBalanceLabelButton.setBorder(BorderFactory.createEmptyBorder());
 
         constraints.gridx = 3;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.weightx = 0.6;
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
@@ -611,10 +626,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         constraints.anchor = GridBagConstraints.LINE_END;
         headerPanel.add(availableBalanceLabelButton, constraints);
-        headerPanel.add(MultiBitTitledPanel.createStent(availableToSpendWidth, availableToSpendHeight), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(spendableWidth, spendableHeight), constraints);
 
         constraints.gridx = 5;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.weightx = 0.6;
         constraints.weighty = 0.01;
         constraints.gridwidth = 1;
@@ -627,7 +642,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(availableBalanceBTCButton, constraints);
 
         constraints.gridx = 7;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.weightx = 0.6;
         constraints.weighty = 0.01;
         constraints.gridwidth = 1;
@@ -642,13 +657,28 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         headerPanel.add(availableBalanceFiatButton, constraints);
 
+        // Bottom Filler
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.weightx = 0.01;
-        constraints.weighty = 0.6;
+        constraints.weighty = 10;
+        constraints.fill = GridBagConstraints.BOTH;
+
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(8, 8), constraints);
- 
+        headerPanel.add(MultiBitTitledPanel.createStent(BALANCE_SPACER, BALANCE_SPACER), constraints);
+
+        JPanel forcerBottom = new JPanel();
+        forcerBottom.setOpaque(false);
+        //forcerBottom.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.weightx = 0.01;
+        constraints.weighty = 1000;
+
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(forcerBottom, constraints);
+
         JPanel forcer1 = new JPanel();
         forcer1.setOpaque(false);
         //forcer1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
@@ -656,8 +686,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 8;
         constraints.gridy = 2;
-        constraints.weightx = 10000;
-        constraints.weighty = 10000;
+        constraints.weightx = 1000;
+        constraints.weighty = 1000;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
@@ -699,14 +729,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(filler3, constraints);
 
         // Add ticker panel.
-        tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 9;
         constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
+        constraints.weightx = 10;
+        constraints.weighty = 10000;
         constraints.gridwidth = 1;
-        constraints.gridheight = 3;
+        constraints.gridheight = 5;
 
         constraints.anchor = GridBagConstraints.CENTER;
         headerPanel.add(tickerTablePanel, constraints);
@@ -738,10 +767,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Create the menu bar.
         JMenuBar menuBar = new JMenuBar();
         menuBar.setComponentOrientation(componentOrientation);
-        
-        // Create the toolBar.
-        JPanel toolBarPanel = new JPanel();
-        toolBarPanel.setOpaque(false);
+        menuBar.setOpaque(false);
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -749,8 +775,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JMenu fileMenu = new JMenu(localiser.getString("multiBitFrame.fileMenuText"));
         fileMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         fileMenu.setComponentOrientation(componentOrientation);
-
         fileMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.fileMenuMnemonic"));
+        tweakAppearance(fileMenu);
         menuBar.add(fileMenu);
 
         // Build the Trade menu.
@@ -758,6 +784,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         tradeMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tradeMenu.setComponentOrientation(componentOrientation);
         tradeMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.tradeMenuMnemonic"));
+        tweakAppearance(tradeMenu);
         menuBar.add(tradeMenu);
 
         // Build the View menu.
@@ -765,6 +792,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         viewMenu.setComponentOrientation(componentOrientation);
         viewMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.viewMenuMnemonic"));
+        tweakAppearance(viewMenu);
         menuBar.add(viewMenu);
 
         // Build the Tools menu.
@@ -772,6 +800,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         toolsMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         toolsMenu.setComponentOrientation(componentOrientation);
         toolsMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.toolsMenuMnemonic"));
+        tweakAppearance(toolsMenu);
         menuBar.add(toolsMenu);
 
         // Build the Help menu.
@@ -779,8 +808,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         helpMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         helpMenu.setComponentOrientation(componentOrientation);
         helpMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.helpMenuMnemonic"));
+        tweakAppearance(helpMenu);
         menuBar.add(helpMenu);
-
         // Create new wallet action.
         CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.bitcoinController,
                 ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), this);
@@ -1082,6 +1111,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setJMenuBar(menuBar);
 
         return;
+    }
+
+    private void tweakAppearance(JMenu menu) {
+        menu.setMargin(new Insets(MENU_HORIZONTAL_INSET, MENU_VERTICAL_INSET, MENU_HORIZONTAL_INSET, MENU_VERTICAL_INSET));
     }
 
     /**
@@ -1699,10 +1732,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
     }
 
-    @Override
-    public void onKeyAdded(ECKey key) {        
-    }
-
     public JPanel getHeaderPanel() {
         return headerPanel;
     }
@@ -1768,5 +1797,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public FileChangeTimerTask getFileChangeTimerTask() {
         return fileChangeTimerTask;
+    }
+
+    @Override
+    public void onKeysAdded(Wallet wallet, List<ECKey> keys) {
     }
 }

@@ -1,9 +1,8 @@
 package org.multibit.controller.bitcoin;
 
-import org.multibit.controller.bitcoin.BitcoinController;
 import java.util.List;
 
-import org.multibit.model.bitcoin.WalletData;
+import org.multibit.controller.Controller;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -14,12 +13,7 @@ import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
-import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.VerificationException;
-import com.google.bitcoin.core.Wallet;
-
-import org.multibit.controller.Controller;
 
 public class BitcoinPeerEventListener implements PeerEventListener {
 
@@ -83,10 +77,5 @@ public class BitcoinPeerEventListener implements PeerEventListener {
     @Override
     public List<Message> getData(Peer peer, GetDataMessage m) {
         return null;
-    }
-
-    @Override
-    public void onException(Throwable throwable) {
-        throwable.printStackTrace();
     }
 }

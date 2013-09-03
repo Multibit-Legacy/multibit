@@ -7,6 +7,7 @@ import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
+import org.multibit.model.bitcoin.WalletAddressBookData;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
@@ -25,9 +26,10 @@ import com.google.protobuf.ByteString;
  */
 public class ActionTestUtils {
     
-    private static SecureRandom secureRandom;
+     private static SecureRandom secureRandom;
 
-     
+     public static final String LABEL_OF_ADDRESS_ADDED = "This is an address label";
+
      public static void createNewActiveWallet(BitcoinController controller, String descriptor, boolean encrypt, CharSequence walletPassword) throws Exception {
          if (secureRandom == null) {
              secureRandom = new SecureRandom();
@@ -40,13 +42,14 @@ public class ActionTestUtils {
          KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
 
          Wallet wallet;
+         ECKey ecKey;
          if (encrypt) {
              wallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
-             ECKey ecKey = (new ECKey()).encrypt(keyCrypter, keyCrypter.deriveKey(walletPassword));
+             ecKey = (new ECKey()).encrypt(keyCrypter, keyCrypter.deriveKey(walletPassword));
              wallet.addKey(ecKey);
          } else {
              wallet = new Wallet(NetworkParameters.prodNet());
-             ECKey ecKey = new ECKey();
+             ecKey = new ECKey();
              wallet.addKey(ecKey);             
          }
          
@@ -59,7 +62,10 @@ public class ActionTestUtils {
          String walletFile = multiBitDirectoryPath + File.separator + descriptor + ".wallet";
          
          // Put the wallet in the model as the active wallet.
-         perWalletModelData.setWalletInfo(new WalletInfoData(walletFile, wallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED));
+         WalletInfoData walletInfoData = new WalletInfoData(walletFile, wallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+         walletInfoData.addReceivingAddress(new WalletAddressBookData(LABEL_OF_ADDRESS_ADDED, ecKey.toAddress(NetworkParameters.prodNet()).toString()), false);
+
+         perWalletModelData.setWalletInfo(walletInfoData);
          perWalletModelData.setWalletFilename(walletFile);
          perWalletModelData.setWalletDescription(descriptor);
          

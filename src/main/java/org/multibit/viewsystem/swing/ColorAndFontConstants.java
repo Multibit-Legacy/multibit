@@ -15,11 +15,8 @@
  */
 package org.multibit.viewsystem.swing;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.SystemColor;
-
-import javax.swing.UIManager;
+import javax.swing.*;
+import java.awt.*;
 
 /***
  * Class containing constants for the colors and fonts used as default in
@@ -28,7 +25,7 @@ import javax.swing.UIManager;
  * @author jim
  * 
  */
-public class ColorAndFontConstants {
+public final class ColorAndFontConstants {
     public static String MULTIBIT_DEFAULT_FONT_NAME;
     public static int MULTIBIT_DEFAULT_FONT_STYLE;
     public static int MULTIBIT_DEFAULT_FONT_SIZE;
@@ -38,6 +35,7 @@ public class ColorAndFontConstants {
             .get("Label.background");
     public static Color DARK_BACKGROUND_COLOR;
     public static Color DEFAULT_VERY_LIGHT_BACKGROUND_COLOR = new Color(251, 251, 254);
+    public static Color MID_BACKGROUND_COLOR;
     public static Color VERY_LIGHT_BACKGROUND_COLOR;
 
     public static Color SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
@@ -45,14 +43,18 @@ public class ColorAndFontConstants {
 
     public static Color CREDIT_FOREGROUND_COLOR = Color.GREEN.darker().darker();
     public static Color DEBIT_FOREGROUND_COLOR = Color.RED.darker();
-    public static Color SELECTION_CREDIT_FOREGROUND_COLOR = SystemColor.textHighlightText;
-    public static Color SELECTION_DEBIT_FOREGROUND_COLOR = SystemColor.textHighlightText;
 
     public static Color DEFAULT_ALTERNATE_TABLE_COLOR = new Color(230, 230, 233);
     public static Color ALTERNATE_TABLE_COLOR;
 
     public static final int BRIGHTEN_CONSTANT = 3;
-    
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private ColorAndFontConstants() {
+    }
+
     public static void init() {
         MULTIBIT_DEFAULT_FONT_NAME = UIManager.get("Label.font") == null ? Font.DIALOG : ((Font) UIManager.get("Label.font"))
                 .getFontName();
@@ -62,16 +64,20 @@ public class ColorAndFontConstants {
         Color labelBackground = (Color)UIManager.get("Label.background");
         if (labelBackground != null) {
             // Brighten it.
-            labelBackground = new Color(Math.min(255, labelBackground.getRed() + BRIGHTEN_CONSTANT), 
+            labelBackground = new Color(Math.min(255, labelBackground.getRed() + BRIGHTEN_CONSTANT),
                     Math.min(255, labelBackground.getGreen() + BRIGHTEN_CONSTANT),
                     Math.min(255, labelBackground.getBlue() + BRIGHTEN_CONSTANT));
         }
-        
+
         BACKGROUND_COLOR = labelBackground == null ? new Color(251, 251, 254) : labelBackground;
         DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
         ALTERNATE_TABLE_COLOR = DEFAULT_ALTERNATE_TABLE_COLOR;
         VERY_LIGHT_BACKGROUND_COLOR = DEFAULT_VERY_LIGHT_BACKGROUND_COLOR;
-        
+
+        MID_BACKGROUND_COLOR = new Color((VERY_LIGHT_BACKGROUND_COLOR.getRed() + BACKGROUND_COLOR.getRed())/2,
+                (VERY_LIGHT_BACKGROUND_COLOR.getGreen() + BACKGROUND_COLOR.getGreen())/2,
+                (VERY_LIGHT_BACKGROUND_COLOR.getGreen() + BACKGROUND_COLOR.getGreen())/2) ;
+
         SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
         SELECTION_BACKGROUND_COLOR = SystemColor.textHighlight;
     }

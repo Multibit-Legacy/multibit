@@ -24,7 +24,13 @@ package org.multibit.platform.builder;
  * @since 0.2.0
  *         
  */
-public class OSUtils {
+public final class OSUtils {
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private OSUtils() {
+    }
 
     public static String getOsName() {
         return System.getProperty("os.name", "unknown");

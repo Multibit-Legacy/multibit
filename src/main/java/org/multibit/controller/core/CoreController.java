@@ -23,30 +23,23 @@
  */
 package org.multibit.controller.core;
 
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.AbstractEventHandler;
 import org.multibit.controller.BaseController;
 import org.multibit.model.core.CoreModel;
-import org.multibit.platform.listener.GenericAboutEvent;
-import org.multibit.platform.listener.GenericAboutEventListener;
-import org.multibit.platform.listener.GenericOpenURIEvent;
-import org.multibit.platform.listener.GenericOpenURIEventListener;
-import org.multibit.platform.listener.GenericPreferencesEvent;
-import org.multibit.platform.listener.GenericPreferencesEventListener;
-import org.multibit.platform.listener.GenericQuitEvent;
-import org.multibit.platform.listener.GenericQuitEventListener;
-import org.multibit.platform.listener.GenericQuitResponse;
+import org.multibit.platform.listener.*;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  *
@@ -201,8 +194,20 @@ public class CoreController extends BaseController<CoreController> implements Ge
     @Override
     public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
         if (isOKToQuit()) {
-            ExitAction exitAction = new ExitAction(this,null);
-
+            
+            ExitAction exitAction;
+            if (super.getViewSystem() != null) {
+                Iterator<ViewSystem> iterator = super.getViewSystem().iterator();
+                ViewSystem viewSystemLoop = iterator.next();
+                if (viewSystemLoop instanceof MultiBitFrame) {
+                    exitAction = new ExitAction(this, (MultiBitFrame)viewSystemLoop);                    
+                } else {
+                    exitAction = new ExitAction(this, null);                    
+                }
+            } else {
+                exitAction = new ExitAction(this, null);
+            }
+            
             for (AbstractEventHandler theEventHandler : this.eventHandlers) {
                 theEventHandler.handleQuitEvent(exitAction);
             }
@@ -226,10 +231,8 @@ public class CoreController extends BaseController<CoreController> implements Ge
         return this.eventHandler;
     }
     
-    private class EventHandler extends AbstractEventHandler<CoreController> {
+    private static class EventHandler extends AbstractEventHandler<CoreController> {
 
-        private volatile URI rawBitcoinURI = null;
-        
         public EventHandler(CoreController coreController){
             super(coreController);
         }

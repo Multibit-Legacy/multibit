@@ -15,19 +15,16 @@
  */
 package org.multibit.viewsystem.swing.browser;
 
-import java.awt.Cursor;
-import java.net.URL;
-
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import java.awt.*;
+import java.net.URL;
 
 public class ActivatedHyperlinkListener implements HyperlinkListener {
 
@@ -45,9 +42,7 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
 
     Browser browser;
 
-    String currentUrl;
-
-    public ActivatedHyperlinkListener(MultiBitFrame frame, Browser browser, String currentUrl) {
+    public ActivatedHyperlinkListener(MultiBitFrame frame, Browser browser) {
         this.mainFrame = frame;
         this.browser = browser;
     }
@@ -99,10 +94,16 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
                                     || MULTIBIT_HOST_NAME3.equals(url.getHost()) || MULTIBIT_HOST_NAME4.equals(url.getHost()))) {
                         browser.visit(url.toString(), false);
                     } else {
-                        StringBuffer stringBuffer = new StringBuffer();
-                        stringBuffer.append("The help contents can only show HTTP content from "
-                                + MULTIBIT_HOST_NAME + ", " + MULTIBIT_HOST_NAME2 + " and "+ MULTIBIT_HOST_NAME4 + ".\nPlease use your main browser to view the URL:\n\n" + url.toString());
-                        JTextArea textArea = new JTextArea(stringBuffer.toString());
+                        StringBuilder text = new StringBuilder();
+                        text.append("The help contents can only show HTTP content from ")
+                            .append(MULTIBIT_HOST_NAME)
+                            .append(", ")
+                            .append(MULTIBIT_HOST_NAME2)
+                            .append(" and ")
+                            .append(MULTIBIT_HOST_NAME4)
+                            .append(".\nPlease use your main browser to view the URL:\n\n")
+                            .append(url.toString());
+                        JTextArea textArea = new JTextArea(text.toString());
                         textArea.setEditable(false);
                         textArea.setOpaque(false);
                         JOptionPane.showMessageDialog(mainFrame, textArea,

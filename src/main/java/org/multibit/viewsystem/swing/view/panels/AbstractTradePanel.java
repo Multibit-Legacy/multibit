@@ -15,68 +15,13 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.SystemColor;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SortOrder;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
-
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.uri.BitcoinURI;
+import com.google.bitcoin.uri.BitcoinURIParseException;
 import org.joda.money.Money;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.exchange.CurrencyConverter;
-import org.multibit.exchange.CurrencyConverterListener;
-import org.multibit.exchange.CurrencyConverterResult;
-import org.multibit.exchange.CurrencyInfo;
-import org.multibit.exchange.ExchangeRate;
+import org.multibit.exchange.*;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
@@ -100,20 +45,24 @@ import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.action.ZoomAction;
 import org.multibit.viewsystem.swing.view.ImageSelection;
-import org.multibit.viewsystem.swing.view.components.DashedBorder;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
-import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.components.*;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.uri.BitcoinURI;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.text.Collator;
+import java.util.*;
+import java.util.List;
 
 
 /**
@@ -189,9 +138,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     protected static final int TEXTFIELD_VERTICAL_DELTA = 16;
     protected static final int HELP_BUTTON_INDENT = 6;
-    protected static final int AMOUNT_BTC_INDENT = 4;
 
-    private final int STENT_DELTA = 4;
+    private static final int STENT_DELTA = 4;
 
     protected FontMetrics fontMetrics;
     protected int separatorSize;
@@ -295,9 +243,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 "sendBitcoinPanel.amountLabel", "receiveBitcoinPanel.addressLabel", "receiveBitcoinPanel.labelLabel",
                 "receiveBitcoinPanel.amountLabel" };
 
-        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
-
-        return stentWidth;
+        return MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
     }
 
     /**
@@ -538,8 +484,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     protected JPanel createAddressesHeaderPanel() {
         JPanel addressesHeaderPanel = new JPanel();
-        addressesHeaderPanel.setOpaque(false);
-        addressesHeaderPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesHeaderPanel.setOpaque(true);
+        addressesHeaderPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
         addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
         addressesHeaderPanel.setLayout(new GridBagLayout());
@@ -565,7 +511,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(createNewButton, constraints);
 
-        int offset = 0;
+        int offset;
         deleteAddressAction = getDeleteAddressAction();
         if (isReceiveBitcoin()) {
             // Put in a stent
@@ -641,7 +587,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         addressesTableModel = new AddressBookTableModel(this.bitcoinController, isReceiveBitcoin());
         addressesTable = new JTable(addressesTableModel);
         addressesTable.setOpaque(true);
-        addressesTable.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesTable.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         addressesTable.setShowGrid(false);
         addressesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         addressesTable.setRowSelectionAllowed(true);
@@ -739,7 +685,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     }
     
     private void setupScrollPane() {
-        addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         addressesScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         addressesScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
         addressesScrollPane.getVerticalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
@@ -838,34 +784,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         }
     }
 
-    class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
-        private static final long serialVersionUID = 1549545L;
-
-        MultiBitLabel label = new MultiBitLabel("");
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
-            label.setHorizontalAlignment(SwingConstants.LEADING);
-            label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
-
-            label.setText((String) value);
-
-            if (isSelected) {
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
-            } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
-                label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
-            }
-            return label;
-        }
-    }
-
-    class LeftJustifiedRenderer extends DefaultTableCellRenderer {
+    static class LeftJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549115L;
 
         MultiBitLabel label = new MultiBitLabel("");
@@ -883,7 +802,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                Color backgroundColor = (row % 2 == 1 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                         : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
@@ -892,34 +811,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         }
     }
 
-    class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
-        private static final long serialVersionUID = 1999545L;
-
-        MultiBitLabel label = new MultiBitLabel("");
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
-            label.setHorizontalAlignment(SwingConstants.TRAILING);
-            label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
-
-            label.setText((String) value);
-
-            if (isSelected) {
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
-            } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
-                label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
-            }
-            return label;
-        }
-    }
-
-    class RightJustifiedRenderer extends DefaultTableCellRenderer {
+    static class RightJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 2299545L;
 
         MultiBitLabel label = new MultiBitLabel("");
@@ -937,7 +829,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                Color backgroundColor = (row % 2 == 1 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                         : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
@@ -1288,12 +1180,10 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         amountUnitFiatLabel = new MultiBitLabel("");
         int fiatCurrencySymbolPosition = 4;   // Prefix is default.
         int stentPosition = 5;
-        if (currencyInfo != null) {
-            amountUnitFiatLabel.setText(currencyInfo.getCurrencySymbol());
-            if (!currencyInfo.isPrefix()) {
-                stentPosition = 7;
-                fiatCurrencySymbolPosition = 8;
-            }
+        amountUnitFiatLabel.setText(currencyInfo.getCurrencySymbol());
+        if (!currencyInfo.isPrefix()) {
+            stentPosition = 7;
+            fiatCurrencySymbolPosition = 8;
         }
         
         constraints2.fill = GridBagConstraints.NONE;
@@ -1519,7 +1409,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                     addressTextField.setText(address);
                 }
             }
-            String amount = "";
+            String amount;
             
             if (amountBTCTextField != null) {
                 CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
@@ -1718,9 +1608,15 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             // Early MultiBit versions did not URL encode the label hence may
             // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
             // i.e be lenient
-            String uriString = decodedString.toString().replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
-            BitcoinURI bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
-
+            String uriString = decodedString.replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
+            BitcoinURI bitcoinURI;
+            try {
+                bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
+            } catch (BitcoinURIParseException e) {
+                Message message = new Message(e.getClass().getName() +  " " + e.getMessage());
+                MessageManager.INSTANCE.addMessage(message);
+                return false;
+            }
             log.debug("AbstractTradePanel - ping 1");
             Address address = bitcoinURI.getAddress();
             log.debug("AbstractTradePanel - ping 2");
@@ -1881,10 +1777,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         return labelTextArea;
     }
 
-    public JLabel getQRCodeLabel() {
-        return qrCodeLabel;
-    }
-
     private BufferedImage toBufferedImage(Image image, int width, int height) {
         log.debug("toBufferedImage - 1");
         if (image == null) {
@@ -1923,19 +1815,20 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     }
     
     private String createCenteredMultilineLabelText(String labelText) {
-        String centeredText = "<html><center>";
+        StringBuilder centeredText = new StringBuilder("<html><center>");
         String[] lines = labelText.split("\\|");
         if (lines != null) {
+
             for (int i = 0; i < lines.length ; i++) {
                 if ( i > 0) {
-                    centeredText += "<br>";
+                    centeredText.append("<br>");
                 }
-                centeredText += lines[i];
+                centeredText.append(lines[i]);
             }
         }
-        centeredText += "</center></html>";
+        centeredText.append("</center></html>");
         
-        return centeredText;
+        return centeredText.toString();
     }
 
     // CopyQRCodeImageDataProvider methods
@@ -2022,9 +1915,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                     if (converterResult.isBtcMoneyValid()) {
                         parsedAmountBTC = converterResult.getBtcMoney();
                         updateFiatAmount();
-                    } else {
-                        // If the conversion fails this is probably an error in one the amount fields so just leave it.
                     }
+                    // If the conversion fails this is probably an error in one the amount fields so just leave it.
                 }
             }});
     }   

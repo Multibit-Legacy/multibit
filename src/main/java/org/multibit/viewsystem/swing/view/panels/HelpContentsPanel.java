@@ -15,17 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.message.Message;
@@ -41,6 +30,9 @@ import org.multibit.viewsystem.swing.browser.Browser;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class HelpContentsPanel extends JPanel implements Viewable {
     private static final Logger log = LoggerFactory.getLogger(HelpContentsPanel.class);
@@ -61,15 +53,17 @@ public class HelpContentsPanel extends JPanel implements Viewable {
     
     public static final String HELP_AVAILABLE_TO_SPEND_URL = "help_availableToSpend.html";
     public static final String HELP_CONTENTS_URL = "help_contents.html";
-    public static final String HELP_SIGN_AND_VERIFY_MESSAGE_URL = "help_signAndVerifyMessage.html";
     public static final String HELP_EXPORTING_PRIVATE_KEYS_URL = "help_exportingPrivateKeys.html";
     public static final String HELP_IMPORTING_PRIVATE_KEYS_URL = "help_importingPrivateKeys.html";
+    public static final String HELP_PASSWORD_PROTECTION_URL = "help_passwordProtection.html";
+    public static final String HELP_PREFERENCES_URL = "help_preferences.html";
     public static final String HELP_RECEIVING_URL = "help_receivingBitcoin.html";
-    public static final String HELP_SENDING_URL = "help_sendingBitcoin.html";
     public static final String HELP_RESET_BLOCKCHAIN_URL = "help_resetBlockchain.html";
+    public static final String HELP_SENDING_URL = "help_sendingBitcoin.html";
+    public static final String HELP_SIGN_AND_VERIFY_MESSAGE_URL = "help_signAndVerifyMessage.html";
+    public static final String HELP_TRANSACTIONS_URL = "help_transactions.html";
     public static final String HELP_WALLET_FORMATS_URL = "help_walletFormats.html";
     public static final String HELP_WALLET_TYPES_URL = "help_walletTypes.html";
-    public static final String HELP_PASSWORD_PROTECTION_URL = "help_passwordProtection.html";
     
     private static final long serialVersionUID = 4921443778446348403L;
 
@@ -156,18 +150,19 @@ public class HelpContentsPanel extends JPanel implements Viewable {
         } else {
             fontCSS = fontCSS + "font-weight:normal;";
         }
-        String toolTipText = "<html><font face=\"sansserif\" style= \"" + fontCSS + "\">";
+        StringBuilder toolTipText = new StringBuilder("<html><font face=\"sansserif\" style= \"").append(fontCSS).append("\">");
 
         if (toolTips != null) {
             for (int i = 0; i < toolTips.length - 1; i++) {
                 if (toolTips[i] != null && !"".equals(toolTips[i])) {
-                    toolTipText = toolTipText + toolTips[i] + "<br>";
+                    toolTipText.append(toolTips[i]).append("<br>");
                 }
             }
+            toolTipText.append(toolTips[toolTips.length - 1]);
         }
-        toolTipText = toolTipText + toolTips[toolTips.length - 1] + "</font></html>";
+        toolTipText.append("</font></html>");
 
-        return toolTipText;
+        return toolTipText.toString();
     }
 
     @Override

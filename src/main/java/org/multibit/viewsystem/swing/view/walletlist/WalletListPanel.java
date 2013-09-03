@@ -54,8 +54,6 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.MultiBitTabbedPane;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletAction;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 
 /**
@@ -64,8 +62,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 public class WalletListPanel extends JPanel implements Viewable, WalletBusyListener, ComponentListener, CurrencyConverterListener {
 
     private static final long serialVersionUID = 191352298245057705L;
-
-    //private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
     private final Controller controller;
     private final BitcoinController bitcoinController;
@@ -309,7 +305,7 @@ public class WalletListPanel extends JPanel implements Viewable, WalletBusyListe
                 BorderFactory.createEmptyBorder(2, 0, 2, 0)
                ));
         buttonPanel.setOpaque(true);
-        buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        buttonPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
         CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(this.bitcoinController, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), mainFrame);

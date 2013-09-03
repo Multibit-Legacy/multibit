@@ -65,17 +65,6 @@ public class Validator {
         return validAddress && validAmount;
     }
 
-    /**
-     * Validate a String address.
-     * 
-     * @param address
-     * @return
-     */
-    public boolean validate(String address) {
-        clearValidationState();
-        return validateAddress(address);
-    }
-
     private boolean validateAmount(String amount) {
         // Copy amount to wallet preferences.
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_VALUE, amount);

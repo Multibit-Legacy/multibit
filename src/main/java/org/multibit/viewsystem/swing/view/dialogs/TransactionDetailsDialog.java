@@ -15,29 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
+import com.google.bitcoin.core.*;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -51,23 +29,23 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-
+import org.multibit.viewsystem.swing.view.components.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.TransactionOutput;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * The transaction details dialog.
@@ -98,11 +76,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private MultiBitLabel sizeText;
 
     private JPanel mainPanel;
-    private JPanel buttonPanel;
-
-    public JPanel getButtonPanel() {
-        return buttonPanel;
-    }
+    private JPanel detailPanel;
 
     private MultiBitButton okButton;
 
@@ -139,7 +113,25 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             initUI();
 
             applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-            okButton.requestFocusInWindow();
+
+            // Put focus on okButton.
+            (new Thread() {
+                public void run() {
+                    // Sleep long enough for the window to pop up.....
+                    try {
+                        Thread.sleep(200);
+                        // request focus.
+                        okButton.requestFocus();
+
+                        Thread.sleep(400);
+                    } catch (Exception e) {
+                        // Not required.
+                    }
+                    // Request focus.
+                    okButton.requestFocus();
+                }
+            }).start();
+
             initialisedOk = true;
         } catch (Exception e) {
             String errorMessage = e.getClass().getName() + " " + e.getMessage();
@@ -148,7 +140,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                     "privateKeysHandler.thereWasAnException", new String[] { errorMessage })));
         }
     }
-
+    
     /**
      * Initialise transaction details dialog.
      */
@@ -160,7 +152,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                 fontMetrics.stringWidth("0123456789") * 5)
                 + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
-        positionDialogRelativeToParent(this, 0.5D, 0.40D);
+        positionDialogRelativeToParent(this, 0.5D, 0.45D);
 
         mainPanel = new JPanel();
         mainPanel.setOpaque(false);
@@ -179,7 +171,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
         }
 
-        JPanel detailPanel = new JPanel(new GridBagLayout());
+        detailPanel = new JPanel(new GridBagLayout());
         detailPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         mainPanel.add(detailPanel, BorderLayout.CENTER);
 
@@ -575,7 +567,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                 if (perWalletModelData.getWalletInfo() != null) {
                     label = perWalletModelData.getWalletInfo().lookupLabelForReceivingAddress(addressString);
                 }
-                if (label != null && label != "") {
+                if (label != null && !label.equals("")) {
                     toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
                             new Object[] { addressString, label });
                 } else {
@@ -598,7 +590,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                     if (perWalletModelData.getWalletInfo() != null) {
                         label = perWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);
                     }
-                    if (label != null && label != "") {
+                    if (label != null && !label.equals("")) {
                         toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
                                 new Object[] { addressString, label });
                     } else {
@@ -648,12 +640,20 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         if (MultiBit.getController() != null && MultiBit.getController().getLocaliser() != null) {
             int peers = transactionConfidence.getBroadcastByCount();
             if (peers > 0) {
-                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+                builder
+                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy"))
+                    .append(" ");
                 builder.append(peers);
                 if (peers > 1)
-                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ". ");
+                    builder
+                        .append(" ")
+                        .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peers"))
+                        .append(". ");
                 else
-                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ". ");
+                    builder
+                        .append(" ")
+                        .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peer"))
+                        .append(". ");
             }
             switch (transactionConfidence.getConfidenceType()) {
             case UNKNOWN:

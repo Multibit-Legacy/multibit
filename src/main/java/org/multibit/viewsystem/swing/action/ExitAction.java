@@ -24,8 +24,8 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.Controller;
-import org.multibit.controller.core.CoreController;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.controller.core.CoreController;
 import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
@@ -43,9 +43,6 @@ import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * Exit the application.
- * 
- * @author jim
- * 
  */
 public class ExitAction extends AbstractExitAction {
 
@@ -53,7 +50,7 @@ public class ExitAction extends AbstractExitAction {
     
     private static final int MAXIMUM_TIME_TO_WAIT_FOR_FILE_CHANGE_TASK = 10000; // ms
     private static final int TIME_TO_WAIT = 200; // ms
-    
+
     private final MultiBitFrame mainFrame;
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
 
@@ -82,11 +79,13 @@ public class ExitAction extends AbstractExitAction {
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
-        // log.debug("exit 1");
+        String shuttingDownTitle = bitcoinController.getLocaliser().getString("multiBitFrame.title.shuttingDown");
+
         if (mainFrame != null) {
+            mainFrame.setTitle(shuttingDownTitle);
+               
             if (EventQueue.isDispatchThread()) {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
             } else {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -95,7 +94,7 @@ public class ExitAction extends AbstractExitAction {
                     }
                 });
             }
-
+               
             // If the FileChangeTimerTask is running wait until it completes.
             FileChangeTimerTask fileChangeTimerTask = mainFrame.getFileChangeTimerTask();
             if (fileChangeTimerTask != null) {
@@ -145,18 +144,32 @@ public class ExitAction extends AbstractExitAction {
             if (perWalletModelDataList != null) {
                 for (WalletData loopPerWalletModelData : perWalletModelDataList) {
                     try {
-                        // log.debug("exit 3a");
+                        String titleText = shuttingDownTitle;
+                        if (mainFrame != null) {
+                            if (loopPerWalletModelData != null) {
+                                titleText = bitcoinController.getLocaliser().getString("multiBitFrame.title.saving",
+                                        new String[] { loopPerWalletModelData.getWalletDescription() });
+                            }
+                            if (EventQueue.isDispatchThread()) {
+                                mainFrame.setTitle(titleText);
+                            } else {
+                                final String finalTitleText = titleText;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mainFrame.setTitle(finalTitleText);
+                                    }
+                                });
+                            }
+                        }
                         bitcoinController.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
-                        // log.debug("exit 3b");
                     } catch (WalletSaveException wse) {
                         log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                         MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
 
                         // Save to backup.
                         try {
-                            // log.debug("exit 4a");
                             BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), loopPerWalletModelData);
-                            // log.debug("exit 4b");
                         } catch (WalletSaveException wse2) {
                             log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
                             MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " "
@@ -172,25 +185,20 @@ public class ExitAction extends AbstractExitAction {
             // Write the user properties.
             log.debug("Saving user preferences ...");
             FileHandler.writeUserPreferences(bitcoinController);
-            // log.debug("exit 6");
         }
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
-        // log.debug("exit 7");
 
         // Get rid of main display.
         if (mainFrame != null) {
             mainFrame.setVisible(false);
         }
-        // log.debug("exit 8");
 
         if (mainFrame != null) {
             mainFrame.dispose();
         }
-        // log.debug("exit 10");
 
         System.exit(0);
-        // log.debug("exit 11");
     }
 }

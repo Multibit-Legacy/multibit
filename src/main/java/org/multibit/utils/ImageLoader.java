@@ -15,13 +15,13 @@
  */
 package org.multibit.utils;
 
-import javax.swing.ImageIcon;
-
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImageLoader {
+import javax.swing.*;
+
+public final class ImageLoader {
     private static final Logger log = LoggerFactory.getLogger(ImageLoader.class);
 
     public static final String ACCEPT_ICON_FILE = "/images/accept.png";
@@ -73,15 +73,18 @@ public class ImageLoader {
     public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
+    public static final String TRANSACTIONS_EXPORT_ICON_FILE = "/images/transactionsExport.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";
     public static final String WELCOME_ICON_FILE = "/images/welcome.png";
     public static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";
     public static final String ZOOM_ICON_FILE = "/images/zoom.png";
-          
-    public ImageLoader() {
-        
+
+    /**
+     * Utility class should not have a public constructor
+     */
+    private ImageLoader() {
     }
-    
+
     /**
      * Returns an ImageIcon, or null if the path was invalid.
      */

@@ -15,13 +15,12 @@
  */
 package org.multibit.viewsystem.swing.view.ticker;
 
-import javax.swing.table.AbstractTableModel;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.model.exchange.ExchangeData;
-import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.exchange.ExchangeModel;
+
+import javax.swing.table.AbstractTableModel;
 
 /**
  * Table model for ticker.
@@ -104,9 +103,7 @@ public class TickerTableModel extends AbstractTableModel {
         }
 
         columnVariables = new String[numberOfColumns];
-        for (int i = 0; i < numberOfColumns; i++) {
-            columnVariables[i] = tempColumns[i];
-        }
+        System.arraycopy(tempColumns, 0, columnVariables, 0, numberOfColumns);
 
         showSecondRow = Boolean.TRUE.toString().equals(
                 controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));

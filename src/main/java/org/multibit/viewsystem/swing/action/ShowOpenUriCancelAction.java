@@ -15,16 +15,14 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-
 import org.multibit.controller.Controller;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * This {@link Action} represents a cancel action to go back to the parent view for the open uri command
@@ -61,7 +59,7 @@ public class ShowOpenUriCancelAction extends AbstractAction {
 //        Item showDialogItem = dataProvider.getData().getItem(BitcoinModel.OPEN_URI_SHOW_DIALOG);
              
         if (dataProvider != null) {
-            String openUriDialogAsString = (new Boolean(dataProvider.isShowUriDialog())).toString();
+            String openUriDialogAsString = (Boolean.valueOf(dataProvider.isShowUriDialog())).toString();
             controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, openUriDialogAsString);                
         }
         

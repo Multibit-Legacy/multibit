@@ -16,11 +16,7 @@
 
 package org.multibit.network;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.google.bitcoin.core.DownloadListener;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
@@ -29,7 +25,10 @@ import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadLi
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.DownloadListener;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -94,7 +93,7 @@ public class MultiBitDownloadListener extends DownloadListener {
             //log.debug("Download - blocksSoFar = " + blocksSoFar);
             synchronized (lockObject) {
                 String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort",
-                        new Object[] { new Integer(blocksSoFar) })
+                        new Object[] {blocksSoFar})
                         + " "
                         + controller.getLocaliser().getString(
                                 "multiBitDownloadListener.blockDateText",
@@ -145,10 +144,10 @@ public class MultiBitDownloadListener extends DownloadListener {
                 String startDownloadText;
                 if (blocks <= CRITERIA_LARGE_NUMBER_OF_BLOCKS) {
                     startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort",
-                            new Object[] { new Integer(blocks) });
+                            new Object[] {blocks});
                 } else {
                     startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextLong",
-                            new Object[] { new Integer(blocks) });
+                            new Object[] {blocks});
                 }
 
                 String startDownloadTextForLabel = controller.getLocaliser().getString("multiBitDownloadListener.downloadingText");

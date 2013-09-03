@@ -1,5 +1,5 @@
 <assembly>
-  <id>exe</id>
+  <id>exe-full</id>
   <formats>
     <format>jar</format>
   </formats>
@@ -21,5 +21,5 @@
       <directory>target/classes</directory>
       <outputDirectory></outputDirectory>
     </fileSet>
-   </fileSets>
+  </fileSets>
  </assembly>

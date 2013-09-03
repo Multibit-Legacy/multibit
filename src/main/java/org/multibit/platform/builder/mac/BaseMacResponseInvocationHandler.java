@@ -83,7 +83,8 @@ public abstract class BaseMacResponseInvocationHandler<H extends GenericHandler,
             log.debug("Invoking {}.{}({},{}) ", new Object[]{genericHandler.getClass().getSimpleName(), method.getName(), method.getParameterTypes()[0].getSimpleName(),method.getParameterTypes()[1].getSimpleName()});
             return method.invoke(genericHandler, event, response);
         } catch (NoSuchMethodException e) {
-            log.warn("Got a NoSuchMethodException");
+            log.warn("Got a NoSuchMethodException. Method = '" + nativeMethod.getName() + "'");
+            e.printStackTrace();
             if (nativeMethod.getName().equals("equals") && objects.length == 1) {
                 return object == objects[0];
             }

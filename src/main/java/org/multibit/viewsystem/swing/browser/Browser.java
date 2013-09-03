@@ -63,7 +63,7 @@ public class Browser extends javax.swing.JEditorPane {
             if (mainFrame != null) {
                 mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
-            addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
+            addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this));
 
             loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
            

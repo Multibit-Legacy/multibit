@@ -23,13 +23,13 @@
  */
 package org.multibit.controller.exchange;
 
-import java.net.URI;
 import org.multibit.controller.AbstractController;
 import org.multibit.controller.AbstractEventHandler;
 import org.multibit.controller.core.CoreController;
-import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.action.ExitAction;
+
+import java.net.URI;
 
 /**
  *
@@ -69,9 +69,7 @@ public class ExchangeController extends AbstractController<CoreController> {
     }
     
     
-    private class EventHandler extends AbstractEventHandler<ExchangeController> {
-
-        private volatile URI rawBitcoinURI = null;
+    private static class EventHandler extends AbstractEventHandler<ExchangeController> {
 
         public EventHandler(ExchangeController controller) {
             super(controller);
@@ -79,7 +77,6 @@ public class ExchangeController extends AbstractController<CoreController> {
 
         @Override
         public void handleOpenURIEvent(URI rawBitcoinURI) {
-            this.rawBitcoinURI = rawBitcoinURI;
             // do nothing
 
         }

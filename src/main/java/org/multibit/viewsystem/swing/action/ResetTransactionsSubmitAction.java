@@ -15,17 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.SwingWorker;
-
-import org.multibit.controller.Controller;
+import com.google.bitcoin.core.Transaction;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -37,12 +27,16 @@ import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
-import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Transaction;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This {@link Action} resets the blockchain and transactions.
@@ -136,7 +130,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             super.bitcoinController.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
             log.debug("RT Ping 10");
 
-            super.bitcoinController.getModel().createWalletData(super.bitcoinController, super.bitcoinController.getModel().getActiveWalletFilename());
+            super.bitcoinController.getModel().createWalletTableData(super.bitcoinController, super.bitcoinController.getModel().getActiveWalletFilename());
             log.debug("RT Ping 11");
 
             controller.fireRecreateAllViews(false);
@@ -204,12 +198,12 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();
-                    if (wasSuccessful != null && wasSuccessful.booleanValue()) {
+                    if (wasSuccessful != null && wasSuccessful) {
                         log.debug(message);
                     } else {
                         log.error(message);
                     }
-                    if (message != "") {
+                    if (!message.equals("")) {
                         MessageManager.INSTANCE.addMessage(new Message(message));
                     }
                 } catch (Exception e) {

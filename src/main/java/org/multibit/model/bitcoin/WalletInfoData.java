@@ -15,24 +15,9 @@
  */
 package org.multibit.model.bitcoin;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
 import org.multibit.MultiBit;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -41,9 +26,8 @@ import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
+import java.io.*;
+import java.util.*;
 
 /**
  * Wallet info is the companion info to the bitcoinj Wallet that multibit uses
@@ -137,7 +121,7 @@ public class WalletInfoData {
      * @return
      */
     public String getProperty(String key) {
-        return (String) walletPreferences.getProperty(key);
+        return walletPreferences.getProperty(key);
     }
 
     /**
@@ -157,8 +141,8 @@ public class WalletInfoData {
         return sendingAddresses;
     }
 
-    public void setSendingAddresses(ArrayList<WalletAddressBookData> sendingAddresses) {
-        this.sendingAddresses = sendingAddresses;
+    public void setReceivingAddresses(ArrayList<WalletAddressBookData> receivingAddresses) {
+        this.receivingAddresses = receivingAddresses;
     }
 
     /**
@@ -191,7 +175,7 @@ public class WalletInfoData {
         if (wallet != null) {
             for (ECKey key : wallet.getKeys()) {
                 if (receivingAddress.getAddress().equals(
-                        key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()))) {
+                        key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()).toString())) {
                     addressMatchesKey = true;
                     break;
                 }
@@ -380,10 +364,11 @@ public class WalletInfoData {
             walletPreferencesClone.remove("sendWasSuccessful");
             walletPreferencesClone.remove("earliestTransactionDate");
 
-            for (Object key : walletPreferencesClone.keySet()) {
+            for (Map.Entry entry : walletPreferencesClone.entrySet()) {
+
                 String columnOne = PROPERTY_MARKER;
-                String columnTwo = (String) key;
-                String encodedColumnThree = encodeURLString((String) walletPreferencesClone.get(key));
+                String columnTwo = (String) entry.getKey();
+                String encodedColumnThree = encodeURLString((String) entry.getValue());
                 if (columnTwo == null) {
                     columnTwo = "";
                 }
@@ -642,7 +627,7 @@ public class WalletInfoData {
                 isEncoded = false;
             } else {
                 // See if there is a % followed by non hex - not encoded.
-                int percentPosition = stringToDecode.indexOf("%");
+                int percentPosition = stringToDecode.indexOf('%');
                 if (percentPosition > -1) {
                     int nextCharacterPosition = percentPosition + 1;
                     int nextNextCharacterPosition = nextCharacterPosition + 1;
@@ -654,7 +639,7 @@ public class WalletInfoData {
                         String nextNextCharacter = stringToDecode.substring(nextNextCharacterPosition,
                                 nextNextCharacterPosition + 1).toLowerCase();
 
-                        if (VALID_HEX_CHARACTERS.indexOf(nextCharacter) < 0 || VALID_HEX_CHARACTERS.indexOf(nextNextCharacter) < 0) {
+                        if (!VALID_HEX_CHARACTERS.contains(nextCharacter) || !VALID_HEX_CHARACTERS.contains(nextNextCharacter)) {
                             isEncoded = false;
                         }
                     }
@@ -668,8 +653,7 @@ public class WalletInfoData {
             // If there are any spaces convert them to %20s.
             stringToDecode = stringToDecode.replace(ENCODED_SPACE_CHARACTER, "+");
 
-            String decodedText = java.net.URLDecoder.decode(stringToDecode, "UTF-8");
-            return decodedText;
+            return java.net.URLDecoder.decode(stringToDecode, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             // Should not happen - UTF-8 is a valid encoding.
             throw new WalletLoadException("Could not decode string '" + stringToDecode + "'", e);

@@ -1,19 +1,5 @@
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -24,6 +10,13 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * JPanel for creating new receiving addresses.
@@ -108,10 +101,10 @@ public class CreateNewReceivingAddressPanel extends JPanel {
         mainPanel.add(explainLabel, constraints);
 
         numberOfAddresses = new JComboBox();
-        numberOfAddresses.addItem(new Integer(1));
-        numberOfAddresses.addItem(new Integer(5));
-        numberOfAddresses.addItem(new Integer(20));
-        numberOfAddresses.addItem(new Integer(100));
+        numberOfAddresses.addItem(1);
+        numberOfAddresses.addItem(5);
+        numberOfAddresses.addItem(20);
+        numberOfAddresses.addItem(100);
         //numberOfAddresses.addItem(new Integer(500));
 
         constraints.fill = GridBagConstraints.NONE;
@@ -202,7 +195,6 @@ public class CreateNewReceivingAddressPanel extends JPanel {
         constraints.weightx = 0.8;
         constraints.weighty = 0.1;
         constraints.gridwidth = 4;
-        constraints.gridheight = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(buttonPanel, constraints);
