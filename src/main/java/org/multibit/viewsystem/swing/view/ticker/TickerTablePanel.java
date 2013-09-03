@@ -79,7 +79,7 @@ public class TickerTablePanel extends JPanel {
         fontMetrics = getFontMetrics(font);
 
         // Switch the dark and light row highlighting for Windows.
-        if (System.getProperty("os.name").startsWith("Win")) {
+        if (System.getProperty("os.name", "unknown").startsWith("Win")) {
             moduloRow = 1;
         } else {
             moduloRow = 0;
@@ -146,7 +146,7 @@ public class TickerTablePanel extends JPanel {
         int tableHeaderHeight = fontMetrics.getHeight() + table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom;
 
         // Windows 8 has slightly taller headers so add a tweak for that.
-        if (System.getProperty("os.name").startsWith("Win")) {
+        if (System.getProperty("os.name", "unknown").startsWith("Win")) {
             tableHeaderHeight = tableHeaderHeight + WINDOWS_TABLE_HEADER_HEIGHT_TWEAK;
         }
 

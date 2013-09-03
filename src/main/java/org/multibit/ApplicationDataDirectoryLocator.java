@@ -77,11 +77,11 @@ public class ApplicationDataDirectoryLocator {
             applicationDataDirectory = "";
         } else {
             String operatingSystemName = System.getProperty("os.name");
-            if (operatingSystemName.startsWith("Windows")) {
+            if (operatingSystemName != null && operatingSystemName.startsWith("Windows")) {
                 // Windows os
                 applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiBit";
             } else {
-                if (operatingSystemName.startsWith("Mac")) {
+                if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
                     // Mac os
                     if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
                         applicationDataDirectory = new File("../../../..").getAbsolutePath();
