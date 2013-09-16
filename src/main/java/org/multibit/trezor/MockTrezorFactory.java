@@ -6,8 +6,6 @@ package org.multibit.trezor;
  *
  */
 
-import com.google.common.base.Optional;
-
 public class MockTrezorFactory {
 
     /**
@@ -18,14 +16,10 @@ public class MockTrezorFactory {
 
     /**
      * <p>Create a new instance of a mock Trezor device (standard)</p>
-     * @param vendorIdOptional The vendor ID (default is 0x10c4)
-     * @param productIdOptional The product ID (default is 0xea80)
-     * @param serialNumberOptional The device serial number (default is to accept any)
      * @return mock Trezor
      */
-    public static MockTrezor newMockTrezor(Optional<Integer> vendorIdOptional, Optional<Integer> productIdOptional, Optional<String> serialNumberOptional) {
-
-        return new MockTrezor(vendorIdOptional, productIdOptional, serialNumberOptional);
+    public static MockTrezor newMockTrezor() {
+        return new MockTrezor();
     }
 
 }

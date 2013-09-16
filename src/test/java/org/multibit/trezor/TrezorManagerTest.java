@@ -15,22 +15,15 @@
  */
 package org.multibit.trezor;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Utils;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.CreateControllers;
 import org.multibit.Localiser;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.network.AlertManager;
-import org.multibit.network.ParseResult;
-import org.multibit.network.Signature;
 import uk.co.bsol.trezorj.core.Trezor;
 
-import java.security.SignatureException;
 import java.util.Collection;
-import java.util.List;
 
 public class TrezorManagerTest extends TestCase {
     BitcoinController controller;
@@ -58,14 +51,19 @@ public class TrezorManagerTest extends TestCase {
         assertEquals("There should initially be no Trezor devices available", 0, trezors.size());
 
 
-        // Connect the trezor object (in this test this will create a software emulator TrezorEmulator.
-//        trezor.connect();
-//
-//        assertEquals("There should initially be no Trezor devices available", 0, trezors.size());
-//
-//        Trezor trezor = trezors.iterator().next();
-//
-//        assertNotNull("The trezor device is null", trezor);
+        // Create a MockTrezor object.
+        Trezor mockTrezor = trezorManager.createMockTrezor();
 
+        assertNotNull("No mockTrezor device was created", mockTrezor);
+        assertEquals("There were the wrong number of trezors under management", 1, trezorManager.getTrezors().size());
+
+        // Connect up the mockTrezor - this should reply with a success message.
+        // This is the physical equivalent of plugging in a Trezor.
+        // TODO - hook up listener to listener for reply.
+
+        mockTrezor.connect();
+
+        // Close the Trezor.
+        // This is the physical equivalent of removing a Trezor device.
     }
 }
