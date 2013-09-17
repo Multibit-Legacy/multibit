@@ -123,8 +123,7 @@ public enum HardwareWalletManager implements TrezorListener {
                         TrezorEvent event = queue.take();
 
                         // Hand over to the event state machine.
-                        // TODO - failing dut to protobuf mismatch.
-                        //processEvent(event);
+                        processEvent(event);
 
                     } catch (InterruptedException e) {
                         break;

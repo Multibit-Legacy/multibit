@@ -21,6 +21,8 @@ import org.junit.Test;
 import org.multibit.CreateControllers;
 import org.multibit.Localiser;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
 
 public class HardwareWalletManagerTest extends TestCase {
@@ -42,7 +44,7 @@ public class HardwareWalletManagerTest extends TestCase {
 
         hardwareWalletManager.initialise(controller, null);
 
-        // At construction there are no Trezor device present.
+        // At construction there is no Trezor device present.
         Trezor trezor = hardwareWalletManager.getTrezor();
         assertNull("Trezor should be null at construction", trezor);
 
@@ -61,14 +63,19 @@ public class HardwareWalletManagerTest extends TestCase {
         // Connect up the mockTrezor - this is the physical equivalent of plugging in a Trezor.
         mockTrezor.connect();
 
+        // Let events propagate.
+        Thread.sleep(10);
+
         // Listener should have detected a connection event.
-        // TODO - not working yet.
-        //assertTrue("HardwareWalletListener did not detect a connection event", hardwareWalletListener.isConnected());
+        assertTrue("HardwareWalletListener did not detect a connection event", hardwareWalletListener.isConnected());
 
 
         // Close the Trezor.
         // This is the physical equivalent of removing a Trezor device.
         mockTrezor.close();
+
+        // Let events propagate.
+        Thread.sleep(10);
 
         // Listener should have detected a disconnection event.
         assertFalse("HardwareWalletListener did not detect a disconnection event", hardwareWalletListener.isConnected());
@@ -81,15 +88,19 @@ public class HardwareWalletManagerTest extends TestCase {
     }
 
     class TestHardwareWalletListener implements HardwareWalletListener {
+        private Logger log = LoggerFactory.getLogger(TestHardwareWalletListener.class);
+
         private boolean connected = false;
 
         @Override
         public void hardwareWalletHasConnected(Trezor trezor) {
+            log.debug("Trezor " + trezor.toString() + " has connected.");
             connected = true;
         }
 
         @Override
         public void hardwareWalletHasDisconnected(Trezor trezor) {
+            log.debug("Trezor " + trezor.toString() + " has disconnected.");
             connected = false;
         }
 

@@ -2,11 +2,15 @@ package org.multibit.hardwarewallet.trezor;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.AbstractMessage;
+import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
 import uk.co.bsol.trezorj.core.TrezorEvent;
+import uk.co.bsol.trezorj.core.TrezorEventType;
 import uk.co.bsol.trezorj.core.TrezorListener;
+import uk.co.bsol.trezorj.core.events.TrezorEvents;
+import uk.co.bsol.trezorj.core.protobuf.TrezorMessage;
 import uk.co.bsol.trezorj.core.trezors.AbstractTrezor;
 
 import java.io.DataInputStream;
@@ -64,12 +68,37 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
         in = new DataInputStream(device.getInputStream());
 
         // Monitor the input stream.
-        monitorDataInputStream(in);
+        //monitorDataInputStream(in);
+
+        // We loopback that the device has connected ok
+        // i.e. we always connect successfully.
+        log.debug("TESTCODE : Saying that we always connect successfully") ;
+
+        for (TrezorListener listener : listeners) {
+            try {
+                listener.getTrezorEventQueue().put(TrezorEvents.newSystemEvent(TrezorEventType.DEVICE_CONNECTED));
+            } catch (InterruptedException e) {
+                log.error(e.getMessage().getClass() + " " + e.getMessage());
+            }
+        }
     }
 
     @Override
     public synchronized void internalClose() {
         Preconditions.checkNotNull(device, "Device is not connected");
+
+        // We loopback that the device has disconnected ok
+        // i.e. we always disconnect successfully.
+        log.debug("TESTCODE : Saying that we always disconnect successfully") ;
+        TrezorEvent disconnectEvent = TrezorEvents.newSystemEvent(TrezorEventType.DEVICE_DISCONNECTED);
+
+        for (TrezorListener listener : listeners) {
+            try {
+                listener.getTrezorEventQueue().put(disconnectEvent);
+            } catch (InterruptedException e) {
+                log.error(e.getMessage().getClass() + " " + e.getMessage());
+            }
+        }
 
         // Close and throw away the Trezor.
         device.close();
