@@ -2,7 +2,6 @@ package org.multibit.hardwarewallet.trezor;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.AbstractMessage;
-import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
@@ -10,7 +9,6 @@ import uk.co.bsol.trezorj.core.TrezorEvent;
 import uk.co.bsol.trezorj.core.TrezorEventType;
 import uk.co.bsol.trezorj.core.TrezorListener;
 import uk.co.bsol.trezorj.core.events.TrezorEvents;
-import uk.co.bsol.trezorj.core.protobuf.TrezorMessage;
 import uk.co.bsol.trezorj.core.trezors.AbstractTrezor;
 
 import java.io.DataInputStream;
