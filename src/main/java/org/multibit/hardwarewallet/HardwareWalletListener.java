@@ -1,4 +1,4 @@
-package org.multibit.hardwarewallets;
+package org.multibit.hardwarewallet;
 
 import uk.co.bsol.trezorj.core.Trezor;
 

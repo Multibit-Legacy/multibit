@@ -1,8 +1,7 @@
-package org.multibit.hardwarewallets.trezor;
+package org.multibit.hardwarewallet.trezor;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.AbstractMessage;
-import org.multibit.hardwarewallets.trezor.TrezorEmulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;

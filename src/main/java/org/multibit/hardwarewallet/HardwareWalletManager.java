@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.hardwarewallets;
+package org.multibit.hardwarewallet;
 
 import com.google.common.collect.Sets;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.hardwarewallets.trezor.MockTrezorFactory;
+import org.multibit.hardwarewallet.trezor.MockTrezorFactory;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,6 @@ import uk.co.bsol.trezorj.core.TrezorEvent;
 import uk.co.bsol.trezorj.core.TrezorEventType;
 import uk.co.bsol.trezorj.core.TrezorListener;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;

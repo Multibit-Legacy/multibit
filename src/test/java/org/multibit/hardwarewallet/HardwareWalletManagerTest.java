@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.hardwarewallets;
+package org.multibit.hardwarewallet;
 
-import com.google.common.collect.Queues;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,11 +22,6 @@ import org.multibit.CreateControllers;
 import org.multibit.Localiser;
 import org.multibit.controller.bitcoin.BitcoinController;
 import uk.co.bsol.trezorj.core.Trezor;
-import uk.co.bsol.trezorj.core.TrezorEvent;
-import uk.co.bsol.trezorj.core.TrezorListener;
-import uk.co.bsol.trezorj.core.trezors.AbstractTrezor;
-
-import java.util.concurrent.BlockingQueue;
 
 public class HardwareWalletManagerTest extends TestCase {
     BitcoinController controller;
