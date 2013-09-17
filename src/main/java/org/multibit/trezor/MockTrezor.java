@@ -28,7 +28,7 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
     private Integer productId;
     private String serialNumber;
 
-    /*
+    /**
      * The DataOutputStream that is writing TO the Trezor emulator.
      */
     private DataOutputStream out = null;
@@ -39,12 +39,12 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
     private DataInputStream in = null;
 
     /**
-     * The device stub that in a non-mock object would actually be the Trezor.
+     * The device that in a non-mock object would be the physical Trezor.
      */
     private TrezorEmulator device = null;
 
     /**
-     * <p>Create a new instance of a Mock Trezor device (standard)</p>
+     * <p>Create a new instance of a Mock Trezor device</p>
      *
      */
     public MockTrezor() {
@@ -55,7 +55,6 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
 
     @Override
     public synchronized void connect() {
-
         Preconditions.checkState(device == null, "Device is already connected");
 
         device = new TrezorEmulator();
@@ -82,18 +81,19 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
         Preconditions.checkNotNull(message, "Message must be present");
         Preconditions.checkNotNull(device, "Device is not connected");
 
-        // Log the message being sent to the Trezor.
-        log.debug("Sending to Trezor the message '" + message.toString() + "'");
+        // Log the message being sent to the TrezorEmulator.
+        log.debug("Sending to TrezorEmulator the message '" + message.toString() + "'");
 
-        // Apply the message to the Trezor.
+        // Apply the message to the TrezorEmulator.
         writeMessage(message, out);
 
-        // Depending on the message sent loopback a message as if coming back from the Trezor.
+        // Depending on the message sent, loopback a message as if coming back from the Trezor.
         loopBack(message);
     }
 
     /**
      * According to the message sent to the Trezor, loopback a reply.
+     * This is so that you can mock replies at the object level rather than the wire level.
      *
      * @param message
      */
@@ -126,6 +126,9 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
      * @return reply
      */
     private TrezorEvent workOutReply(AbstractMessage message) {
+        log.debug("Working out reply for message '" + message.toString() + "'");
+        //TrezorEvent replyEvent;
+
         return null;
     }
 }

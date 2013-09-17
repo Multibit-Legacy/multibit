@@ -9,14 +9,12 @@ import uk.co.bsol.trezorj.core.TrezorListener;
 import java.io.*;
 
 /**
- * This class is a emulator of a Trezor device used by the MockTrezor
- * to loop back events for demos etc.
+ * This class is an almost empty emulator of a Trezor device used by the MockTrezor.
+ * The emulation is done currently at the object level in MockTrezor.
  */
 public class TrezorEmulator implements Trezor {
 
     private static Logger log = LoggerFactory.getLogger(TrezorEmulator.class);
-
-    private static final byte[] TREZOR_SUCCESS_RESPONSE = new byte[]{33, 33, 0, 2, 0, 0, 0, 0};
 
     /**
      * The stream from the Trezor to the calling device.
@@ -61,17 +59,14 @@ public class TrezorEmulator implements Trezor {
         if (isConnected) {
             // TODO Reply with an error.
         } else {
-            try {
-                out.write(TREZOR_SUCCESS_RESPONSE);
-            } catch (IOException e) {
-                log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
-            }
+            isConnected = true;
         }
     }
 
     @Override
     public void close() {
-     }
+        isConnected = false;
+    }
 
     @Override
     public void sendMessage(AbstractMessage message) throws IOException {

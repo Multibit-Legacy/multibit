@@ -15,14 +15,18 @@
  */
 package org.multibit.trezor;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
+import uk.co.bsol.trezorj.core.TrezorListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 
 /**
@@ -39,9 +43,15 @@ public enum TrezorManager {
     private MultiBitFrame mainFrame;
 
     /**
-     * The collection of trezor devices that are currently connected.
+     * The trezor device that is currently connected (may be null).
      */
-    private Collection<Trezor> trezors;
+    private Trezor trezor;
+
+
+    /**
+     * Listeners to the known trezors.
+     */
+    protected Set<TrezorListener> listeners;
 
     private Logger log = LoggerFactory.getLogger(TrezorManager.class);
 
@@ -49,16 +59,33 @@ public enum TrezorManager {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        trezors = new ArrayList<Trezor>();
+        listeners = Sets.newLinkedHashSet();
     }
 
-    public Collection<Trezor> getTrezors() {
-        return trezors;
+    public Trezor getTrezor() {
+        return trezor;
     }
 
-    public MockTrezor createMockTrezor() {
-        MockTrezor mockTrezor = MockTrezorFactory.newMockTrezor();
-        trezors.add(mockTrezor);
-        return mockTrezor;
+    /**
+     * A utility method to create a MockTrezor device - this is a software emulation
+     * of a real Trezor.
+     *
+     * @return a Trezor (will actually be a MockTrezor)
+     */
+    public Trezor createMockTrezor() {
+        trezor = MockTrezorFactory.newMockTrezor();
+        return trezor;
+    }
+
+    public void addListener(TrezorListener trezorListener) {
+        if (trezor != null) {
+            trezor.addListener(trezorListener);
+        }
+    }
+
+    public void removeListener(TrezorListener trezorListener) {
+        if (trezor != null) {
+            trezor.removeListener(trezorListener);
+        }
     }
 }
