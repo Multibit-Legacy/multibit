@@ -1,7 +1,8 @@
-package org.multibit.trezor;
+package org.multibit.hardwarewallets.trezor;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.AbstractMessage;
+import org.multibit.hardwarewallets.trezor.TrezorEmulator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
@@ -127,7 +128,6 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
      */
     private TrezorEvent workOutReply(AbstractMessage message) {
         log.debug("Working out reply for message '" + message.toString() + "'");
-        //TrezorEvent replyEvent;
 
         return null;
     }

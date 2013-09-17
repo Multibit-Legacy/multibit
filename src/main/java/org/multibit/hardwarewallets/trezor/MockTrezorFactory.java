@@ -1,4 +1,6 @@
-package org.multibit.trezor;
+package org.multibit.hardwarewallets.trezor;
+
+import org.multibit.hardwarewallets.trezor.MockTrezor;
 
 /**
  * Class to create a Mock Trezor device.

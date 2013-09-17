@@ -1,4 +1,4 @@
-package org.multibit.trezor;
+package org.multibit.hardwarewallets.trezor;
 
 import com.google.protobuf.AbstractMessage;
 import org.slf4j.Logger;
