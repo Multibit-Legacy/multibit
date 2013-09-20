@@ -1,6 +1,7 @@
 package org.multibit.hardwarewallet.trezor;
 
 import com.google.protobuf.AbstractMessage;
+import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
@@ -69,7 +70,7 @@ public class TrezorEmulator implements Trezor {
     }
 
     @Override
-    public void sendMessage(AbstractMessage message) throws IOException {
+    public void sendMessage(Message message) throws IOException {
     }
 
     @Override

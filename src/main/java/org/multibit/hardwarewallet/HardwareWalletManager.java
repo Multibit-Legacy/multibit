@@ -59,7 +59,7 @@ public enum HardwareWalletManager implements TrezorListener {
     private BlockingQueue<TrezorEvent> queue;
 
     /**
-     * The hardware wallet that is currently connected (may contain a null Trezor).
+     * The hardware wallet that is currently connected (may contain a null Trezor implementation).
      */
     private HardwareWallet hardwareWallet;
 
@@ -155,13 +155,14 @@ public enum HardwareWalletManager implements TrezorListener {
 
         if (event.eventType().equals(TrezorEventType.DEVICE_CONNECTED)) {
             log.debug("Trezor device '" + trezor.toString() +"' has connected.");
+            hardwareWallet.setConnected(true);
             for (HardwareWalletListener loopListener : listeners) {
-                hardwareWallet.setConnected(true);
                 loopListener.hasConnected(hardwareWallet);
             }
         } else {
             log.debug("Trezor device '" + trezor.toString() +"' has disconnected.");
             if (event.eventType().equals(TrezorEventType.DEVICE_DISCONNECTED)) {
+                hardwareWallet.setConnected(false);
                 for (HardwareWalletListener loopListener : listeners) {
                     loopListener.hasDisconnected(hardwareWallet);
                 }

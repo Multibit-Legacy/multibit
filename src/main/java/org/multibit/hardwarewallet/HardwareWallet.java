@@ -26,7 +26,7 @@ public interface HardwareWallet {
     /**
      * Initialise a hardware wallet.
      * This will start a session with the device and read any initial status information e.g. serial ID
-     * Sometime later the device will become initialised and isinitialised will return true.
+     * Sometime later the device will become initialised and isInitialised will return true.
      */
     public void initialise();
 
