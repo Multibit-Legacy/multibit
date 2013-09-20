@@ -52,13 +52,13 @@ public class HardwareWalletManagerTest extends TestCase {
         Trezor mockTrezor = hardwareWallet.getImplementation();
 
         assertNotNull("No mockTrezor device was created", mockTrezor);
-
-        // Add a hardwareWalletListener to the manager.
-        //TestHardwareWalletListener hardwareWalletListener = new TestHardwareWalletListener();
         assertFalse("HardwareWallet was in wrong state at creation", hardwareWallet.isConnected());
 
-        //hardwareWalletManager.addListener(hardwareWalletListener);
-
+        // Add a hardwareWalletListener to the manager.
+        TestHardwareWalletListener hardwareWalletListener = new TestHardwareWalletListener();
+        assertFalse("hardwareWalletListener was in the wrong connected state at creation", hardwareWalletListener.connected);
+        assertFalse("hardwareWalletListener was in the wrong initialisation state at creation", hardwareWalletListener.initialised);
+        hardwareWalletManager.addListener(hardwareWalletListener);
 
         // Connect up the mockTrezor - this is the physical equivalent of plugging in a Trezor.
         mockTrezor.connect();
@@ -68,19 +68,18 @@ public class HardwareWalletManagerTest extends TestCase {
 
         // HardwareWallet should be connected.
         assertTrue("HardwareWallet did not detect a connection event", hardwareWallet.isConnected());
-
-        // Let events propagate.
-        Thread.sleep(10);
+        assertTrue("hardwareWalletListener was in the wrong connected state after connection", hardwareWalletListener.connected);
+        assertFalse("hardwareWalletListener was in the wrong initialisation after connection", hardwareWalletListener.initialised);
 
         // TODO Initialise the HardwareWallet
         //hardwareWallet.initialise();
 
         // After some period of time the wallet should be initialised.
-        // Give it 4 seconds (should really listen for hasInialised event on HardwareWalletListener
+        // Give it 4 seconds (should really listen for hasInitalised event on HardwareWalletListener
         //Thread.sleep(4000);
 
         // HardwareWallet should be initialised.
-        //assertTrue("HardwareWallet did not initialise", hardwareWallet.isInitialised());
+        // assertTrue("HardwareWallet did not initialise", hardwareWallet.isInitialised());
 
 
         // Close the Trezor.
@@ -92,9 +91,10 @@ public class HardwareWalletManagerTest extends TestCase {
 
         // HardwareWallet should be disconnected
         assertFalse("HardwareWallet did not detect a disconnection event", hardwareWallet.isConnected());
+        assertFalse("hardwareWalletListener was in the wrong connected state after disconnection", hardwareWalletListener.connected);
 
         // Remove the hardwareWalletListener.
-        //hardwareWalletManager.removeListener(hardwareWalletListener);
+        hardwareWalletManager.removeListener(hardwareWalletListener);
 
         // Destroy the trezor device
         hardwareWalletManager.destroyMockTrezor();
@@ -102,26 +102,27 @@ public class HardwareWalletManagerTest extends TestCase {
 
     }
 
-//    class TestHardwareWalletListener implements HardwareWalletListener {
-//        private Logger log = LoggerFactory.getLogger(TestHardwareWalletListener.class);
-//
-//        HardwareWallet hardwareWallet;
-//
-//        @Override
-//        public void hasConnected(HardwareWallet hardwareWallet) {
-//            hardwareWallet.setConnected(true);
-//            log.debug("Trezor " + hardwareWallet.getImplementation().toString() + " has connected.");
-//        }
-//
-//        @Override
-//        public void hasDisconnected(HardwareWallet hardwareWallet) {
-//            hardwareWallet.setConnected(false);
-//            log.debug("Trezor " + hardwareWallet.getImplementation().toString() + " has disconnected.");
-//        }
-//
-//        @Override
-//        public void hasInitialised(HardwareWallet hardwareWallet) {
-//           hardwareWallet.setInitialised(true);
-//        }
-//    }
+    class TestHardwareWalletListener implements HardwareWalletListener {
+        private Logger log = LoggerFactory.getLogger(TestHardwareWalletListener.class);
+
+        public boolean connected = false;
+        public boolean initialised = false;
+
+        @Override
+        public void hasConnected(HardwareWallet hardwareWallet) {
+            connected = true;
+            log.debug("Trezor " + hardwareWallet.getImplementation().toString() + " has connected.");
+        }
+
+        @Override
+        public void hasDisconnected(HardwareWallet hardwareWallet) {
+            connected = false;
+            log.debug("Trezor " + hardwareWallet.getImplementation().toString() + " has disconnected.");
+        }
+
+        @Override
+        public void hasInitialised(HardwareWallet hardwareWallet) {
+           initialised = true;
+        }
+    }
 }
