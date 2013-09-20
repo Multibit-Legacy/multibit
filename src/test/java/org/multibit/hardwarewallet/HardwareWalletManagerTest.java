@@ -93,13 +93,13 @@ public class HardwareWalletManagerTest extends TestCase {
         private boolean connected = false;
 
         @Override
-        public void hardwareWalletHasConnected(Trezor trezor) {
+        public void hasConnected(Trezor trezor) {
             log.debug("Trezor " + trezor.toString() + " has connected.");
             connected = true;
         }
 
         @Override
-        public void hardwareWalletHasDisconnected(Trezor trezor) {
+        public void hasDisconnected(Trezor trezor) {
             log.debug("Trezor " + trezor.toString() + " has disconnected.");
             connected = false;
         }

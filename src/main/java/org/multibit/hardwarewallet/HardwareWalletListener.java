@@ -4,20 +4,23 @@ import uk.co.bsol.trezorj.core.Trezor;
 
 /**
  * Listener interface to listen to events from a hardware wallet.
- * (In the future a more generic class than Trezor will be used for the hardware wallet instance).
  */
 public interface HardwareWalletListener {
 
     /**
      * A hardware wallet has connected to the host machine.
-     * @returns Trezor the hardware wallet that has connected.
+     * @returns hardwareWallet the hardware wallet that has connected.
      */
-    public void hardwareWalletHasConnected(Trezor trezor);
+    public void hasConnected(HardwareWallet hardwareWallet);
 
     /**
      * A hardware wallet has disconnected from the host machine.
-     * @returns Trezor the hardware wallet that has disconnected.
+     * @returns hardwareWallet the hardware wallet that has disconnected.
      */
-    public void hardwareWalletHasDisconnected(Trezor trezor);
+    public void hasDisconnected(HardwareWallet hardwareWallet);
 
+    /**
+     * The hardware wallet is now initialised and available for use
+     */
+    public void hasInitialised(HardwareWallet hardwareWallet);
 }

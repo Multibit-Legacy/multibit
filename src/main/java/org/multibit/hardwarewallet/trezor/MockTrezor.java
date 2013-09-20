@@ -2,6 +2,7 @@ package org.multibit.hardwarewallet.trezor;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.AbstractMessage;
+import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
@@ -104,7 +105,7 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
     }
 
     @Override
-    public void sendMessage(AbstractMessage message) throws IOException {
+    public void sendMessage(Message message) throws IOException {
         Preconditions.checkNotNull(message, "Message must be present");
         Preconditions.checkNotNull(device, "Device is not connected");
 
@@ -124,7 +125,7 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
      *
      * @param message
      */
-    private void loopBack(AbstractMessage message) {
+    private void loopBack(Message message) {
 
         try {
             Thread.sleep(100);
@@ -152,7 +153,7 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
      * @param message
      * @return reply
      */
-    private TrezorEvent workOutReply(AbstractMessage message) {
+    private TrezorEvent workOutReply(Message message) {
         log.debug("Working out reply for message '" + message.toString() + "'");
 
         return null;

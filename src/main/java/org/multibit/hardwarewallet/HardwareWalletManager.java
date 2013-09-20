@@ -59,9 +59,9 @@ public enum HardwareWalletManager implements TrezorListener {
     private BlockingQueue<TrezorEvent> queue;
 
     /**
-     * The trezor device that is currently connected (may be null).
+     * The hardware wallet that is currently connected (may contain a null Trezor).
      */
-    private Trezor trezor;
+    private HardwareWallet hardwareWallet;
 
     /**
      * Executor service for monitoring incoming trezor events.
@@ -73,6 +73,12 @@ public enum HardwareWalletManager implements TrezorListener {
      */
     private Set<HardwareWalletListener> listeners;
 
+    /**
+     * Initialise the HardwareWalletManager enum singleton.
+     *
+     * @param controller
+     * @param mainFrame
+     */
     public void initialise(BitcoinController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
@@ -100,13 +106,15 @@ public enum HardwareWalletManager implements TrezorListener {
      * A utility method to create a MockTrezor device - this is a software emulation
      * of a real Trezor. Also starts listening to events.
      *
-     * @return a Trezor (will actually be a MockTrezor)
+     * @return a HardwareWallet (This will contain an uninitialised MockTrezor)
      */
-    public Trezor createMockTrezor() {
-        trezor = MockTrezorFactory.newMockTrezor();
+    public HardwareWallet createMockTrezor() {
+        Trezor trezor = MockTrezorFactory.newMockTrezor();
 
         // Add this as the listener (sets the event queue)
         trezor.addListener(this);
+
+        hardwareWallet = new DefaultHardwareWallet(trezor);
 
         // Executor for trezor events.
         executorService = Executors.newSingleThreadExecutor();
@@ -131,7 +139,7 @@ public enum HardwareWalletManager implements TrezorListener {
                 }
             }
         });
-        return trezor;
+        return hardwareWallet;
     }
 
     /**
@@ -143,16 +151,19 @@ public enum HardwareWalletManager implements TrezorListener {
             return;
         }
 
+        Trezor trezor =  hardwareWallet.getImplementation();
+
         if (event.eventType().equals(TrezorEventType.DEVICE_CONNECTED)) {
             log.debug("Trezor device '" + trezor.toString() +"' has connected.");
             for (HardwareWalletListener loopListener : listeners) {
-                loopListener.hardwareWalletHasConnected(trezor);
+                hardwareWallet.setConnected(true);
+                loopListener.hasConnected(hardwareWallet);
             }
         } else {
             log.debug("Trezor device '" + trezor.toString() +"' has disconnected.");
             if (event.eventType().equals(TrezorEventType.DEVICE_DISCONNECTED)) {
                 for (HardwareWalletListener loopListener : listeners) {
-                    loopListener.hardwareWalletHasDisconnected(trezor);
+                    loopListener.hasDisconnected(hardwareWallet);
                 }
             } else {
                 log.debug("Trezor device '" + trezor.toString() +"' has emitted an event '" + event.toString() + "'");
@@ -161,16 +172,19 @@ public enum HardwareWalletManager implements TrezorListener {
     }
 
     /**
-     * A utility method to destroy a MockTrezor device.
+     * A utility method to destroy the MockTrezor device.
      */
     public void destroyMockTrezor() {
         executorService.shutdown();
-        trezor.removeListener(this);
-        trezor = null;
+        hardwareWallet.getImplementation().removeListener(this);
+
+        hardwareWallet.setInitialised(false);
+        hardwareWallet.setConnected(false);
+        hardwareWallet = null;
     }
 
-    public Trezor getTrezor() {
-        return trezor;
+    public HardwareWallet getHardwareWallet() {
+        return hardwareWallet;
     }
 
     // TrezorListener methods.
