@@ -42,7 +42,7 @@ public class HardwareWalletManagerTest extends TestCase {
         HardwareWalletManager hardwareWalletManager = HardwareWalletManager.INSTANCE;
         assertNotNull(hardwareWalletManager);
 
-        hardwareWalletManager.initialise(controller, null);
+        hardwareWalletManager.initialise(controller);
 
         // At construction there is no hardware wallet present.
         assertNull("HardwareWallet should be null at construction",  hardwareWalletManager.getHardwareWallet());

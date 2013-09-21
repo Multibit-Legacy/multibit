@@ -25,6 +25,8 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
+import org.multibit.hardwarewallet.HardwareWalletListener;
+import org.multibit.hardwarewallet.HardwareWalletManager;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
@@ -238,6 +240,10 @@ public final class MultiBit {
 
             log.debug("Registering with controller");
             coreController.registerViewSystem(swingViewSystem);
+
+            // Hook up UI to HardwareWalletManager so that it can hear HardWareWalletListener events.
+            HardwareWalletManager.INSTANCE.initialise(bitcoinController);
+            HardwareWalletManager.INSTANCE.addListener((HardwareWalletListener)swingViewSystem);
 
             String userDataString = localiser.getString("multibit.userDataDirectory", new String[] {applicationDataDirectoryLocator.getApplicationDataDirectory()});
             log.debug(userDataString);

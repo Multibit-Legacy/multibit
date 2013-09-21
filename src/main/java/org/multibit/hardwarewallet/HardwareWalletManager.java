@@ -18,7 +18,6 @@ package org.multibit.hardwarewallet;
 import com.google.common.collect.Sets;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.hardwarewallet.trezor.MockTrezorFactory;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
@@ -26,6 +25,8 @@ import uk.co.bsol.trezorj.core.TrezorEvent;
 import uk.co.bsol.trezorj.core.TrezorEventType;
 import uk.co.bsol.trezorj.core.TrezorListener;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -51,7 +52,6 @@ public enum HardwareWalletManager implements TrezorListener {
     private Logger log = LoggerFactory.getLogger(HardwareWalletManager.class);
 
     private BitcoinController controller;
-    private MultiBitFrame mainFrame;
 
     /**
      * The trezor event queue.
@@ -77,11 +77,9 @@ public enum HardwareWalletManager implements TrezorListener {
      * Initialise the HardwareWalletManager enum singleton.
      *
      * @param controller
-     * @param mainFrame
      */
-    public void initialise(BitcoinController controller, MultiBitFrame mainFrame) {
+    public void initialise(BitcoinController controller) {
         this.controller = controller;
-        this.mainFrame = mainFrame;
 
         listeners = Sets.newLinkedHashSet();
     }
@@ -156,15 +154,37 @@ public enum HardwareWalletManager implements TrezorListener {
         if (event.eventType().equals(TrezorEventType.DEVICE_CONNECTED)) {
             log.debug("Trezor device '" + trezor.toString() +"' has connected.");
             hardwareWallet.setConnected(true);
-            for (HardwareWalletListener loopListener : listeners) {
-                loopListener.hasConnected(hardwareWallet);
+            if (EventQueue.isDispatchThread()) {
+                for (HardwareWalletListener loopListener : listeners) {
+                    loopListener.hasConnected(hardwareWallet);
+                }
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (HardwareWalletListener loopListener : listeners) {
+                            loopListener.hasConnected(hardwareWallet);
+                        }
+                    }
+                });
             }
         } else {
             log.debug("Trezor device '" + trezor.toString() +"' has disconnected.");
             if (event.eventType().equals(TrezorEventType.DEVICE_DISCONNECTED)) {
                 hardwareWallet.setConnected(false);
-                for (HardwareWalletListener loopListener : listeners) {
-                    loopListener.hasDisconnected(hardwareWallet);
+                if (EventQueue.isDispatchThread()) {
+                    for (HardwareWalletListener loopListener : listeners) {
+                        loopListener.hasDisconnected(hardwareWallet);
+                    }
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (HardwareWalletListener loopListener : listeners) {
+                                loopListener.hasDisconnected(hardwareWallet);
+                            }
+                        }
+                    });
                 }
             } else {
                 log.debug("Trezor device '" + trezor.toString() +"' has emitted an event '" + event.toString() + "'");

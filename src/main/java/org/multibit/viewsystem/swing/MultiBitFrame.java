@@ -58,6 +58,8 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
+import org.multibit.hardwarewallet.HardwareWallet;
+import org.multibit.hardwarewallet.HardwareWalletListener;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
@@ -106,7 +108,7 @@ import com.google.bitcoin.core.Wallet;
 /*
  * JFrame displaying Swing version of MultiBit
  */
-public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener, WalletBusyListener, CurrencyConverterListener {
+public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener, WalletBusyListener, CurrencyConverterListener, HardwareWalletListener {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
@@ -1801,5 +1803,25 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onKeysAdded(Wallet wallet, List<ECKey> keys) {
+    }
+
+    //
+    // HardwareWalletListener methods
+    @Override
+    public void hasConnected(HardwareWallet hardwareWallet) {
+        Toolkit.getDefaultToolkit().beep();
+        MessageManager.INSTANCE.addMessage(new Message("A trezor device has connected."));
+    }
+
+    @Override
+    public void hasDisconnected(HardwareWallet hardwareWallet) {
+        Toolkit.getDefaultToolkit().beep();
+        MessageManager.INSTANCE.addMessage(new Message("A trezor device has disconnected."));
+    }
+
+    @Override
+    public void hasInitialised(HardwareWallet hardwareWallet) {
+        Toolkit.getDefaultToolkit().beep();
+        MessageManager.INSTANCE.addMessage(new Message("A trezor device has initialised."));
     }
 }

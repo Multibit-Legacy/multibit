@@ -36,6 +36,8 @@ package org.multibit.viewsystem.swing;
 import com.google.bitcoin.core.Block;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.hardwarewallet.HardwareWallet;
+import org.multibit.hardwarewallet.HardwareWalletManager;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
 import org.multibit.model.core.StatusEnum;
@@ -46,6 +48,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.co.bsol.trezorj.core.Trezor;
+import uk.co.bsol.trezorj.core.TrezorEvent;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -53,11 +57,16 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.UIResource;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Timer;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * StatusBar. <BR>
@@ -213,13 +222,71 @@ public class StatusBar extends JPanel implements MessageListener {
         filler.setOpaque(true);
         filler.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
+        JButton trezorTestButton = new JButton("T");
+        trezorTestButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        runTrezorTest();
+                    }
+                });
+            }
+        }
+        );
+
         addZone("online", onlineLabel, "" + onlineWidth, "left");
         addZone("progressBar", syncProgressBar, "" + 200, "left");
         addZone("network", statusLabel, "*", "");
+        addZone("trezorTest", trezorTestButton, "20", "");
         addZone("filler2", filler, "0", "right");
 
         statusClearTimer = new java.util.Timer();
         statusClearTimer.schedule(new StatusClearTask(statusLabel), TIMER_REPEAT_TIME, TIMER_REPEAT_TIME);
+    }
+
+    /**
+     * Test code that simulates a trezor connection and disconnection.
+     */
+    private void runTrezorTest() {
+        try {
+            HardwareWalletManager hardwareWalletManager = HardwareWalletManager.INSTANCE;
+
+            // Create a HardwareWallet object. This also wires up the HardwareWalletManager to listen for trezor events.
+            HardwareWallet hardwareWallet = hardwareWalletManager.createMockTrezor();
+            Trezor mockTrezor = hardwareWallet.getImplementation();
+
+            // Connect up the mockTrezor - this is the physical equivalent of plugging in a Trezor.
+            mockTrezor.connect();
+
+            Thread.sleep(2000);
+
+            // TODO Initialise the HardwareWallet
+            //hardwareWallet.initialise();
+
+            // After some period of time the wallet should be initialised.
+            // Give it 4 seconds (should really listen for hasInitalised event on HardwareWalletListener
+            //Thread.sleep(4000);
+
+            // HardwareWallet should be initialised.
+            // assertTrue("HardwareWallet did not initialise", hardwareWallet.isInitialised());
+
+
+            // Close the Trezor.
+            // This is the physical equivalent of removing a Trezor device.
+            mockTrezor.close();
+
+            Thread.sleep(2000);
+
+
+            // Destroy the trezor device
+            hardwareWalletManager.destroyMockTrezor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
