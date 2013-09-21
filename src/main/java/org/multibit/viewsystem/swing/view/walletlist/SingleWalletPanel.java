@@ -268,7 +268,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         walletTypeButton.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, WALLET_TYPE_LEFT_BORDER));
         if (perWalletModelData.getWallet() != null) {
-            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), perWalletModelData.getHardwareWallet(), walletTypeButton);
+            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), perWalletModelData.getWalletFilename(), perWalletModelData.getHardwareWallet(), walletTypeButton);
         }
 
         constraints.fill = GridBagConstraints.NONE;
@@ -419,7 +419,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         }
     }
 
-    private void setIconForWalletType(EncryptionType walletType, HardwareWallet hardwareWallet, JButton button) {
+    private void setIconForWalletType(EncryptionType walletType, String walletFilename, HardwareWallet hardwareWallet, JButton button) {
         button.setHorizontalAlignment(SwingConstants.CENTER);
         button.setContentAreaFilled(false);
         
@@ -437,7 +437,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             button.setBorderPainted(false);
         }
 
-        if (hardwareWallet != null) {
+        // TODO Whether the wallet is Trezor is not persisted hence this bodgy code.
+        if (hardwareWallet != null || walletFilename.contains("trezor-")) {
             // Trezor wallet.
             Action helpAction = new HelpContextAction(controller, ImageLoader.TREZOR_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
@@ -645,7 +646,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         } 
 
         if (perWalletModelData.getWallet() != null) {
-            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), perWalletModelData.getHardwareWallet(), walletTypeButton);
+            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), perWalletModelData.getWalletFilename(), perWalletModelData.getHardwareWallet(), walletTypeButton);
     
             if (walletFormatButton != null) {
                 MultiBitWalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
