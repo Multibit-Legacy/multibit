@@ -47,6 +47,7 @@ import org.joda.money.Money;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
+import org.multibit.hardwarewallet.HardwareWallet;
 import org.multibit.message.Message;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
@@ -122,6 +123,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     
     private String unencryptedTooltip = "";
     private String encryptedTooltip = "";
+    private String trezorTooltip = "Trezor wallet"; // TODO
     
     private JButton walletTypeButton;
     
@@ -266,7 +268,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         walletTypeButton.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, WALLET_TYPE_LEFT_BORDER));
         if (perWalletModelData.getWallet() != null) {
-            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
+            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), perWalletModelData.getHardwareWallet(), walletTypeButton);
         }
 
         constraints.fill = GridBagConstraints.NONE;
@@ -417,7 +419,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         }
     }
 
-    private void setIconForWalletType(EncryptionType walletType, JButton button) {
+    private void setIconForWalletType(EncryptionType walletType, HardwareWallet hardwareWallet, JButton button) {
         button.setHorizontalAlignment(SwingConstants.CENTER);
         button.setContentAreaFilled(false);
         
@@ -434,22 +436,32 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             button.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
             button.setBorderPainted(false);
         }
-        
-        if (walletType == EncryptionType.ENCRYPTED_SCRYPT_AES) {
-            Action helpAction = new HelpContextAction(controller, ImageLoader.LOCK_ICON_FILE,
+
+        if (hardwareWallet != null) {
+            // Trezor wallet.
+            Action helpAction = new HelpContextAction(controller, ImageLoader.TREZOR_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
                     HelpContentsPanel.HELP_WALLET_TYPES_URL);
             button.setAction(helpAction);
             button.setText("");
-            button.setToolTipText(encryptedTooltip);
-         } else {
-             Action helpAction = new HelpContextAction(controller, ImageLoader.SINGLE_WALLET_ICON_FILE,
-                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                     HelpContentsPanel.HELP_WALLET_TYPES_URL);
-             button.setAction(helpAction);
-             button.setText("");
-             button.setToolTipText(unencryptedTooltip);
-         }
+            button.setToolTipText(trezorTooltip);
+        } else {
+            if (walletType == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+                Action helpAction = new HelpContextAction(controller, ImageLoader.LOCK_ICON_FILE,
+                        "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                        HelpContentsPanel.HELP_WALLET_TYPES_URL);
+                button.setAction(helpAction);
+                button.setText("");
+                button.setToolTipText(encryptedTooltip);
+            } else {
+                Action helpAction = new HelpContextAction(controller, ImageLoader.SINGLE_WALLET_ICON_FILE,
+                        "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                        HelpContentsPanel.HELP_WALLET_TYPES_URL);
+                button.setAction(helpAction);
+                button.setText("");
+                button.setToolTipText(unencryptedTooltip);
+            }
+        }
     }
     
     public static int calculateNormalWidth(JComponent component) {
@@ -633,7 +645,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         } 
 
         if (perWalletModelData.getWallet() != null) {
-            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
+            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), perWalletModelData.getHardwareWallet(), walletTypeButton);
     
             if (walletFormatButton != null) {
                 MultiBitWalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();

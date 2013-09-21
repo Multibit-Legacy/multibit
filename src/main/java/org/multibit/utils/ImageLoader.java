@@ -72,6 +72,7 @@ public final class ImageLoader {
     public static final String SIDE_PANEL_HIDE_RTL_ICON_FILE = "/images/sidePanelHideRTL.png";
     public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
+    public static final String TREZOR_ICON_FILE = "/images/trezor16.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
     public static final String TRANSACTIONS_EXPORT_ICON_FILE = "/images/transactionsExport.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";

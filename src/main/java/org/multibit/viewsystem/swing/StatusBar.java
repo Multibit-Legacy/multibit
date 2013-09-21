@@ -326,7 +326,8 @@ public class StatusBar extends JPanel implements MessageListener {
                                     WalletData perWalletModelData = iterator.next();
                                     if (perWalletModelData != null && perWalletModelData.getWalletFilename() != null) {
                                         if (perWalletModelData.getWalletFilename().equals(walletFilename)) {
-                                            this.bitcoinController.getModel().setActiveWalletByFilename(walletFilename);
+                                            bitcoinController.getModel().setActiveWalletByFilename(walletFilename);
+                                            bitcoinController.getModel().getActivePerWalletModelData().setHardwareWallet(hardwareWallet);
                                             controller.fireDataChangedUpdateNow();
                                             walletIsAlreadyOpen = true;
                                             break;
@@ -338,12 +339,15 @@ public class StatusBar extends JPanel implements MessageListener {
                     }
 
                     if (!walletIsAlreadyOpen)  {
-                        openWalletInBackground(walletFilename);
+                        Message openMessage = new Message(bitcoinController.getLocaliser().getString("multiBit.openingWallet", new Object[]{walletFilename}));
+                        openMessage.setShowInStatusBar(false);
+                        MessageManager.INSTANCE.addMessage(openMessage);
+                        openWalletInBackground(walletFilename, hardwareWallet);
                     }
                 } else {
                     // Create a new wallet.
                     // TODO this should be an HD watch only wallet initialised with the trezor MPK.
-                    createNewWallet(walletFilename, walletDescription);
+                    createNewWallet(walletFilename, walletDescription, hardwareWallet);
                 }
             }
 
@@ -356,7 +360,6 @@ public class StatusBar extends JPanel implements MessageListener {
      * Test code that simulates a trezor disconnection.
      */
     private void disconnectTrezorTest() {
-        try {
             HardwareWalletManager hardwareWalletManager = HardwareWalletManager.INSTANCE;
 
             HardwareWallet hardwareWallet = hardwareWalletManager.getHardwareWallet();
@@ -366,21 +369,18 @@ public class StatusBar extends JPanel implements MessageListener {
                 // This is the physical equivalent of removing a Trezor device.
                 hardwareWallet.getImplementation().close();
 
-                Thread.sleep(2000);
+                //Thread.sleep(2000);
 
                 // Destroy the trezor device
-                hardwareWalletManager.destroyMockTrezor();
+                //hardwareWalletManager.destroyMockTrezor();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
      * Open a wallet in a background Swing worker thread.
      * @param selectedWalletFilename Filename of wallet to open
      */
-    private void openWalletInBackground(String selectedWalletFilename) {
+    private void openWalletInBackground(String selectedWalletFilename, final HardwareWallet hardwareWallet) {
         final String selectedWalletFilenameFinal = selectedWalletFilename;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
@@ -392,6 +392,7 @@ public class StatusBar extends JPanel implements MessageListener {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "'.");
                     WalletData perWalletModelData = bitcoinController.addWalletFromFilename(selectedWalletFilenameFinal);
+                    perWalletModelData.setHardwareWallet(hardwareWallet);
 
                     log.debug("Setting active wallet for file '" + selectedWalletFilenameFinal + "'.");
                     bitcoinController.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
@@ -562,7 +563,7 @@ public class StatusBar extends JPanel implements MessageListener {
         worker.execute();
     }
 
-    public void createNewWallet(String newWalletFilename, String walletDescription) {
+    public void createNewWallet(String newWalletFilename, String walletDescription, HardwareWallet hardwareWallet) {
         String message;
         if (new File(newWalletFilename).isDirectory()) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletFileIsADirectory",
@@ -587,6 +588,7 @@ public class StatusBar extends JPanel implements MessageListener {
             perWalletModelData.setWallet(newWallet);
             perWalletModelData.setWalletFilename(newWalletFilename);
             perWalletModelData.setWalletDescription(walletDescription);
+            perWalletModelData.setHardwareWallet(hardwareWallet);
             this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
             // Start using the new file as the wallet.

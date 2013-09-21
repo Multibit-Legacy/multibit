@@ -18,6 +18,7 @@ package org.multibit.model.bitcoin;
 import java.util.List;
 import java.util.UUID;
 
+import org.multibit.hardwarewallet.HardwareWallet;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
 
 import com.google.bitcoin.core.Wallet;
@@ -86,7 +87,10 @@ public class WalletData {
      */
     private transient SingleWalletPanelDownloadListener singleWalletDownloadListener;
 
-    
+
+    private transient HardwareWallet hardwareWallet;
+
+
     public WalletData() {
         isDirty = false;
     }
@@ -223,5 +227,16 @@ public class WalletData {
 
     public void setReplayTaskUUID(UUID replayTaskUUID) {
         this.replayTaskUUID = replayTaskUUID;
+    }
+
+    /**
+     * The HardWare wallet associated with this wallet (may be null)
+     */
+    public HardwareWallet getHardwareWallet() {
+        return hardwareWallet;
+    }
+
+    public void setHardwareWallet(HardwareWallet hardwareWallet) {
+        this.hardwareWallet = hardwareWallet;
     }
 }
