@@ -42,6 +42,18 @@ public interface HardwareWallet {
     public boolean isInitialised();
 
     /**
+     * Set the serial id.
+     * This should only be used by the device layer.
+     */
+    public void setSerialId(String serialId);
+
+    /**
+     * Get the serial id of the device.
+     * This is only available after initialisation - it will be null before then.
+     */
+    public String getSerialId();
+
+    /**
      * Get the actual hardware wallet implementation.
      * TODO In future use a more generic implementation or perhaps Object
      */

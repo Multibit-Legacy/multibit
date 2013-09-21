@@ -33,23 +33,37 @@ package org.multibit.viewsystem.swing;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.*;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.file.BackupManager;
+import org.multibit.file.FileHandler;
+import org.multibit.file.WalletLoadException;
+import org.multibit.file.WalletSaveException;
 import org.multibit.hardwarewallet.HardwareWallet;
 import org.multibit.hardwarewallet.HardwareWalletManager;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
+import org.multibit.message.MessageManager;
+import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.model.core.StatusEnum;
+import org.multibit.network.MultiBitCheckpointManager;
+import org.multibit.network.ReplayManager;
+import org.multibit.network.ReplayTask;
+import org.multibit.store.MultiBitWalletVersion;
+import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
+import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
-import uk.co.bsol.trezorj.core.TrezorEvent;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -61,10 +75,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.Timer;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -222,8 +238,8 @@ public class StatusBar extends JPanel implements MessageListener {
         filler.setOpaque(true);
         filler.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
-        JButton trezorTestButton = new JButton("T");
-        trezorTestButton.addActionListener(new ActionListener() {
+        JButton connectTrezorTestButton = new JButton("1");
+        connectTrezorTestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -231,7 +247,22 @@ public class StatusBar extends JPanel implements MessageListener {
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
-                        runTrezorTest();
+                        connectTrezorTest();
+                    }
+                });
+            }
+        }
+        );
+        JButton disconnectTrezorTestButton = new JButton("0");
+        disconnectTrezorTestButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        disconnectTrezorTest();
                     }
                 });
             }
@@ -241,7 +272,8 @@ public class StatusBar extends JPanel implements MessageListener {
         addZone("online", onlineLabel, "" + onlineWidth, "left");
         addZone("progressBar", syncProgressBar, "" + 200, "left");
         addZone("network", statusLabel, "*", "");
-        addZone("trezorTest", trezorTestButton, "20", "");
+        addZone("connectTrezorTest", connectTrezorTestButton, "20", "");
+        addZone("disconnectTrezorTest", disconnectTrezorTestButton, "20", "");
         addZone("filler2", filler, "0", "right");
 
         statusClearTimer = new java.util.Timer();
@@ -249,9 +281,9 @@ public class StatusBar extends JPanel implements MessageListener {
     }
 
     /**
-     * Test code that simulates a trezor connection and disconnection.
+     * Test code that simulates a trezor connection and initialisation.
      */
-    private void runTrezorTest() {
+    private void connectTrezorTest() {
         try {
             HardwareWalletManager hardwareWalletManager = HardwareWalletManager.INSTANCE;
 
@@ -264,28 +296,347 @@ public class StatusBar extends JPanel implements MessageListener {
 
             Thread.sleep(2000);
 
-            // TODO Initialise the HardwareWallet
-            //hardwareWallet.initialise();
+            // Initialise the device.
+            MessageManager.INSTANCE.addMessage(new Message("Initialising trezor device ..."));
+            hardwareWallet.initialise();
 
             // After some period of time the wallet should be initialised.
-            // Give it 4 seconds (should really listen for hasInitalised event on HardwareWalletListener
-            //Thread.sleep(4000);
-
-            // HardwareWallet should be initialised.
-            // assertTrue("HardwareWallet did not initialise", hardwareWallet.isInitialised());
-
-
-            // Close the Trezor.
-            // This is the physical equivalent of removing a Trezor device.
-            mockTrezor.close();
-
+            // Give it 2 seconds (should really listen for hasInitalised event on HardwareWalletListener
             Thread.sleep(2000);
+            MessageManager.INSTANCE.addMessage(new Message("Trezor device initialised successfully. Serial id = " + hardwareWallet.getSerialId()));
 
+            if (hardwareWallet.getSerialId() != null) {
+                // Work out the name of the trezor wallet from the serial id
+                // TODO probably needs to also use the MPK and then hash it for privacy.
+                // Wallet filename is <user data directory>/"trezor-" + serialId + ".wallet"
+                // TODO think about name collisions
+                String walletFilename = bitcoinController.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator +
+                        "trezor-" + hardwareWallet.getSerialId() + ".wallet";
+                String walletDescription = "trezor-" + hardwareWallet.getSerialId();
+                File walletFile = new File(walletFilename);
+                if (walletFile.exists()) {
+                    // If the wallet already exists, open it.
+                    boolean walletIsAlreadyOpen = false;
+                    if (controller != null && controller.getModel() != null) {
+                        List<WalletData> perWalletDataModels = this.bitcoinController.getModel().getPerWalletModelDataList();
+                        if (perWalletDataModels != null) {
+                            Iterator<WalletData> iterator = perWalletDataModels.iterator();
+                            if (iterator != null) {
+                                while(iterator.hasNext()) {
+                                    WalletData perWalletModelData = iterator.next();
+                                    if (perWalletModelData != null && perWalletModelData.getWalletFilename() != null) {
+                                        if (perWalletModelData.getWalletFilename().equals(walletFilename)) {
+                                            this.bitcoinController.getModel().setActiveWalletByFilename(walletFilename);
+                                            controller.fireDataChangedUpdateNow();
+                                            walletIsAlreadyOpen = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
-            // Destroy the trezor device
-            hardwareWalletManager.destroyMockTrezor();
+                    if (!walletIsAlreadyOpen)  {
+                        openWalletInBackground(walletFilename);
+                    }
+                } else {
+                    // Create a new wallet.
+                    // TODO this should be an HD watch only wallet initialised with the trezor MPK.
+                    createNewWallet(walletFilename, walletDescription);
+                }
+            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test code that simulates a trezor disconnection.
+     */
+    private void disconnectTrezorTest() {
+        try {
+            HardwareWalletManager hardwareWalletManager = HardwareWalletManager.INSTANCE;
+
+            HardwareWallet hardwareWallet = hardwareWalletManager.getHardwareWallet();
+
+            if (hardwareWallet != null && hardwareWallet.getImplementation() != null) {
+                // Close the Trezor.
+                // This is the physical equivalent of removing a Trezor device.
+                hardwareWallet.getImplementation().close();
+
+                Thread.sleep(2000);
+
+                // Destroy the trezor device
+                hardwareWalletManager.destroyMockTrezor();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Open a wallet in a background Swing worker thread.
+     * @param selectedWalletFilename Filename of wallet to open
+     */
+    private void openWalletInBackground(String selectedWalletFilename) {
+        final String selectedWalletFilenameFinal = selectedWalletFilename;
+
+        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+
+            private String message = null;
+
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    log.debug("Opening wallet '" + selectedWalletFilenameFinal + "'.");
+                    WalletData perWalletModelData = bitcoinController.addWalletFromFilename(selectedWalletFilenameFinal);
+
+                    log.debug("Setting active wallet for file '" + selectedWalletFilenameFinal + "'.");
+                    bitcoinController.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
+
+                    // Save the user properties to disk.
+                    log.debug("Writing user preferences. . .");
+                    FileHandler.writeUserPreferences(bitcoinController);
+                    log.debug("User preferences with new wallet written successfully");
+
+                    // Backup the wallet and wallet info.
+                    BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
+
+                    message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal});
+
+                    return Boolean.TRUE;
+                } catch (WalletLoadException e) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
+                    return Boolean.FALSE;
+                } catch (WalletVersionException e) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
+                    return Boolean.FALSE;
+                } catch (IOException e) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
+                    return Boolean.FALSE;
+                }  catch (WalletSaveException e) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
+                    return Boolean.FALSE;
+                } catch (Exception e) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
+                    return Boolean.FALSE;
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    Boolean wasSuccessful = get();
+                    if (wasSuccessful) {
+                        log.debug(message);
+                        Message messageMessage = new Message(message);
+                        messageMessage.setShowInStatusBar(false);
+                        MessageManager.INSTANCE.addMessage(messageMessage);
+
+                        // Work out the late date/ block the wallet saw to see if it needs syncing.
+                        WalletData perWalletModelData = bitcoinController.getModel().getActivePerWalletModelData();
+                        Wallet wallet = perWalletModelData.getWallet();
+                        int lastBlockSeenHeight = wallet.getLastBlockSeenHeight();
+                        log.debug("For wallet '" + perWalletModelData.getWalletFilename() + " the lastBlockSeenHeight was " + lastBlockSeenHeight);
+
+                        // If there was no lastBlockSeenHeight, find the latest confirmed transaction height.
+                        if (lastBlockSeenHeight <= 0) {
+                            Set<Transaction> transactions = perWalletModelData.getWallet().getTransactions(true);
+                            if (transactions != null) {
+                                for (Transaction transaction : transactions) {
+                                    TransactionConfidence confidence = transaction.getConfidence();
+                                    if (confidence != null) {
+                                        if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidence.getConfidenceType())) {
+                                            lastBlockSeenHeight = Math.max(lastBlockSeenHeight, confidence.getAppearedAtChainHeight());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        log.debug("For wallet '" + perWalletModelData.getWalletFilename() + ", after transactions, the lastBlockSeenHeight was " + lastBlockSeenHeight);
+
+                        int currentChainHeight = -1;
+                        if (bitcoinController.getMultiBitService().getChain() != null) {
+                            if (bitcoinController.getMultiBitService().getChain().getChainHead() != null) {
+                                currentChainHeight = bitcoinController.getMultiBitService().getChain().getChainHead().getHeight();
+                            }
+                        }
+                        log.debug("The current chain height is " + currentChainHeight);
+
+                        boolean needToSync = false;
+                        long requiredSyncTimeInSeconds = -1;
+
+                        // Check if we have both the lastBlockSeenHeight and the currentChainHeight.
+                        if (lastBlockSeenHeight > 0 && currentChainHeight > 0) {
+                            if (lastBlockSeenHeight >= currentChainHeight) {
+                                // Wallet is at or ahead of current chain - but check there isnt a replay at the moment.
+                                // If there is, use the actual last chain height to check.
+                                // (The user might have opened a wallet whilst a replay was occurring).
+                                if (ReplayManager.INSTANCE.getCurrentReplayTask() != null) {
+                                    int actualLastChainHeight = ReplayManager.INSTANCE.getActualLastChainHeight();
+                                    if (lastBlockSeenHeight < actualLastChainHeight) {
+                                        needToSync = true;
+                                    }
+                                }
+                            } else {
+                                // Wallet is behind the current chain - need to sync.
+                                needToSync = true;
+                            }
+                        } else {
+                            // If we still dont have a sync date/height, use the key birth date of the wallet
+                            // and sync from that. This might be expensive, but should only be used for empty
+                            // wallets.
+                            requiredSyncTimeInSeconds = wallet.getEarliestKeyCreationTime();
+                            needToSync = true;
+                            log.debug("requiredSyncTimeInSeconds worked out from earliestKeyCreationTime = " + requiredSyncTimeInSeconds);
+                        }
+
+                        log.debug("needToSync = " + needToSync);
+
+                        if (needToSync) {
+                            StoredBlock syncFromStoredBlock = null;
+
+                            MultiBitCheckpointManager checkpointManager = bitcoinController.getMultiBitService().getCheckpointManager();
+                            if (checkpointManager != null) {
+                                if (lastBlockSeenHeight > 0) {
+                                    syncFromStoredBlock = checkpointManager.getCheckpointBeforeOrAtHeight(lastBlockSeenHeight);
+                                } else {
+                                    if (requiredSyncTimeInSeconds >= 0) {
+                                        syncFromStoredBlock = checkpointManager.getCheckpointBefore(requiredSyncTimeInSeconds);
+                                    }
+                                }
+                            }
+                            log.debug("syncFromStoredBlock =" + syncFromStoredBlock);
+
+                            // Initialise the message in the singleWalletPanel.
+                            if (mainFrame != null) {
+                                WalletListPanel walletListPanel = mainFrame.getWalletsView();
+                                if (walletListPanel != null) {
+                                    SingleWalletPanel singleWalletPanel = walletListPanel.findWalletPanelByFilename(selectedWalletFilenameFinal);
+                                    if (singleWalletPanel != null) {
+                                        singleWalletPanel.setSyncMessage(controller.getLocaliser().getString("multiBitDownloadListener.downloadingTextShort"), Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
+                                    }
+                                }
+                            }
+                            List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();
+                            perWalletModelDataList.add(perWalletModelData);
+                            ReplayTask replayTask;
+                            if (syncFromStoredBlock == null) {
+                                // Sync from genesis block.
+                                replayTask = new ReplayTask(perWalletModelDataList, null, 0);
+                            } else {
+                                Date syncDate = null;
+                                if (syncFromStoredBlock.getHeader() != null) {
+                                    syncDate = new Date(syncFromStoredBlock.getHeader().getTimeSeconds() * 1000);
+                                }
+                                replayTask = new ReplayTask(perWalletModelDataList, syncDate, syncFromStoredBlock.getHeight());
+                            }
+                            ReplayManager.INSTANCE.offerReplayTask(replayTask);
+                        }
+                        controller.fireRecreateAllViews(true);
+                    } else {
+                        log.error(message);
+                        MessageManager.INSTANCE.addMessage(new Message(message));
+                        WalletData loopData = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(selectedWalletFilenameFinal);
+                        if (loopData != null) {
+                            // Clear the backup wallet filename - this prevents it being automatically overwritten.
+                            if (loopData.getWalletInfo() != null) {
+                                loopData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, "");
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // Not really used but caught so that SwingWorker shuts down cleanly.
+                    log.error(e.getClass() + " " + e.getMessage());
+                } finally {
+                    setEnabled(true);
+                    if (mainFrame != null) {
+                        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+            }
+        };
+        log.debug("Executing open of wallet '" + selectedWalletFilenameFinal + "'.");
+        worker.execute();
+    }
+
+    public void createNewWallet(String newWalletFilename, String walletDescription) {
+        String message;
+        if (new File(newWalletFilename).isDirectory()) {
+            message = controller.getLocaliser().getString("createNewWalletAction.walletFileIsADirectory",
+                    new Object[] { newWalletFilename });
+            log.debug(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
+            return;
+        }
+
+        File newWalletFile = new File(newWalletFilename);
+
+        boolean theWalletWasNotOpenedSuccessfully = false;
+
+        try {
+            // Create a new wallet - protobuf.2 initially for backwards compatibility.
+            Wallet newWallet = new Wallet(this.bitcoinController.getModel().getNetworkParameters());
+
+            ECKey newKey = new ECKey();
+            newWallet.addKey(newKey);
+            WalletData perWalletModelData = new WalletData();
+            perWalletModelData.setWalletInfo(new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF));
+            perWalletModelData.setWallet(newWallet);
+            perWalletModelData.setWalletFilename(newWalletFilename);
+            perWalletModelData.setWalletDescription(walletDescription);
+            this.bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+
+            // Start using the new file as the wallet.
+            this.bitcoinController.addWalletFromFilename(newWalletFile.getAbsolutePath());
+            this.bitcoinController.getModel().setActiveWalletByFilename(newWalletFilename);
+            controller.getModel().setUserPreference(BitcoinModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
+
+            // Save the user properties to disk.
+            FileHandler.writeUserPreferences(this.bitcoinController);
+            log.debug("User preferences with new wallet written successfully");
+
+            // Backup the wallet and wallet info.
+            BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
+
+            controller.fireRecreateAllViews(true);
+            controller.fireDataChangedUpdateNow();
+        } catch (WalletLoadException e) {
+            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                    new Object[] { newWalletFilename, e.getMessage() });
+            log.error(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
+            theWalletWasNotOpenedSuccessfully = true;
+        } catch (WalletSaveException e) {
+            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                    new Object[] { newWalletFilename, e.getMessage() });
+            log.error(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
+            theWalletWasNotOpenedSuccessfully = true;
+        } catch (WalletVersionException e) {
+            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                    new Object[] { newWalletFilename, e.getMessage() });
+            log.error(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
+            theWalletWasNotOpenedSuccessfully = true;
+        } catch (IOException e) {
+            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                    new Object[] { newWalletFilename, e.getMessage() });
+            log.error(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
+            theWalletWasNotOpenedSuccessfully = true;
+        }
+
+        if (theWalletWasNotOpenedSuccessfully) {
+            WalletData loopData = this.bitcoinController.getModel().getPerWalletModelDataByWalletFilename(newWalletFilename);
+            if (loopData != null) {
+                // Clear the backup wallet filename - this prevents it being automatically overwritten.
+                if (loopData.getWalletInfo() != null) {
+                    loopData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, "");
+                }
+            }
         }
     }
 

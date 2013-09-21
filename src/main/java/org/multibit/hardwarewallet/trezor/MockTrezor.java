@@ -1,7 +1,6 @@
 package org.multibit.hardwarewallet.trezor;
 
 import com.google.common.base.Preconditions;
-import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +69,7 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
         //monitorDataInputStream(in);
 
         // We loopback that the device has connected ok
-        // i.e. we always connect successfully.
+        // i.e. we always say we connect successfully.
         log.debug("TESTCODE : Saying that we always connect successfully") ;
 
         for (TrezorListener listener : listeners) {
