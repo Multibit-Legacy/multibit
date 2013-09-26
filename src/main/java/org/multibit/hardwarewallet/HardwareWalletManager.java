@@ -15,15 +15,16 @@
  */
 package org.multibit.hardwarewallet;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.hardwarewallet.trezor.MockTrezorFactory;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.co.bsol.trezorj.core.Trezor;
-import uk.co.bsol.trezorj.core.TrezorEvent;
-import uk.co.bsol.trezorj.core.TrezorEventType;
-import uk.co.bsol.trezorj.core.TrezorListener;
+import uk.co.bsol.trezorj.core.*;
+import uk.co.bsol.trezorj.core.protobuf.MessageType;
+import uk.co.bsol.trezorj.core.protobuf.TrezorMessage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -82,6 +83,9 @@ public enum HardwareWalletManager implements TrezorListener {
         this.controller = controller;
 
         listeners = Sets.newLinkedHashSet();
+
+        // TODO Re-instate later
+        //createMockTrezor();
     }
 
     /**
@@ -107,7 +111,11 @@ public enum HardwareWalletManager implements TrezorListener {
      * @return a HardwareWallet (This will contain an uninitialised MockTrezor)
      */
     public HardwareWallet createMockTrezor() {
-        Trezor trezor = MockTrezorFactory.newMockTrezor();
+        Trezor trezor = TrezorFactory.newUsbTrezor(
+                Optional.<Integer>absent(),
+                Optional.<Integer>absent(),
+                Optional.<String>absent()
+        );
 
         // Add this as the listener (sets the event queue)
         trezor.addListener(this);
@@ -149,7 +157,22 @@ public enum HardwareWalletManager implements TrezorListener {
             return;
         }
 
-        Trezor trezor =  hardwareWallet.getImplementation();
+        Trezor trezor =  hardwareWallet.getTrezorClient();
+
+        if (event.eventType().equals(TrezorEventType.PROTOCOL_MESSAGE)) {
+
+          // Display message on status bar
+          MessageManager.INSTANCE.addMessage(new Message(event.protocolMessageType().toString()));
+
+          if (event.protocolMessageType().get().equals(MessageType.FEATURES)) {
+            TrezorMessage.Features features = (TrezorMessage.Features) event.protocolMessage().get();
+            String vendor = features.getVendor();
+
+            MessageManager.INSTANCE.addMessage(new Message("Vendor ID: "+vendor));
+
+          }
+
+        }
 
         if (event.eventType().equals(TrezorEventType.DEVICE_CONNECTED)) {
             log.debug("Trezor device '" + trezor.toString() +"' has connected.");
@@ -187,7 +210,7 @@ public enum HardwareWalletManager implements TrezorListener {
                     });
                 }
             } else {
-                log.debug("Trezor device '" + trezor.toString() +"' has emitted an event '" + event.toString() + "'");
+                log.debug("Trezor device '" + trezor.toString() +"' has emitted an event '" + event.eventType().toString() + "'");
             }
         }
     }
@@ -197,7 +220,7 @@ public enum HardwareWalletManager implements TrezorListener {
      */
     public void destroyMockTrezor() {
         executorService.shutdown();
-        hardwareWallet.getImplementation().removeListener(this);
+        hardwareWallet.getTrezorClient().removeListener(this);
 
         hardwareWallet.setInitialised(false);
         hardwareWallet.setConnected(false);

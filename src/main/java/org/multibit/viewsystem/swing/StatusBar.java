@@ -64,6 +64,7 @@ import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
+import uk.co.bsol.trezorj.core.protobuf.TrezorMessage;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -238,7 +239,7 @@ public class StatusBar extends JPanel implements MessageListener {
         filler.setOpaque(true);
         filler.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
 
-        JButton connectTrezorTestButton = new JButton("1");
+        JButton connectTrezorTestButton = new JButton("Connect");
         connectTrezorTestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -253,7 +254,7 @@ public class StatusBar extends JPanel implements MessageListener {
             }
         }
         );
-        JButton disconnectTrezorTestButton = new JButton("0");
+        JButton disconnectTrezorTestButton = new JButton("Ping");
         disconnectTrezorTestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -272,8 +273,8 @@ public class StatusBar extends JPanel implements MessageListener {
         addZone("online", onlineLabel, "" + onlineWidth, "left");
         addZone("progressBar", syncProgressBar, "" + 200, "left");
         addZone("network", statusLabel, "*", "");
-        addZone("connectTrezorTest", connectTrezorTestButton, "20", "");
-        addZone("disconnectTrezorTest", disconnectTrezorTestButton, "20", "");
+        addZone("connectTrezorTest", connectTrezorTestButton, "100", "");
+        addZone("disconnectTrezorTest", disconnectTrezorTestButton, "100", "");
         addZone("filler2", filler, "0", "right");
 
         statusClearTimer = new java.util.Timer();
@@ -289,10 +290,10 @@ public class StatusBar extends JPanel implements MessageListener {
 
             // Create a HardwareWallet object. This also wires up the HardwareWalletManager to listen for trezor events.
             HardwareWallet hardwareWallet = hardwareWalletManager.createMockTrezor();
-            Trezor mockTrezor = hardwareWallet.getImplementation();
+            Trezor client = hardwareWallet.getTrezorClient();
 
             // Connect up the mockTrezor - this is the physical equivalent of plugging in a Trezor.
-            mockTrezor.connect();
+            client.connect();
 
             Thread.sleep(2000);
 
@@ -364,10 +365,10 @@ public class StatusBar extends JPanel implements MessageListener {
 
             HardwareWallet hardwareWallet = hardwareWalletManager.getHardwareWallet();
 
-            if (hardwareWallet != null && hardwareWallet.getImplementation() != null) {
+            if (hardwareWallet != null && hardwareWallet.getTrezorClient() != null) {
                 // Close the Trezor.
                 // This is the physical equivalent of removing a Trezor device.
-                hardwareWallet.getImplementation().close();
+                hardwareWallet.getTrezorClient().sendMessage(TrezorMessage.Ping.getDefaultInstance());
 
                 //Thread.sleep(2000);
 

@@ -13,7 +13,6 @@ import uk.co.bsol.trezorj.core.trezors.AbstractTrezor;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 
 /**
  * A mock Trezor device that you can use to loop back events to the MultiBit UI.
@@ -104,7 +103,7 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
     }
 
     @Override
-    public void sendMessage(Message message) throws IOException {
+    public void sendMessage(Message message) {
         Preconditions.checkNotNull(message, "Message must be present");
         Preconditions.checkNotNull(device, "Device is not connected");
 
@@ -112,7 +111,7 @@ public class MockTrezor extends AbstractTrezor implements Trezor {
         log.debug("Sending to TrezorEmulator the message '" + message.toString() + "'");
 
         // Apply the message to the TrezorEmulator.
-        writeMessage(message, out);
+        //writeMessage(message, out);
 
         // Depending on the message sent, loopback a message as if coming back from the Trezor.
         loopBack(message);

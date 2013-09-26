@@ -1,17 +1,27 @@
-package org.multibit.hardwarewallet;
+package org.multibit.hardwarewallet.trezor;
 
-import com.google.protobuf.ByteString;
+import org.multibit.hardwarewallet.HardwareWallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
-import uk.co.bsol.trezorj.core.protobuf.TrezorMessage;
+import uk.co.bsol.trezorj.core.clients.TrezorClient;
+import uk.co.bsol.trezorj.core.clients.TrezorClients;
 
 /**
- * Default class used to wrap an actual hardware wallet and keep track of its state
+ * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <ul>
+ * <li></li>
+ * </ul>
+ * <p>Example:</p>
+ * <pre>
+ * </pre>
+ *
+ * @since 0.0.1
+ *         
  */
-public  class DefaultHardwareWallet implements HardwareWallet {
+public class TrezorHardwareWallet implements HardwareWallet {
 
-    private Logger log = LoggerFactory.getLogger(DefaultHardwareWallet.class);
+    private Logger log = LoggerFactory.getLogger(TrezorHardwareWallet.class);
 
     private static final String DUMMY_SERIAL_ID = "123456";
     /**
@@ -29,10 +39,15 @@ public  class DefaultHardwareWallet implements HardwareWallet {
      */
     private String serialId;
 
-    private Trezor implementation;
+    private TrezorClient trezorClient;
 
-    public DefaultHardwareWallet(Trezor trezor) {
-        implementation = trezor;
+    public TrezorHardwareWallet(Trezor trezor) {
+
+        this.trezorClient = TrezorClients.newNonBlockingSocketInstance(
+          "localhost",
+          3000,
+          TrezorClients.newSessionId());
+
         initialised = false;
     }
 
@@ -48,16 +63,9 @@ public  class DefaultHardwareWallet implements HardwareWallet {
 
     @Override
     public void initialise() {
-        if (implementation != null) {
 
-            // TODO Create random session ID (TrezorClients)
-            // Send the real message
-            ByteString sessionId =  ByteString.copyFrom("123456".getBytes());
-            implementation.sendMessage(TrezorMessage.Initialize.newBuilder().setSessionId(sessionId).build());
+        //trezorClient.initialize();
 
-            serialId = sessionId.toStringUtf8();
-
-        }
     }
 
     /**
@@ -70,7 +78,7 @@ public  class DefaultHardwareWallet implements HardwareWallet {
 
     @Override
     public void setSerialId(String serialId) {
-       this.serialId = serialId;
+        this.serialId = serialId;
     }
 
     @Override
@@ -84,11 +92,10 @@ public  class DefaultHardwareWallet implements HardwareWallet {
     }
 
     /**
-     *
      * @return Trezor The physical device that this class wraps.
-     * (In the future this will be a more general class, or perhaps Object)
+     *         (In the future this will be a more general class, or perhaps Object)
      */
     public Trezor getTrezorClient() {
-        return implementation;
+        return null;
     }
 }

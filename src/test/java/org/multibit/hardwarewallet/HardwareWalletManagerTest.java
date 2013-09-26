@@ -49,7 +49,7 @@ public class HardwareWalletManagerTest extends TestCase {
 
         // Create a HardwareWallet object. This also wires up the HardwareWalletManager to listen for trezor events.
         HardwareWallet hardwareWallet = hardwareWalletManager.createMockTrezor();
-        Trezor mockTrezor = hardwareWallet.getImplementation();
+        Trezor mockTrezor = hardwareWallet.getTrezorClient();
 
         assertNotNull("No mockTrezor device was created", mockTrezor);
         assertFalse("HardwareWallet was in wrong state at creation", hardwareWallet.isConnected());
@@ -115,13 +115,13 @@ public class HardwareWalletManagerTest extends TestCase {
         @Override
         public void hasConnected(HardwareWallet hardwareWallet) {
             connected = true;
-            log.debug("Trezor " + hardwareWallet.getImplementation().toString() + " has connected.");
+            log.debug("Trezor " + hardwareWallet.getTrezorClient().toString() + " has connected.");
         }
 
         @Override
         public void hasDisconnected(HardwareWallet hardwareWallet) {
             connected = false;
-            log.debug("Trezor " + hardwareWallet.getImplementation().toString() + " has disconnected.");
+            log.debug("Trezor " + hardwareWallet.getTrezorClient().toString() + " has disconnected.");
         }
 
         @Override

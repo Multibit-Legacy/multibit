@@ -57,5 +57,5 @@ public interface HardwareWallet {
      * Get the actual hardware wallet implementation.
      * TODO In future use a more generic implementation or perhaps Object
      */
-    public Trezor getImplementation();
+    public Trezor getTrezorClient();
 }

@@ -1,13 +1,15 @@
 package org.multibit.hardwarewallet.trezor;
 
-import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.bsol.trezorj.core.Trezor;
 import uk.co.bsol.trezorj.core.TrezorListener;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * This class is an almost empty emulator of a Trezor device used by the MockTrezor.
@@ -70,7 +72,7 @@ public class TrezorEmulator implements Trezor {
     }
 
     @Override
-    public void sendMessage(Message message) throws IOException {
+    public void sendMessage(Message message)  {
     }
 
     @Override
