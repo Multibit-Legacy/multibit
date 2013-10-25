@@ -102,14 +102,14 @@
             </resource>
         </resources>
         <plugins>
-            <!-- Standard compile to ensure Java6 is used in all environments (e.g. Jenkins) -->
+            <!-- Standard compile to ensure Java7 is used in all environments (e.g. Jenkins) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                 </configuration>
@@ -772,6 +772,13 @@
         <groupId>com.googlecode.jcsv</groupId>
             <artifactId>jcsv</artifactId>
             <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>javafx</artifactId>
+            <version>2.2.40</version>
+            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+            <scope>system</scope>
         </dependency>
     </dependencies>
 
