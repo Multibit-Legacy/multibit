@@ -21,7 +21,9 @@ here:
 https://code.google.com/r/jimburton618-bitcoinj-coinbase-tx/source/checkout
 ```
 
-The branch you should use for the MultiBit develop code is: `bcj-0.10-mb-alice`
+The branch you should use is as follows:
+
+MultiBit 0.5.14 master branch uses: `bcj-0.10.1-mb-alice`
 
 Once cloned, you should then install the custom Bitcoinj library using
 
