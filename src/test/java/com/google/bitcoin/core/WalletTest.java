@@ -88,7 +88,7 @@ public class WalletTest {
                 wallet.receivePending(tx, new ArrayList<Transaction>());
         } else {
             BlockPair bp = com.google.bitcoin.core.CoreTestUtils.createFakeBlock(params, blockStore, tx);
-            wallet.receiveFromBlock(tx, bp.storedBlock, type);
+            wallet.receiveFromBlock(tx, bp.storedBlock, type, 1);
             if (type == AbstractBlockChain.NewBlockType.BEST_CHAIN)
                 wallet.notifyNewBestBlock(bp.storedBlock);
         }
@@ -289,8 +289,8 @@ public class WalletTest {
         assertTrue(wallet.isConsistent());
         // t2 and t3 gets confirmed in the same block.
         CoreTestUtils.BlockPair bp = CoreTestUtils.createFakeBlock(params, blockStore, t2, t3);
-        wallet.receiveFromBlock(t2, bp.storedBlock, AbstractBlockChain.NewBlockType.BEST_CHAIN);
-        wallet.receiveFromBlock(t3, bp.storedBlock, AbstractBlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(t2, bp.storedBlock, AbstractBlockChain.NewBlockType.BEST_CHAIN, 1);
+        wallet.receiveFromBlock(t3, bp.storedBlock, AbstractBlockChain.NewBlockType.BEST_CHAIN, 1);
         wallet.notifyNewBestBlock(bp.storedBlock);
         assertTrue(wallet.isConsistent());
     }
@@ -323,9 +323,9 @@ public class WalletTest {
         StoredBlock b2 = CoreTestUtils.createFakeBlock(params, blockStore, t2).storedBlock;
         BigInteger expected = toNanoCoins(5, 50);
         assertEquals(0, wallet.getPoolSize(WalletTransaction.Pool.ALL));
-        wallet.receiveFromBlock(t1, b1, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(t1, b1, BlockChain.NewBlockType.BEST_CHAIN, 1);
         assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
-        wallet.receiveFromBlock(t2, b2, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(t2, b2, BlockChain.NewBlockType.BEST_CHAIN, 1);
         assertEquals(2, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
         assertEquals(expected, wallet.getBalance());
 
@@ -343,7 +343,7 @@ public class WalletTest {
 
         // Now confirm the transaction by including it into a block.
         StoredBlock b3 = CoreTestUtils.createFakeBlock(params, blockStore, spend).storedBlock;
-        wallet.receiveFromBlock(spend, b3, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(spend, b3, BlockChain.NewBlockType.BEST_CHAIN, 1);
 
         // Change is confirmed. We started with 5.50 so we should have 4.50
         // left.
@@ -377,7 +377,7 @@ public class WalletTest {
         // correctly isn't possible in SPV mode because value is a property of
         // outputs not inputs. Without all
         // transactions you can't check they add up.
-        wallet.receiveFromBlock(tx, null, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(tx, null, BlockChain.NewBlockType.BEST_CHAIN, 1);
         // Now the other guy creates a transaction which spends that change.
         Transaction tx2 = new Transaction(params);
         tx2.addInput(output);
@@ -461,7 +461,7 @@ public class WalletTest {
         assertEquals(TransactionConfidence.ConfidenceType.PENDING, notifiedTx[0].getConfidence().getConfidenceType());
         final Transaction t1Copy = new Transaction(params, t1.bitcoinSerialize());
         com.google.bitcoin.core.CoreTestUtils.BlockPair fakeBlock = CoreTestUtils.createFakeBlock(params, blockStore, t1Copy);
-        wallet.receiveFromBlock(t1Copy, fakeBlock.storedBlock, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(t1Copy, fakeBlock.storedBlock, BlockChain.NewBlockType.BEST_CHAIN, 1);
         wallet.notifyNewBestBlock(fakeBlock.storedBlock);
         assertFalse(flags[0]);
         //assertTrue(flags[1]);
@@ -494,7 +494,7 @@ public class WalletTest {
         BigInteger nanos = Utils.toNanoCoins(1, 0);
         Transaction t1 = CoreTestUtils.createFakeTx(params, nanos, myAddress);
         StoredBlock b1 = CoreTestUtils.createFakeBlock(params, blockStore, t1).storedBlock;
-        wallet.receiveFromBlock(t1, b1, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(t1, b1, BlockChain.NewBlockType.BEST_CHAIN, 1);
         assertEquals(nanos, wallet.getBalance());
         // Create a spend with them, but don't commit it (ie it's from somewhere
         // else but using our keys). This TX
@@ -521,12 +521,12 @@ public class WalletTest {
         // Receive a coin.
         Transaction tx1 = CoreTestUtils.createFakeTx(params, Utils.toNanoCoins(1, 0), myAddress);
         StoredBlock b1 = CoreTestUtils.createFakeBlock(params, blockStore, tx1).storedBlock;
-        wallet.receiveFromBlock(tx1, b1, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(tx1, b1, BlockChain.NewBlockType.BEST_CHAIN, 1);
         // Receive half a coin 10 minutes later.
         Utils.rollMockClock(60 * 10);
         Transaction tx2 = CoreTestUtils.createFakeTx(params, Utils.toNanoCoins(0, 5), myAddress);
         StoredBlock b2 = CoreTestUtils.createFakeBlock(params, blockStore, tx1).storedBlock;
-        wallet.receiveFromBlock(tx2, b2, BlockChain.NewBlockType.BEST_CHAIN);
+        wallet.receiveFromBlock(tx2, b2, BlockChain.NewBlockType.BEST_CHAIN, 1);
         // Check we got them back in order.
         List<Transaction> transactions = wallet.getTransactionsByTime();
         assertEquals(tx2, transactions.get(0));

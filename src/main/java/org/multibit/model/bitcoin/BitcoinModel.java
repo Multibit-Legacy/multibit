@@ -629,10 +629,10 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
         }
 
         // Other wise return the date of the block it first appeared in.
-        Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
+        Map<Sha256Hash, Integer> appearsIn = transaction.getAppearsInHashes();
         if (appearsIn != null) {
             if (!appearsIn.isEmpty()) {
-                Iterator<Sha256Hash> iterator = appearsIn.iterator();
+                Iterator<Sha256Hash> iterator = appearsIn.keySet().iterator();
                 // just take the first i.e. ignore impact of side chains
                 if (iterator.hasNext()) {
                     Sha256Hash appearsInHash = iterator.next();
