@@ -15,10 +15,6 @@
  */
 package org.multibit.viewsystem.swing;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.TimerTask;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
@@ -28,6 +24,10 @@ import org.multibit.model.bitcoin.WalletData;
 import org.multibit.store.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.TimerTask;
 
 /**
  * TimerTask to detect whether wallet files have been changed by some external
@@ -52,7 +52,7 @@ public class FileChangeTimerTask extends TimerTask {
 
     /**
      * Constructs the object, sets the string to be output in function run()
-     * @param str
+     * @param bitcoinController
      */
     public FileChangeTimerTask(BitcoinController bitcoinController) {
         this.bitcoinController = bitcoinController;
@@ -115,6 +115,8 @@ public class FileChangeTimerTask extends TimerTask {
             }
 
             log.debug("End of FileChangeTimerTask - run");
+        } catch (java.util.ConcurrentModificationException cme) {
+            log.error("The list of open wallets was changed whilst files were being written.");
         } finally {
             isRunning = false;
         }
