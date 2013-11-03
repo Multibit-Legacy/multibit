@@ -40,6 +40,8 @@ public class CloseWalletAction extends MultiBitSubmitAction {
   private static final long serialVersionUID = 1923933460523457765L;
   private MultiBitFrame mainFrame;
 
+  private static final int RECREATE_ALL_VIEWS_WAIT_TIME = 500; // ms
+
   /**
    * Creates a new {@link CloseWalletAction}.
    */
@@ -131,40 +133,29 @@ public class CloseWalletAction extends MultiBitSubmitAction {
     } finally {
       controller.fireRecreateAllViews(true);
 
-      if (mainFrame != null) {
-        if (EventQueue.isDispatchThread()) {
-          mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-
-        } else {
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
-          });
-        }
-      }
-
       // Wait a while for the UI to reinitialise and then set the status message
       // Give the user a message that wallet is closed.
-      if (successfullyClosedWallet) {
-        final String finalWalletToCloseFilename = walletToCloseFilename;
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
+      final String finalWalletToCloseFilename = walletToCloseFilename;
+      final boolean finalSuccessfullyClosedWallet = successfullyClosedWallet;
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          if (finalSuccessfullyClosedWallet) {
             try {
-              Thread.sleep(2000);
+              Thread.sleep(RECREATE_ALL_VIEWS_WAIT_TIME);
             } catch (InterruptedException e1) {
               log.error("Unexpected thread interruption", e1);
             }
             Message closeMessage = new Message(controller.getLocaliser().getString("multiBit.closedWallet", new Object[]{finalWalletToCloseFilename}));
             MessageManager.INSTANCE.addMessage(closeMessage);
           }
-        });
 
-      }
-
+          // Reset wait cursor
+          if (mainFrame != null) {
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+          }
+        }
+      });
     }
   }
 }
