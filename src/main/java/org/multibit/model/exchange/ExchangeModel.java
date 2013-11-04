@@ -63,13 +63,16 @@ public class ExchangeModel extends AbstractModel<CoreModel> {
         ExchangeData exchangeData1 = new ExchangeData();
         ExchangeData exchangeData2 = new ExchangeData();
 
-        exchangeData1.setShortExchangeName(getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE));
-        exchangeData2.setShortExchangeName(getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE));
+        String shortExchangeName1 = getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
+        String shortExchangeName2 = getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
+        exchangeData1.setShortExchangeName(shortExchangeName1);
+        exchangeData2.setShortExchangeName(shortExchangeName2);
         
         shortExchangeNameToExchangeMap = new HashMap<String, ExchangeData>();
         shortExchangeNameToExchangeMap.put(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, exchangeData1);
         shortExchangeNameToExchangeMap.put(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, exchangeData2);
-        
+        shortExchangeNameToExchangeMap.put(shortExchangeName1, exchangeData1);
+        shortExchangeNameToExchangeMap.put(shortExchangeName2, exchangeData2);
     }
     
     @Override
