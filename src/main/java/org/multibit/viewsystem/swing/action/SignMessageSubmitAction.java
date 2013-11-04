@@ -15,27 +15,21 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-import java.nio.CharBuffer;
-import java.util.Iterator;
-
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-
+import com.google.bitcoin.core.*;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.SignMessagePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WrongNetworkException;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.nio.CharBuffer;
+import java.util.Iterator;
 
 /**
  * This {@link Action} signs a message
@@ -79,6 +73,9 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
         String addressText = null;
         if (signMessagePanel.getAddressTextArea() != null) {
             addressText = signMessagePanel.getAddressTextArea().getText();
+            if (addressText != null) {
+              addressText = WhitespaceTrimmer.trim(addressText);
+            }
         }
         
         String messageText = null;
@@ -113,7 +110,7 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
         log.debug("addressText = '" + addressText + "'");
         log.debug("messageText = '" + messageText + "'");
         
-        if (addressText == null || "".equals(addressText.trim())) {
+        if (addressText == null || "".equals(addressText)) {
             signMessagePanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.noAddress"));
             signMessagePanel.setMessageText2(" ");  
             return;

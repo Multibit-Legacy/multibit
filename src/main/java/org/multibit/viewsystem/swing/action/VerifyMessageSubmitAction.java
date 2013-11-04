@@ -15,24 +15,21 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-import java.security.SignatureException;
-
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.WrongNetworkException;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.VerifyMessagePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.WrongNetworkException;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.security.SignatureException;
 
 /**
  * This {@link Action} verifies a signed message.
@@ -72,6 +69,9 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
         String addressText = null;
         if (verifyMessagePanel.getAddressTextArea() != null) {
             addressText = verifyMessagePanel.getAddressTextArea().getText();
+            if (addressText != null) {
+              addressText = WhitespaceTrimmer.trim(addressText);
+            }
         }
         
         String messageText = null;
@@ -88,7 +88,7 @@ public class VerifyMessageSubmitAction extends MultiBitSubmitAction implements W
         log.debug("messageText = '" + messageText + "'");
         log.debug("signatureText = '" + signatureText + "'");
         
-        if (addressText == null || "".equals(addressText.trim())) {
+        if (addressText == null || "".equals(addressText)) {
             verifyMessagePanel.setMessageText1(controller.getLocaliser().getString("verifyMessageAction.noAddress"));
             verifyMessagePanel.setMessageText2(" ");  
             return;
