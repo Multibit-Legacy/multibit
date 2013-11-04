@@ -24,10 +24,10 @@
         <javaversion>1.6</javaversion>
     </info>
 
-<variables>
-  <variable name="ShowCreateDirectoryMessage" value="false"/>
-  <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
-</variables>
+    <variables>
+        <variable name="ShowCreateDirectoryMessage" value="false"/>
+        <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
+    </variables>
 
     <!-- 
         The gui preferences indication.
