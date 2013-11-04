@@ -17,9 +17,9 @@ package org.multibit;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import org.multibit.file.FileHandler;
+import org.multibit.platform.builder.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,17 +54,17 @@ public class ApplicationDataDirectoryLocator {
      * 
      * 2. Otherwise set the working directory as follows:
      * 
-     * PC System.getenv("APPDATA")/MultiBitInExecutableJar
+     * PC System.getenv("APPDATA")/MultiBit
      * 
-     * e.g. C:/Documents and Settings/Administrator/Application Data/MultiBitInExecutableJar
+     * e.g. C:/Documents and Settings/Administrator/Application Data/MultiBit
      * 
-     * Mac System.getProperty("user.home")/Library/Application Support/MultiBitInExecutableJar
+     * Mac System.getProperty("user.home")/Library/Application Support/MultiBit
      * 
-     * e.g. /Users/jim/Library/Application Support/MultiBitInExecutableJar
+     * e.g. /Users/jim/Library/Application Support/MultiBit
      * 
-     * Linux System.getProperty("user.home")/MultiBitInExecutableJar
+     * Linux System.getProperty("user.home")/.MultiBit
      * 
-     * e.g. /Users/jim/MultiBitInExecutableJar
+     * e.g. /Users/jim/MultiBit
      */
     public String getApplicationDataDirectory() {
         if (applicationDataDirectory != null) {
@@ -76,12 +76,11 @@ public class ApplicationDataDirectoryLocator {
             // applicationDataDirectory is the local directory;
             applicationDataDirectory = "";
         } else {
-            String operatingSystemName = System.getProperty("os.name");
-            if (operatingSystemName != null && operatingSystemName.startsWith("Windows")) {
+            if (OSUtils.isWindows()) {
                 // Windows os
                 applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiBit";
             } else {
-                if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
+                if (OSUtils.isMac()) {
                     // Mac os
                     if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
                         applicationDataDirectory = new File("../../../..").getAbsolutePath();
@@ -90,7 +89,12 @@ public class ApplicationDataDirectoryLocator {
                     }
                 } else {
                     // treat as Linux/ unix variant
-                    applicationDataDirectory = System.getProperty("user.home") + "/MultiBit";
+                    File oldAppDir = new File(System.getProperty("user.home") + "/MultiBit");
+                    if (oldAppDir.exists()) {
+                        applicationDataDirectory = oldAppDir.getAbsolutePath();
+                    } else {
+                        applicationDataDirectory = System.getProperty("user.home") + "/.MultiBit";
+                    }
                 }
             }
             
