@@ -23,11 +23,12 @@
  */
 package org.multibit.model.exchange;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.multibit.model.AbstractModel;
 import org.multibit.model.ModelEnum;
 import org.multibit.model.core.CoreModel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -47,10 +48,6 @@ public class ExchangeModel extends AbstractModel<CoreModel> {
     
     // Currency support.
     public static final String SHOW_BITCOIN_CONVERTED_TO_FIAT = "showBitcoinConvertedToFiat";   // boolean
-    public static final String USE_LAST_AS_EXCHANGE_RATE = "useLastAsExchangeRate";             // boolean
-    public static final String USE_BID_AS_EXCHANGE_RATE = "useBidAsExchangeRate";               // boolean
-    public static final String USE_ASK_AS_EXCHANGE_RATE = "useAskAsExchangeRate";               // boolean
-    public static final String SHOW_BTC_IN_WALLET_PANEL = "showBTCinWalletPanel";               // boolean
     public static final String OPEN_EXCHANGE_RATES_API_CODE = "openExchangeRatesApiCode";
     
     
