@@ -15,22 +15,19 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.math.BigInteger;
-
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet.BalanceType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
-
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet.BalanceType;
+import java.math.BigInteger;
 
 /**
  * A class to validate String addresses and amounts.
@@ -75,6 +72,7 @@ public class Validator {
         Boolean notEnoughFunds = Boolean.FALSE;
         Boolean amountIsMissing = Boolean.FALSE;
         Boolean amountIsNegativeOrZero = Boolean.FALSE;
+        Boolean amountIsTooSmall = Boolean.FALSE;
 
         // See if the amount is missing.
         if (amount == null || "".equals(amount) || amount.trim().length() == 0) {
@@ -106,24 +104,30 @@ public class Validator {
                     amountValidatesOk = Boolean.FALSE;
                     amountIsNegativeOrZero = Boolean.TRUE;
                 } else {
+                  if (amountBigInteger.compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
+                    amountValidatesOk = Boolean.FALSE;
+                    amountIsTooSmall = Boolean.TRUE;
+                  } else {
                     // The fee is worked out in detail later, but we know it will be at least the minimum reference amount.
                     BigInteger totalSpend = amountBigInteger.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
                     BigInteger availableBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
                     BigInteger estimatedBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED);
-                    
-                    log.debug("Amount = " + amountBigInteger.toString() + ", fee of at least " + Transaction.REFERENCE_DEFAULT_MIN_TX_FEE.toString() 
+
+                    log.debug("Amount = " + amountBigInteger.toString() + ", fee of at least " + Transaction.REFERENCE_DEFAULT_MIN_TX_FEE.toString()
                             + ", totalSpend = " + totalSpend.toString() + ", availableBalance = " + availableBalance.toString() + ", estimatedBalance = " + estimatedBalance.toString());
                     if (totalSpend.compareTo(availableBalance) > 0) {
-                        // Not enough funds.
-                        amountValidatesOk = Boolean.FALSE;
-                        notEnoughFunds = Boolean.TRUE;
+                      // Not enough funds.
+                      amountValidatesOk = Boolean.FALSE;
+                      notEnoughFunds = Boolean.TRUE;
                     }
+                  }
                 }
             }
         }
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_MISSING, amountIsMissing.toString());
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO,
                 amountIsNegativeOrZero.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_TOO_SMALL, amountIsTooSmall.toString());
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_INVALID, amountIsInvalid.toString());
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS, notEnoughFunds.toString());
 
@@ -156,6 +160,7 @@ public class Validator {
     public void clearValidationState() {
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_MISSING, Boolean.FALSE.toString());
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO, Boolean.FALSE.toString());
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_TOO_SMALL, Boolean.FALSE.toString());
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_AMOUNT_IS_INVALID, Boolean.FALSE.toString());
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS, Boolean.FALSE.toString());
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.VALIDATION_ADDRESS_IS_INVALID, Boolean.FALSE.toString());

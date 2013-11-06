@@ -108,6 +108,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String VALIDATION_AMOUNT_IS_INVALID = "validationAmountIsInvalid";
     public static final String VALIDATION_AMOUNT_IS_MISSING = "validationAmountIsMissing";
     public static final String VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO = "validationAmountIsNegativeOrZero";
+    public static final String VALIDATION_AMOUNT_IS_TOO_SMALL = "validationAmountIsTooSmall";
     public static final String VALIDATION_NOT_ENOUGH_FUNDS = "validationNotEnoughFunds";
     public static final String VALIDATION_ADDRESS_VALUE = "validationAddressValue";
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";

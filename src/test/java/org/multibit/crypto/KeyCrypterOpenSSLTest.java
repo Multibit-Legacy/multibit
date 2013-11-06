@@ -15,22 +15,15 @@
  */
 package org.multibit.crypto;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.UUID;
-
+import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import java.io.*;
+import java.util.UUID;
 
 public class KeyCrypterOpenSSLTest extends TestCase {
 
@@ -90,7 +83,6 @@ public class KeyCrypterOpenSSLTest extends TestCase {
     /**
      * Test with random plain text strings and random passwords.
      * UUIDs are used and hence will only cover hex characters (and te separator hyphen).
-     * @throws EncrypterDecrypterException
      */
     public void testEncryptDecryptGood3() throws Exception {
         KeyCrypterOpenSSL encrypterDecrypter = new KeyCrypterOpenSSL();

@@ -17,6 +17,7 @@ package org.multibit.viewsystem.swing.view.dialogs;
 
 
 
+import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.Wallet.SendRequest;
 import org.multibit.controller.Controller;
@@ -104,6 +105,14 @@ public class ValidationErrorDialog extends MultiBitDialog {
             amountIsNegativeOrZeroBoolean = true;
         }
 
+        // Amount is too small.
+        String amountIsTooSmall = this.bitcoinController.getModel().getActiveWalletPreference(
+                BitcoinModel.VALIDATION_AMOUNT_IS_TOO_SMALL);
+        boolean amountIsTooSmallBoolean = false;
+        if (Boolean.TRUE.toString().equals(amountIsTooSmall)) {
+            amountIsTooSmallBoolean = true;
+        }
+
         // Amount is more than available funds.
         String notEnoughFunds = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.VALIDATION_NOT_ENOUGH_FUNDS);
         boolean notEnoughFundsBoolean = false;
@@ -147,19 +156,32 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
             rows++;
         }
-        if (amountIsNegativeOrZeroBoolean) {
-            if (completeMessage.length()>0) {
-                completeMessage.append("\n");
-            }
+      if (amountIsNegativeOrZeroBoolean) {
+          if (completeMessage.length()>0) {
+              completeMessage.append("\n");
+          }
 
-            String textToAdd = controller.getLocaliser().getString("validationErrorView.amountIsNegativeOrZeroMessage");
-            if (textToAdd.length() > longestRow.length()) {
-                longestRow = textToAdd;
-            }
-            completeMessage.append(textToAdd);
+          String textToAdd = controller.getLocaliser().getString("validationErrorView.amountIsNegativeOrZeroMessage");
+          if (textToAdd.length() > longestRow.length()) {
+              longestRow = textToAdd;
+          }
+          completeMessage.append(textToAdd);
 
-            rows++;
-        }
+          rows++;
+      }
+      if (amountIsTooSmallBoolean) {
+          if (completeMessage.length()>0) {
+              completeMessage.append("\n");
+          }
+
+          String textToAdd = controller.getLocaliser().getString("validationErrorView.amountIsTooSmallMessage", new String[]{Transaction.MIN_NONDUST_OUTPUT.toString()});
+          if (textToAdd.length() > longestRow.length()) {
+              longestRow = textToAdd;
+          }
+          completeMessage.append(textToAdd);
+
+          rows++;
+      }
         if (notEnoughFundsBoolean) {
             if (completeMessage.length()>0) {
                 completeMessage.append("\n");
