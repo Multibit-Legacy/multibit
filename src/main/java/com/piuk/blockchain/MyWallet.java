@@ -17,21 +17,12 @@
 
 package com.piuk.blockchain;
 
-import java.io.IOException;
-import java.lang.Exception;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.spec.KeySpec;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-
+import com.google.bitcoin.core.Base58;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.spongycastle.crypto.BufferedBlockCipher;
 import org.spongycastle.crypto.CipherParameters;
 import org.spongycastle.crypto.PBEParametersGenerator;
@@ -45,16 +36,10 @@ import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.crypto.params.ParametersWithIV;
 import org.spongycastle.util.encoders.Base64;
 import org.spongycastle.util.encoders.Hex;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 
-import java.security.SecureRandom;
-import com.google.bitcoin.core.Base58;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet; 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class MyWallet {
@@ -85,7 +70,7 @@ public class MyWallet {
 
         TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
         try {
-            this.root = (Map<String, Object>) mapper.readValue(decrypted, typeRef);
+            this.root = mapper.readValue(decrypted, typeRef);
         } catch (Exception e) {
             throw e;
         }
@@ -113,39 +98,12 @@ public class MyWallet {
 		return (List<Map<String, Object>>) root.get("keys");
 	}
 
-	public String[] getActiveAddresses() {
-		List<String> list = new ArrayList<String>();
-		for (Map<String, Object> map : getKeysMap()) {
-			if (map.get("tag") == null || (Long)map.get("tag") == 0)
-				list.add((String) map.get("addr"));
-		} 
-		return list.toArray(new String[list.size()]);
-	}
-
-	public String[] getArchivedAddresses() {
-		List<String> list = new ArrayList<String>();
-		for (Map<String, Object> map : getKeysMap()) {
-			if (map.get("tag") != null && (Long)map.get("tag") == 2)
-				list.add((String) map.get("addr"));
-		}
-		return list.toArray(new String[list.size()]);
-	}
-
-	public List<Map<String, Object>> getAddressBookMap() {
-		return (List<Map<String, Object>>) root.get("address_book");
-	}
-
-
 	public boolean isDoubleEncrypted() {
 		Object double_encryption = root.get("double_encryption");
 		if (double_encryption != null)
 			return (Boolean)double_encryption;
 		else
 			return false;
-	}
-
-	public String getGUID() {
-		return (String)root.get("guid");
 	}
 
 	public String getSharedKey() {
@@ -156,115 +114,8 @@ public class MyWallet {
 		return (String)root.get("dpasswordhash");
 	}
 
-	public void setTemporyPassword(String password) {
-		this.temporyPassword = password;
-	}
-
 	public void setTemporySecondPassword(String secondPassword) {
 		this.temporySecondPassword = secondPassword;
-	}
-
-	public String toJSONString() {
-		ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
-
-		try {
-			return mapper.writer().writeValueAsString(root);
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	public Map<String, String> getLabelMap() {
-		Map<String, String> _labelMap = new HashMap<String, String>();
-
-		List<Map<String, Object>> addressBook = this.getAddressBookMap();
-
-		if (addressBook != null) {
-			for (Map<String, Object> addr_book : addressBook) {
-				_labelMap.put((String)addr_book.get("addr"), (String)addr_book.get("label"));
-			}
-		}
-
-		if (this.getKeysMap() != null) {
-			for (Map<String, Object> key_map : this.getKeysMap()) {
-				String label = (String)key_map.get("label");
-
-				if (label != null)
-					_labelMap.put((String)key_map.get("addr"), label);
-			}
-		}
-
-		return _labelMap;
-	}
-
-	public Map<String, Object> findAddressBookEntry(String address) {
-		List<Map<String, Object>> addressBook = this.getAddressBookMap();
-
-		if (addressBook != null) {
-			for (Map<String, Object> addr_book : addressBook) {
-				if (addr_book.get("addr").equals(address))
-					return addr_book;
-			}
-		}
-
-		return null;
-	}
-	public Map<String, Object> findKey(String address) {
-		for (Map<String, Object> key : this.getKeysMap()) {
-			String addr = (String) key.get("addr");
-
-			if (addr.equals(address))
-				return key;
-		}
-		return null;
-	}
-
-	public boolean isMine(String address) {
-		for (Map<String, Object> key : this.getKeysMap()) {
-			String addr = (String) key.get("addr");
-
-			if (addr.equals(address))
-				return true;
-		}
-
-		return false;
-	}
-
-	public void setTag(String address, long tag) {
-		if (this.isMine(address)) {
-			findKey(address).put("tag", tag);
-		}
-	}
-
-	public void addLabel(String address, String label) {
-		if (this.isMine(address)) {
-			findKey(address).put("label", label);
-		} else {
-			Map<String, Object> entry = findAddressBookEntry(address);
-			if (entry != null) {
-				entry.put("label", label);
-			} else {
-				List<Map<String, Object>> addressBook = this.getAddressBookMap();
-
-				if (addressBook == null) {
-					addressBook = new ArrayList<Map<String, Object>>();
-					root.put("address_book", addressBook);
-				}
-
-				HashMap<String, Object> map = new HashMap<String, Object>();
-				map.put("addr", address);
-				map.put("label", label);
-
-				addressBook.add(map);
-			}
-		}
-
 	}
 
 	protected void addKeysTobitoinJWallet(Wallet wallet) throws Exception {
@@ -293,7 +144,7 @@ public class MyWallet {
 
 		TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {}; 
 		try {
-			return (Map<String, Object>) mapper.readValue(payload, typeRef);
+			return mapper.readValue(payload, typeRef);
 		} catch (Exception e) {
 			throw e;
 		}
@@ -321,24 +172,6 @@ public class MyWallet {
         }
 
         return iterations;
-    }
-
-    public int getMainPasswordPbkdf2Iterations() {
-        int iterations = DefaultPBKDF2Iterations;
-        if (rootContainer != null && rootContainer.containsKey("pbkdf2_iterations")) {
-            iterations = Integer.valueOf(rootContainer.get("pbkdf2_iterations").toString());
-        }
-
-        return iterations;
-    }
-
-    public double getEncryptionVersionUsed() {
-        double version = 0.0;
-        if (rootContainer != null && rootContainer.containsKey("version")) {
-            version = Double.valueOf(rootContainer.get("version").toString());
-        }
-
-        return version;
     }
 
     public boolean validateSecondPassword(String secondPassword) {
@@ -371,7 +204,7 @@ public class MyWallet {
         try {
             TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
 
-            Map<String, Object> obj = (Map<String, Object>) mapper.readValue(ciphertext, typeRef);
+            Map<String, Object> obj = mapper.readValue(ciphertext, typeRef);
 
             String payload = (String) obj.get("payload");
             int pbkdf2_iterations = Integer.valueOf(obj.get("pbkdf2_iterations").toString());
@@ -406,7 +239,7 @@ public class MyWallet {
     public static String decrypt(String ciphertext, String password, final int PBKDF2Iterations) throws Exception {
         byte[] cipherdata = Base64.decode(ciphertext);
 
-        //Sperate the IV and cipher data
+        //Seperate the IV and cipher data
         byte[] iv = copyOfRange(cipherdata, 0, AESBlockSize * 4);
         byte[] input = copyOfRange(cipherdata, AESBlockSize * 4, cipherdata.length);
 
@@ -435,25 +268,6 @@ public class MyWallet {
         return new String(out, "UTF-8");
     }
 
-
-    private static byte[] cipherData(BufferedBlockCipher cipher, byte[] data)
-            throws Exception {
-        int minSize = cipher.getOutputSize(data.length);
-        byte[] outBuf = new byte[minSize];
-        int length1 = cipher.processBytes(data, 0, data.length, outBuf, 0);
-        int length2 = cipher.doFinal(outBuf, length1);
-        int actualLength = length1 + length2;
-        byte[] result = new byte[actualLength];
-        System.arraycopy(outBuf, 0, result, 0, result.length);
-        return result;
-    }
-
-    public static <T> T[] concat(T[] first, T[] second) {
-        T[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
-        return result;
-    }
-
     // Decrypt a double encrypted private key
     public static String decryptPK(String key, String sharedKey, String password, final int PBKDF2Iterations)
             throws Exception {
@@ -463,7 +277,7 @@ public class MyWallet {
     public static ECKey decodeBase58PK(String base58Priv) throws Exception {
         byte[] privBytes = Base58.decode(base58Priv);
 
-        // Prppend a zero byte to make the biginteger unsigned
+        // Prepend a zero byte to make the biginteger unsigned
         byte[] appendZeroByte = concat(new byte[1], privBytes);
 
         ECKey ecKey = new ECKey(new BigInteger(appendZeroByte));

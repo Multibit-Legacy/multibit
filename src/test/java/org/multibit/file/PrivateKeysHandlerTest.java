@@ -17,25 +17,22 @@ package org.multibit.file;
 
 
 
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
+import com.piuk.blockchain.MyWallet;
+import junit.framework.TestCase;
+import org.junit.Test;
+import org.multibit.Constants;
+import org.multibit.CreateControllers;
+import org.multibit.controller.bitcoin.BitcoinController;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import junit.framework.TestCase;
-import org.junit.Test;
-
-import org.multibit.Constants;
-import org.multibit.CreateControllers;
-import org.multibit.controller.bitcoin.BitcoinController;
-
-import com.piuk.blockchain.MyWallet;
-
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
 
 
 
@@ -55,7 +52,6 @@ public class PrivateKeysHandlerTest extends TestCase {
         "166ofzumkuBB8gpDqd3usn3PypRXA4wTS6", "1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK", "13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6"};
 
     public static final String BLOCKCHAIN_NO_PASSWORD_WALLET_FILE = "blockchain_test_nopassword.json";
-    public static final String BLOCKCHAIN_NO_PASSWORD = "";
     public static final String[] EXPECTED_ADDRESSES_FOR_BLOCKCHAIN_WALLET = new String[]{"1HyWjW2gfp8NPG2jj3399DBA1kxQP5SYa9"};
 
     public static final String BLOCKCHAIN_MAIN_PASSWORD = "1234567890";
