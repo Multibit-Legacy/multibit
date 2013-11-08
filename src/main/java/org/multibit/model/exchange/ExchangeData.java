@@ -127,11 +127,15 @@ public class ExchangeData {
         }
         return BITCOIN_CHARTS_EXCHANGE_NAME.equals(shortExchangeName);
     }
-    
+
+  /**
+   * Available exchanges
+   * BTCChina not in the list as it does not seem reliable enough - drops connections (when used in UK)
+   * @return
+   */
     public static String[] getAvailableExchanges() {
         return new String[] { MT_GOX_EXCHANGE_NAME,
             BITSTAMP_EXCHANGE_NAME,
-            BTCCHINA_EXCHANGE_NAME,
             BTCE_EXCHANGE_NAME,
             CAMPBX_EXCHANGE_NAME,
             OPEN_EXCHANGE_RATES_EXCHANGE_NAME,
