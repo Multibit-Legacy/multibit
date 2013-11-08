@@ -131,7 +131,6 @@ public class ExchangeData {
   /**
    * Available exchanges
    * BTCChina not in the list as it does not seem reliable enough - drops connections (when used in UK)
-   * @return
    */
     public static String[] getAvailableExchanges() {
         return new String[] { MT_GOX_EXCHANGE_NAME,
