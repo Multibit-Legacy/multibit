@@ -16,7 +16,6 @@
 package org.multibit.model.exchange;
 
 import com.xeiam.xchange.bitstamp.BitstampExchange;
-import com.xeiam.xchange.btcchina.BTCChinaExchange;
 import com.xeiam.xchange.btce.BTCEExchange;
 import com.xeiam.xchange.campbx.CampBXExchange;
 import com.xeiam.xchange.oer.OERExchange;
@@ -39,12 +38,10 @@ public class ExchangeData {
 
     public static final String EXCHANGE_NOT_SET = "NoExchangeSetYet";
 
-    public static final String BTCCHINA_EXCHANGE_NAME = "BTCChina";
     public static final String BITCOIN_CHARTS_EXCHANGE_NAME = "BitcoinCharts";
     public static final String BITSTAMP_EXCHANGE_NAME = "Bitstamp";
     public static final String BTCE_EXCHANGE_NAME = "BTC-E";
     public static final String CAMPBX_EXCHANGE_NAME = "CampBX";
-    public static final String KRAKEN_EXCHANGE_NAME = "Kraken";
     public static final String OPEN_EXCHANGE_RATES_EXCHANGE_NAME = "OpenExchangeRates";
     public static final String MT_GOX_EXCHANGE_NAME = "MtGox";
     public static final String VIRTEX_EXCHANGE_NAME = "VirtEx";
@@ -165,8 +162,8 @@ public class ExchangeData {
             return  BitstampExchange.class.getName();
         }  else if (BTCE_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  BTCEExchange.class.getName();
-        } else if (BTCCHINA_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
-            return  BTCChinaExchange.class.getName();
+        //} else if (BTCCHINA_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
+        //    return  BTCChinaExchange.class.getName();
         //} else if (KRAKEN_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
         //    return  KrakenExchange.class.getName();
         } else if (CAMPBX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
