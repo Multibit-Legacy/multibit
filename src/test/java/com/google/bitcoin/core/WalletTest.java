@@ -639,7 +639,7 @@ public class WalletTest {
             encryptedWallet.decrypt(wrongAesKey);
             fail("Incorrectly decoded wallet with wrong password");
         } catch (KeyCrypterException ede) {
-            assertTrue("Wrong message in EncrypterDecrypterException", ede.getMessage().contains("Could not decrypt bytes"));
+            assertTrue("Wrong message in EncrypterDecrypterException, message was '" + ede.getMessage() + "'", ede.getMessage().contains("Could not decrypt bytes"));
         }
     }
 

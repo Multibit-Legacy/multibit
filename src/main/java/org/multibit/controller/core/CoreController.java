@@ -180,7 +180,7 @@ public class CoreController extends BaseController<CoreController> implements Ge
     @Override
     public synchronized void onOpenURIEvent(GenericOpenURIEvent event) {
         log.debug("Controller received open URI event with URI='{}'", event.getURI().toASCIIString());
-           if (!getApplicationStarting()) {
+        if (!getApplicationStarting()) {
             log.debug("Open URI event handled immediately");
 
             for (AbstractEventHandler theEventHandler : this.eventHandlers) {
@@ -189,7 +189,7 @@ public class CoreController extends BaseController<CoreController> implements Ge
                
         } else {
             log.debug("Open URI event not handled immediately because application is still starting. Remembering for later.");
-               MultiBit.setRememberedRawBitcoinURI(event.getURI().toString());
+            MultiBit.setRememberedRawBitcoinURI(event.getURI().toASCIIString());
         }
     }
     

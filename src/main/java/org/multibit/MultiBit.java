@@ -711,6 +711,7 @@ public final class MultiBit {
     }
 
     public static void setRememberedRawBitcoinURI(String rememberedRawBitcoinURI) {
+        log.debug("Remembering the bitcoin URI to process of '" + rememberedRawBitcoinURI + "'");
         MultiBit.rememberedRawBitcoinURI = rememberedRawBitcoinURI;
     }
 }
