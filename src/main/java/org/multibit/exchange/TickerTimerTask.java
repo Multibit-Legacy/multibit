@@ -18,6 +18,7 @@ package org.multibit.exchange;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -101,7 +102,7 @@ public class TickerTimerTask extends TimerTask {
                 controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW))) {
             return;
         }
-        
+
         try {
             // Create exchange.
             synchronized (this) {
@@ -248,9 +249,15 @@ public class TickerTimerTask extends TimerTask {
                                 }
                             }
 
+                            Date lastUpdated = loopTicker.getTimestamp();
+                            if (lastUpdated == null) {
+                                lastUpdated = new Date();
+                            }
+
                             this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last);
                             this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid);
                             this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask);
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastUpdated(currency, lastUpdated);
                             log.debug("Exchange = " + shortExchangeName);
 
                             // Put the exchange rate into the currency converter.
@@ -303,13 +310,13 @@ public class TickerTimerTask extends TimerTask {
 
                     if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals(newExchangeName)) {
                         if ("USD".equalsIgnoreCase(baseCurrency) && !"BTC".equalsIgnoreCase(counterCurrency)) {
-                            if (!"EEK".equalsIgnoreCase(counterCurrency) && !"CLF".equalsIgnoreCase(counterCurrency) 
+                            if (!"EEK".equalsIgnoreCase(counterCurrency) && !"CLF".equalsIgnoreCase(counterCurrency)
                              && !"JEP".equalsIgnoreCase(counterCurrency) && ! "SVC".equalsIgnoreCase(counterCurrency)) {
                                 availableCurrencies.add(counterCurrency);
                             }
                         }
                         if ("USD".equalsIgnoreCase(counterCurrency) && !"BTC".equalsIgnoreCase(baseCurrency)) {
-                            if (!"EEK".equalsIgnoreCase(baseCurrency) && !"CLF".equalsIgnoreCase(baseCurrency) 
+                            if (!"EEK".equalsIgnoreCase(baseCurrency) && !"CLF".equalsIgnoreCase(baseCurrency)
                                     && !"JEP".equalsIgnoreCase(baseCurrency) && ! "SVC".equalsIgnoreCase(baseCurrency)) {
                                 availableCurrencies.add(baseCurrency);
                             }
@@ -331,26 +338,26 @@ public class TickerTimerTask extends TimerTask {
     /**
      * Create the exchange specified by the exchange class name specified e.g.
      * BitcoinChartsExchange.class.getName();
-     * 
-     * @param exchangeClassName
+     *
+     * @param exchangeShortName
      */
-    private Exchange createExchange(String exchangeShortname) {
-        log.debug("creating exchange from exchangeShortname  = " + exchangeShortname);
-        if (exchangeShortname == null) {
+    private Exchange createExchange(String exchangeShortName) {
+        log.debug("creating exchange from exchangeShortName  = " + exchangeShortName);
+        if (exchangeShortName == null) {
             return null;
         }
 
         try {
             // Demonstrate the public market data service.
             // Use the factory to get the exchange API using default settings.
-            String exchangeClassname = ExchangeData.convertExchangeShortNameToClassname(exchangeShortname);
+            String exchangeClassname = ExchangeData.convertExchangeShortNameToClassname(exchangeShortName);
 
             if (exchangeClassname == null) {
                 return null;
             }
 
             Exchange exchangeToReturn;
-            if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortname)) {
+            if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortName)) {
                 ExchangeSpecification exchangeSpecification = new ExchangeSpecification(exchangeClassname);
                 exchangeSpecification.setPlainTextUri("http://openexchangerates.org");
                 exchangeSpecification
@@ -359,11 +366,11 @@ public class TickerTimerTask extends TimerTask {
             } else {
                 exchangeToReturn = ExchangeFactory.INSTANCE.createExchange(exchangeClassname);
             }
-            
+
             if (this.exchangeController.getModel().getExchangeData(shortExchangeName) == null) {
                 ExchangeData exchangeData = new ExchangeData();
                 exchangeData.setShortExchangeName(shortExchangeName);
-                this.exchangeController.getModel().getShortExchangeNameToExchangeMap().put(exchangeShortname, exchangeData);
+                this.exchangeController.getModel().getShortExchangeNameToExchangeMap().put(exchangeShortName, exchangeData);
             }
 
             return exchangeToReturn;

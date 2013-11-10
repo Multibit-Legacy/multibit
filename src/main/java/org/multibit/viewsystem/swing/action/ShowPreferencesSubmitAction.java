@@ -380,7 +380,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 tickerTimerTask1.createExchangeObjects(controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE));
                 mainFrame.setTickerTimerTask1(tickerTimerTask1);
 
-                tickerTimer1.schedule(tickerTimerTask1, 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                tickerTimer1.schedule(tickerTimerTask1, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
                 
                 boolean showSecondRow = Boolean.TRUE.toString().equals(
                         controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));

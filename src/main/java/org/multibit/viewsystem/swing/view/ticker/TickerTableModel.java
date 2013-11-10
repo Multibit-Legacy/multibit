@@ -21,12 +21,13 @@ import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.exchange.ExchangeModel;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.Date;
 
 /**
  * Table model for ticker.
- * 
+ *
  * @author jim
- * 
+ *
  */
 public class TickerTableModel extends AbstractTableModel {
 
@@ -74,11 +75,11 @@ public class TickerTableModel extends AbstractTableModel {
         if (tickerColumnsToShow == null || tickerColumnsToShow.equals("")) {
             tickerColumnsToShow = DEFAULT_COLUMNS_TO_SHOW;
         }
-        showCurrency = tickerColumnsToShow.indexOf(TICKER_COLUMN_CURRENCY) > -1;
-        showLastPrice = tickerColumnsToShow.indexOf(TICKER_COLUMN_LAST_PRICE) > -1;
-        showBid = tickerColumnsToShow.indexOf(TICKER_COLUMN_BID) > -1;
-        showAsk = tickerColumnsToShow.indexOf(TICKER_COLUMN_ASK) > -1;
-        showExchange = tickerColumnsToShow.indexOf(TICKER_COLUMN_EXCHANGE) > -1;
+        showCurrency = tickerColumnsToShow.contains(TICKER_COLUMN_CURRENCY);
+        showLastPrice = tickerColumnsToShow.contains(TICKER_COLUMN_LAST_PRICE);
+        showBid = tickerColumnsToShow.contains(TICKER_COLUMN_BID);
+        showAsk = tickerColumnsToShow.contains(TICKER_COLUMN_ASK);
+        showExchange = tickerColumnsToShow.contains(TICKER_COLUMN_EXCHANGE);
 
         numberOfColumns = 0;
         if (showExchange) {
@@ -164,42 +165,36 @@ public class TickerTableModel extends AbstractTableModel {
         } else {
             exchange = exchange2;
             currency = currency2;
-            exchangeData = this.exchangeController.getModel().getExchangeData(exchange2);;
+            exchangeData = this.exchangeController.getModel().getExchangeData(exchange2);
         }
 
+        String text = " ";
         String variable = columnVariables[column];
-
         if (TICKER_COLUMN_CURRENCY.equals(variable)) {
             // currency
-            return currency;
-        } else if (TICKER_COLUMN_LAST_PRICE.equals(variable)) {
-            // rate
-            if (exchangeData == null || exchangeData.getLastPrice(currency) == null) {
-                return " ";
-            } else {
-                return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastPrice(currency));
-            }
-        } else if (TICKER_COLUMN_BID.equals(variable)) {
-            // bid
-            if (exchangeData == null || exchangeData.getLastBid(currency) == null) {
-                return " ";
-            } else {
-                return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastBid(currency));
-            }
-        } else if (TICKER_COLUMN_ASK.equals(variable)) {
-            // ask
-            if (exchangeData == null || exchangeData.getLastAsk(currency) == null) {
-                return " ";
-            } else {
-                 return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastAsk(currency));
-            }
+            text = currency;
         } else if (TICKER_COLUMN_EXCHANGE.equals(variable)) {
             // exchange
-            return exchange;
-        } else {
-            // do not know
-            return "";
+            text = exchange;
+        } else if (exchangeData != null) {
+            if (TICKER_COLUMN_LAST_PRICE.equals(variable) && exchangeData.getLastPrice(currency) != null) {
+                // rate
+                text = controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastPrice(currency));
+            } else if (TICKER_COLUMN_BID.equals(variable) && exchangeData.getLastBid(currency) != null) {
+                // bid
+                text = controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastBid(currency));
+            } else if (TICKER_COLUMN_ASK.equals(variable) && exchangeData.getLastAsk(currency) != null) {
+                // ask
+                text = controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastAsk(currency));
+            }
         }
+
+        Date lastUpdated = null;
+        if (exchangeData != null) {
+            lastUpdated = exchangeData.getLastUpdated(currency);
+        }
+
+        return new Value(text, lastUpdated);
     }
 
     /**
@@ -212,5 +207,25 @@ public class TickerTableModel extends AbstractTableModel {
 
     public String[] getColumnVariables() {
         return columnVariables;
+    }
+
+    class Value {
+
+        private final String text;
+        private final Date lastUpdated;
+
+        private Value(String text, Date lastUpdated) {
+            this.text = text;
+            this.lastUpdated = lastUpdated;
+        }
+
+        String getText() {
+            return text;
+        }
+
+        Date getLastUpdated() {
+            return lastUpdated;
+        }
+
     }
 }

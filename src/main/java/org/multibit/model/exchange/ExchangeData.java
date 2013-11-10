@@ -25,6 +25,7 @@ import org.joda.money.BigMoney;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,9 +64,10 @@ public class ExchangeData {
     public static final BigMoney DO_NOT_KNOW = null;
     
     private String shortExchangeName;
-    private Map<String, BigMoney> currencyToLastPriceMap;
-    private Map<String, BigMoney> currencyToAskMap;
-    private Map<String, BigMoney> currencyToBidMap;
+    private final Map<String, BigMoney> currencyToLastPriceMap;
+    private final Map<String, BigMoney> currencyToAskMap;
+    private final Map<String, BigMoney> currencyToBidMap;
+    private final Map<String, Date> currencyToLastUpdated;
        
     private static Map<String,  Collection<String>> exchangeNameToAvailableCurrenciesMap  = new HashMap<String, Collection<String>>();
     
@@ -74,6 +76,7 @@ public class ExchangeData {
         currencyToLastPriceMap = new HashMap<String, BigMoney>();
         currencyToBidMap = new HashMap<String, BigMoney>();
         currencyToAskMap = new HashMap<String, BigMoney>();
+        currencyToLastUpdated = new HashMap<String, Date>();
     }
     
     public BigMoney getLastPrice(String currency) {
@@ -103,6 +106,10 @@ public class ExchangeData {
         }
     }
 
+    public Date getLastUpdated(String currency){
+        return currencyToLastUpdated.get(currency);
+    }
+
     public void setLastPrice(String currency, BigMoney lastPrice) {
         currencyToLastPriceMap.put(currency, lastPrice);
     }
@@ -113,6 +120,10 @@ public class ExchangeData {
 
     public void setLastAsk(String currency, BigMoney lastAsk) {
         currencyToAskMap.put(currency, lastAsk);
+    }
+
+    public void setLastUpdated(String currency, Date lastUpdated){
+        currencyToLastUpdated.put(currency, lastUpdated);
     }
 
     /**

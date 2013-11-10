@@ -311,7 +311,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         tickerTimer2 = new Timer();
         tickerTimerTask2 = new TickerTimerTask(this.exchangeController, this, false);
-        tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.INITIAL_DELAY + TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        tickerTimer2.schedule(tickerTimerTask2, TickerTimerTask.TASK_SEPARATION, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
         // Initialise status bar.
         statusBar.initialise();
@@ -1042,7 +1042,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         }
                         // Start ticker timer.
                         tickerTimer1 = new Timer();
-                        tickerTimer1.schedule(new TickerTimerTask(exchangeController, thisFrame, true), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                        tickerTimer1.schedule(new TickerTimerTask(exchangeController, thisFrame, true), TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
                         
                         boolean showSecondRow = Boolean.TRUE.toString().equals(
                                 controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
