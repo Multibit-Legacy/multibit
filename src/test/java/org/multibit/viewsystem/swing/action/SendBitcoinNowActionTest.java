@@ -15,11 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.io.File;
-import java.io.IOException;
-
 import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
@@ -33,6 +29,9 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 public class SendBitcoinNowActionTest extends TestCase {
 
@@ -123,13 +122,6 @@ public class SendBitcoinNowActionTest extends TestCase {
 
             // Execute - this should give the sending message or sent message.
             sendBitcoinNowAction.actionPerformed(null);
-//            assertTrue(
-//                    "Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1()
-//                    + "'",
-//                    "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
-//                    || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
-//                    || EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));
-//            assertEquals("Wrong message - expecting sending on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
 
             // Wait a while and the message should be that it has completed the
             // send.
@@ -211,14 +203,6 @@ public class SendBitcoinNowActionTest extends TestCase {
 
             // Execute
             sendBitcoinNowAction.actionPerformed(null);
-
-//            assertTrue(
-//                    "Wrong message - expecting sending/sent on messageText1, was '" + sendBitcoinConfirmPanel.getMessageText1()
-//                    + "'",
-//                    "".equals(sendBitcoinConfirmPanel.getMessageText1().trim())
-//                    || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1())
-//                    || EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY.equals(sendBitcoinConfirmPanel.getMessageText1()));
-//            assertEquals("Wrong message - expecting sending on messageText2", "", sendBitcoinConfirmPanel.getMessageText2().trim());
 
             // Wait a while and the message should be that it has completed the
             // send.

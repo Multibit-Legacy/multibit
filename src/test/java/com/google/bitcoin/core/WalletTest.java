@@ -42,6 +42,7 @@ import java.util.*;
 
 import static com.google.bitcoin.core.Utils.toNanoCoins;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * This is a selection of the bitcoinj wallet tests - mainly included 
@@ -348,6 +349,43 @@ public class WalletTest {
         // Change is confirmed. We started with 5.50 so we should have 4.50
         // left.
         assertEquals(toNanoCoins("4.4999"), wallet.getBalance(Wallet.BalanceType.AVAILABLE));
+    }
+
+  @Test
+   public void largeBalance() throws Exception {
+       // Receive 1700 coins then 100 coin.
+       BigInteger v1 = toNanoCoins(1700, 0);
+       BigInteger v2 = toNanoCoins(100, 0);
+       Transaction t1 = CoreTestUtils.createFakeTx(params, v1, myAddress);
+       Transaction t2 = CoreTestUtils.createFakeTx(params, v2, myAddress);
+       StoredBlock b1 = CoreTestUtils.createFakeBlock(params, blockStore, t1).storedBlock;
+       StoredBlock b2 = CoreTestUtils.createFakeBlock(params, blockStore, t2).storedBlock;
+       BigInteger expected = toNanoCoins(1800, 0);
+       assertEquals(0, wallet.getPoolSize(WalletTransaction.Pool.ALL));
+       wallet.receiveFromBlock(t1, b1, BlockChain.NewBlockType.BEST_CHAIN, 1);
+       assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
+       wallet.receiveFromBlock(t2, b2, BlockChain.NewBlockType.BEST_CHAIN, 1);
+       assertEquals(2, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
+       assertEquals(expected, wallet.getBalance());
+
+       // Now spend 1799 coin.
+       BigInteger v3 = toNanoCoins(1799, 0);
+       Transaction spend = wallet.createSend(new ECKey().toAddress(params), v3);
+       wallet.commitTx(spend);
+       assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.PENDING));
+
+       // Available and estimated balances should not be the same. We don't
+       // check the exact available balance here
+       // because it depends on the coin selection algorithm.
+       assertEquals(toNanoCoins("0.9999"), wallet.getBalance(Wallet.BalanceType.ESTIMATED));
+       assertFalse(wallet.getBalance(Wallet.BalanceType.AVAILABLE).equals(wallet.getBalance(Wallet.BalanceType.ESTIMATED)));
+
+       // Now confirm the transaction by including it into a block.
+       StoredBlock b3 = CoreTestUtils.createFakeBlock(params, blockStore, spend).storedBlock;
+       wallet.receiveFromBlock(spend, b3, BlockChain.NewBlockType.BEST_CHAIN, 1);
+
+       // Change is confirmed. We started with 1800 and spent 1799 so we should have 0.9999 left
+        assertEquals(toNanoCoins("0.9999"), wallet.getBalance(Wallet.BalanceType.AVAILABLE));
     }
 
     @Test

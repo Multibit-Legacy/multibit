@@ -15,23 +15,14 @@
  */
 package org.multibit.network;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.security.SecureRandom;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SimpleTimeZone;
-
-import javax.swing.SwingWorker;
-
+import com.google.bitcoin.core.*;
+import com.google.bitcoin.core.Wallet.SendRequest;
+import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.discovery.DnsDiscovery;
+import com.google.bitcoin.discovery.IrcDiscovery;
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.store.SPVBlockStore;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.MultiBit;
@@ -52,25 +43,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.CheckpointManager;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.MultiBitBlockChain;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.PeerAddress;
-import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.VerificationException;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.Wallet.SendRequest;
-import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.discovery.DnsDiscovery;
-import com.google.bitcoin.discovery.IrcDiscovery;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.store.SPVBlockStore;
+import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.security.SecureRandom;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -581,16 +564,11 @@ public class MultiBitService {
     /**
      * Send bitcoins from the active wallet.
      * 
-     * @param sendAddressString
-     *            the address to send to, as a String
-     * @param amount
-     *            the amount to send to, in BTC, as a String
-     * @param fee
-     *            fee to pay in nanocoin
-     * 
      * @return The sent transaction (may be null if there were insufficient
      *         funds for send)
-     * @throws EncrypterDecrypterException
+     * @throws KeyCrypterException
+     * @throws IOException
+     * @throws AddressFormatException
      */
 
     public Transaction sendCoins(WalletData perWalletModelData, SendRequest sendRequest,
