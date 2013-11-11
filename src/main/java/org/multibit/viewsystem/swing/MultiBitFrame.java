@@ -15,38 +15,10 @@
  */
 package org.multibit.viewsystem.swing;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Timer;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
-import javax.swing.plaf.basic.BasicSplitPaneDivider;
-import javax.swing.text.DefaultEditorKit;
-
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Sha256Hash;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.Localiser;
@@ -75,15 +47,7 @@ import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.Viewable;
-import org.multibit.viewsystem.swing.action.AbstractExitAction;
-import org.multibit.viewsystem.swing.action.CloseWalletAction;
-import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletAction;
-import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.action.MnemonicUtil;
-import org.multibit.viewsystem.swing.action.MultiBitAction;
-import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
+import org.multibit.viewsystem.swing.action.*;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.*;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
@@ -97,10 +61,14 @@ import org.simplericity.macify.eawt.ApplicationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Sha256Hash;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
+import java.awt.event.*;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Timer;
 
 
 /*
@@ -570,7 +538,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         estimatedBalanceBTCLabel = new BlinkLabel(controller, true);
         estimatedBalanceBTCLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
         estimatedBalanceBTCLabel.setBorder(BorderFactory.createEmptyBorder());
-        //estimatedBalanceBTCLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
 
         constraints.gridx = 5;
         constraints.gridy = 1;
@@ -584,8 +551,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         estimatedBalanceFiatLabel = new BlinkLabel(controller, true);
         estimatedBalanceFiatLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip")));
         estimatedBalanceFiatLabel.setBorder(BorderFactory.createEmptyBorder());
-        //estimatedBalanceFiatLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
-        
+
         constraints.gridx = 6;
         constraints.gridy = 0;
         constraints.weightx = 0.01;

@@ -15,14 +15,13 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.Timer;
-
 import org.multibit.controller.Controller;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class BlinkLabel extends MultiBitLabel {
     private static final long serialVersionUID = 1L;
@@ -82,7 +81,7 @@ public class BlinkLabel extends MultiBitLabel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            blinkLabel.setForeground(Color.BLACK);
+            blinkLabel.setForeground(ColorAndFontConstants.TEXT_COLOR);
             blinkLabel.setBackground(originalBackgroundColor);
             blinkLabel.setOpaque(false);
             

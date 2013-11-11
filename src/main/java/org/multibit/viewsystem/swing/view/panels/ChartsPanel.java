@@ -78,6 +78,8 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
 
     setLayout(new BorderLayout());
     setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    setForeground(ColorAndFontConstants.TEXT_COLOR);
+
     setOpaque(true);
     applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -92,6 +94,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
     mainPanel.setLayout(new GridBagLayout());
     mainPanel.setOpaque(true);
     mainPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    mainPanel.setForeground(ColorAndFontConstants.TEXT_COLOR);
 
     mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -109,11 +112,14 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
     JPanel chartPanel = new JPanel();
     chartPanel.setOpaque(true);
     chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    chartPanel.setForeground(ColorAndFontConstants.TEXT_COLOR);
+
     mainPanel.add(chartPanel, constraints);
 
     JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
     mainScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    mainScrollPane.getViewport().setForeground(ColorAndFontConstants.TEXT_COLOR);
     mainScrollPane.getViewport().setOpaque(true);
     mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     mainScrollPane.getHorizontalScrollBar().setUnitIncrement(CoreModel.SCROLL_INCREMENT);
@@ -128,6 +134,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
   private JPanel createChartPanel() {
     try {
       setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+      setForeground(ColorAndFontConstants.TEXT_COLOR);
 
       int chartWidth = Math.max(getWidth() - WIDTH_DELTA, MINIMUM_WIDTH);
       int chartHeight = Math.max(getHeight() - HEIGHT_DELTA, MINIMUM_HEIGHT);
@@ -160,6 +167,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
 
           JPanel chartPanel = new JPanel();
           chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+          chartPanel.setForeground(ColorAndFontConstants.TEXT_COLOR);
           chartPanel.setOpaque(true);
           return chartPanel;
         } else {
@@ -184,6 +192,9 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
       chart.getStyleManager().setLegendVisible(false);
 
       chart.getStyleManager().setChartBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
+      chart.getStyleManager().setChartFontColor(ColorAndFontConstants.TEXT_COLOR);
+      chart.getStyleManager().setAxisTickLabelsColor(ColorAndFontConstants.TEXT_COLOR);
+      chart.getStyleManager().setAxisTickMarksColor(ColorAndFontConstants.TEXT_COLOR);
       chart.getStyleManager().setChartTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
       chart.getStyleManager().setAxisTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
       chart.getStyleManager().setAxisTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
@@ -207,6 +218,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
       e.printStackTrace();
       JPanel chartPanel = new JPanel();
       chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+      chartPanel.setForeground(ColorAndFontConstants.TEXT_COLOR);
       chartPanel.setOpaque(true);
       return chartPanel;
     }
@@ -235,6 +247,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
     JPanel chartPanel = createChartPanel();
     chartPanel.setOpaque(true);
     chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    chartPanel.setForeground(ColorAndFontConstants.TEXT_COLOR);
     mainPanel.add(chartPanel, constraints);
   }
 
