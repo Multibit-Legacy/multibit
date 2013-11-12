@@ -39,6 +39,7 @@ import java.util.Collection;
 public class PrivateKeysHandlerTest extends TestCase {
     public static final String PRIVATE_KEYS_TESTDATA_DIRECTORY = "privateKeys";
     public static final String WALLETS_TESTDATA_DIRECTORY = "wallets";
+    public static final String BCI_TESTDATA_DIRECTORY = "BCI-backups";
 
     public static final String TEST1_WALLET_FILE = "test1.wallet";
     public static final String TEST1_PRIVATE_KEYS_FILE = "test1.key";
@@ -59,7 +60,12 @@ public class PrivateKeysHandlerTest extends TestCase {
 
     public static final String BLOCKCHAIN_SINGLE_PASSWORD_WALLET_FILE = "blockchain_test.aes.json";
     public static final String BLOCKCHAIN_DOUBLE_PASSWORD_WALLET_FILE = "blockchain_test_double_encrypted.aes.json";
-    
+
+    public static final String BCI_FORMAT_CHANGE_EXPORT_FILE = "wallet.aes.json";
+    public static final String BCI_FORMAT_CHANGE_PASSWORD = "zacksamemona274399";
+    public static final String BCI_FORMAT_CHANGE_ADDRESS1 = "1AT4u2KDnbSBKZABt9WBJDWoLYUZh6vJG4";
+    public static final String BCI_FORMAT_CHANGE_ADDRESS2 = "1BB9Z5Fyxwt9fgweUKBRAZg2xAGKVXAEib";
+
     @Test
     public void testExport() throws Exception {
         // Create MultiBit controller.
@@ -223,6 +229,48 @@ public class PrivateKeysHandlerTest extends TestCase {
             count++;
         }
     }
+
+
+  @Test
+  public void testMyWalletImportNov2013Format() throws Exception {
+      NetworkParameters prodNet = NetworkParameters.prodNet();
+      PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(prodNet);
+      assertNotNull(privateKeysHandler);
+
+      File directory = new File(".");
+      String currentPath = directory.getAbsolutePath();
+
+      String testDirectory = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+              + BCI_TESTDATA_DIRECTORY;
+      File importFile = new File(testDirectory + File.separator + BCI_FORMAT_CHANGE_EXPORT_FILE);
+
+      String importFileContents = PrivateKeysHandler.readFile(importFile);
+
+      MyWallet wallet = new MyWallet(importFileContents, BCI_FORMAT_CHANGE_PASSWORD);
+
+      Wallet bitcoinj = wallet.getBitcoinJWallet();
+      Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
+      for (ECKey key : bitcoinj.getKeychain()) {
+          privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
+      }
+
+      System.out.println("PrivateKeysHandlerTest#testMyWalletImportNov2013Format parsedPrivateKeysAndDates = '" + privateKeyAndDateArray + "'");
+      assertNotNull(privateKeyAndDateArray);
+      assertEquals(2, privateKeyAndDateArray.size());
+
+      boolean seenAddress1 = false;
+      boolean seenAddress2 = false;
+      for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
+        if (BCI_FORMAT_CHANGE_ADDRESS1.equals(privateKeyAndDate.getKey().toAddress(prodNet).toString())) {
+              seenAddress1 = true;
+        } else {
+          if (BCI_FORMAT_CHANGE_ADDRESS2.equals(privateKeyAndDate.getKey().toAddress(prodNet).toString())) {
+                seenAddress2 = true;
+          }
+        }
+      }
+      assertTrue("The imported wallet did not contain both private keys", seenAddress1 && seenAddress2);
+  }
 
     private String readFile(File inputFile) throws IOException {
         StringBuffer contents = new StringBuffer();
