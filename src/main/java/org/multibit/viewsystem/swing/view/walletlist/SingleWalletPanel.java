@@ -142,9 +142,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     setFocusable(true);
     setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
-    inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
-            ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
-
+    if (ColorAndFontConstants.isInverse()) {
+      inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() + COLOR_DELTA), Math.max(0,
+              ColorAndFontConstants.BACKGROUND_COLOR.getBlue() + COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() + COLOR_DELTA));
+    } else {
+      inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
+              ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
+    }
     GridBagConstraints constraints = new GridBagConstraints();
 
     JLabel filler1 = new JLabel();

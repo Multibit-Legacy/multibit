@@ -49,7 +49,9 @@ public final class ColorAndFontConstants {
   public static Color TEXT_COLOR = Color.BLACK;
   public static Color DATA_HAS_CHANGED_TEXT_COLOR = Color.RED;
 
-  public static final int BRIGHTEN_CONSTANT = 3;
+  public static final int BRIGHTEN_CONSTANT = 4;
+
+  private static boolean inverse = false;
 
   /**
    * Utility class should not have a public constructor
@@ -64,20 +66,25 @@ public final class ColorAndFontConstants {
     MULTIBIT_DEFAULT_FONT_SIZE = UIManager.get("Label.font") == null ? 13 : ((Font) UIManager.get("Label.font")).getSize() + 1;
 
     // Work out if we are using an inverse color scheme
-    boolean isInverse = false;
 
     Color labelBackground = (Color) UIManager.get("Label.background");
     if (labelBackground != null) {
       log.debug("labelBackground = " + labelBackground.getRed() + " " + labelBackground.getGreen() + " " + labelBackground.getBlue());
-      isInverse = (labelBackground.getRed() + labelBackground.getGreen() + labelBackground.getBlue() < 384);
+      inverse = (labelBackground.getRed() + labelBackground.getGreen() + labelBackground.getBlue() < 384);
+
+      // Brighten it.
+      labelBackground = new Color(Math.min(255, labelBackground.getRed() + BRIGHTEN_CONSTANT),
+              Math.min(255, labelBackground.getGreen() + BRIGHTEN_CONSTANT),
+              Math.min(255, labelBackground.getBlue() + BRIGHTEN_CONSTANT));
     }
 
+    // Logged simply for interest - it might be useful to determine inverse on some machines in the future.
     Color labelForeground = (Color) UIManager.get("Label.foreground");
     if (labelForeground != null) {
       log.debug("labelForeground = " + labelForeground.getRed() + " " + labelForeground.getGreen() + " " + labelForeground.getBlue());
     }
 
-    if (isInverse) {
+    if (inverse) {
       // Inverse color scheme
       VERY_LIGHT_BACKGROUND_COLOR = new Color(4, 4, 1);
       TEXT_COLOR = Color.WHITE;
@@ -86,16 +93,9 @@ public final class ColorAndFontConstants {
       DEBIT_FOREGROUND_COLOR = Color.RED.brighter();
     } else {
       // Normal color scheme
-      if (labelBackground != null) {
-        // Brighten it.
-        labelBackground = new Color(Math.min(255, labelBackground.getRed() + BRIGHTEN_CONSTANT),
-                Math.min(255, labelBackground.getGreen() + BRIGHTEN_CONSTANT),
-                Math.min(255, labelBackground.getBlue() + BRIGHTEN_CONSTANT));
-      }
       VERY_LIGHT_BACKGROUND_COLOR = new Color(251, 251, 254);
       TEXT_COLOR = Color.BLACK;
       ALTERNATE_TABLE_COLOR = new Color(230, 230, 233);
-
       CREDIT_FOREGROUND_COLOR = Color.GREEN.darker().darker();
       DEBIT_FOREGROUND_COLOR = Color.RED.darker();
     }
@@ -107,5 +107,9 @@ public final class ColorAndFontConstants {
 
     SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
     SELECTION_BACKGROUND_COLOR = SystemColor.textHighlight;
+  }
+
+  public static boolean isInverse() {
+    return inverse;
   }
 }
