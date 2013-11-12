@@ -128,7 +128,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     // Add contents to myRoundedPanel.
     myRoundedPanel = new RoundedPanel(controller.getLocaliser().getLocale());
     myRoundedPanel.setLayout(new GridBagLayout());
-    myRoundedPanel.setOpaque(false);
+    myRoundedPanel.setOpaque(true);
     myRoundedPanel.setPreferredSize(new Dimension(normalWidth, normalHeight));
     if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
       myRoundedPanel.setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
@@ -143,8 +143,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
     if (ColorAndFontConstants.isInverse()) {
-      inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() + COLOR_DELTA), Math.max(0,
-              ColorAndFontConstants.BACKGROUND_COLOR.getBlue() + COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() + COLOR_DELTA));
+      inactiveBackGroundColor = new Color(Math.min(255, ColorAndFontConstants.BACKGROUND_COLOR.getRed() + 2 * COLOR_DELTA), Math.min(255,
+              ColorAndFontConstants.BACKGROUND_COLOR.getBlue() + 2 * COLOR_DELTA), Math.min(255, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() + 2 * COLOR_DELTA));
     } else {
       inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
               ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
@@ -492,7 +492,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         walletTypeButton.setOpaque(true);
         walletTypeButton.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        walletTypeButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.SELECTION_BACKGROUND_COLOR.darker()),
+        Color selectionBackGroundColor = ColorAndFontConstants.SELECTION_BACKGROUND_COLOR;
+        selectionBackGroundColor = ColorAndFontConstants.isInverse() ? selectionBackGroundColor.brighter() : selectionBackGroundColor.darker();
+        walletTypeButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, selectionBackGroundColor),
                 BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR)));
         walletTypeButton.setBorderPainted(true);
 
@@ -573,8 +575,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
    * Update any UI elements from the model (hint that data has changed).
    */
   public void updateFromModel(boolean blinkEnabled, boolean useBusyStatus) {
-    inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
-            ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
+    if (ColorAndFontConstants.isInverse()) {
+      inactiveBackGroundColor = new Color(Math.min(255, ColorAndFontConstants.BACKGROUND_COLOR.getRed() + 2 * COLOR_DELTA), Math.min(255,
+              ColorAndFontConstants.BACKGROUND_COLOR.getBlue() + 2 * COLOR_DELTA), Math.min(255, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() + 2 * COLOR_DELTA));
+    } else {
+      inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
+              ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
+    }
 
     BigInteger estimatedBalance = perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
     String balanceTextToShowBTC = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
