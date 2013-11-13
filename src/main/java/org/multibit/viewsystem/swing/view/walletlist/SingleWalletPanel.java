@@ -629,6 +629,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
       amountLabelFiat.setEnabled(false);
       walletTypeButton.setEnabled(false);
     }
+
+    invalidate();
+    revalidate();
+    repaint();
   }
 
   public void setSyncMessage(String message, double syncPercent) {
