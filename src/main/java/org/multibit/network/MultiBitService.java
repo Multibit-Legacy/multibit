@@ -521,11 +521,18 @@ public class MultiBitService {
                 log.debug("NullPointerException on blockstore close");
             }
         }
+
+        // The CheckpointManager removes a week to cater for block header drift.
+        // Any date before genesis + 1 week gets adjusted accordingly.
+        Date genesisPlusOnwWeekAndASecond = new Date(MultiBitService.genesisBlockCreationDate.getTime() + (86400 * 7 + 1) * 1000);
+
         if (dateToReplayFrom != null) {
+            if (dateToReplayFrom.getTime() < genesisPlusOnwWeekAndASecond.getTime() ) {
+              dateToReplayFrom = genesisPlusOnwWeekAndASecond;
+            }
             blockStore = createBlockStore(dateToReplayFrom, true);
         } else {
-            Date oneSecondAfterGenesis = new Date(MultiBitService.genesisBlockCreationDate.getTime() + 1000);
-            blockStore = createBlockStore(oneSecondAfterGenesis, true);
+             blockStore = createBlockStore(genesisPlusOnwWeekAndASecond, true);
         }
         log.debug("Blockstore is '" + blockStore + "'");
 
