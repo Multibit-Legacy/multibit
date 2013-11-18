@@ -1,5 +1,34 @@
 MultiBit release notes.
 
+03 Sep 2013 Version 0.5.14
+Changes:
+#133. The Windows installer is signed with authenticode.
+#161. Fixed bug: Still prompted for password after a send.
+#179. Moved 'Show transaction details' to button bar on Transactions tab.
+#180. Added 'Export transactions' to Transactions tab.
+#181. Improved build to check dependencies using Gary's dependency checker.
+#202. Improved closedown of MultiBit. There are now messages in the titlebar.
+#209. Fixed bug: Request labels being wiped after private key import.
+#223. Tidied up UI.
+#224. Updated to bitcoinj 0.10.1.
+#225. Updated to XChange 1.8.0.
+#229. Renamed windows installer to get automatic administrator elevation.
+
+
+22 Jul 2013 Version 0.5.13
+Changes:
+#190. The backing up of wallets has been improved. 
+      There is now a data directory for each wallet.
+
+#111. Failing test fixed. Also fixed functional tests.
+#174. Send address is properly trimmed.
+#182. Swiss Francs now has correct currency prefix.
+#189. Receiving addresses that are manually added to the info file do not appear in the UI.
+#191. Swahili added as a target language.
+#195. Fixed Verify Message tooltip on a Mac.
+#201. Fixed blank validation message if fee takes total over amount in wallet.
+
+
 24 June 2013 - Version 0.5.12
 Changes:
 + Updated to bitcoinj v0.9
