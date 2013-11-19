@@ -74,6 +74,8 @@ public final class MultiBit {
     private static BitcoinController bitcoinController = null;
     private static ExchangeController exchangeController = null;
 
+    private static String rememberedRawBitcoinURI;
+
     /**
      * Utility class should not have a public constructor
      */
@@ -195,14 +197,13 @@ public final class MultiBit {
             
             // Initialise replay manager.
             ReplayManager.INSTANCE.initialise(bitcoinController, false);
-            
+
             log.debug("Setting look and feel");
             try {
                 String lookAndFeel = userPreferences.getProperty(CoreModel.LOOK_AND_FEEL);
 
                 // If not set on Windows use 'Windows' L&F as system can be rendered as metal.
-                if ((lookAndFeel == null || lookAndFeel.equals("")) &&
-                        (System.getProperty("os.name") != null && System.getProperty("os.name").startsWith("Win"))) {
+                if ((lookAndFeel == null || lookAndFeel.equals("")) && System.getProperty("os.name").startsWith("Win")) {
                     lookAndFeel = "Windows";
                     userPreferences.setProperty(CoreModel.LOOK_AND_FEEL, lookAndFeel);
                 }
@@ -527,7 +528,7 @@ public final class MultiBit {
             coreController.setApplicationStarting(false);
 
             // Check for any pending URI operations.
-            bitcoinController.handleOpenURI();
+            bitcoinController.handleOpenURI(rememberedRawBitcoinURI);
 
             // Check to see if there is a new version.
             AlertManager.INSTANCE.initialise(bitcoinController, (MultiBitFrame) swingViewSystem);
@@ -698,5 +699,14 @@ public final class MultiBit {
      
      public static void setExchangeController(ExchangeController exchangeController) {
         MultiBit.exchangeController = exchangeController;
+    }
+
+    public static String getRememberedRawBitcoinURI() {
+        return rememberedRawBitcoinURI;
+    }
+
+    public static void setRememberedRawBitcoinURI(String rememberedRawBitcoinURI) {
+        log.debug("Remembering the bitcoin URI to process of '" + rememberedRawBitcoinURI + "'");
+        MultiBit.rememberedRawBitcoinURI = rememberedRawBitcoinURI;
     }
 }

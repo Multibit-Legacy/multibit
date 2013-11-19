@@ -108,6 +108,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String VALIDATION_AMOUNT_IS_INVALID = "validationAmountIsInvalid";
     public static final String VALIDATION_AMOUNT_IS_MISSING = "validationAmountIsMissing";
     public static final String VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO = "validationAmountIsNegativeOrZero";
+    public static final String VALIDATION_AMOUNT_IS_TOO_SMALL = "validationAmountIsTooSmall";
     public static final String VALIDATION_NOT_ENOUGH_FUNDS = "validationNotEnoughFunds";
     public static final String VALIDATION_ADDRESS_VALUE = "validationAddressValue";
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
@@ -629,10 +630,10 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
         }
 
         // Other wise return the date of the block it first appeared in.
-        Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
+        Map<Sha256Hash, Integer> appearsIn = transaction.getAppearsInHashes();
         if (appearsIn != null) {
             if (!appearsIn.isEmpty()) {
-                Iterator<Sha256Hash> iterator = appearsIn.iterator();
+                Iterator<Sha256Hash> iterator = appearsIn.keySet().iterator();
                 // just take the first i.e. ignore impact of side chains
                 if (iterator.hasNext()) {
                     Sha256Hash appearsInHash = iterator.next();

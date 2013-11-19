@@ -16,18 +16,10 @@
 
 package org.multibit.network;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Timer;
-import java.util.UUID;
-
+import com.google.bitcoin.core.CheckpointManager;
+import com.google.bitcoin.core.PeerGroup;
+import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.store.BlockStoreException;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -35,10 +27,11 @@ import org.multibit.model.bitcoin.WalletData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.CheckpointManager;
-import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.store.BlockStoreException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.util.*;
 
 
 /**
@@ -315,7 +308,7 @@ public enum ReplayManager {
     
     /**
      * See if there is a waiting replay task for a perWalletModelData
-     * @param perModelWalletData
+     * @param perWalletModelData
      * @return the waiting ReplayTask or null if there is not one.
      */
     @SuppressWarnings("unchecked")

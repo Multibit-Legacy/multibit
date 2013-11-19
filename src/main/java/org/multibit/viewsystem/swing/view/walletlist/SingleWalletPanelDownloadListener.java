@@ -16,21 +16,17 @@
 
 package org.multibit.viewsystem.swing.view.walletlist;
 
-import java.util.Date;
-import java.util.UUID;
-
+import com.google.bitcoin.core.DownloadListener;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.ReplayManager;
-import org.multibit.network.ReplayTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.DownloadListener;
-
-
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * Listen to chain download events and print useful informational messages.
@@ -129,17 +125,6 @@ public class SingleWalletPanelDownloadListener extends DownloadListener {
             if (replayTaskUUID != null) {
                 ReplayManager.INSTANCE.taskHasCompleted(replayTaskUUID);                
             }
-        }
-    }
-    
-    /**
-     *  Set a sync message on the underlying SingleWalletPanel
-     * @param message
-     * @param syncPercent
-     */
-    public void setSyncMessage(String message, double syncPercent) {
-        if (singleWalletPanel != null) {
-            singleWalletPanel.setSyncMessage(message, syncPercent);
         }
     }
 }

@@ -9,4 +9,6 @@ Tim Molter
 
 Internationalisation:
 ---------------------
-Thanks to all the localisers at http://translate.multibit.org
+http://translate.multibit.org
+
+Thanks to all the MultiBit localisers.
