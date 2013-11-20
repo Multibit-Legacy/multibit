@@ -814,7 +814,7 @@
         <bitcoinj.version>0.10.2-MB-ALICE</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
-        <xchange.version>1.9.0</xchange.version>
+        <xchange.version>1.10.0</xchange.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>

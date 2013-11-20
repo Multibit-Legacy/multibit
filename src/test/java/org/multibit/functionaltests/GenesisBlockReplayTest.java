@@ -142,12 +142,11 @@ public class GenesisBlockReplayTest extends TestCase {
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
-        
+
         // Copy in the checkpoints stored in git - this is in source/main/resources/.
         File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
         FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
         multibitCheckpoints.deleteOnExit();
-
 
         return multiBitDirectory;
     }

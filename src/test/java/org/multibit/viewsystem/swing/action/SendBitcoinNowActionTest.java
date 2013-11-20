@@ -278,7 +278,6 @@ public class SendBitcoinNowActionTest extends TestCase {
         FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
         multibitCheckpoints.deleteOnExit();
 
-
         return multiBitDirectory;
     }
 }
