@@ -15,16 +15,7 @@
  */
 package org.multibit.functionaltests;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
@@ -38,6 +29,14 @@ import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.action.ActionTestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Functional test to check that replay from the genesis block works ok.
@@ -144,16 +143,10 @@ public class GenesisBlockReplayTest extends TestCase {
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
-        // Copy in the blockchain stored in git - this is in source/main/resources/.
-        File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
-        FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
-        multibitBlockchain.deleteOnExit();
-        
         // Copy in the checkpoints stored in git - this is in source/main/resources/.
         File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
         FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
         multibitCheckpoints.deleteOnExit();
-
 
         return multiBitDirectory;
     }
