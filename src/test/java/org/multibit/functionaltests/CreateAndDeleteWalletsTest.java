@@ -15,17 +15,12 @@
  */
 package org.multibit.functionaltests;
 
-import java.io.File;
-import java.io.IOException;
-
 import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
 import org.multibit.CreateControllers;
-
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.network.MultiBitService;
@@ -34,6 +29,9 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * functional test to check that wallets can be created and deleted ok
@@ -140,11 +138,6 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
-
-        // Copy in the blockchain stored in git - this is in source/main/resources/.
-        File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
-        FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
-        multibitBlockchain.deleteOnExit();
 
         // Copy in the checkpoints stored in git - this is in source/main/resources/.
         File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");

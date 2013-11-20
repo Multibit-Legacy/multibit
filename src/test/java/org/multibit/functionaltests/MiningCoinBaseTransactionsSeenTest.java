@@ -16,23 +16,16 @@
 package org.multibit.functionaltests;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TimeZone;
-
+import com.google.bitcoin.core.DumpedPrivateKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.Wallet.BalanceType;
 import junit.framework.TestCase;
 import org.junit.Test;
-
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
 import org.multibit.CreateControllers;
-import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
@@ -41,15 +34,14 @@ import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.DumpedPrivateKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.Wallet.BalanceType;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -216,11 +208,6 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
-
-        // Copy in the blockchain stored in git - this is in source/main/resources/.
-        File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
-        FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
-        multibitBlockchain.deleteOnExit();
 
         // Copy in the checkpoints stored in git - this is in source/main/resources/.
         File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
