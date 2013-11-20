@@ -143,9 +143,9 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             ReplayManager.INSTANCE.offerReplayTask(replayTask);
 
             // Run for a while.
-            log.debug("Twiddling thumbs for 60 seconds ...");
-            Thread.sleep(60000);
-            log.debug("... 60 seconds later.");
+            log.debug("Twiddling thumbs for 90 seconds ...");
+            Thread.sleep(90000);
+            log.debug("... 90 seconds later.");
 
             // Check new balance on wallet - estimated balance should be at least the
             // expected (may have later tx too)..
