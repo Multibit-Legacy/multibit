@@ -606,6 +606,8 @@ public class MultiBitService {
             // txConfidenceListener which will in turn invoke the wallets event listener onTransactionConfidenceChanged
             // method.
             peerGroup.broadcastTransaction(sendRequest.tx);
+
+            log.debug("Sending transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
         } catch (VerificationException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
