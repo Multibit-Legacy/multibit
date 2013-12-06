@@ -41,6 +41,7 @@ import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.panels.SignMessagePanel;
 import org.multibit.viewsystem.swing.view.panels.VerifyMessagePanel;
+import org.multibit.viewsystem.swing.view.panels.WalletInfoPanel;
 import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
 
 /**
@@ -184,6 +185,10 @@ public class ViewFactory {
             break;
         }
 
+        case WALLET_INFO_VIEW: {
+        	viewToReturn = new WalletInfoPanel(bitcoinController);
+        }
+        
         default: {
         }
         }
