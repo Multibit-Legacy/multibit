@@ -27,7 +27,12 @@ Wherever this file is found, that directory is used as the application data dire
 
 #### Show Delete Wallet
 
-To enable the display in the File menu of the 'Delete Wallet' option, set `showDeleteWallet=true`
+To enable the display in the File menu of the 'Delete Wallet' option, do the following:
+1. Shutdown MultiBit.
+2. Locate the file "multibit.properties" in your installation directory
+3. Edit this file to include a setting of: showDeleteWallet=true
+4. Save the file and restart MultiBit.
+5. The File | Delete menu option should now be available - use it at your own risk.
 
 When deleting a wallet, to avoid accidental deletion, MultiBit asks you:
 ```

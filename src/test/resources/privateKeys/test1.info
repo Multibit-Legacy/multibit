@@ -31,7 +31,7 @@ property,receiveAmount,0.05
 property,sendAddress,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
 property,receiveLabel,50%25%20of%20LoveBitcoins.org%20subs
 property,sendLabel,petty%20cash%201
-property,walletBackupFile,%2FUsers%2Fjim%2FIdeaProjects%2Fmultibit%2Fsrc%2Ftest%2Fresources%2FprivateKeys%2Ftest1-data%2Frolling-backup%2Ftest1-20131209212328.wallet
 property,receiveAddress,1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK
+property,walletBackupFile,%2FUsers%2Fjim%2FIdeaProjects%2Fmultibit%2Fsrc%2Ftest%2Fresources%2FprivateKeys%2Ftest1-data%2Frolling-backup%2Ftest1-20131209221532.wallet
 property,sendAmount,9.1464
 property,openUriShowDialog,false
