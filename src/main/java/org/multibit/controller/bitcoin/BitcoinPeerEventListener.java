@@ -89,7 +89,7 @@ public class BitcoinPeerEventListener implements PeerEventListener {
                     } else {
                       perWalletModelData.setDirty(true);
                     }
-                    loopWallet.receivePending(transaction, null); // TODO - will this add a timelocked tx i.e. retep attack ?
+                    loopWallet.receivePending(transaction, null);
                   }
                 }
               }

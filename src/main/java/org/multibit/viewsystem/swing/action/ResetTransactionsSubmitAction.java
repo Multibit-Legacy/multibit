@@ -98,7 +98,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
             }
 
         // Take an extra day off the reset date to ensure the wallet is cleared entirely
-        actualResetDate = new Date (actualResetDate.getTime() - 3600 * 24 * 1000);  // Number of milliseconds in a day
+        actualResetDate = new Date (actualResetDate.getTime() - 3600 * 24 * NUMBER_OF_MILLISECOND_IN_A_SECOND);  // Number of milliseconds in a day
 
         // Remove the transactions from the wallet.
         activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
