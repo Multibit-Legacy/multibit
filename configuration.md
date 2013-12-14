@@ -25,27 +25,6 @@ All these options are set in the main control file `multibit.properties`. MultiB
 
 Wherever this file is found, that directory is used as the application data directory for Multibit.
 
-#### Show Delete Wallet
-
-To enable the display in the File menu of the 'Delete Wallet' option, do the following:
-1. Shutdown MultiBit.
-2. Locate the file "multibit.properties" in your installation directory
-3. Edit this file to include a setting of: showDeleteWallet=true
-4. Save the file and restart MultiBit.
-5. The File | Delete menu option should now be available - use it at your own risk.
-
-When deleting a wallet, to avoid accidental deletion, MultiBit asks you:
-```
-"To confirm this action enter the name of the creator of Bitcoin"
-```
-The answer is:
-```
-satoshi nakamoto
-```
-
-Note that when a wallet is deleted the wallet data directory and all the wallet backups are NOT deleted.
-You have to [securely delete (shred)](http://superuser.com/questions/86824/how-to-secure-delete-file-or-folder-in-windows) this directory manually (as long as you are sure you do not
-need them). 
 
 #### Connect to specific peers
 

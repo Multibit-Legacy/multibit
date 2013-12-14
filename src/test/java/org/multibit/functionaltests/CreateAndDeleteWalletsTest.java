@@ -26,7 +26,6 @@ import org.multibit.file.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,17 +108,6 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             createNewWalletAction.createNewWallet(test2WalletPath);
             Thread.sleep(4000);
             assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
-
-            // delete the test1wallet
-            DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null);
-            deleteWalletSubmitAction.deleteWallet(test1WalletPath);
-            Thread.sleep(4000);
-            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
-
-            // delete the test2wallet
-            deleteWalletSubmitAction.deleteWallet(test2WalletPath);
-            Thread.sleep(4000);
-            assertEquals(0, controller.getModel().getPerWalletModelDataList().size());
         }
     }
 
