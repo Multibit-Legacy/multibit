@@ -609,7 +609,7 @@ public final class MultiBit {
                 ReplayManager.INSTANCE.offerReplayTask(replayTask);
             } else {
                 // Just sync the blockchain without a replay task being involved.
-                multiBitService.downloadBlockChain();
+                ReplayManager.INSTANCE.downloadBlockChain();
             }
         } catch (Exception e) {
             // An odd unrecoverable error occurred.

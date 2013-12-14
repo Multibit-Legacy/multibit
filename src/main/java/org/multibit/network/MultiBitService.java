@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -86,8 +85,6 @@ public class MultiBitService {
 
     public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";
     public static final String IRC_CHANNEL_TESTNET3 = "#bitcoinTEST3";
-
-    static boolean restartListenerHasBeenAddedToPeerGroup = false;
 
     public Logger logger = LoggerFactory.getLogger(MultiBitService.class.getName());
 
@@ -506,7 +503,7 @@ public class MultiBitService {
 
     /**
      * Create a new block store.
-     * @param dateToReplayFrom
+     * @param dateToReplayFrom The date to start the replay task from
      * @return height tof new block chain after truncate.
      * @throws IOException
      * @throws BlockStoreException
@@ -553,22 +550,6 @@ public class MultiBitService {
     }
 
     /**
-     * Download the block chain.
-     */
-    public void downloadBlockChain() {
-        @SuppressWarnings("rawtypes")
-        SwingWorker worker = new SwingWorker() {
-            @Override
-            protected Object doInBackground() throws Exception {
-                logger.debug("Downloading blockchain");
-                peerGroup.downloadBlockChain();
-                return null; // return not used
-            }
-        };
-        worker.execute();
-    }
-
-    /**
      * Send bitcoins from the active wallet.
      * 
      * @return The sent transaction (may be null if there were insufficient
@@ -592,7 +573,6 @@ public class MultiBitService {
         sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
         
         sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
-        // log.debug("Added txConfidenceListener " + txConfidenceListener + " to tx " + request.tx.getHashAsString() + ", identityHashCode = " + System.identityHashCode(request.tx));
 
         try {
             // The transaction is already added to the wallet (in SendBitcoinConfirmAction) so here we just need
@@ -697,5 +677,5 @@ public class MultiBitService {
 
     public MultiBitCheckpointManager getCheckpointManager() {
         return checkpointManager;
-    };
+    }
 }

@@ -4,6 +4,7 @@ import com.google.bitcoin.core.*;
 import org.multibit.controller.Controller;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.StatusEnum;
+import org.multibit.network.ReplayManager;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +26,17 @@ public class BitcoinPeerEventListener implements PeerEventListener {
   @Override
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
     this.bitcoinController.fireBlockDownloaded();
+
+    if (blocksLeft == 0) {
+      ReplayManager.INSTANCE.downloadHasCompleted();
+    }
   }
 
   @Override
   public void onChainDownloadStarted(Peer peer, int blocksLeft) {
+    if (blocksLeft == 0) {
+      ReplayManager.INSTANCE.downloadHasCompleted();
+    }
     this.bitcoinController.fireBlockDownloaded();
   }
 
