@@ -15,13 +15,8 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Cursor;
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.util.List;
-
-import javax.swing.SwingUtilities;
-
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.BlockStoreException;
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -33,13 +28,15 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.store.WalletVersionException;
-import org.multibit.viewsystem.swing.FileChangeTimerTask;
+import org.multibit.viewsystem.swing.HealthCheckTimerTask;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.List;
 
 /**
  * Exit the application.
@@ -48,7 +45,7 @@ public class ExitAction extends AbstractExitAction {
 
     private static final long serialVersionUID = 8784284740245520863L;
     
-    private static final int MAXIMUM_TIME_TO_WAIT_FOR_FILE_CHANGE_TASK = 10000; // ms
+    private static final int MAXIMUM_TIME_TO_WAIT_FOR_HEALTH_CHECK_TASK = 10000; // ms
     private static final int TIME_TO_WAIT = 200; // ms
 
     private final MultiBitFrame mainFrame;
@@ -95,15 +92,15 @@ public class ExitAction extends AbstractExitAction {
                 });
             }
                
-            // If the FileChangeTimerTask is running wait until it completes.
-            FileChangeTimerTask fileChangeTimerTask = mainFrame.getFileChangeTimerTask();
-            if (fileChangeTimerTask != null) {
+            // If the HealthCheckTimerTask is running wait until it completes.
+            HealthCheckTimerTask healthCheckTimerTask = mainFrame.getHealthCheckTimerTask();
+            if (healthCheckTimerTask != null) {
                 boolean breakout = false;
                 int timeWaited = 0;
                 
-                while(fileChangeTimerTask.isRunning() && !breakout && timeWaited < MAXIMUM_TIME_TO_WAIT_FOR_FILE_CHANGE_TASK) {
+                while(healthCheckTimerTask.isRunning() && !breakout && timeWaited < MAXIMUM_TIME_TO_WAIT_FOR_HEALTH_CHECK_TASK) {
                     try {
-                        log.debug("Waiting for fileChangeTimerTask to complete (waited so far = " + timeWaited + "). . .");
+                        log.debug("Waiting for healthCheckTimerTask to complete (waited so far = " + timeWaited + "). . .");
                         Thread.sleep(TIME_TO_WAIT);
                         timeWaited = timeWaited + TIME_TO_WAIT;
                     } catch (InterruptedException e) {

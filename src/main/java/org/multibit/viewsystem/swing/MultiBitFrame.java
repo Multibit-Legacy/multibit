@@ -175,7 +175,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private ViewFactory viewFactory;
 
     private Timer fileChangeTimer;
-    private FileChangeTimerTask fileChangeTimerTask;
+    private HealthCheckTimerTask healthCheckTimerTask;
 
     private Timer tickerTimer1;
     private Timer tickerTimer2;
@@ -265,8 +265,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
          // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimerTask = new FileChangeTimerTask(this.bitcoinController);
-        fileChangeTimer.schedule(fileChangeTimerTask, FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        healthCheckTimerTask = new HealthCheckTimerTask(this.bitcoinController);
+        fileChangeTimer.schedule(healthCheckTimerTask, HealthCheckTimerTask.INITIAL_DELAY, HealthCheckTimerTask.DEFAULT_REPEAT_RATE);
 
          // Initialise the tickers.
         tickerTimer1 = new Timer();
@@ -1744,8 +1744,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         this.tickerTimerTask2 = tickerTimerTask2;
     }
 
-    public FileChangeTimerTask getFileChangeTimerTask() {
-        return fileChangeTimerTask;
+    public HealthCheckTimerTask getHealthCheckTimerTask() {
+        return healthCheckTimerTask;
     }
 
     @Override

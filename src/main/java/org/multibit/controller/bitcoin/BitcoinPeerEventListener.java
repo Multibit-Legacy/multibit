@@ -57,7 +57,7 @@ public class BitcoinPeerEventListener implements PeerEventListener {
   @Override
   public void onPeerDisconnected(Peer peer, int peerCount) {
     if (peer != null) {
-      log.debug("Disconnected from peer, address : " + peer.getAddress());
+      log.debug("Disconnected from peer, address : " + peer.getAddress() + ", peerCount = " + peerCount);
     }
     if (peerCount == 0) {
       controller.setOnlineStatus(StatusEnum.CONNECTING);

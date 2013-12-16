@@ -71,8 +71,6 @@ public class MultiBitService {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
-    public static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
-
     public static final String MULTIBIT_PREFIX = "multibit";
     public static final String TESTNET_PREFIX = "testnet";
     public static final String TESTNET3_PREFIX = "testnet3";
