@@ -15,8 +15,6 @@
  */
 package org.multibit.viewsystem.swing;
 
-import com.google.bitcoin.core.Peer;
-import com.google.bitcoin.core.PeerGroup;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
@@ -40,7 +38,7 @@ import java.util.*;
 public class HealthCheckTimerTask extends TimerTask {
 
   public static final int INITIAL_DELAY = 30000; // milliseconds
-  public static final int DEFAULT_REPEAT_RATE = 15000; // milliseconds
+  public static final int DEFAULT_REPEAT_RATE = 90000; // milliseconds
 
   private static Logger log = LoggerFactory.getLogger(HealthCheckTimerTask.class);
 
@@ -49,9 +47,9 @@ public class HealthCheckTimerTask extends TimerTask {
 
   private boolean isRunning = false;
 
-  private Map<String, Long> previousPeerToLastPingTime;
+  //private Map<String, Long> previousPeerToLastPingTime;
 
-  private int counter;
+  //private int counter;
 
   /**
    * Constructs the object, sets the string to be output in function run()
@@ -62,9 +60,9 @@ public class HealthCheckTimerTask extends TimerTask {
     this.bitcoinController = bitcoinController;
     this.controller = bitcoinController;
 
-    previousPeerToLastPingTime = new HashMap<String, Long>();
+    //previousPeerToLastPingTime = new HashMap<String, Long>();
 
-    counter = 0;
+    //counter = 0;
   }
 
   /**
@@ -76,7 +74,7 @@ public class HealthCheckTimerTask extends TimerTask {
     try {
       log.debug("Start of HealthCheckTimerTask");
 
-      if (counter == 0) {
+      //if (counter == 0) {
         log.debug("Checking if wallets are dirty . . .");
         List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
 
@@ -122,56 +120,56 @@ public class HealthCheckTimerTask extends TimerTask {
             }
           }
         }
-      }
+      //}
       //log.debug("Checking if peers are alive . . .");
-      if (bitcoinController.getMultiBitService() != null && bitcoinController.getMultiBitService().getPeerGroup() != null) {
-        PeerGroup peerGroup = bitcoinController.getMultiBitService().getPeerGroup();
-        Peer downloadPeer = peerGroup.getDownloadPeer();
-        if (downloadPeer == null) {
-          //log.debug("There is no downloadPeer");
-        } else {
-          //log.debug("The downloadPeer is '" + downloadPeer.toString());
-        }
-
-        // Work out if all the last ping times are exactly the same as the last times the health check ran.
-        // The ping time says the same if the network is lost so if all the ping times are the same as the previous time
-        // the health check ran then this is a good indicator that the network has been lost.
-        List<Peer> connectedPeers = peerGroup.getConnectedPeers();
-        if (connectedPeers != null) {
-          boolean allPingTimesWereIdenticalToPreviousHealthCheck = true;
-          for (Peer connectedPeer : connectedPeers) {
-            long thePingTimeThisHealthCheck = connectedPeer.getLastPingTime();
-            Long thePreviousPingTime = previousPeerToLastPingTime.get(connectedPeer.toString());
-            if (thePingTimeThisHealthCheck != (thePreviousPingTime == null ? 0 : thePreviousPingTime.longValue())) {
-              allPingTimesWereIdenticalToPreviousHealthCheck = false;
-              break;
-            }
-          }
-          if (allPingTimesWereIdenticalToPreviousHealthCheck) {
-            log.debug("SUSPECTED LOSS OF NETWORK - all ping times were identical to the last time the health check was run.");
-          }
-          // Clear out previous ping times and then refill.
-          previousPeerToLastPingTime.clear();
-
-          for (Peer connectedPeer : connectedPeers) {
-            if (downloadPeer == null) {
-              //log.debug("There is a null connectedPeer");
-            } else {
-              //log.debug("There is a connectedPeer : '" + connectedPeer.toString() + "', with a last ping time of " + connectedPeer.getLastPingTime());
-              previousPeerToLastPingTime.put(connectedPeer.toString(), connectedPeer.getLastPingTime());
-            }
-          }
-        }
-      } else {
-        //log.debug("Cannot perform peer check due to missing peerGroup");
-      }
+//      if (bitcoinController.getMultiBitService() != null && bitcoinController.getMultiBitService().getPeerGroup() != null) {
+//        PeerGroup peerGroup = bitcoinController.getMultiBitService().getPeerGroup();
+//        Peer downloadPeer = peerGroup.getDownloadPeer();
+//        if (downloadPeer == null) {
+//          //log.debug("There is no downloadPeer");
+//        } else {
+//          //log.debug("The downloadPeer is '" + downloadPeer.toString());
+//        }
+//
+//        // Work out if all the last ping times are exactly the same as the last times the health check ran.
+//        // The ping time says the same if the network is lost so if all the ping times are the same as the previous time
+//        // the health check ran then this is a good indicator that the network has been lost.
+//        List<Peer> connectedPeers = peerGroup.getConnectedPeers();
+//        if (connectedPeers != null) {
+//          boolean allPingTimesWereIdenticalToPreviousHealthCheck = true;
+//          for (Peer connectedPeer : connectedPeers) {
+//            long thePingTimeThisHealthCheck = connectedPeer.getLastPingTime();
+//            Long thePreviousPingTime = previousPeerToLastPingTime.get(connectedPeer.toString());
+//            if (thePingTimeThisHealthCheck != (thePreviousPingTime == null ? 0 : thePreviousPingTime.longValue())) {
+//              allPingTimesWereIdenticalToPreviousHealthCheck = false;
+//              break;
+//            }
+//          }
+//          if (allPingTimesWereIdenticalToPreviousHealthCheck) {
+//            log.debug("SUSPECTED LOSS OF NETWORK - all ping times were identical to the last time the health check was run.");
+//          }
+//          // Clear out previous ping times and then refill.
+//          previousPeerToLastPingTime.clear();
+//
+//          for (Peer connectedPeer : connectedPeers) {
+//            if (downloadPeer == null) {
+//              //log.debug("There is a null connectedPeer");
+//            } else {
+//              //log.debug("There is a connectedPeer : '" + connectedPeer.toString() + "', with a last ping time of " + connectedPeer.getLastPingTime());
+//              previousPeerToLastPingTime.put(connectedPeer.toString(), connectedPeer.getLastPingTime());
+//            }
+//          }
+//        }
+//      } else {
+//        //log.debug("Cannot perform peer check due to missing peerGroup");
+//      }
 
       log.debug("End of HealthCheckTimerTask");
     } catch (java.util.ConcurrentModificationException cme) {
       log.error("The list of open wallets was changed whilst files were being written.");
     } finally {
-      int SLOW_DOWN_RATE = 4;
-      counter = (counter + 1) % SLOW_DOWN_RATE;
+      //int SLOW_DOWN_RATE = 4;
+      //counter = (counter + 1) % SLOW_DOWN_RATE;
       isRunning = false;
     }
   }
