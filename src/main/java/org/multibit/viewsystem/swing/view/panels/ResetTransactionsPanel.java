@@ -16,60 +16,27 @@
 package org.multibit.viewsystem.swing.view.panels;
 
 
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.core.CoreModel;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.Viewable;
-import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.components.*;
 
-import com.toedter.calendar.JCalendar;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The reset blockchain and transactions view.
  */
-public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTransactionsDataProvider, WalletBusyListener {
+public class ResetTransactionsPanel extends JPanel implements Viewable, WalletBusyListener {
 
     private static final long serialVersionUID = 199992298245057705L;
 
@@ -81,22 +48,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
     private MultiBitLabel walletFilenameLabel;
 
     private MultiBitLabel walletDescriptionLabel;
-
-    private Date resetDate;
-
-    private static final int CALENDAR_BORDER_WIDTH = 4;
-
-    private static final int NUMBER_OF_HOURS_IN_A_DAY = 24;
-
-    private static final int DEFAULT_NUMBER_OF_DAYS = 2;
-
-    private final SimpleDateFormat dateFormatter;
     
     private ResetTransactionsSubmitAction resetTransactionsSubmitAction;
-
-    private JRadioButton resetFromFirstTransactionRadioButton;
-    private JRadioButton chooseResetDateRadioButton;
-    private JCalendar calendarChooser;
 
     /**
      * Creates a new {@link ResetTransactionsPanel}.
@@ -109,19 +62,6 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        // Default reset date is the beginning of the day 2 days ago.
-        Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        now.add(Calendar.HOUR, -1 * NUMBER_OF_HOURS_IN_A_DAY * DEFAULT_NUMBER_OF_DAYS);
-
-        now.set(Calendar.HOUR_OF_DAY, 0);
-        now.set(Calendar.MINUTE, 0);
-        now.set(Calendar.SECOND, 0);
-        now.set(Calendar.MILLISECOND, 0);
-
-        resetDate = now.getTime();
-
-        dateFormatter = new SimpleDateFormat("dd MMM yyyy", controller.getLocaliser().getLocale());
 
         initUI();
         
@@ -149,15 +89,6 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(createExplainPanel(stentWidth), constraints);
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.gridwidth = 2;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(createResetDatePanel(stentWidth), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -355,146 +286,11 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(this.bitcoinController, mainFrame,
-                ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
+                ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE));
         MultiBitButton submitButton = new MultiBitButton(resetTransactionsSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
-    }
-
-    private JPanel createResetDatePanel(int stentWidth) {
-        // Reset date radios.
-        MultiBitTitledPanel resetDatePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.resetDate"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        GridBagConstraints constraints = new GridBagConstraints();
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.05;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
-        resetDatePanel.add(indent, constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 3;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
-        resetDatePanel.add(stent, constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
-        constraints.gridy = 3;
-        constraints.weightx = 0.05;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        resetDatePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
-
-        ButtonGroup resetDateGroup = new ButtonGroup();
-        resetFromFirstTransactionRadioButton = new JRadioButton(controller.getLocaliser().getString(
-                "resetTransactionsPanel.resetFromFirstTransaction"));
-        resetFromFirstTransactionRadioButton.setOpaque(false);
-        resetFromFirstTransactionRadioButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        resetFromFirstTransactionRadioButton.setSelected(true);
-        resetFromFirstTransactionRadioButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        chooseResetDateRadioButton = new JRadioButton(controller.getLocaliser().getString("resetTransactionsPanel.chooseResetDate",
-                new Object[] { dateFormatter.format(resetDate.getTime()) }));
-        chooseResetDateRadioButton.setOpaque(false);
-        chooseResetDateRadioButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        chooseResetDateRadioButton.setSelected(false);
-        chooseResetDateRadioButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        resetDateGroup.add(resetFromFirstTransactionRadioButton);
-        resetDateGroup.add(chooseResetDateRadioButton);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 4;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        resetDatePanel.add(resetFromFirstTransactionRadioButton, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 5;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        resetDatePanel.add(chooseResetDateRadioButton, constraints);
-
-        // Create a border for the calendar.
-        Border etchedBorder = BorderFactory.createEtchedBorder();
-        Border emptyBorder = BorderFactory.createEmptyBorder(CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH,
-                CALENDAR_BORDER_WIDTH);
-        Border compoundBorder = BorderFactory.createCompoundBorder(etchedBorder, emptyBorder);
-
-        calendarChooser = new JCalendar(resetDate, controller.getLocaliser().getLocale(), true, false);
-        calendarChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        if (FontSizer.INSTANCE.getAdjustedDefaultFont() != null) {
-            calendarChooser.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        }
-        calendarChooser.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent e) {
-                if ("calendar".equals(e.getPropertyName())) {
-                    GregorianCalendar calendar = ((GregorianCalendar) e.getNewValue());
-                    resetDate = calendar.getTime();
-                    chooseResetDateRadioButton.setText(controller.getLocaliser().getString(
-                            "resetTransactionsPanel.chooseResetDate", new Object[] { dateFormatter.format(calendar.getTime()) }));
-                }
-            }
-        });
-        calendarChooser.setDate(resetDate);
-        calendarChooser.setBorder(compoundBorder);
-        calendarChooser.setEnabled(false);
-
-        ItemListener itemListener = new ChangeResetDateListener();
-        resetFromFirstTransactionRadioButton.addItemListener(itemListener);
-        chooseResetDateRadioButton.addItemListener(itemListener);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
-        constraints.gridy = 6;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        resetDatePanel.add(MultiBitTitledPanel.createStent(8, 8), constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 7;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        resetDatePanel.add(calendarChooser, constraints);
-
-        JPanel fill1 = new JPanel();
-        fill1.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 4;
-        constraints.gridy = 8;
-        constraints.weightx = 20;
-        constraints.weighty = 1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        resetDatePanel.add(fill1, constraints);
-
-        return resetDatePanel;
     }
 
     @Override
@@ -536,38 +332,8 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, ResetTra
         return View.RESET_TRANSACTIONS_VIEW;
     }
 
-    class ChangeResetDateListener implements ItemListener {
-        public ChangeResetDateListener() {
-
-        }
-
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            if (e.getSource().equals(resetFromFirstTransactionRadioButton)) {
-                calendarChooser.setEnabled(false);
-            } else {
-                calendarChooser.setEnabled(true);
-            }
-        }
-    }
-
     public ResetTransactionsSubmitAction getResetTransactionsSubmitAction() {
         return resetTransactionsSubmitAction;
-    }
-    
-    // ResetTransactionDataProvider methods.
-    @Override
-    public Date getResetDate() {
-        return resetDate;
-    }
-
-    @Override
-    public boolean isResetFromFirstTransaction() {
-        if (resetFromFirstTransactionRadioButton != null) {
-            return resetFromFirstTransactionRadioButton.isSelected();
-        } else {
-            return true;
-        }
     }
     
     @Override

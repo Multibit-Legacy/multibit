@@ -32,7 +32,6 @@ import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.StatusEnum;
@@ -176,7 +175,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private ViewFactory viewFactory;
 
     private Timer fileChangeTimer;
-    private FileChangeTimerTask fileChangeTimerTask;
+    private HealthCheckTimerTask healthCheckTimerTask;
 
     private Timer tickerTimer1;
     private Timer tickerTimer2;
@@ -247,9 +246,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
-        // TODO Examine how this fits in with the controller onQuit() event
-        // Cam: I've moved this to the quit event.
-        
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent arg0) {
@@ -269,8 +265,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
          // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimerTask = new FileChangeTimerTask(this.bitcoinController);
-        fileChangeTimer.schedule(fileChangeTimerTask, FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        healthCheckTimerTask = new HealthCheckTimerTask(this.bitcoinController);
+        fileChangeTimer.schedule(healthCheckTimerTask, HealthCheckTimerTask.INITIAL_DELAY, HealthCheckTimerTask.DEFAULT_REPEAT_RATE);
 
          // Initialise the tickers.
         tickerTimer1 = new Timer();
@@ -800,19 +796,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         fileMenu.addSeparator();
-        
-        // See if user has enabled the delete wallet action
-        String showDeleteWalletString = this.bitcoinController.getModel().getUserPreference(BitcoinModel.SHOW_DELETE_WALLET);
-        if (Boolean.TRUE.toString().equalsIgnoreCase(showDeleteWalletString)) {
-            DeleteWalletAction deleteWalletAction = new DeleteWalletAction(this.bitcoinController,
-                    ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
-            menuItem = new JMenuItem(deleteWalletAction);
-            menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-            menuItem.setComponentOrientation(componentOrientation);
-            fileMenu.add(menuItem);
-
-            fileMenu.addSeparator();
-        }
         
         // Add password action.
         addPasswordAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
@@ -1761,8 +1744,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         this.tickerTimerTask2 = tickerTimerTask2;
     }
 
-    public FileChangeTimerTask getFileChangeTimerTask() {
-        return fileChangeTimerTask;
+    public HealthCheckTimerTask getHealthCheckTimerTask() {
+        return healthCheckTimerTask;
     }
 
     @Override

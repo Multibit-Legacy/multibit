@@ -58,16 +58,8 @@ public enum MessageManager {
         }
     }
     
-    synchronized public void clearAllMessages() {
-        messageQueue.clear();
-    }
-    
     public void addMessageListener(MessageListener messageListener) {
         messageListeners.add(messageListener);
-    }
-    
-    public void removeMessageListener(MessageListener messageListener) {
-        messageListeners.remove(messageListener);
     }
     
     private void notifyMessageListeners(Message message) {
