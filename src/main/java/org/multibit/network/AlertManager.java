@@ -70,7 +70,7 @@ public enum AlertManager {
 
     public static final String RELEASES_URL = "https://www.multibit.org/releases.html";
 
-    public static final int NUMBER_OF_TIMES_TO_REPEAT_ALERT = 2;
+    public static final int NUMBER_OF_TIMES_TO_REPEAT_ALERT = 3;
     
     public static final String MESSAGE_WINDOW_SEPARATOR = "----------------------------------------------------------------";
 
