@@ -811,7 +811,7 @@
         </staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
-        <bitcoinj.version>0.10.3-MB-ALICE</bitcoinj.version>
+        <bitcoinj.version>0.10.2-MB-ALICE-DOGE</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
         <xchange.version>1.10.0</xchange.version>

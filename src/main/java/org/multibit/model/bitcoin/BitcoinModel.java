@@ -691,18 +691,18 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     
     public NetworkParameters getNetworkParameters() {
         // If test or production is not specified, default to production.
-        String testOrProduction = super.getUserPreference(BitcoinModel.TEST_OR_PRODUCTION_NETWORK);
-        if (testOrProduction == null) {
-            testOrProduction = BitcoinModel.PRODUCTION_NETWORK_VALUE;
-            super.setUserPreference(BitcoinModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
-        }
-        if (BitcoinModel.TEST_NETWORK_VALUE.equalsIgnoreCase(testOrProduction)) {
-            return NetworkParameters.testNet2();
-        } else if (BitcoinModel.TESTNET3_VALUE.equalsIgnoreCase(testOrProduction)) {
-            return NetworkParameters.testNet();
-        } else {
+//        String testOrProduction = super.getUserPreference(BitcoinModel.TEST_OR_PRODUCTION_NETWORK);
+//        if (testOrProduction == null) {
+//            testOrProduction = BitcoinModel.PRODUCTION_NETWORK_VALUE;
+//            super.setUserPreference(BitcoinModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
+//        }
+//        if (BitcoinModel.TEST_NETWORK_VALUE.equalsIgnoreCase(testOrProduction)) {
+//            return NetworkParameters.testNet2();
+//        } else if (BitcoinModel.TESTNET3_VALUE.equalsIgnoreCase(testOrProduction)) {
+//            return NetworkParameters.testNet();
+//        } else {
             return NetworkParameters.prodNet();
-        }
+//        }
     }
 
     public boolean thereIsNoActiveWallet() {

@@ -339,14 +339,21 @@ public class MultiBitService {
     }
 
     if (!peersSpecified) {
-      // Use DNS for production, IRC for test.
+/*      // Use DNS for production, IRC for test.
       if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
         peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
       } else if (NetworkParameters.testNet().equals(bitcoinController.getModel().getNetworkParameters())) {
         peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
       } else {
         peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
-      }
+      }*/
+        //DOGE: Use IRC for now...
+        //Try a bit harder to find good peers...
+        Random rand = new Random();
+        int i = rand.nextInt(50);
+        String channel = "#dogecoin" + String.format("%02d", i);
+        //private final PeerDiscovery normalPeerDiscovery = new DnsDiscovery(Constants.NETWORK_PARAMETERS);
+        peerGroup.addPeerDiscovery(new IrcDiscovery(channel));
     }
     // Add the controller as a PeerEventListener.
     peerGroup.addEventListener(bitcoinController.getPeerEventListener());
@@ -369,15 +376,15 @@ public class MultiBitService {
   }
 
   public static String getFilePrefix() {
-    BitcoinController bitcoinController = MultiBit.getBitcoinController();
+/*    BitcoinController bitcoinController = MultiBit.getBitcoinController();
     // testnet3
     if (TESTNET3_GENESIS_HASH.equals(bitcoinController.getModel().getNetworkParameters().getGenesisBlock().getHashAsString())) {
       return MULTIBIT_PREFIX + SEPARATOR + TESTNET3_PREFIX;
     } else if (NetworkParameters.testNet().equals(bitcoinController.getModel().getNetworkParameters())) {
       return MULTIBIT_PREFIX + SEPARATOR + TESTNET_PREFIX;
-    } else {
+    } else {*/
       return MULTIBIT_PREFIX;
-    }
+    //} //TODO DOGE: No testnet...
   }
 
   /**
