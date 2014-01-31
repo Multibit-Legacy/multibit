@@ -31,7 +31,7 @@
     <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
   </variables>
 
-  <!-- Register protocol handling for bitcoin: URI -->
+  <!-- Register protocol handling for dogecoin: URI -->
   <listeners>
     <listener installer="RegistryInstallerListener"
               uninstaller="RegistryUninstallerListener">

@@ -2,7 +2,7 @@ package org.multibit.viewsystem.dataproviders;
 
 
 /**
- * DataProvider for send bitcoin and send bitcoin confirm action
+ * DataProvider for send dogecoin and send dogecoin confirm action
  * @author jim
  *
  */

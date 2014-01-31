@@ -17,10 +17,10 @@
 
 package com.piuk.blockchain;
 
-import com.google.bitcoin.core.Base58;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
+import com.google.dogecoin.core.Base58;
+import com.google.dogecoin.core.ECKey;
+import com.google.dogecoin.core.NetworkParameters;
+import com.google.dogecoin.core.Wallet;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.spongycastle.crypto.BufferedBlockCipher;

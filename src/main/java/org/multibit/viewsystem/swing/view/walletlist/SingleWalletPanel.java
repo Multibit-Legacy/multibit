@@ -15,7 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.walletlist;
 
-import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.dogecoin.core.Wallet.BalanceType;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
 import org.multibit.controller.Controller;

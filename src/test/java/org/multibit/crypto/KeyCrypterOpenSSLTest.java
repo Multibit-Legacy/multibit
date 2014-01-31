@@ -15,8 +15,8 @@
  */
 package org.multibit.crypto;
 
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.dogecoin.core.Utils;
+import com.google.dogecoin.crypto.KeyCrypterException;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.slf4j.Logger;

@@ -15,18 +15,17 @@
  */
 package org.multibit.network;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.core.Wallet.SendRequest;
-import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.discovery.DnsDiscovery;
-import com.google.bitcoin.discovery.IrcDiscovery;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.store.SPVBlockStore;
+import com.google.dogecoin.core.MultiBitBlockChain;
+import com.google.dogecoin.core.*;
+import com.google.dogecoin.core.Wallet.SendRequest;
+import com.google.dogecoin.crypto.KeyCrypterException;
+import com.google.dogecoin.discovery.DnsDiscovery;
+import com.google.dogecoin.store.BlockStore;
+import com.google.dogecoin.store.BlockStoreException;
+import com.google.dogecoin.store.SPVBlockStore;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.ApplicationDataDirectoryLocator;
-import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.BackupManager;
@@ -61,12 +60,12 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * <p>
- * MultiBitService encapsulates the interaction with the bitcoin netork
+ * MultiBitService encapsulates the interaction with the dogecoin netork
  * including: o Peers o Block chain download o sending / receiving bitcoins
  * <p/>
  * The testnet can be slow or flaky as it's a shared resource. You can use the
  * <a href="http://sourceforge
- * .net/projects/bitcoin/files/Bitcoin/testnet-in-a-box/">testnet in a box</a>
+ * .net/projects/dogecoin/files/Bitcoin/testnet-in-a-box/">testnet in a box</a>
  * to do everything purely locally.
  * </p>
  */
@@ -347,13 +346,8 @@ public class MultiBitService {
       } else {
         peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
       }*/
-        //DOGE: Use IRC for now...
-        //Try a bit harder to find good peers...
-        Random rand = new Random();
-        int i = rand.nextInt(50);
-        String channel = "#dogecoin" + String.format("%02d", i);
-        //private final PeerDiscovery normalPeerDiscovery = new DnsDiscovery(Constants.NETWORK_PARAMETERS);
-        peerGroup.addPeerDiscovery(new IrcDiscovery(channel));
+        //DOGE: Only production for now.
+        peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
     }
     // Add the controller as a PeerEventListener.
     peerGroup.addEventListener(bitcoinController.getPeerEventListener());
@@ -571,7 +565,7 @@ public class MultiBitService {
   public Transaction sendCoins(WalletData perWalletModelData, SendRequest sendRequest,
                                CharSequence password) throws java.io.IOException, AddressFormatException, KeyCrypterException {
 
-    // Ping the peers to check the bitcoin network connection
+    // Ping the peers to check the dogecoin network connection
     List<Peer> connectedPeers = peerGroup.getConnectedPeers();
     boolean atLeastOnePingWorked = false;
     if (connectedPeers != null) {

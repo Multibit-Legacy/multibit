@@ -72,7 +72,7 @@ public class GenesisBlockReplayTest extends TestCase {
             final CreateControllers.Controllers controllers = CreateControllers.createControllers(applicationDataDirectoryLocator);
 
             log.debug("Creating Bitcoin service");
-            // Create the MultiBitService that connects to the bitcoin network.
+            // Create the MultiBitService that connects to the dogecoin network.
             MultiBitService multiBitService = new MultiBitService(controllers.bitcoinController);
             controllers.bitcoinController.setMultiBitService(multiBitService);
 

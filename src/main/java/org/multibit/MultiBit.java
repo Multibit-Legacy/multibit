@@ -15,8 +15,8 @@
  */
 package org.multibit;
 
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.Wallet;
+import com.google.dogecoin.core.StoredBlock;
+import com.google.dogecoin.core.Wallet;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;
@@ -253,7 +253,7 @@ public final class MultiBit {
             MessageManager.INSTANCE.addMessage(directoryMessage2);
 
             log.debug("Creating Bitcoin service");
-            // Create the MultiBitService that connects to the bitcoin network.
+            // Create the MultiBitService that connects to the dogecoin network.
             MultiBitService multiBitService = new MultiBitService(bitcoinController);
             bitcoinController.setMultiBitService(multiBitService);
 
@@ -706,7 +706,7 @@ public final class MultiBit {
     }
 
     public static void setRememberedRawBitcoinURI(String rememberedRawBitcoinURI) {
-        log.debug("Remembering the bitcoin URI to process of '" + rememberedRawBitcoinURI + "'");
+        log.debug("Remembering the dogecoin URI to process of '" + rememberedRawBitcoinURI + "'");
         MultiBit.rememberedRawBitcoinURI = rememberedRawBitcoinURI;
     }
 }

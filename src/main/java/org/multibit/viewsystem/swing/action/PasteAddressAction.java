@@ -77,7 +77,7 @@ public class PasteAddressAction extends AbstractAction {
             String stringToPaste = textTransfer.getClipboardContents();
             stringToPaste = WhitespaceTrimmer.trim(stringToPaste);
 
-            // TODO parse string - if bitcoin URI then fill out other fields
+            // TODO parse string - if dogecoin URI then fill out other fields
 
             String label = sendBitcoinPanel.getLabelTextArea().getText();
             WalletAddressBookData addressBookData = new WalletAddressBookData(label, stringToPaste);

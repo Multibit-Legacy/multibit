@@ -2,21 +2,21 @@
 Require the following structure on Windows
 see http://msdn.microsoft.com/en-us/library/aa767914(v=vs.85).aspx
 
-bitcoin.reg:
+dogecoin.reg:
 Windows Registry Editor Version 5.00
 
-[HKEY_CLASSES_ROOT\bitcoin]
+[HKEY_CLASSES_ROOT\dogecoin]
 @="URL:Bitcoin Protocol"
 "URL Protocol"=""
 
-[HKEY_CLASSES_ROOT\bitcoin\DefaultIcon]
+[HKEY_CLASSES_ROOT\dogecoin\DefaultIcon]
 @="multibit.exe,1"
 
-[HKEY_CLASSES_ROOT\bitcoin\shell]
+[HKEY_CLASSES_ROOT\dogecoin\shell]
 
-[HKEY_CLASSES_ROOT\bitcoin\shell\open]
+[HKEY_CLASSES_ROOT\dogecoin\shell\open]
 
-[HKEY_CLASSES_ROOT\bitcoin\shell\open\command]
+[HKEY_CLASSES_ROOT\dogecoin\shell\open\command]
 @="\"C:\\Program Files\\MultiBit-0.2.0beta4\\multibit.exe\" \"%1\""
 
 

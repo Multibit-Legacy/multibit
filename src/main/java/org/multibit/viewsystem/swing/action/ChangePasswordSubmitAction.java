@@ -35,9 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.dogecoin.core.Wallet;
+import com.google.dogecoin.crypto.KeyCrypter;
+import com.google.dogecoin.crypto.KeyCrypterException;
 
 
 /**

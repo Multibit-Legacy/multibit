@@ -15,10 +15,10 @@
  */
 package org.multibit.file;
 
-import com.google.bitcoin.core.BlockChain;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.dogecoin.core.BlockChain;
+import com.google.dogecoin.core.ECKey;
+import com.google.dogecoin.core.Wallet;
+import com.google.dogecoin.crypto.KeyCrypterException;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;

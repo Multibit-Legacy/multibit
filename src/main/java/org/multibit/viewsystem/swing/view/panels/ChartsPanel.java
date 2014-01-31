@@ -16,7 +16,7 @@
 package org.multibit.viewsystem.swing.view.panels;
 
 
-import com.google.bitcoin.core.Transaction;
+import com.google.dogecoin.core.Transaction;
 import com.xeiam.xchart.*;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -354,7 +354,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
       // Add in the balance at the end of the time window.
       chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
       // log.debug("Last transaction date = " + previousDate + ", chart balance = " + balance + ", wallet balance = " + controller.getModel().getActiveWallet().getBalance());
-    } catch (com.google.bitcoin.core.ScriptException e1) {
+    } catch (com.google.dogecoin.core.ScriptException e1) {
       e1.printStackTrace();
     }
 

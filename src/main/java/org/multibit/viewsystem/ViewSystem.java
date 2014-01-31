@@ -18,7 +18,7 @@ package org.multibit.viewsystem;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.StatusEnum;
 
-import com.google.bitcoin.core.WalletEventListener;
+import com.google.dogecoin.core.WalletEventListener;
 
 /**
  * An interface describing a collection of views that are used to render the MultiBit application.

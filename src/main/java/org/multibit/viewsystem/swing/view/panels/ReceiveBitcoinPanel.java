@@ -466,6 +466,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements Viewable 
 
     @Override
     public void checkDeleteSendingEnabled() {
-        // Not used on receive bitcoin panel.
+        // Not used on receive dogecoin panel.
     }
 }

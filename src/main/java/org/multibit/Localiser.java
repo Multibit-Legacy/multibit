@@ -33,7 +33,7 @@ import org.joda.money.BigMoney;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Utils;
+import com.google.dogecoin.core.Utils;
 
 /**
  * Class used for producing localised messages it contains a resource bundle and

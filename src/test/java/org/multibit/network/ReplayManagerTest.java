@@ -41,11 +41,11 @@ import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.DumpedPrivateKey;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.dogecoin.core.DumpedPrivateKey;
+import com.google.dogecoin.core.ECKey;
+import com.google.dogecoin.core.NetworkParameters;
+import com.google.dogecoin.core.Wallet;
+import com.google.dogecoin.core.Wallet.BalanceType;
 
 public class ReplayManagerTest extends TestCase {
     private static final Logger log = LoggerFactory.getLogger(ReplayManagerTest.class);
@@ -77,7 +77,7 @@ public class ReplayManagerTest extends TestCase {
         controller = controllers.bitcoinController;
 
         log.debug("Creating Bitcoin service");
-        // Create the MultiBitService that connects to the bitcoin network.
+        // Create the MultiBitService that connects to the dogecoin network.
         MultiBitService multiBitService = new MultiBitService(controller);
         controller.setMultiBitService(multiBitService);
 
