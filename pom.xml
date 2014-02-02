@@ -21,10 +21,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
-    <artifactId>multibit</artifactId>
+    <artifactId>moonwallet</artifactId>
     <version>develop-SNAPSHOT</version>
-    <name>MultiBit</name>
-    <description>A Java Swing client for Bitcoin</description>
+    <name>MoonWallet</name>
+    <description>A Java Swing client for Dogecoin</description>
     <url>https://multibit.org</url>
     <!-- Use "mvn clean package" to build the code packaged into a basic multibit.jar 
   		Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
@@ -42,12 +42,12 @@
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/jim618/multibit/issues</url>
+        <url>https://github.com/langerhans/multibit/issues</url>
     </issueManagement>
 
     <scm>
         <!-- Public read-only source -->
-        <url>https://github.com/jim618/multibit</url>
+        <url>https://github.com/langerhans/multibit</url>
     </scm>
 
     <repositories>
@@ -76,7 +76,7 @@
     </repositories>
 
     <build>
-        <finalName>multibit</finalName>
+        <finalName>moonwallet</finalName>
         <resources>
             <!-- filter properties files e.g. version.properties -->
             <resource>
@@ -226,20 +226,20 @@
                                         <include>install.xml</include>
                                         <include>readme.txt</include>
                                         <include>Unix_shortcutSpec.xml</include>
-                                        <include>multibit-protocol-handler.sh</include>
+                                        <include>moonwallet-protocol-handler.sh</include>
                                     </includes>
                                 </resource>
                                 <resource>
                                     <directory>${basedir}/src/main/resources/images</directory>
                                     <includes>
                                         <include>installerLeft.png</include>
-                                        <include>multibit48.png</include>
+                                        <include>moonwallet48.png</include>
                                     </includes>
                                 </resource>
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.checkpoints</include>
+                                        <include>moonwallet.checkpoints</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -254,7 +254,7 @@
                                 <resource>
                                     <directory>target</directory>
                                     <includes>
-                                        <include>multibit-exe.jar</include>
+                                        <include>moonwallet-exe.jar</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -286,13 +286,13 @@
                                     <directory>${basedir}/src/main/resources/images</directory>
                                     <includes>
                                         <include>installerLeft.png</include>
-                                        <include>multibit.ico</include>
+                                        <include>moonwallet.ico</include>
                                     </includes>
                                 </resource>
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.checkpoints</include>
+                                        <include>moonwallet.checkpoints</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -307,7 +307,7 @@
                                 <resource>
                                     <directory>target</directory>
                                     <includes>
-                                        <include>multibit.exe</include>
+                                        <include>moonwallet.exe</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -326,12 +326,12 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit.app
+                            <outputDirectory>${basedir}/target/MoonWallet.app
                             </outputDirectory>
                             <resources>
                                 <resource>
                                     <!-- skeleton app including JRE -->
-                                    <directory>src/app-resources/MultiBit.app</directory>
+                                    <directory>src/app-resources/MoonWallet.app</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -343,14 +343,14 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java
+                            <outputDirectory>${basedir}/target/MoonWallet.app/Contents/Resources/Java
                             </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${basedir}/target/staging.linux</directory>
                                     <includes>
-                                        <include>multibit-exe.jar</include>
-                                        <include>multibit.checkpoints</include>
+                                        <include>moonwallet-exe.jar</include>
+                                        <include>moonwallet.checkpoints</include>
                                         <include>release_notes.txt</include>
                                         <include>configuration.md</include>
                                         <include>COPYING</include>
@@ -421,39 +421,39 @@
                                 <!-- Make the JavaApplicationStub in the Mac application bundle executable
                        									(it loses its 'x' permission after the copy) -->
                                 <chmod
-                                        file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                        file="${basedir}/target/MoonWallet.app/Contents/MacOS/JavaApplicationStub"
                                         perm="777" />
 
                                 <copy
-                                        todir="${basedir}/target/MultiBit-mac/MultiBit.app">
+                                        todir="${basedir}/target/MoonWallet-mac/MultiBit.app">
                                     <fileset dir="${basedir}/target/MultiBit.app"
                                              includes="**" />
                                 </copy>
                                 <copy file="${basedir}/src/main/izpack/mac/readme.txt"
-                                      todir="${basedir}/target/MultiBit-mac" />
+                                      todir="${basedir}/target/MoonWallet-mac" />
 
                                 <!-- Create Applications Symbolic link -->
                                 <!-- WARNING, do not remove this symbolic link by Java(ant) -->
                                 <exec executable="ln" os="'Mac OS X'">
                                     <arg
-                                            line="-s /Applications ${basedir}/target/MultiBit-mac/Applications" />
+                                            line="-s /Applications ${basedir}/target/MoonWallet-mac/Applications" />
                                 </exec>
 
                                 <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
                        									'x' permission after the copy) -->
                                 <chmod
-                                        file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                        file="${basedir}/target/MultiBit-mac/Moonwallet.app/Contents/MacOS/JavaApplicationStub"
                                         perm="777" />
 
                                 <!-- Sign the Mac app -->
                                 <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                            line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                            line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MoonWallet-mac/Moonwallet.app" />
                                 </exec>
                                 <!-- Verify it is signed ok -->
                                 <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                            line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                            line="--display --verbose=4 ${basedir}/target/MoonWallet-mac/Moonwallet.app" />
                                 </exec>
 
                                 <!-- create a DMG file -->
@@ -463,19 +463,19 @@
                                     <arg value="-imagekey"/>
                                     <arg value="zlib-level=9" />
                                     <arg value="-srcfolder" />
-                                    <arg value="${basedir}/target/MultiBit-mac" />
-                                    <arg value="${basedir}/target/multibit-${project.version}.dmg" />
+                                    <arg value="${basedir}/target/MoonWallet-mac" />
+                                    <arg value="${basedir}/target/moonwallet-${project.version}.dmg" />
                                 </exec>
 
                                 <!-- IMPORTANT! -->
                                 <!-- Remove symbolic link before deleting tmp dir -->
                                 <exec executable="rm" os="'Mac OS X'">
-                                    <arg line="-R ${basedir}/target/MultiBit-mac/Applications" />
+                                    <arg line="-R ${basedir}/target/MoonWallet-mac/Applications" />
                                 </exec>
 
                                 <!-- get rid of temporary directory -->
                                 <delete includeEmptyDirs="true">
-                                    <fileset dir="${basedir}/target/MultiBit-mac" />
+                                    <fileset dir="${basedir}/target/MoonWallet-mac" />
                                 </delete>
                             </tasks>
                         </configuration>
@@ -520,7 +520,7 @@
                                          classpathref="jsmooth-classpathref" />
                                 <jsmoothgen project="src/main/jsmooth/installer.jsmooth"
                                             skeletonroot="src/main/jsmooth/skeletons" />
-                                <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows-setup.exe" />
+                                <move file="target/moonwallet-windows.exe" tofile="target/moonwallet-${project.version}-windows-setup.exe" />
                             </tasks>
                         </configuration>
                         <goals>

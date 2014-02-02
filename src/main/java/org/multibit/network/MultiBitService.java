@@ -74,7 +74,7 @@ public class MultiBitService {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
-  public static final String MULTIBIT_PREFIX = "multibit";
+  public static final String MULTIBIT_PREFIX = "moonwallet";
   public static final String TESTNET_PREFIX = "testnet";
   public static final String TESTNET3_PREFIX = "testnet3";
   public static final String SEPARATOR = "-";
@@ -115,7 +115,7 @@ public class MultiBitService {
       java.text.SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       java.util.Calendar cal = Calendar.getInstance(new SimpleTimeZone(0, "GMT"));
       format.setCalendar(cal);
-      genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
+      genesisBlockCreationDate = format.parse("2013-12-06 10:25:40");
     } catch (ParseException e) {
       // Will never happen.
       e.printStackTrace();

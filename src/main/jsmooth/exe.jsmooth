@@ -7,12 +7,12 @@
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
-<classPath>../../../target/multibit-exe.jar</classPath>
+<classPath>../../../target/moonwallet-exe.jar</classPath>
 <embeddedJar>true</embeddedJar>
-<executableName>../../../target/multibit.exe</executableName>
-<iconLocation>../resources/images/multibit32.png</iconLocation>
+<executableName>../../../target/moonwallet.exe</executableName>
+<iconLocation>../resources/images/moonwallet32.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
-<jarLocation>../../../target/multibit-exe.jar</jarLocation>
+<jarLocation>../../../target/moonwallet-exe.jar</jarLocation>
 <mainClassName>org.multibit.MultiBitInExecutableJar</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>

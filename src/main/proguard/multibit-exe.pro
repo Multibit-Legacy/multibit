@@ -6,8 +6,8 @@
 
 # Specify the input jars, output jars, and library jars.
 
--injars  ../../../target/multibit-exe-full.jar
--outjars ../../../target/multibit-exe.jar
+-injars  ../../../target/moonwallet-exe-full.jar
+-outjars ../../../target/moonwallet-exe.jar
 
 -libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/rt.jar
 -libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/alt-rt.jar

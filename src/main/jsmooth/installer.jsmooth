@@ -7,12 +7,12 @@
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
-<classPath>../../../target/multibit-windows.jar</classPath>
+<classPath>../../../target/moonwallet-windows.jar</classPath>
 <embeddedJar>true</embeddedJar>
-<executableName>../../../target/multibit-windows.exe</executableName>
-<iconLocation>../resources/images/multibit.png</iconLocation>
+<executableName>../../../target/moonwallet-windows.exe</executableName>
+<iconLocation>../resources/images/moonwallet.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
-<jarLocation>../../../target/multibit-windows.jar</jarLocation>
+<jarLocation>../../../target/moonwallet-windows.jar</jarLocation>
 <mainClassName>com.izforge.izpack.installer.Installer</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>

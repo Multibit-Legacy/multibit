@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>MultiBit</string>
+	<string>MoonWallet</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.multibit</string>
 	<key>CFBundleVersion</key>
@@ -23,11 +23,11 @@
 	<key>CFBundleIconFile</key>
 	<string>multibit.icns</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright MultiBit developers 2013</string>
+	<string>Copyright MultiBit developers 2013, MoonWaalet developers 2014</string>
 	<key>CFBundleGetInfoString</key>
-	<string>MultiBit, © 2013 MultiBit developers</string>
+	<string>MultiBit, © 2013 MultiBit developers; MoonWallet, © 2014 MoonWallet developers</string>
 	<key>CFBundleDisplayName</key>
-	<string>MultiBit</string>
+	<string>MoonWallet</string>
 	<key>Java</key>
 	<dict>
 		<key>WorkingDirectory</key>

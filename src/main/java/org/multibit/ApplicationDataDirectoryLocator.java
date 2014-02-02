@@ -42,7 +42,7 @@ public class ApplicationDataDirectoryLocator {
      * 
      * This is worked out as follows:
      * 
-     * 1. See if there is a multibit.properties in MultiBit's current working
+     * 1. See if there is a moonwallet.properties in MoonWallet's current working
      * directory If there is, use this directory as the application data
      * directory This is for backwards compatibility and for running everything
      * from a USB drive
@@ -53,17 +53,17 @@ public class ApplicationDataDirectoryLocator {
      * 
      * 2. Otherwise set the working directory as follows:
      * 
-     * PC System.getenv("APPDATA")/MultiBitInExecutableJar
+     * PC System.getenv("APPDATA")/MoonWalletInExecutableJar
      * 
-     * e.g. C:/Documents and Settings/Administrator/Application Data/MultiBitInExecutableJar
+     * e.g. C:/Documents and Settings/Administrator/Application Data/MoonWalletInExecutableJar
      * 
-     * Mac System.getProperty("user.home")/Library/Application Support/MultiBitInExecutableJar
+     * Mac System.getProperty("user.home")/Library/Application Support/MoonWalletInExecutableJar
      * 
-     * e.g. /Users/jim/Library/Application Support/MultiBitInExecutableJar
+     * e.g. /Users/jim/Library/Application Support/MoonWalletInExecutableJar
      * 
-     * Linux System.getProperty("user.home")/MultiBitInExecutableJar
+     * Linux System.getProperty("user.home")/MoonWalletInExecutableJar
      * 
-     * e.g. /Users/jim/MultiBitInExecutableJar
+     * e.g. /Users/jim/MoonWalletInExecutableJar
      */
     public String getApplicationDataDirectory() {
         if (applicationDataDirectory != null) {
@@ -78,18 +78,18 @@ public class ApplicationDataDirectoryLocator {
             String operatingSystemName = System.getProperty("os.name");
             if (operatingSystemName != null && operatingSystemName.startsWith("Windows")) {
                 // Windows os
-                applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiBit";
+                applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MoonWallet";
             } else {
                 if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
                     // Mac os
                     if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
                         applicationDataDirectory = new File("../../../..").getAbsolutePath();
                     } else {
-                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiBit";
+                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MoonWallet";
                     }
                 } else {
                     // treat as Linux/ unix variant
-                    applicationDataDirectory = System.getProperty("user.home") + "/MultiBit";
+                    applicationDataDirectory = System.getProperty("user.home") + "/MoonWallet";
                 }
             }
             
@@ -108,7 +108,7 @@ public class ApplicationDataDirectoryLocator {
     
     /**
      * Get the installation directory.
-     * This is the directory into which MultiBit was installed.
+     * This is the directory into which MoonWallet was installed.
      * @throws IOException 
      * 
      * @TODO when running locally it is possible that the working directory directory and installation directory are different. Fix.
