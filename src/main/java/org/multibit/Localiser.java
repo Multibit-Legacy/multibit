@@ -280,7 +280,9 @@ public class Localiser {
         }
                 
         BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
+        numberFormat.setGroupingUsed(false);
         toReturn = toReturn + numberFormat.format(valueInBTC.doubleValue());
+        numberFormat.setGroupingUsed(true);
 
         if (addUnit) {
             toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
@@ -311,7 +313,9 @@ public class Localiser {
         }
                 
         BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
+        numberFormatNotLocalised.setGroupingUsed(false);
         toReturn = toReturn + numberFormatNotLocalised.format(valueInBTC.doubleValue());
+        numberFormatNotLocalised.setGroupingUsed(true);
 
         if (addUnit) {
             toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");

@@ -213,7 +213,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         tableColumn.setPreferredWidth(250);
 
         tableColumn = table.getColumnModel().getColumn(3); // Amount (BTC).
-        int amountBTCWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (BTC)"),
+        int amountBTCWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (DOGE)"),
                 fontMetrics.stringWidth("00000.000000000"));
         tableColumn.setPreferredWidth(amountBTCWidth);
         tableColumn.setMinWidth(amountBTCWidth);
@@ -550,7 +550,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                     ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, transaction);
                     primaryLabel.setIcon(buildingIcon);
                     primaryLabel.setText("");
-                    if (numberOfBlocksEmbedded >= 6) {
+                    if (numberOfBlocksEmbedded >= 3) {
                         primaryLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed")));
                     } else {
                         if (transaction != null && transaction.isCoinBase()) {
@@ -637,8 +637,8 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             if (numberOfBlocksEmbedded < 0) {
                 numberOfBlocksEmbedded = 0;
             }
-            if (numberOfBlocksEmbedded > 6) {
-                numberOfBlocksEmbedded = 6;
+            if (numberOfBlocksEmbedded > 3) {
+                numberOfBlocksEmbedded = 3;
             }
 
             boolean isLeftToRight = ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight();
@@ -649,26 +649,22 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             }
             case 1: {
                 if (isLeftToRight) {
-                    return progress1Icon;
-                } else {
-                    return rtlProgress1Icon;
-                }
-            }
-            case 2: {
-                if (isLeftToRight) {
                     return progress2Icon;
                 } else {
                     return rtlProgress2Icon;
                 }
             }
-            case 3: {
+            case 2: {
                 if (isLeftToRight) {
-                    return progress3Icon;
+                    return progress4Icon;
                 } else {
-                    return rtlProgress3Icon;
+                    return rtlProgress4Icon;
                 }
             }
-            case 4: {
+            case 3: {
+                return tickIcon;
+            }
+            /*case 4: {
                 if (isLeftToRight) {
                     return progress4Icon;
                 } else {
@@ -684,7 +680,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             }
             case 6: {
                 return tickIcon;
-            }
+            }*/
             default:
                 return getConfidenceIcon(confidence);
             }

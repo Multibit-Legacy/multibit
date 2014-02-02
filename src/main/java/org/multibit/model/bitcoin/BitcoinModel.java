@@ -87,14 +87,14 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String BRING_TO_FRONT = "bringToFront";
 
     // Default fee and feePerKB
-    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000");
-    public static final BigInteger SEND_FEE_PER_KB_DEFAULT = new BigInteger("10000");
+    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000000");
+    public static final BigInteger SEND_FEE_PER_KB_DEFAULT = new BigInteger("100000000");
     
     // Minimum fee.
-    public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
+    public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("100000000");
 
     // Maximum fee.
-    public static final BigInteger SEND_MAXIMUM_FEE = new BigInteger("100000000"); // 1 BTC.
+    public static final BigInteger SEND_MAXIMUM_FEE = new BigInteger("100000000000"); // 1000 DOGE. Hope it won't ever go above du to bogus transactions.
 
     // Receive dogecoin.
     public static final String IS_RECEIVE_BITCOIN = "isReceiveBitcoin";
