@@ -45,6 +45,7 @@ public class ExchangeData {
     public static final String OPEN_EXCHANGE_RATES_EXCHANGE_NAME = "OpenExchangeRates";
     public static final String MT_GOX_EXCHANGE_NAME = "MtGox";
     public static final String VIRTEX_EXCHANGE_NAME = "VirtEx";
+    public static final String CRYPTSY_EXCHANGE_NAME = "Cryptsy";
 
     public static final String DEFAULT_EXCHANGE = MT_GOX_EXCHANGE_NAME;
     
@@ -130,12 +131,13 @@ public class ExchangeData {
    * BTCChina not in the list as it does not seem reliable enough - drops connections (when used in UK)
    */
     public static String[] getAvailableExchanges() {
-        return new String[] { MT_GOX_EXCHANGE_NAME,
+/*        return new String[] { MT_GOX_EXCHANGE_NAME,
             BITSTAMP_EXCHANGE_NAME,
             BTCE_EXCHANGE_NAME,
             CAMPBX_EXCHANGE_NAME,
             OPEN_EXCHANGE_RATES_EXCHANGE_NAME,
-            VIRTEX_EXCHANGE_NAME};
+            VIRTEX_EXCHANGE_NAME};*/
+        return new String[] {CRYPTSY_EXCHANGE_NAME};
     }
 
     public static Collection<String> getAvailableCurrenciesForExchange(String shortExchangeName) {
@@ -156,7 +158,7 @@ public class ExchangeData {
      * Convert an exchange short name into a classname that can be used to create an Exchange.
      */
     public static String convertExchangeShortNameToClassname(String shortExchangeName) {
-        if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName)) {
+        if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName) || CRYPTSY_EXCHANGE_NAME.equals(shortExchangeName)) {
             return "com.xeiam.xchange.mtgox.v2.MtGoxExchange";
         } else if (BITSTAMP_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  BitstampExchange.class.getName();

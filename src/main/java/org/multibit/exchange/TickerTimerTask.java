@@ -249,11 +249,6 @@ public class TickerTimerTask extends TimerTask {
                                 }
                             }
 
-                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last);
-                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid);
-                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask);
-                            log.debug("Exchange = " + shortExchangeName);
-
                             log.debug("Getting DOGE conversion");
                             float dogeRate = DogeUtils.requestDogeBtcConversion();
                             if (dogeRate == 0f)
@@ -261,6 +256,11 @@ public class TickerTimerTask extends TimerTask {
                                 log.debug("Problem getting DOGE conversion");
                                 return;
                             }
+
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last.multipliedBy(dogeRate));
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid.multipliedBy(dogeRate));
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask.multipliedBy(dogeRate));
+                            log.debug("Exchange = " + shortExchangeName);
 
                             // Put the exchange rate into the currency converter.
                             if (isFirstExchange) {
