@@ -66,12 +66,9 @@ import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Timer;
-import java.net.URL;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -96,8 +93,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int MENU_VERTICAL_INSET = 1;
 
     public static final int BALANCE_SPACER = 7;
-
-    // public static final URL DOGEPOOL_URL;
 
     public static final String SPENDABLE_TEXT_IN_ENGLISH = "Spendable";
 
@@ -1546,16 +1541,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 estimatedBalanceBTCLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
                 estimatedBalanceFiatLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
                 if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-
-                    // Money fiat = CurrencyConverter.INSTANCE.requestDogeBtcConversion(DOGEPOOL_URL, estimatedBalance);
                     Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
-                    //Money fiat = CurrencyConverter.INSTANCE.co(estimatedBalance);
-                    // estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
-
-                    double dogeinbtc = estimatedBalance.doubleValue() * .00000001 * CurrencyConverter.INSTANCE.requestDogeBtcConversion();
-                    BigDecimal dogeround = new BigDecimal(dogeinbtc).setScale(5, RoundingMode.HALF_EVEN);
-
-                    estimatedBalanceFiatLabel.setText("(" + dogeround + " BTC)");
+                    estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
                 } else {
                     estimatedBalanceFiatLabel.setText(" ");
                 }
@@ -1575,7 +1562,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
                         Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(availableToSpend);
                         if (fiat != null) {
-                            availableBalanceFiatButton.setText("(" + estimatedBalance.doubleValue() * .00000001 * CurrencyConverter.requestDogeBtcConversion() + " BTC)");
+                            availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat)
+                                    + ")");
                         }
                     } else {
                         availableBalanceFiatButton.setText(" ");

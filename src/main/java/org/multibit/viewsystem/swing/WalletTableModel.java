@@ -15,14 +15,6 @@
  */
 package org.multibit.viewsystem.swing;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-
-import javax.swing.table.AbstractTableModel;
-
 import org.joda.money.Money;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -32,7 +24,10 @@ import org.multibit.model.bitcoin.WalletTableData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.multibit.viewsystem.swing.action.Validator;
+import javax.swing.table.AbstractTableModel;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Date;
 
 
 

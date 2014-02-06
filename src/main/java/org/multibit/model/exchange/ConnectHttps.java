@@ -22,9 +22,7 @@ public final class ConnectHttps {
         trustAllCerts();
 
         httpGet("https://multibit.org/version.txt");
-        //httpGet("https://data.mtgox.com/api/2/BTCUSD/money/ticker");
-        //httpGet("https://dogeapi.com/wow/?a=get_current_price&convert_to=USD");
-        httpGet("http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=132");
+        httpGet("https://data.mtgox.com/api/2/BTCUSD/money/ticker");
     }
 
     /**

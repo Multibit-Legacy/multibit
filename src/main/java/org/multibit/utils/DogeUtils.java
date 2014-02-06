@@ -1,42 +1,48 @@
-/*
- * Copyright 2011-2014 the original author or authors.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.multibit.utils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * @author Andreas Schildbach
+ * Created by Max on 06.02.14.
  */
-public class ExchangeRatesProvider
-{
+public class DogeUtils {
 
-    private static float requestDogeBtcConversion(URL url) {
+    private static Logger log = LoggerFactory.getLogger(DogeUtils.class);
+
+    private static final URL DOGEPOOL_URL;
+    private static final URL CRYPTSY_URL;
+    private static final URL VIRCUREX_URL;
+
+    static
+    {
+        try
+        {
+            DOGEPOOL_URL = new URL("http://dogepool.com/lastdoge");
+            CRYPTSY_URL = new URL("http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=132");
+            VIRCUREX_URL = new URL("https://vircurex.com/api/get_last_trade.json?base=DOGE&alt=BTC");
+        }
+        catch (final MalformedURLException x)
+        {
+            throw new RuntimeException(x); // cannot happen
+        }
+    }
+
+    public static float requestDogeBtcConversion() {
         HttpURLConnection connection = null;
         Reader reader = null;
 
         try
         {
-            connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) DOGEPOOL_URL.openConnection();
             connection.setConnectTimeout(Constants.HTTP_TIMEOUT_MS);
             connection.setReadTimeout(Constants.HTTP_TIMEOUT_MS);
             connection.connect();
@@ -53,19 +59,19 @@ public class ExchangeRatesProvider
                     return Float.parseFloat(content.toString());
                 } catch (NumberFormatException e)
                 {
-                    // log.debug("Hm, looks like dogepool changed their API...");
+                    log.debug("Hm, looks like dogepool changed their API...");
                     return -1;
                 }
 
             }
             else
             {
-                // log.debug("http status " + responseCode + " when fetching " + url);
+                log.debug("http status " + responseCode + " when fetching " + DOGEPOOL_URL);
             }
         }
         catch (final Exception x)
         {
-            // log.debug("problem reading exchange rates", x);
+            log.debug("problem reading exchange rates", x);
         }
         finally
         {

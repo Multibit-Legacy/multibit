@@ -15,8 +15,6 @@ import javax.swing.SwingUtilities;
 import org.multibit.controller.Controller;
 import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.exchange.ExchangeModel;
-import org.multibit.utils.Constants;
-import org.multibit.utils.Io;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +26,7 @@ import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.io.Reader;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+
 
 public enum CurrencyConverter {
     INSTANCE;
@@ -104,13 +96,13 @@ public enum CurrencyConverter {
         }
         initialise(controller, newCurrencyCode);
     }
-
+    
     public void initialise(Controller controller, String currencyCode) {
        this.controller = controller;
-
+       
        try {
            BITCOIN_CURRENCY_UNIT  = CurrencyUnit.of("BTC");
-
+           
            if (currencyCode != null && !"".equals(currencyCode)) {
                currencyUnit = CurrencyUnit.of(currencyCode);
            } else {
@@ -121,15 +113,15 @@ public enum CurrencyConverter {
            // Default to USD.
            currencyUnit = CurrencyUnit.of("USD");
        }
-
-
+       
+       
         // Exchange rate is unknown.
         rate = null;
         rateDividedByNumberOfSatoshiInOneBitcoin = null;
-
+        
         // Setup listeners
         listeners = new ArrayList<CurrencyConverterListener>();
-
+        
         // Initialise currency info map.
         currencyCodeToInfoMap = new HashMap<String, CurrencyInfo>();
         currencyCodeToInfoMap.put("USD", new CurrencyInfo("USD", "$", true));
@@ -320,7 +312,11 @@ public enum CurrencyConverter {
         groupingSeparator = String.valueOf(fiatFormatter.getDecimalFormatSymbols().getGroupingSeparator());     
     }
 
-
+    /**
+     * Convert a number of satoshis to fiat
+     * @param bitcoinAmountInSatoshi in satoshis
+     * @return equivalent fiat amount
+     */
     public Money convertFromBTCToFiat(BigInteger bitcoinAmountInSatoshi) {
         if (rate == null) {
             return null;
@@ -588,12 +584,6 @@ public enum CurrencyConverter {
             result.setBtcMessage(controller.getLocaliser().getString("currencyConverter.btcCanOnlyHaveEightDecimalPlaces"));
             return result;
         }
-
-
-
-
-
-
     }
     
     /**
@@ -618,8 +608,7 @@ public enum CurrencyConverter {
                 if (converterResult.isBtcMoneyValid()) {
                     Money fiat = convertFromBTCToFiat(converterResult.getBtcMoney().getAmount()
                             .toBigInteger());
-                    // prettyPrint = prettyPrint + getFiatAsLocalisedString(fiat, true, true);
-                    prettyPrint = prettyPrint;
+                    prettyPrint = prettyPrint + getFiatAsLocalisedString(fiat, true, true);
                 }
             }
         }
@@ -654,8 +643,6 @@ public enum CurrencyConverter {
 
     public void setRate(BigDecimal rate) {
         boolean fireFoundInsteadOfUpdated = (rate== null);
-        // this.rate = rate;
-        // this.rate = new BigDecimal(Float.toString(requestDogeBtcConversion(DOGEPOOL_URL)));
         this.rate = rate;
         rateDividedByNumberOfSatoshiInOneBitcoin = rate.divide(new BigDecimal(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN));
         
@@ -713,93 +700,4 @@ public enum CurrencyConverter {
     public Map<String, String> getCurrencyCodeToDescriptionMap() {
         return currencyCodeToDescriptionMap;
     }
-
-    private static final URL BITCOINAVERAGE_URL;
-    private static final String[] BITCOINAVERAGE_FIELDS = new String[] { "24h_avg" };
-    private static final URL BITCOINCHARTS_URL;
-    private static final String[] BITCOINCHARTS_FIELDS = new String[] { "24h", "7d", "30d" };
-    private static final URL BLOCKCHAININFO_URL;
-    private static final String[] BLOCKCHAININFO_FIELDS = new String[] { "15m" };
-    private static final URL DOGEPOOL_URL;
-    private static final URL CRYPTSY_URL;
-    private static final URL VIRCUREX_URL;
-
-    // https://bitmarket.eu/api/ticker
-
-    static
-    {
-        try
-        {
-            BITCOINAVERAGE_URL = new URL("https://api.bitcoinaverage.com/ticker/all");
-            BITCOINCHARTS_URL = new URL("http://api.bitcoincharts.com/v1/weighted_prices.json");
-            BLOCKCHAININFO_URL = new URL("https://blockchain.info/ticker");
-            DOGEPOOL_URL = new URL("http://dogepool.com/lastdoge");
-            CRYPTSY_URL = new URL("http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=132");
-            VIRCUREX_URL = new URL("https://vircurex.com/api/get_last_trade.json?base=DOGE&alt=BTC");
-        }
-        catch (final MalformedURLException x)
-        {
-            throw new RuntimeException(x); // cannot happen
-        }
-    }
-
-    public static float requestDogeBtcConversion() {
-        HttpURLConnection connection = null;
-        Reader reader = null;
-
-        try
-        {
-            connection = (HttpURLConnection) DOGEPOOL_URL.openConnection();
-            connection.setConnectTimeout(Constants.HTTP_TIMEOUT_MS);
-            connection.setReadTimeout(Constants.HTTP_TIMEOUT_MS);
-            connection.connect();
-
-            final int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK)
-            {
-                reader = new InputStreamReader(new BufferedInputStream(connection.getInputStream(), 1024), Constants.UTF_8);
-                final StringBuilder content = new StringBuilder();
-                Io.copy(reader, content);
-
-                try
-                {
-                    return Float.parseFloat(content.toString());
-                } catch (NumberFormatException e)
-                {
-                    log.debug("Hm, looks like dogepool changed their API...");
-                    return -1;
-                }
-
-            }
-            else
-            {
-                log.debug("http status " + responseCode + " when fetching " + DOGEPOOL_URL);
-            }
-        }
-        catch (final Exception x)
-        {
-            log.debug("problem reading exchange rates", x);
-        }
-        finally
-        {
-            if (reader != null)
-            {
-                try
-                {
-                    reader.close();
-                }
-                catch (final IOException x)
-                {
-                    // swallow
-                }
-            }
-
-            if (connection != null)
-                connection.disconnect();
-        }
-
-        return -1;
-    }
-
-
 }
