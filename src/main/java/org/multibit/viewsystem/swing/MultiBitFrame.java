@@ -1552,7 +1552,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     //Money fiat = CurrencyConverter.INSTANCE.co(estimatedBalance);
                     // estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
 
-                    double dogeinbtc = estimatedBalance.doubleValue() * .00000001 * CurrencyConverter.requestDogeBtcConversion();
+                    double dogeinbtc = estimatedBalance.doubleValue() * .00000001 * CurrencyConverter.INSTANCE.requestDogeBtcConversion();
                     BigDecimal dogeround = new BigDecimal(dogeinbtc).setScale(5, RoundingMode.HALF_EVEN);
 
                     estimatedBalanceFiatLabel.setText("(" + dogeround + " BTC)");

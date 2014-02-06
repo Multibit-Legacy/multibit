@@ -41,7 +41,9 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, WalletBusyListener {
@@ -588,7 +590,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     String balanceTextToShowFiat = "";
     if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
       Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
-      balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")";
+      // balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")";
+
+        //double value = Double.parseDouble(balanceTextToShowBTC);
+        double dogeinbtc = estimatedBalance.doubleValue() * .00000001 * CurrencyConverter.INSTANCE.requestDogeBtcConversion();
+        BigDecimal dogeround = new BigDecimal(dogeinbtc).setScale(5, RoundingMode.HALF_EVEN);
+        balanceTextToShowFiat = "(" + dogeround + " BTC)";
     }
 
     if (useBusyStatus && perWalletModelData.isBusy()) {
