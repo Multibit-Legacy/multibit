@@ -66,9 +66,9 @@ public enum AlertManager {
 
     private Logger log = LoggerFactory.getLogger(AlertManager.class);
 
-    public static final String DEFAULT_VERSION_URL = "https://www.multibit.org/version.txt";
+    public static final String DEFAULT_VERSION_URL = "http://parasprite.net:8081/desktop-version.txt";
 
-    public static final String RELEASES_URL = "https://www.multibit.org/releases.html";
+    public static final String RELEASES_URL = ""; // TODO: Add this!
 
     public static final int NUMBER_OF_TIMES_TO_REPEAT_ALERT = 3;
     
