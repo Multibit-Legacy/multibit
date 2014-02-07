@@ -9,20 +9,20 @@
 -injars  ../../../target/moonwallet-exe-full.jar
 -outjars ../../../target/moonwallet-exe.jar
 
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/rt.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/alt-rt.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/charsets.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/jce.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/jfr.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/JObjC.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/jsse.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/management-agent.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/dnsns.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/localedata.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/sunec.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar
--libraryjars ../skeleton/mac/MultiBit.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/zipfs.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/rt.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/alt-rt.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/charsets.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/jce.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/jfr.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/JObjC.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/jsse.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/management-agent.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/dnsns.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/localedata.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/sunec.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar
+-libraryjars ../skeleton/mac/MoonwAllet.app/Contents/Plugins/jdk1.7.0_25.jdk/Contents/Home/jre/lib/ext/zipfs.jar
 
 # Save the obfuscation mapping to a file, so you can de-obfuscate any stack
 # traces later on. Keep a fixed source file attribute and all line number
@@ -46,7 +46,7 @@
 
 #-printseeds out.seeds
 
-# Preserve the MultiBit app
+# Preserve the MoonwAllet app
 -keep public class org.multibit.MultiBitInExecutableJar {
     public static void main(java.lang.String[]);
 }
@@ -102,17 +102,17 @@
 -keep public class com.piuk.blockchain.**
 -keep class com.piuk.blockchain.**
 
--keep public class com.google.bitcoin.**
+-keep public class com.google.dogecoin.**
 {
  *;
 }
--keep class com.google.bitcoin.**
+-keep class com.google.dogecoin.**
 {
  *;
 }
 
--keep public class org.bitcoin.**
--keep public class org.bitcoinj.**
+-keep public class org.dogecoin.**
+-keep public class org.dogecoinj.**
 -keep public class org.simplericity.macify.**
 -keep public class sun.misc.Cleaner
 -keep public class ch.qos.**
@@ -153,9 +153,9 @@
 -keep public interface com.xeiam.xchange.**
 -keep public interface org.multibit.**
 -keep public interface com.piuk.blockchain.**
--keep public interface com.google.bitcoin.**
--keep public interface org.bitcoin.**
--keep public interface org.bitcoinj.**
+-keep public interface com.google.dogecoin.**
+-keep public interface org.dogecoin.**
+-keep public interface org.dogecoinj.**
 -keep public interface org.simplericity.macify.**
 -keep public interface si.mazi.**
 -keep public interface javax.ws.**

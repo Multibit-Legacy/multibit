@@ -425,8 +425,8 @@
                                         perm="777" />
 
                                 <copy
-                                        todir="${basedir}/target/MoonWallet-mac/MultiBit.app">
-                                    <fileset dir="${basedir}/target/MultiBit.app"
+                                        todir="${basedir}/target/MoonWallet-mac/MoonwAllet.app">
+                                    <fileset dir="${basedir}/target/MoonwAllet.app"
                                              includes="**" />
                                 </copy>
                                 <copy file="${basedir}/src/main/izpack/mac/readme.txt"
