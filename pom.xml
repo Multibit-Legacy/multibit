@@ -442,7 +442,7 @@
                                 <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
                        									'x' permission after the copy) -->
                                 <chmod
-                                        file="${basedir}/target/MultiBit-mac/Moonwallet.app/Contents/MacOS/JavaApplicationStub"
+                                        file="${basedir}/target/MoonWallet-mac/MoonWallet.app/Contents/MacOS/JavaApplicationStub"
                                         perm="777" />
 
                                 <!-- Sign the Mac app -->
