@@ -75,7 +75,7 @@ After some processing, you will have the following artifacts in the target direc
 * an installer for Linux = multidoge-x.y.z-linux.jar
 
 To run MultiDoge from these artifacts you can follow the instructions [provided on the main MultiDoge
-website](https://multidoge.org/help.html)
+website](http://multidoge.org/help.html)
 
 ### MultiDoge contains cut down JREs so is a large clone
 
