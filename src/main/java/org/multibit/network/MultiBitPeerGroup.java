@@ -18,21 +18,26 @@ package org.multibit.network;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 
-import com.google.bitcoin.core.BlockChain;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.PeerGroup;
+import com.google.dogecoin.core.BlockChain;
+import com.google.dogecoin.core.NetworkParameters;
+import com.google.dogecoin.core.PeerGroup;
 
 
 public class MultiBitPeerGroup extends PeerGroup {
     private final Controller controller;
     private final BitcoinController bitcoinController;
     MultiBitDownloadListener multiBitDownloadListener = null;
+
+    public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
+
         
     public MultiBitPeerGroup(BitcoinController bitcoinController, NetworkParameters params, BlockChain chain) {
         super(params, chain);
         this.bitcoinController = bitcoinController;
         this.controller = this.bitcoinController;
         multiBitDownloadListener = new MultiBitDownloadListener(this.bitcoinController);
+
+        setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
     }
     
     /**

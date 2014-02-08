@@ -2,27 +2,27 @@
 
 <shortcuts>
 
-  <programGroup defaultName="MultiBit"
+  <programGroup defaultName="MultiDoge"
   location="applications"/>
 
    <shortcut
-     name="MultiBit ${project.version}"
+     name="MultiDoge ${project.version}"
      programGroup="yes"
      desktop="yes"
      applications="no"
      startMenu="no"
      startup="no"
      target="/usr/bin/java"
-     commandLine="-jar $INSTALL_PATH/multibit-exe.jar"
+     commandLine="-jar $INSTALL_PATH/multidoge-exe.jar"
      initialState="normal"
-     iconFile="$INSTALL_PATH/multibit48.png"
+     iconFile="$INSTALL_PATH/multidoge48.png"
      workingDirectory="$INSTALL_PATH"
      type="Application"
      encoding="UTF-8"
-     description="MultiBit ${project.version}">
+     description="MultiDoge ${project.version}">
    </shortcut>
    <shortcut
-     name="Uninstall MultiBit ${project.version}"
+     name="Uninstall MultiDoge ${project.version}"
      programGroup="yes"
      desktop="yes"
      applications="no"
@@ -34,7 +34,7 @@
      workingDirectory="$INSTALL_PATH"
      type="Application"
      encoding="UTF-8"
-     description="Uninstall MultiBit ${project.version}">
+     description="Uninstall MultiDoge ${project.version}">
    </shortcut>
 </shortcuts>
 

@@ -34,7 +34,7 @@ import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.action.ExportTransactionsSubmitAction;
 
-import com.google.bitcoin.core.Wallet;
+import com.google.dogecoin.core.Wallet;
 
 public class ExportTransactionsSubmitActionTest extends TestCase {
     public static final String WALLETS_TESTDATA_DIRECTORY = "wallets";

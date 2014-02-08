@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
 
-import com.google.bitcoin.core.Wallet;
+import com.google.dogecoin.core.Wallet;
 
 /**
  * This wrapper class wraps all the data pertaining to a single wallet.

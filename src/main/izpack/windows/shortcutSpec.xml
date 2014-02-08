@@ -1,23 +1,25 @@
 <shortcuts> 
-   <programGroup defaultName="MultiBit" location="applications"/> 
-   <shortcut name="MultiBit ${project.version}" 
-             target="$INSTALL_PATH/multibit.exe" 
-             description="MultiBit" 
+   <programGroup defaultName="MultiDoge" location="applications"/> 
+   <shortcut name="MultiDoge ${project.version}" 
+             target="$INSTALL_PATH/multidoge.exe" 
+             description="MultiDoge" 
              workingDirectory="$INSTALL_PATH"
-             iconFile="$INSTALL_PATH/multibit.ico" 
+             iconFile="$INSTALL_PATH/multidoge.ico" 
              initialState="normal" 
              programGroup="yes"
              desktop="yes" 
              applications="no" 
              startMenu="no" 
              startup="no">
-    </shortcut>    <shortcut name="Uninstall MultiBit ${project.version}" 
+    </shortcut>
+    <shortcut name="Uninstall MultiDoge ${project.version}" 
              target="$INSTALL_PATH/uninstaller/uninstaller.jar" 
-             description="Uninstall MultiBit" 
+             description="Uninstall MultiDoge" 
              initialState="normal" 
              programGroup="yes"
              desktop="no" 
              applications="no" 
              startMenu="no" 
              startup="no">
-    </shortcut></shortcuts>
+    </shortcut>
+</shortcuts>

@@ -15,7 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import com.google.bitcoin.core.Transaction;
+import com.google.dogecoin.core.Transaction;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -24,7 +24,6 @@ import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.ReplayManager;
 import org.multibit.network.ReplayTask;
 import org.multibit.utils.DateUtils;
-import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
@@ -49,19 +48,15 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
 
-    private ResetTransactionsDataProvider resetTransactionsDataProvider;
-    
     private MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public ResetTransactionsSubmitAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, Icon icon,
-            ResetTransactionsDataProvider resetTransactionsDataProvider) {
+    public ResetTransactionsSubmitAction(BitcoinController bitcoinController, MultiBitFrame mainFrame, Icon icon) {
         super(bitcoinController, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
                 "resetTransactionsSubmitAction.mnemonicKey", icon);
         this.mainFrame = mainFrame;
-        this.resetTransactionsDataProvider = resetTransactionsDataProvider;
     }
 
 
@@ -70,27 +65,15 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        log.debug("RT Ping 1");
         if (abort()) {
             return;
         }
-        log.debug("RT Ping 2");
 
-        final ResetTransactionsSubmitAction thisAction = this;
         setEnabled(false);
 
-        boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
-        Date resetDate = resetTransactionsDataProvider.getResetDate();
-
         WalletData activePerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
-        log.debug("RT Ping 3");
 
-        Date actualResetDate = null;
-
-        if (resetFromFirstTransaction) {
             // Work out the earliest transaction date and save it to the wallet.
-            log.debug("RT Ping 4");
-
             Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
             Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true);
             if (allTransactions != null) {
@@ -103,8 +86,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                     }
                 }
             }
-            actualResetDate = earliestTransactionDate;
-            log.debug("RT Ping 5");
+            Date actualResetDate = earliestTransactionDate;
 
             // Look at the earliest key creation time - this is
             // returned in seconds and is converted to milliseconds.
@@ -114,33 +96,23 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                 earliestTransactionDate = new Date(earliestKeyCreationTime);
                 actualResetDate = earliestTransactionDate;
             }
-            log.debug("RT Ping 6");
-        } else {
-            log.debug("RT Ping 7");
-            actualResetDate = resetDate;
-        }
-        log.debug("RT Ping 8");
+
+        // Take an extra day off the reset date to ensure the wallet is cleared entirely
+        actualResetDate = new Date (actualResetDate.getTime() - 3600 * 24 * NUMBER_OF_MILLISECOND_IN_A_SECOND);  // Number of milliseconds in a day
 
         // Remove the transactions from the wallet.
         activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
-        log.debug("RT Ping 9");
 
         // Save the wallet without the transactions.
         try {
             super.bitcoinController.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
-            log.debug("RT Ping 10");
 
             super.bitcoinController.getModel().createWalletTableData(super.bitcoinController, super.bitcoinController.getModel().getActiveWalletFilename());
-            log.debug("RT Ping 11");
-
             controller.fireRecreateAllViews(false);
-            log.debug("RT Ping 12");
-
         } catch (WalletSaveException wse) {
             log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
             MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
         }
-        log.debug("RT Ping 13");
         
         // Double check wallet is not busy then declare that the active wallet
         // is busy with the task
@@ -153,8 +125,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
             super.bitcoinController.fireWalletBusyChange(true);
 
-            resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate, activePerWalletModelData.getWalletFilename());
-            log.debug("RT Ping 14");
+            resetTransactionsInBackground(actualResetDate, activePerWalletModelData.getWalletFilename());
         }
 
     }
@@ -162,14 +133,14 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     /**
      * Reset the transaction in a background Swing worker thread.
      */
-    private void resetTransactionsInBackground(final boolean resetFromFirstTransaction, final Date resetDate, final String walletFilename) {
+    private void resetTransactionsInBackground(final Date resetDate, final String walletFilename) {
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
 
             private String message = "";
 
             @Override
             protected Boolean doInBackground() throws Exception {
-                Boolean successMeasure = Boolean.FALSE;
+                Boolean successMeasure;
 
                 log.debug("Starting replay from date = " + resetDate);
                 List<WalletData> perWalletModelDataList = new ArrayList<WalletData>();

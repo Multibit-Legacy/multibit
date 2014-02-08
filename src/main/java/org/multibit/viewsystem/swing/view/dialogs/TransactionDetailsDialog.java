@@ -15,7 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.dialogs;
 
-import com.google.bitcoin.core.*;
+import com.google.dogecoin.core.*;
 import org.multibit.MultiBit;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -52,9 +52,9 @@ import java.util.List;
  */
 public class TransactionDetailsDialog extends MultiBitDialog {
 
-    private static final String BLOCKCHAIN_INFO_PREFIX = "http://blockchain.info/tx-index/";
+    private static final String BLOCKCHAIN_INFO_PREFIX = "http://dogechain.info/tx/";
 
-    private static final String BLOCKEXPLORER_TRANSACTION_PREFIX = "http://blockexplorer.com/tx/";
+    private static final String BLOCKEXPLORER_TRANSACTION_PREFIX = "http://dogechain.info/tx/";
 
     private static final long serialVersionUID = 191435612345057705L;
 
@@ -436,7 +436,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
 
         if (isBrowserSupported()) {
-            MultiBitButton openInBlockExplorerButton = new MultiBitButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockExplorer"));
+/*            MultiBitButton openInBlockExplorerButton = new MultiBitButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockExplorer"));
             openInBlockExplorerButton.addActionListener(new ActionListener() {
 
                 @Override
@@ -448,7 +448,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                         log.debug(e.getMessage());
                     }
                     
-                }});
+                }});*/
             
             constraints.fill = GridBagConstraints.NONE;
             constraints.gridx = 2;
@@ -458,7 +458,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             constraints.gridwidth = 1;
             constraints.gridheight = 1;
             constraints.anchor = GridBagConstraints.LINE_END;
-            detailPanel.add(openInBlockExplorerButton, constraints);
+            //detailPanel.add(openInBlockExplorerButton, constraints);
 
             MultiBitButton openInBlockChainInfoButton = new MultiBitButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockChainInfo"));
             openInBlockChainInfoButton.addActionListener(new ActionListener() {

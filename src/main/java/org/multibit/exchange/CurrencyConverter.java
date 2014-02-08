@@ -314,7 +314,7 @@ public enum CurrencyConverter {
 
     /**
      * Convert a number of satoshis to fiat
-     * @param bitcoinAmount in satoshis
+     * @param bitcoinAmountInSatoshi in satoshis
      * @return equivalent fiat amount
      */
     public Money convertFromBTCToFiat(BigInteger bitcoinAmountInSatoshi) {

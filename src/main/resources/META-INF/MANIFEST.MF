@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Archiver-Version: Plexus Archiver
 Created-By: Apache Maven
-Built-By: jim
+Built-By: langerhans
 Build-Jdk: 1.6.0_26
 Main-Class: org.multibit.MultiBitInExecutableJar

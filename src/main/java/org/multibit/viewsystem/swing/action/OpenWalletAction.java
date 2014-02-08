@@ -15,34 +15,11 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.SwingWorker;
-
+import com.google.dogecoin.core.StoredBlock;
+import com.google.dogecoin.core.Transaction;
+import com.google.dogecoin.core.TransactionConfidence;
+import com.google.dogecoin.core.Wallet;
+import com.google.dogecoin.crypto.KeyCrypterException;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.BackupManager;
@@ -67,11 +44,14 @@ import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.*;
+import java.util.List;
 
 /**
  * This {@link Action} opens a wallet from a file.
@@ -471,6 +451,7 @@ public class OpenWalletAction extends AbstractAction {
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
                 } finally {
+                    controller.fireDataChangedUpdateNow();
                     setEnabled(true);
                     if (mainFrame != null) {
                         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

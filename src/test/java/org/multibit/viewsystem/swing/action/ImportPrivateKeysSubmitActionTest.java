@@ -30,7 +30,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
-import com.google.bitcoin.core.ECKey;
+import com.google.dogecoin.core.ECKey;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class ImportPrivateKeysSubmitActionTest extends TestCase {   
@@ -317,7 +317,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importPrivateKeysSubmitAction.actionPerformed(null);
         Object[] messages = MessageManager.INSTANCE.getMessages().toArray();
         assertTrue("There were no messages but there should have been", messages != null && messages.length > 0);
-        assertEquals("Wrong message after receive bitcoin confirm with no active wallet", ResetTransactionsSubmitActionTest.EXPECTED_NO_WALLET_IS_SELECTED, ((Message)messages[messages.length - 1]).getText());
+        assertEquals("Wrong message after receive dogecoin confirm with no active wallet", ResetTransactionsSubmitActionTest.EXPECTED_NO_WALLET_IS_SELECTED, ((Message)messages[messages.length - 1]).getText());
     }
     
     private void checkEveryExpectedKeyIsPresent(BitcoinController controller) {

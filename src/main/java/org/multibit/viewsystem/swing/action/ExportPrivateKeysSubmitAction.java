@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.MultiBitBlockChain;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.dogecoin.core.MultiBitBlockChain;
+import com.google.dogecoin.crypto.KeyCrypterException;
 
 /**
  * This {@link Action} exports the active wallets private keys.

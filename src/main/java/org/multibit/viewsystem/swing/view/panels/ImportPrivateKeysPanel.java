@@ -73,7 +73,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.dogecoin.crypto.KeyCrypterException;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 

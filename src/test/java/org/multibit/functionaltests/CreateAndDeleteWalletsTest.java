@@ -26,7 +26,6 @@ import org.multibit.file.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +66,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             controller = controllers.bitcoinController;
 
             log.debug("Creating Bitcoin service");
-            // create the MultiBitService that connects to the bitcoin network
+            // create the MultiBitService that connects to the dogecoin network
             MultiBitService multiBitService = new MultiBitService(controller);
             controller.setMultiBitService(multiBitService);
 
@@ -109,17 +108,6 @@ public class CreateAndDeleteWalletsTest extends TestCase {
             createNewWalletAction.createNewWallet(test2WalletPath);
             Thread.sleep(4000);
             assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
-
-            // delete the test1wallet
-            DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null);
-            deleteWalletSubmitAction.deleteWallet(test1WalletPath);
-            Thread.sleep(4000);
-            assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
-
-            // delete the test2wallet
-            deleteWalletSubmitAction.deleteWallet(test2WalletPath);
-            Thread.sleep(4000);
-            assertEquals(0, controller.getModel().getPerWalletModelDataList().size());
         }
     }
 
@@ -132,16 +120,16 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         File multiBitDirectory = FileHandler.createTempDirectory("CreateAndDeleteWalletsTest");
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
 
-        System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
+        System.out.println("Building MultiDoge runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // Create an empty multibit.properties.
-        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
+        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multidoge.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
         // Copy in the checkpoints stored in git - this is in source/main/resources/.
-        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
-        FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
+        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multidoge.checkpoints");
+        FileHandler.copyFile(new File("./src/main/resources/multidoge.checkpoints"), multibitCheckpoints);
         multibitCheckpoints.deleteOnExit();
 
         return multiBitDirectory;

@@ -17,9 +17,9 @@ package org.multibit.viewsystem.swing.view.dialogs;
 
 
 
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.core.Wallet.SendRequest;
+import com.google.dogecoin.core.Transaction;
+import com.google.dogecoin.core.Wallet.BalanceType;
+import com.google.dogecoin.core.Wallet.SendRequest;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.exchange.CurrencyConverter;

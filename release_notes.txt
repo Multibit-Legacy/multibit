@@ -1,17 +1,13 @@
 MultiBit release notes.
 
-19 Nov 2013 Version 0.5.15
+18 Dec 2013 Version 0.5.16
 Changes:
-#196. Fixed: Bitcoin URI protocol handler does not work properly under Windows.
-#203, #276. Inverted colour scheme now working ok.
-#230. Fixed: Exception when sending coins.
-#234. Fixed: The addresses in Sign Message / Verify Message need white space trimming.
-#235. Fixed: USB drive installation instructions are out of date.
-#262. Added support for new blockchain.info wallet format to Import Private Keys.
-#280, #284. Fixed: MultiBit does not build.
-#283. Fixed: Misleading error message when trying to send very small amount.
-#293. Updated build to bitcoinj 0.10.2
-#297. Added a message when wallet closes (with location of wallet).
-#299. Added Serbian as a target language.
-#304. Updated XChange library to 1.9.0
+#340. Fixed: if you close a wallet then open it immediately it does not appear.
+#347, #410. Updated code to bitcoinj 0.10.3 (transaction is now resent ok if not initially sent).
+#407. Changed reset block chain and transactions to always run before wallet creation date.
+#408. Send is now prevented until sync completes.
+#409. Examined code to see if 'tx is missing' can be improved.
+#415. Removed 'File | Delete Wallet' entirely for safety reasons.
+#418. Now performs a ping of peers before send as a network check.
+
 

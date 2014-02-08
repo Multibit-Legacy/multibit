@@ -37,10 +37,10 @@ public class SendBitcoinNowActionTest extends TestCase {
 
     private static final String EXPECTED_ENTER_THE_WALLET_PASSWORD = "Enter the wallet password";
     private static final String EXPECTED_TEST_SEND_FAILED_ERROR = " test - send failed";
-    private static final String EXPECTED_SEND_FAILED = "The send of your bitcoin failed.";
+    private static final String EXPECTED_SEND_FAILED = "The send of your dogecoin failed.";
     private static final String EXPECTED_THE_WALLET_IS_BUSY = "The wallet is busy with the task \"\"";
-    private static final String EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY = "Your bitcoin were sent successfully.";
-    private static final String EXPECTED_SENDING_BITCOIN = "Sending bitcoin...";
+    private static final String EXPECTED_YOUR_BITCOIN_WERE_SENT_SUCCESSFULLY = "Your dogecoin were sent successfully.";
+    private static final String EXPECTED_SENDING_BITCOIN = "Sending dogecoin...";
     public static final CharSequence TEST_PASSWORD1 = "my hovercraft has eels";
     public static final CharSequence WALLET_PASSWORD = "testing testing 123";
     private static final int DELAY_TO_COMPLETE_OPERATION = 12000; // milliseconds
@@ -70,7 +70,7 @@ public class SendBitcoinNowActionTest extends TestCase {
             controller = controllers.bitcoinController;
 
             log.debug("Creating Bitcoin service");
-            // create the MultiBitService that connects to the bitcoin network
+            // create the MultiBitService that connects to the dogecoin network
             MultiBitService multiBitService = new MultiBitService(controller);
             controller.setMultiBitService(multiBitService);
 
@@ -269,13 +269,13 @@ public class SendBitcoinNowActionTest extends TestCase {
         System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // Create an empty multibit.properties.
-        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
+        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multidoge.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
         // Copy in the checkpoints stored in git - this is in source/main/resources/.
-        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multibit.checkpoints");
-        FileHandler.copyFile(new File("./src/main/resources/multibit.checkpoints"), multibitCheckpoints);
+        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multidoge.checkpoints");
+        FileHandler.copyFile(new File("./src/main/resources/multidoge.checkpoints"), multibitCheckpoints);
         multibitCheckpoints.deleteOnExit();
 
         return multiBitDirectory;

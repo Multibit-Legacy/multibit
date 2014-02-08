@@ -51,10 +51,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
+import com.google.dogecoin.core.ECKey;
+import com.google.dogecoin.core.NetworkParameters;
+import com.google.dogecoin.core.Utils;
+import com.google.dogecoin.core.Wallet;
 
 
 
@@ -66,11 +66,11 @@ public enum AlertManager {
 
     private Logger log = LoggerFactory.getLogger(AlertManager.class);
 
-    public static final String DEFAULT_VERSION_URL = "https://www.multibit.org/version.txt";
+    public static final String DEFAULT_VERSION_URL = "http://parasprite.net:8081/desktop-version.txt";
 
-    public static final String RELEASES_URL = "https://www.multibit.org/releases.html";
+    public static final String RELEASES_URL = "http://multidoge.org/";
 
-    public static final int NUMBER_OF_TIMES_TO_REPEAT_ALERT = 2;
+    public static final int NUMBER_OF_TIMES_TO_REPEAT_ALERT = 3;
     
     public static final String MESSAGE_WINDOW_SEPARATOR = "----------------------------------------------------------------";
 

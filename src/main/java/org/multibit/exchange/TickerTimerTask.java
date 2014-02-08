@@ -28,6 +28,7 @@ import org.multibit.controller.Controller;
 import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.exchange.ExchangeModel;
+import org.multibit.utils.DogeUtils;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 import org.slf4j.Logger;
@@ -248,9 +249,17 @@ public class TickerTimerTask extends TimerTask {
                                 }
                             }
 
-                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last);
-                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid);
-                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask);
+                            log.debug("Getting DOGE conversion");
+                            float dogeRate = DogeUtils.requestDogeBtcConversion();
+                            if (dogeRate == 0f)
+                            {
+                                log.debug("Problem getting DOGE conversion");
+                                return;
+                            }
+
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastPrice(currency, last.multipliedBy(dogeRate));
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastBid(currency, bid.multipliedBy(dogeRate));
+                            this.exchangeController.getModel().getExchangeData(shortExchangeName).setLastAsk(currency, ask.multipliedBy(dogeRate));
                             log.debug("Exchange = " + shortExchangeName);
 
                             // Put the exchange rate into the currency converter.
@@ -264,7 +273,7 @@ public class TickerTimerTask extends TimerTask {
                                     }
                                 }
                                 CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrencyCode));
-                                CurrencyConverter.INSTANCE.setRate(last.getAmount());
+                                CurrencyConverter.INSTANCE.setRate(last.getAmount().multiply(BigDecimal.valueOf(dogeRate)));
                             }
                         }
                     }

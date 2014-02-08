@@ -38,12 +38,12 @@ import org.multibit.store.MultiBitWalletVersion;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.dogecoin.core.ECKey;
+import com.google.dogecoin.core.NetworkParameters;
+import com.google.dogecoin.core.Utils;
+import com.google.dogecoin.core.Wallet;
+import com.google.dogecoin.crypto.KeyCrypter;
+import com.google.dogecoin.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
 
 public class BackupManagerTest extends TestCase {

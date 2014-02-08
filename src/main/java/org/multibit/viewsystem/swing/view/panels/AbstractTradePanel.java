@@ -15,9 +15,9 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.uri.BitcoinURI;
-import com.google.bitcoin.uri.BitcoinURIParseException;
+import com.google.dogecoin.core.Address;
+import com.google.dogecoin.uri.BitcoinURI;
+import com.google.dogecoin.uri.BitcoinURIParseException;
 import org.joda.money.Money;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -213,7 +213,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     }
 
     /**
-     * is it the receive bitcoin panel (return true) or the send bitcoin panel
+     * is it the receive dogecoin panel (return true) or the send dogecoin panel
      * (return false)
      */
     protected abstract boolean isReceiveBitcoin();
