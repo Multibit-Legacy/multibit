@@ -47,7 +47,7 @@ public class ExchangeData {
     public static final String VIRTEX_EXCHANGE_NAME = "VirtEx";
     public static final String CRYPTSY_EXCHANGE_NAME = "Cryptsy";
 
-    public static final String DEFAULT_EXCHANGE = MT_GOX_EXCHANGE_NAME;
+    public static final String DEFAULT_EXCHANGE = CRYPTSY_EXCHANGE_NAME;
     
     public static final String DEFAULT_CURRENCY = "USD";
     
