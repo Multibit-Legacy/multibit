@@ -50,8 +50,8 @@ import java.util.*;
 public class FileHandler {
     private static Logger log = LoggerFactory.getLogger(FileHandler.class);
 
-    public static final String USER_PROPERTIES_FILE_NAME = "moonwallet.properties";
-    public static final String USER_PROPERTIES_HEADER_TEXT = "moonwallet";
+    public static final String USER_PROPERTIES_FILE_NAME = "multidoge.properties";
+    public static final String USER_PROPERTIES_HEADER_TEXT = "multidoge";
 
     private final Controller controller;
     private final BitcoinController bitcoinController;

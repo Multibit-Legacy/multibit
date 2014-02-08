@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>MoonWallet</string>
+	<string>MultiDoge</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.multibit</string>
 	<key>CFBundleVersion</key>
-	<string>0.1.x</string>
+	<string>0.1.x beta</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
 	<key>CFBundleExecutable</key>
@@ -21,13 +21,13 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleIconFile</key>
-	<string>moonwallet.icns</string>
+	<string>multidoge.icns</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright MultiBit developers 2013, MoonWaalet developers 2014</string>
+	<string>Copyright MultiBit developers 2013, MultiDoge developers 2014</string>
 	<key>CFBundleGetInfoString</key>
-	<string>MultiBit, © 2013 MultiBit developers; MoonWallet, © 2014 MoonWallet developers</string>
+	<string>MultiBit, © 2013 MultiBit developers; MultiDoge, © 2014 MultiDoge developers</string>
 	<key>CFBundleDisplayName</key>
-	<string>MoonWallet</string>
+	<string>MultiDoge</string>
 	<key>Java</key>
 	<dict>
 		<key>WorkingDirectory</key>
@@ -37,7 +37,7 @@
 		<key>JVMVersion</key>
 		<string>1.6+</string>
 		<key>ClassPath</key>
-		<string>$JAVAROOT/moonwallet-exe.jar</string>
+		<string>$JAVAROOT/multidoge-exe.jar</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
@@ -50,9 +50,9 @@
 			<key>CFBundleTypeRole</key>
 			<string>Shell</string>
 			<key>CFBundleURLIconFile</key>
-			<string>multibit.icns</string>
+			<string>multidoge.icns</string>
 			<key>CFBundleURLName</key>
-			<string>org.multibit.bitcoin.url</string>
+			<string>org.multibit.dogecoin.url</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>dogecoin</string>

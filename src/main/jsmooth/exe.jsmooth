@@ -7,12 +7,12 @@
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
-<classPath>../../../target/moonwallet-exe.jar</classPath>
+<classPath>../../../target/multidoge-exe.jar</classPath>
 <embeddedJar>true</embeddedJar>
-<executableName>../../../target/moonwallet.exe</executableName>
-<iconLocation>../resources/images/moonwallet32.png</iconLocation>
+<executableName>../../../target/multidoge.exe</executableName>
+<iconLocation>../resources/images/multidoge32.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
-<jarLocation>../../../target/moonwallet-exe.jar</jarLocation>
+<jarLocation>../../../target/multidoge-exe.jar</jarLocation>
 <mainClassName>org.multibit.MultiBitInExecutableJar</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>

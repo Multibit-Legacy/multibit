@@ -10,33 +10,33 @@ Windows Registry Editor Version 5.00
 "URL Protocol"=""
 
 [HKEY_CLASSES_ROOT\dogecoin\DefaultIcon]
-@="moonwallet.exe,1"
+@="multidoge.exe,1"
 
 [HKEY_CLASSES_ROOT\dogecoin\shell]
 
 [HKEY_CLASSES_ROOT\dogecoin\shell\open]
 
 [HKEY_CLASSES_ROOT\dogecoin\shell\open\command]
-@="\"C:\\Program Files\\MoonwAllet-0.2.0beta4\\moonwallet.exe\" \"%1\""
+@="\"C:\\Program Files\\MultiDoge-0.2.0beta4\\multidoge.exe\" \"%1\""
 
 
 -->
 <registry>
-  <pack name="MoonwAllet">
+  <pack name="MultiDoge">
     <key root="HKCR" keypath="dogecoin" />
     <value root="HKCR" name="" keypath="dogecoin" string="URL:Dogecoin Protocol"/>
     <value root="HKCR" name="URL Protocol" keypath="dogecoin" string=""/>
     <value root="HKCR" name="UseOriginalUrlEncoding" keypath="dogecoin" dword="1"/>
 
     <key root="HKCR" keypath="dogecoin\DefaultIcon" />
-    <value root="HKCR" name="" keypath="dogecoin\DefaultIcon" string="moonwallet.exe,1"/>
+    <value root="HKCR" name="" keypath="dogecoin\DefaultIcon" string="multidoge.exe,1"/>
 
     <key root="HKCR" keypath="dogecoin\shell" />
 
     <key root="HKCR" keypath="dogecoin\shell\open" />
 
     <key root="HKCR" keypath="dogecoin\shell\open\command" />
-    <value root="HKCR" keypath="dogecoin\shell\open\command" name="" string="&quot;$INSTALL_PATH\moonwallet.exe&quot; &quot;%1&quot;" />
+    <value root="HKCR" keypath="dogecoin\shell\open\command" name="" string="&quot;$INSTALL_PATH\multidoge.exe&quot; &quot;%1&quot;" />
 
   </pack>
 </registry>

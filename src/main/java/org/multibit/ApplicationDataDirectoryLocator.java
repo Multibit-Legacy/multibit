@@ -42,7 +42,7 @@ public class ApplicationDataDirectoryLocator {
      * 
      * This is worked out as follows:
      * 
-     * 1. See if there is a moonwallet.properties in MoonWallet's current working
+     * 1. See if there is a multidoge.properties in MultiDoge's current working
      * directory If there is, use this directory as the application data
      * directory This is for backwards compatibility and for running everything
      * from a USB drive
@@ -53,17 +53,17 @@ public class ApplicationDataDirectoryLocator {
      * 
      * 2. Otherwise set the working directory as follows:
      * 
-     * PC System.getenv("APPDATA")/MoonWalletInExecutableJar
+     * PC System.getenv("APPDATA")/MultiDogeInExecutableJar
      * 
-     * e.g. C:/Documents and Settings/Administrator/Application Data/MoonWalletInExecutableJar
+     * e.g. C:/Documents and Settings/Administrator/Application Data/MultiDogeInExecutableJar
      * 
-     * Mac System.getProperty("user.home")/Library/Application Support/MoonWalletInExecutableJar
+     * Mac System.getProperty("user.home")/Library/Application Support/MultiDogeInExecutableJar
      * 
-     * e.g. /Users/jim/Library/Application Support/MoonWalletInExecutableJar
+     * e.g. /Users/jim/Library/Application Support/MultiDogeInExecutableJar
      * 
-     * Linux System.getProperty("user.home")/MoonWalletInExecutableJar
+     * Linux System.getProperty("user.home")/MultiDogeInExecutableJar
      * 
-     * e.g. /Users/jim/MoonWalletInExecutableJar
+     * e.g. /Users/jim/MultiDogeInExecutableJar
      */
     public String getApplicationDataDirectory() {
         if (applicationDataDirectory != null) {
@@ -78,18 +78,18 @@ public class ApplicationDataDirectoryLocator {
             String operatingSystemName = System.getProperty("os.name");
             if (operatingSystemName != null && operatingSystemName.startsWith("Windows")) {
                 // Windows os
-                applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MoonWallet";
+                applicationDataDirectory = System.getenv("APPDATA") + File.separator + "MultiDoge";
             } else {
                 if (operatingSystemName != null && operatingSystemName.startsWith("Mac")) {
                     // Mac os
                     if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
                         applicationDataDirectory = new File("../../../..").getAbsolutePath();
                     } else {
-                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MoonWallet";
+                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiDoge";
                     }
                 } else {
                     // treat as Linux/ unix variant
-                    applicationDataDirectory = System.getProperty("user.home") + "/MoonWallet";
+                    applicationDataDirectory = System.getProperty("user.home") + "/MultiDoge";
                 }
             }
             
@@ -108,7 +108,7 @@ public class ApplicationDataDirectoryLocator {
     
     /**
      * Get the installation directory.
-     * This is the directory into which MoonWallet was installed.
+     * This is the directory into which MultiDoge was installed.
      * @throws IOException 
      * 
      * @TODO when running locally it is possible that the working directory directory and installation directory are different. Fix.

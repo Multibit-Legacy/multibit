@@ -16,10 +16,10 @@
       The meaning of the tags should be natural ...
   -->
   <info>
-    <appname>MoonwAllet</appname>
-    <appsubpath>MoonwAllet-${project.version}</appsubpath>
+    <appname>MultiDoge</appname>
+    <appsubpath>MultiDoge-${project.version}</appsubpath>
     <appversion>${project.version}</appversion>
-    <url>https://multibit.org/</url>
+    <url>https://multidoge.org/</url>
     <uninstaller write="yes"/>
     <javaversion>1.6</javaversion>
     <run-privileged condition="izpack.windowsinstall.vista|izpack.windowsinstall.7"/>
@@ -91,16 +91,16 @@
       We specify here our packs.
   -->
   <packs>
-    <pack name="MoonwAllet" required="yes">
-      <description>MoonwAllet install files.</description>
+    <pack name="MultiDoge" required="yes">
+      <description>MultiDoge install files.</description>
       <file src="readme.txt" targetdir="$INSTALL_PATH"/>
       <file src="configuration.md" targetdir="$INSTALL_PATH"/>
-      <file src="moonwallet.ico" targetdir="$INSTALL_PATH"/>
-      <file src="moonwallet.checkpoints" targetdir="$INSTALL_PATH"/>
+      <file src="multidoge.ico" targetdir="$INSTALL_PATH"/>
+      <file src="multidoge.checkpoints" targetdir="$INSTALL_PATH"/>
       <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
       <file src="COPYING" targetdir="$INSTALL_PATH"/>
       <file src="authors.txt" targetdir="$INSTALL_PATH"/>
-      <file src="moonwallet.exe" targetdir="$INSTALL_PATH"/>
+      <file src="multidoge.exe" targetdir="$INSTALL_PATH"/>
     </pack>
   </packs>
 

@@ -191,14 +191,14 @@ public class ReplayManagerTest extends TestCase {
         System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // Create an empty multibit.properties.
-        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "moonwallet.properties");
+        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multidoge.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
         // Copy in the checkpoints and blockchain stored in git - this is in
         // source/main/resources/.
-        File multibitBlockcheckpoints = new File(multiBitDirectoryPath + File.separator + "moonwallet.checkpoints");
-        FileHandler.copyFile(new File("./src/main/resources/moonwallet.checkpoints"), multibitBlockcheckpoints);
+        File multibitBlockcheckpoints = new File(multiBitDirectoryPath + File.separator + "multidoge.checkpoints");
+        FileHandler.copyFile(new File("./src/main/resources/multidoge.checkpoints"), multibitBlockcheckpoints);
         multibitBlockcheckpoints.deleteOnExit();
 
         return multiBitDirectory;

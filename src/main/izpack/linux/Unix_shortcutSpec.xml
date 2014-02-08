@@ -2,27 +2,27 @@
 
 <shortcuts>
 
-  <programGroup defaultName="MoonwAllet"
+  <programGroup defaultName="MultiDoge"
   location="applications"/>
 
    <shortcut
-     name="MoonwAllet ${project.version}"
+     name="MultiDoge ${project.version}"
      programGroup="yes"
      desktop="yes"
      applications="no"
      startMenu="no"
      startup="no"
      target="/usr/bin/java"
-     commandLine="-jar $INSTALL_PATH/moonwallet-exe.jar"
+     commandLine="-jar $INSTALL_PATH/multidoge-exe.jar"
      initialState="normal"
-     iconFile="$INSTALL_PATH/moonwallet48.png"
+     iconFile="$INSTALL_PATH/multidoge48.png"
      workingDirectory="$INSTALL_PATH"
      type="Application"
      encoding="UTF-8"
-     description="MoonwAllet ${project.version}">
+     description="MultiDoge ${project.version}">
    </shortcut>
    <shortcut
-     name="Uninstall MoonwAllet ${project.version}"
+     name="Uninstall MultiDoge ${project.version}"
      programGroup="yes"
      desktop="yes"
      applications="no"
@@ -34,7 +34,7 @@
      workingDirectory="$INSTALL_PATH"
      type="Application"
      encoding="UTF-8"
-     description="Uninstall MoonwAllet ${project.version}">
+     description="Uninstall MultiDoge ${project.version}">
    </shortcut>
 </shortcuts>
 

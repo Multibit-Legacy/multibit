@@ -120,16 +120,16 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         File multiBitDirectory = FileHandler.createTempDirectory("CreateAndDeleteWalletsTest");
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
 
-        System.out.println("Building MoonWallet runtime in : " + multiBitDirectory.getAbsolutePath());
+        System.out.println("Building MultiDoge runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // Create an empty multibit.properties.
-        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "moonwallet.properties");
+        File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multidoge.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
         // Copy in the checkpoints stored in git - this is in source/main/resources/.
-        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "moonwallet.checkpoints");
-        FileHandler.copyFile(new File("./src/main/resources/moonwallet.checkpoints"), multibitCheckpoints);
+        File multibitCheckpoints = new File(multiBitDirectoryPath + File.separator + "multidoge.checkpoints");
+        FileHandler.copyFile(new File("./src/main/resources/multidoge.checkpoints"), multibitCheckpoints);
         multibitCheckpoints.deleteOnExit();
 
         return multiBitDirectory;

@@ -74,7 +74,7 @@ public class MultiBitService {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
-  public static final String MULTIBIT_PREFIX = "moonwallet";
+  public static final String MULTIBIT_PREFIX = "multidoge";
   public static final String TESTNET_PREFIX = "testnet";
   public static final String TESTNET3_PREFIX = "testnet3";
   public static final String SEPARATOR = "-";

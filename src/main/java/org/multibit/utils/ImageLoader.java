@@ -51,9 +51,9 @@ public final class ImageLoader {
     public static final String MESSAGE_SIGN_ICON_FILE = "/images/messageSign.png";
     public static final String MESSAGE_VERIFY_ICON_FILE = "/images/messageVerify.png";
     public static final String MONEY_ICON_FILE = "/images/money.png";
-    public static final String MULTIBIT_128_ICON_FILE = "/images/moonwallet128.png";
-    public static final String MULTIBIT_ICON_FILE = "/images/moonwallet.png";
-    public static final String MULTIBIT_SMALL_ICON_FILE = "/images/moonwallet-small.png";
+    public static final String MULTIBIT_128_ICON_FILE = "/images/multidoge128.png";
+    public static final String MULTIBIT_ICON_FILE = "/images/multidoge.png";
+    public static final String MULTIBIT_SMALL_ICON_FILE = "/images/multidoge-small.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
     public static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
