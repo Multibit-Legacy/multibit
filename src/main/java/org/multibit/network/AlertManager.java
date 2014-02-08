@@ -68,7 +68,7 @@ public enum AlertManager {
 
     public static final String DEFAULT_VERSION_URL = "http://parasprite.net:8081/desktop-version.txt";
 
-    public static final String RELEASES_URL = "http://multidoge.org/releases.html";
+    public static final String RELEASES_URL = "http://multidoge.org/";
 
     public static final int NUMBER_OF_TIMES_TO_REPEAT_ALERT = 3;
     
