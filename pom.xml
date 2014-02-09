@@ -2,6 +2,7 @@
 
 <!--
   ~ Copyright 2013 multibit.org
+  ~ Copyright 2014 multidoge.org
   ~
   ~ Licensed under the MIT license (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,16 +22,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
-    <artifactId>multibit</artifactId>
-    <version>0.5.15</version>
-    <name>MultiBit</name>
-    <description>A Java Swing client for Bitcoin</description>
-    <url>https://multibit.org</url>
-    <!-- Use "mvn clean package" to build the code packaged into a basic multibit.jar 
-  		Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
-  		to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
-  		generate a complete website under target/site Use "mvn site:run" to run a 
-  		local webserver localhost:8080/index.html -->
+    <artifactId>multidoge</artifactId>
+    <version>0.1.0</version>
+    <name>MultiDoge</name>
+    <description>A Java Swing client for Dogecoin</description>
+    <url>https://multidoge.org</url>
+    <!-- Use "mvn clean package" to build the code packaged into a basic multidoge.jar 
+        Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
+        to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
+        generate a complete website under target/site Use "mvn site:run" to run a 
+        local webserver localhost:8080/index.html -->
     <licenses>
         <license>
             <name>MIT</name>
@@ -42,12 +43,12 @@
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/jim618/multibit/issues</url>
+        <url>https://github.com/langerhans/multidoge/issues</url>
     </issueManagement>
 
     <scm>
         <!-- Public read-only source -->
-        <url>https://github.com/jim618/multibit</url>
+        <url>https://github.com/langerhans/multidoge</url>
     </scm>
 
     <repositories>
@@ -61,7 +62,7 @@
             <snapshots/>
             <url>https://oss.sonatype.org/content/groups/public</url>
         </repository>
-        <!-- bitcoin-j repo -->
+        <!-- dogecoin-j repo -->
         <repository>
             <id>bitcoinj-release</id>
             <releases />
@@ -76,7 +77,7 @@
     </repositories>
 
     <build>
-        <finalName>multibit</finalName>
+        <finalName>multidoge</finalName>
         <resources>
             <!-- filter properties files e.g. version.properties -->
             <resource>
@@ -190,7 +191,7 @@
                             <maxMemory>256m</maxMemory>
                             <attach>false</attach>
                             <addMavenDescriptor>false</addMavenDescriptor>
-                            <proguardInclude>src/main/proguard/multibit-exe.pro</proguardInclude>
+                            <proguardInclude>src/main/proguard/multidoge-exe.pro</proguardInclude>
                         </configuration>
                     </execution>
                 </executions>
@@ -205,7 +206,7 @@
             </plugin>
 
             <!-- Produce staging directory with all resources used in creation of 
-        				the linux IzPack installer and in creation of the Mac application bundle -->
+                        the linux IzPack installer and in creation of the Mac application bundle -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.5</version>
@@ -226,20 +227,20 @@
                                         <include>install.xml</include>
                                         <include>readme.txt</include>
                                         <include>Unix_shortcutSpec.xml</include>
-                                        <include>multibit-protocol-handler.sh</include>
+                                        <include>multidoge-protocol-handler.sh</include>
                                     </includes>
                                 </resource>
                                 <resource>
                                     <directory>${basedir}/src/main/resources/images</directory>
                                     <includes>
                                         <include>installerLeft.png</include>
-                                        <include>multibit48.png</include>
+                                        <include>multidoge48.png</include>
                                     </includes>
                                 </resource>
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.checkpoints</include>
+                                        <include>multidoge.checkpoints</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -254,7 +255,7 @@
                                 <resource>
                                     <directory>target</directory>
                                     <includes>
-                                        <include>multibit-exe.jar</include>
+                                        <include>multidoge-exe.jar</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -262,7 +263,7 @@
                     </execution>
 
                     <!-- Produce staging directory with all resources used in creation of 
-              						the windows IzPack installer -->
+                                    the windows IzPack installer -->
                     <execution>
                         <id>copy-resources-to-staging-windows</id>
                         <phase>install</phase>
@@ -286,13 +287,13 @@
                                     <directory>${basedir}/src/main/resources/images</directory>
                                     <includes>
                                         <include>installerLeft.png</include>
-                                        <include>multibit.ico</include>
+                                        <include>multidoge.ico</include>
                                     </includes>
                                 </resource>
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.checkpoints</include>
+                                        <include>multidoge.checkpoints</include>
                                     </includes>
                                 </resource>
                                 <resource>
@@ -307,7 +308,7 @@
                                 <resource>
                                     <directory>target</directory>
                                     <includes>
-                                        <include>multibit.exe</include>
+                                        <include>multidoge.exe</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -316,9 +317,9 @@
 
                     <!-- produce a Mac application bundle -->
                     <!-- this plugin copies a skeleton App and then copies in the resources 
-              						from the linux staging directory -->
+                                    from the linux staging directory -->
                     <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ 
-              						but cannot get extra resources into my Java directory in the app -->
+                                    but cannot get extra resources into my Java directory in the app -->
                     <execution>
                         <id>create-skeleton-Mac-application-bundle</id>
                         <phase>install</phase>
@@ -326,12 +327,12 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit.app
+                            <outputDirectory>${basedir}/target/MultiDoge.app
                             </outputDirectory>
                             <resources>
                                 <resource>
                                     <!-- skeleton app including JRE -->
-                                    <directory>src/app-resources/MultiBit.app</directory>
+                                    <directory>src/app-resources/MultiDoge.app</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -343,14 +344,14 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java
+                            <outputDirectory>${basedir}/target/MultiDoge.app/Contents/Resources/Java
                             </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${basedir}/target/staging.linux</directory>
                                     <includes>
-                                        <include>multibit-exe.jar</include>
-                                        <include>multibit.checkpoints</include>
+                                        <include>multidoge-exe.jar</include>
+                                        <include>multidoge.checkpoints</include>
                                         <include>release_notes.txt</include>
                                         <include>configuration.md</include>
                                         <include>COPYING</include>
@@ -419,41 +420,41 @@
                         <configuration>
                             <tasks>
                                 <!-- Make the JavaApplicationStub in the Mac application bundle executable
-                       									(it loses its 'x' permission after the copy) -->
+                                                        (it loses its 'x' permission after the copy) -->
                                 <chmod
-                                        file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                        file="${basedir}/target/MultiDoge.app/Contents/MacOS/JavaApplicationStub"
                                         perm="777" />
 
                                 <copy
-                                        todir="${basedir}/target/MultiBit-mac/MultiBit.app">
-                                    <fileset dir="${basedir}/target/MultiBit.app"
+                                        todir="${basedir}/target/MultiDoge-mac/MultiDoge.app">
+                                    <fileset dir="${basedir}/target/MultiDoge.app"
                                              includes="**" />
                                 </copy>
                                 <copy file="${basedir}/src/main/izpack/mac/readme.txt"
-                                      todir="${basedir}/target/MultiBit-mac" />
+                                      todir="${basedir}/target/MultiDoge-mac" />
 
                                 <!-- Create Applications Symbolic link -->
                                 <!-- WARNING, do not remove this symbolic link by Java(ant) -->
                                 <exec executable="ln" os="'Mac OS X'">
                                     <arg
-                                            line="-s /Applications ${basedir}/target/MultiBit-mac/Applications" />
+                                            line="-s /Applications ${basedir}/target/MultiDoge-mac/Applications" />
                                 </exec>
 
                                 <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
-                       									'x' permission after the copy) -->
+                                                        'x' permission after the copy) -->
                                 <chmod
-                                        file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                                        file="${basedir}/target/MultiDoge-mac/MultiDoge.app/Contents/MacOS/JavaApplicationStub"
                                         perm="777" />
 
                                 <!-- Sign the Mac app -->
                                 <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                            line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                            line="--sign 'Developer ID Application: James Burton' --force ${basedir}/target/MultiDoge-mac/Multidoge.app" />
                                 </exec>
                                 <!-- Verify it is signed ok -->
                                 <exec executable="codesign" os="'Mac OS X'">
                                     <arg
-                                            line="--display --verbose=4 ${basedir}/target/MultiBit-mac/MultiBit.app" />
+                                            line="--display --verbose=4 ${basedir}/target/MultiDoge-mac/Multidoge.app" />
                                 </exec>
 
                                 <!-- create a DMG file -->
@@ -463,19 +464,19 @@
                                     <arg value="-imagekey"/>
                                     <arg value="zlib-level=9" />
                                     <arg value="-srcfolder" />
-                                    <arg value="${basedir}/target/MultiBit-mac" />
-                                    <arg value="${basedir}/target/multibit-${project.version}.dmg" />
+                                    <arg value="${basedir}/target/MultiDoge-mac" />
+                                    <arg value="${basedir}/target/multidoge-${project.version}.dmg" />
                                 </exec>
 
                                 <!-- IMPORTANT! -->
                                 <!-- Remove symbolic link before deleting tmp dir -->
                                 <exec executable="rm" os="'Mac OS X'">
-                                    <arg line="-R ${basedir}/target/MultiBit-mac/Applications" />
+                                    <arg line="-R ${basedir}/target/MultiDoge-mac/Applications" />
                                 </exec>
 
                                 <!-- get rid of temporary directory -->
                                 <delete includeEmptyDirs="true">
-                                    <fileset dir="${basedir}/target/MultiBit-mac" />
+                                    <fileset dir="${basedir}/target/MultiDoge-mac" />
                                 </delete>
                             </tasks>
                         </configuration>
@@ -483,8 +484,8 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                    <!-- Produce a Win32 exe from the multibit-exe.jar (no Maven plugin 
-              						for JSmooth so drop down to ant) -->
+                    <!-- Produce a Win32 exe from the multidoge-exe.jar (no Maven plugin 
+                                    for JSmooth so drop down to ant) -->
                     <execution>
                         <id>jsmooth-installer2exe-exe</id>
                         <phase>package</phase>
@@ -506,7 +507,7 @@
                     </execution>
 
                     <!-- Produce a Win32 exe from the windows IzPack installer (no Maven 
-              						plugin for JSmooth so drop down to ant) -->
+                                    plugin for JSmooth so drop down to ant) -->
                     <execution>
                         <id>jsmooth-installer2exe-installer</id>
                         <phase>install</phase>
@@ -520,7 +521,7 @@
                                          classpathref="jsmooth-classpathref" />
                                 <jsmoothgen project="src/main/jsmooth/installer.jsmooth"
                                             skeletonroot="src/main/jsmooth/skeletons" />
-                                <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows-setup.exe" />
+                                <move file="target/multidoge-windows.exe" tofile="target/multidoge-${project.version}-windows-setup.exe" />
                             </tasks>
                         </configuration>
                         <goals>
@@ -676,7 +677,7 @@
         </dependency>
         <dependency>
             <groupId>com.google</groupId>
-            <artifactId>bitcoinj</artifactId>
+            <artifactId>dogecoinj</artifactId>
             <version>${bitcoinj.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -811,7 +812,7 @@
         </staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
-        <bitcoinj.version>0.10.2-MB-ALICE</bitcoinj.version>
+        <bitcoinj.version>0.10.3-MB-ALICE</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
         <xchange.version>1.10.0</xchange.version>
