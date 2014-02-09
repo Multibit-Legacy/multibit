@@ -15,8 +15,9 @@
  */
 package org.multibit.model.exchange;
 
+import com.xeiam.xchange.bitcoinaverage.BitcoinAverageExchange;
 import com.xeiam.xchange.bitstamp.BitstampExchange;
-import com.xeiam.xchange.btce.BTCEExchange;
+import com.xeiam.xchange.btce.v3.BTCEExchange;
 import com.xeiam.xchange.campbx.CampBXExchange;
 import com.xeiam.xchange.oer.OERExchange;
 import com.xeiam.xchange.virtex.VirtExExchange;
@@ -46,6 +47,7 @@ public class ExchangeData {
     public static final String MT_GOX_EXCHANGE_NAME = "MtGox";
     public static final String VIRTEX_EXCHANGE_NAME = "VirtEx";
     public static final String CRYPTSY_EXCHANGE_NAME = "Cryptsy";
+    public static final String BITCOINAVERAGE_EXCHANGE_NAME = "BitcoinAverage";
 
     public static final String DEFAULT_EXCHANGE = CRYPTSY_EXCHANGE_NAME;
     
@@ -158,7 +160,7 @@ public class ExchangeData {
      * Convert an exchange short name into a classname that can be used to create an Exchange.
      */
     public static String convertExchangeShortNameToClassname(String shortExchangeName) {
-        if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName) || CRYPTSY_EXCHANGE_NAME.equals(shortExchangeName)) {
+        if (MT_GOX_EXCHANGE_NAME.equals(shortExchangeName)) {
             return "com.xeiam.xchange.mtgox.v2.MtGoxExchange";
         } else if (BITSTAMP_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  BitstampExchange.class.getName();
@@ -174,6 +176,8 @@ public class ExchangeData {
             return  OERExchange.class.getName();
         } else if (VIRTEX_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName)) {
             return  VirtExExchange.class.getName();
+        } else if (BITCOINAVERAGE_EXCHANGE_NAME.equalsIgnoreCase(shortExchangeName) || CRYPTSY_EXCHANGE_NAME.equals(shortExchangeName)) {
+            return BitcoinAverageExchange.class.getName();
         } else {
             // Unidentified exchange.
             return null;
