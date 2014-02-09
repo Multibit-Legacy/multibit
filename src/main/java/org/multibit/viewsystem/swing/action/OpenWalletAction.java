@@ -112,6 +112,7 @@ public class OpenWalletAction extends AbstractAction {
                 }
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 fileChooser.setFileFilter(new WalletFileFilter(controller));
+                fileChooser.setAcceptAllFileFilterUsed(false);
             }
 
             fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
