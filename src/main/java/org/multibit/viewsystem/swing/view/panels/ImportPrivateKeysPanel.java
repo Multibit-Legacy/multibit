@@ -861,8 +861,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         fileChooser.addChoosableFileFilter(multiBitFileChooser);
-        fileChooser.addChoosableFileFilter(myWalletPlainFileChooser);
-        fileChooser.addChoosableFileFilter(myWalletEncryptedFileChooser);
+//        fileChooser.addChoosableFileFilter(myWalletPlainFileChooser);
+//        fileChooser.addChoosableFileFilter(myWalletEncryptedFileChooser);
 
         fileChooser.setAcceptAllFileFilterUsed(false);
 
