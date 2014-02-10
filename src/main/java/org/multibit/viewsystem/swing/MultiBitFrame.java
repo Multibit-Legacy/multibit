@@ -21,6 +21,7 @@ import com.google.dogecoin.core.Transaction;
 import com.google.dogecoin.core.Wallet;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
+import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -30,10 +31,12 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
+import org.multibit.file.FileHandler;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.ReplayManager;
@@ -67,6 +70,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Properties;
 import java.util.Timer;
 
 
@@ -317,12 +321,30 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         int height = (int) (screenSize.height * PROPORTION_OF_VERTICAL_SCREEN_TO_FILL);
         int width = (int) (screenSize.width * PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL);
-
-        // Set the jframe height and width.
-        setPreferredSize(new Dimension(width, height));
         double startVerticalPositionRatio = (1 - PROPORTION_OF_VERTICAL_SCREEN_TO_FILL) / 2;
         double startHorizontalPositionRatio = (1 - PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL) / 2;
-        setLocation((int) (width * startHorizontalPositionRatio), (int) (height * startVerticalPositionRatio));
+        int x = (int) (width * startHorizontalPositionRatio);
+        int y = (int) (height * startVerticalPositionRatio);
+
+        // Try loading the previous window state from the user preferences
+        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+        Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
+        int savedWidth = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_SIZE_W, String.valueOf(width)));
+        int savedHeight = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_SIZE_H, String.valueOf(height)));
+        int savedX = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_POS_X, String.valueOf(x)));
+        int savedY = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_POS_Y, String.valueOf(y)));
+        int previousState = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_MAX, "0"));
+
+        if ((previousState & Frame.MAXIMIZED_BOTH) != 0)
+        {
+            setExtendedState(Frame.MAXIMIZED_BOTH);
+        } else {
+            // Set the jframe height and width.
+            setPreferredSize(new Dimension(savedWidth, savedHeight));
+            setLocation(savedX, savedY);
+        }
+
+
     }
 
     private void initUI(View initialView) {

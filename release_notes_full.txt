@@ -7,6 +7,7 @@ tbd: 0.1.1
 #10: Fix "BTC" leftover in transaction details
 + Remove blockchain.info wallet import (leftover)
 + Only allow .wallet files to imported. Prevents users from trying to open .dat files.
++ Saves window state on close so size and position are restored at launch.
 
 7 Feb 2014: 0.1.0
 Initial release.

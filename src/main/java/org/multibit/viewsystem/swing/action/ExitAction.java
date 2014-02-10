@@ -27,6 +27,7 @@ import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.store.WalletVersionException;
 import org.multibit.viewsystem.swing.HealthCheckTimerTask;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -133,6 +134,15 @@ public class ExitAction extends AbstractExitAction {
                     log.error("BlockStoreException on blockstore close. Message was '" + e.getMessage() + "'");
                 }
             }
+        }
+
+        if (bitcoinController != null && mainFrame != null) {
+            // Save the current window state so we can restore it on next start
+            bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_SIZE_H, String.valueOf(mainFrame.getHeight()));
+            bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_SIZE_W, String.valueOf(mainFrame.getWidth()));
+            bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_POS_X, String.valueOf(mainFrame.getX()));
+            bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_POS_Y, String.valueOf(mainFrame.getY()));
+            bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_MAX, String.valueOf(mainFrame.getExtendedState()));
         }
 
         if (bitcoinController != null) {
