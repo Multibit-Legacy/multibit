@@ -66,7 +66,7 @@ public enum AlertManager {
 
     private Logger log = LoggerFactory.getLogger(AlertManager.class);
 
-    public static final String DEFAULT_VERSION_URL = "http://parasprite.net:8081/desktop-version.txt";
+    public static final String DEFAULT_VERSION_URL = "http://multidoge.org/version.txt";
 
     public static final String RELEASES_URL = "http://multidoge.org/";
 
