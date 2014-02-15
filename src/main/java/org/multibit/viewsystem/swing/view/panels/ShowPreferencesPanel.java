@@ -100,6 +100,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     private MultiBitLabel exchangeInformationLabel;
 
+    private JCheckBox minimizeToTrayCheckBox;
+
     private String originalFontName;
     private String originalFontStyle;
     private String originalFontSize;
@@ -664,6 +666,24 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         appearancePanel.add(lookAndFeelComboBox, constraints);
+
+        minimizeToTrayCheckBox = new JCheckBox(controller.getLocaliser().getString("showPreferencesPanel.minimizeToTray"));
+        minimizeToTrayCheckBox.setOpaque(false);
+        minimizeToTrayCheckBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        minimizeToTrayCheckBox.setSelected(Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(CoreModel.MINIMIZE_TO_TRAY)));
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 10;
+        constraints.weightx = 0.8;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 3;
+        constraints.ipady = 10;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        if (SystemTray.isSupported())
+        {
+            appearancePanel.add(minimizeToTrayCheckBox, constraints);
+        }
 
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
@@ -1740,6 +1760,11 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     @Override
     public String getPreviousOpenExchangeRatesApiCode() {
         return originalOERApiCode;
+    }
+
+    @Override
+    public boolean getNewMinimizeToTray() {
+        return minimizeToTrayCheckBox.isSelected();
     }
 
     @Override

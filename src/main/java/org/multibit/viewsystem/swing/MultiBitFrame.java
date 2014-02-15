@@ -213,6 +213,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static FireDataChangedTimerTask fireDataChangedTimerTask;
 
+    private TrayIcon trayIcon;
+    private SystemTray tray;
+    private int stateBeforeMinimize;
+    public boolean allowMinimizeToTray;
+
     @SuppressWarnings("deprecation")
     public MultiBitFrame(CoreController coreController, BitcoinController bitcoinController, ExchangeController exchangeController, GenericApplication application, View initialView) {
         this.coreController = coreController;
@@ -305,6 +310,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         pack();
 
         setVisible(true);
+
+        if (SystemTray.isSupported())
+            setupTray();
         
         fireDataChangedTimerTask = new FireDataChangedTimerTask(this);
         fireDataChangedTimer = new Timer();
@@ -313,6 +321,63 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public GenericApplication getApplication() {
         return application;
+    }
+
+    private void setupTray() {
+        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+        Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
+        allowMinimizeToTray = Boolean.TRUE.toString().equals(userPreferences.getProperty(CoreModel.MINIMIZE_TO_TRAY, "false"));
+
+        Image trayIconIcon = new ImageIcon(this.getClass().getResource("/images/multidoge64.png")).getImage();
+        trayIcon = new TrayIcon(trayIconIcon, "MultiDoge");
+        trayIcon.setImageAutoSize(true);
+        trayIcon.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1)
+                {
+                    tray.remove(trayIcon);
+                    setVisible(true);
+                    setState(stateBeforeMinimize);
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
+
+        tray = SystemTray.getSystemTray();
+
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowIconified(WindowEvent e) {
+                if (allowMinimizeToTray)
+                    try {
+                        stateBeforeMinimize = e.getOldState();
+                        tray.add(trayIcon);
+                        setVisible(false);
+                    } catch (AWTException e1) {
+                        log.debug("Couldn't add tray icon");
+                    }
+            }
+            @Override
+            public void windowDeiconified(WindowEvent e) {}
+            @Override
+            public void windowOpened(WindowEvent e) {}
+            @Override
+            public void windowClosing(WindowEvent e) {}
+            @Override
+            public void windowClosed(WindowEvent e) {}
+            @Override
+            public void windowActivated(WindowEvent e) {}
+            @Override
+            public void windowDeactivated(WindowEvent e) {}
+        });
     }
 
     private void sizeAndCenter() {
