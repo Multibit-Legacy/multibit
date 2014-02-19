@@ -15,14 +15,14 @@
  */
 package org.multibit.network;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.core.Wallet.SendRequest;
-import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.discovery.DnsDiscovery;
-import com.google.bitcoin.discovery.IrcDiscovery;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.store.SPVBlockStore;
+import com.google.dogecoin.core.*;
+import com.google.dogecoin.core.Wallet.SendRequest;
+import com.google.dogecoin.crypto.KeyCrypterException;
+import com.google.dogecoin.discovery.DnsDiscovery;
+import com.google.dogecoin.discovery.IrcDiscovery;
+import com.google.dogecoin.store.BlockStore;
+import com.google.dogecoin.store.BlockStoreException;
+import com.google.dogecoin.store.SPVBlockStore;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.MultiBit;
