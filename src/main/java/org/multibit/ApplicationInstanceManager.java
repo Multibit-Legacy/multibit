@@ -34,15 +34,15 @@ public final class ApplicationInstanceManager {
     private static ApplicationInstanceListener subListener;
 
     /**
-     * MultiBit port number, as specified in
+     * MultiDoge port number. Must be different to Multibit as specified in
      * http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
      */
-    public static final int MULTIBIT_NETWORK_SOCKET = 8331;
+    public static final int MULTIBIT_NETWORK_SOCKET = 22554;
 
     /**
      * Multibit message start - must end with newline
      */
-    public static final String MESSAGE_START = "$$MultiBitMessageStart$$\n";
+    public static final String MESSAGE_START = "$$MultiDogeMessageStart$$\n";
 
     /**
      * Multibit message end - must end with newline (nonsense text to make it

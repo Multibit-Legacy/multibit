@@ -1,13 +1,12 @@
-MultiBit release notes.
+MultiDoge release notes:
 
-18 Dec 2013 Version 0.5.16
-Changes:
-#340. Fixed: if you close a wallet then open it immediately it does not appear.
-#347, #410. Updated code to bitcoinj 0.10.3 (transaction is now resent ok if not initially sent).
-#407. Changed reset block chain and transactions to always run before wallet creation date.
-#408. Send is now prevented until sync completes.
-#409. Examined code to see if 'tx is missing' can be improved.
-#415. Removed 'File | Delete Wallet' entirely for safety reasons.
-#418. Now performs a ping of peers before send as a network check.
-
-
+19 Feb 2014: 0.1.1
++ Saves window state on close so size and position are restored at launch.
++ Option to minimize to tray. Stays in dock on OS X because Apple has no API to change that dynamically. On Linux the icon lacks transparanecy due to an internal Java bug. Sorry, can't change that :/
++ Only allow nodes with more than 105000 blocks to connect. Prevents running on the wrong side of the recent fork.
++ Remove blockchain.info wallet import (leftover)
++ Only allow .wallet files to imported. Prevents users from trying to open .dat files.
+#2: Switched to BitcoinAverage as BTC/fiat rate provider
+#5: Update French transaltion
+#7: Allow parallel running of MultiBit and MultiDoge
+#10: Fix "BTC" leftover in transaction details

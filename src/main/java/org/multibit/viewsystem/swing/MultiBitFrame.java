@@ -21,6 +21,7 @@ import com.google.dogecoin.core.Transaction;
 import com.google.dogecoin.core.Wallet;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.joda.money.Money;
+import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -30,10 +31,12 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
+import org.multibit.file.FileHandler;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.ReplayManager;
@@ -67,6 +70,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Properties;
 import java.util.Timer;
 
 
@@ -209,6 +213,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static FireDataChangedTimerTask fireDataChangedTimerTask;
 
+    private TrayIcon trayIcon;
+    private SystemTray tray;
+    private int stateBeforeMinimize;
+    public boolean allowMinimizeToTray;
+
+    private Properties userPreferences;
+
     @SuppressWarnings("deprecation")
     public MultiBitFrame(CoreController coreController, BitcoinController bitcoinController, ExchangeController exchangeController, GenericApplication application, View initialView) {
         this.coreController = coreController;
@@ -255,7 +266,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        sizeAndCenter();
+        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+        userPreferences = bitcoinController.getModel().getAllUserPreferences();
+
+        if (SystemTray.isSupported())
+            setupTray();
+
+        boolean wasInTray = sizeAndCenter();
 
         viewFactory = new ViewFactory(this.bitcoinController, this.exchangeController, this);
 
@@ -300,7 +317,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         pack();
 
-        setVisible(true);
+        if (!wasInTray)
+            setVisible(true);
         
         fireDataChangedTimerTask = new FireDataChangedTimerTask(this);
         fireDataChangedTimer = new Timer();
@@ -311,18 +329,120 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         return application;
     }
 
-    private void sizeAndCenter() {
+    private void setupTray() {
+        allowMinimizeToTray = Boolean.TRUE.toString().equals(userPreferences.getProperty(CoreModel.MINIMIZE_TO_TRAY, "false"));
+
+        Image trayIconIcon = new ImageIcon(this.getClass().getResource("/images/multidoge64.png")).getImage();
+        trayIcon = new TrayIcon(trayIconIcon, "MultiDoge");
+        trayIcon.setImageAutoSize(true);
+        trayIcon.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1)
+                {
+                    setTray(false);
+                    setState(stateBeforeMinimize);
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
+
+        tray = SystemTray.getSystemTray();
+
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowIconified(WindowEvent e) {
+                stateBeforeMinimize = e.getOldState();
+                setTray(true);
+            }
+            @Override
+            public void windowDeiconified(WindowEvent e) {}
+            @Override
+            public void windowOpened(WindowEvent e) {}
+            @Override
+            public void windowClosing(WindowEvent e) {}
+            @Override
+            public void windowClosed(WindowEvent e) {}
+            @Override
+            public void windowActivated(WindowEvent e) {}
+            @Override
+            public void windowDeactivated(WindowEvent e) {}
+        });
+    }
+
+    public boolean isInTray() {
+        if (tray == null)
+            return false;
+        return tray.getTrayIcons().length > 0;
+    }
+
+    private void setTray(boolean isTray) {
+        if (isTray) {
+            if (allowMinimizeToTray)
+                try {
+                    tray.add(trayIcon);
+                    setVisible(false);
+                } catch (AWTException e1) {
+                    log.debug("Couldn't add tray icon");
+                }
+        } else {
+            tray.remove(trayIcon);
+            setVisible(true);
+        }
+
+        // Save window states for next start.
+        userPreferences.setProperty(CoreModel.PREVIOUS_WINDOW_TRAY, String.valueOf(isTray));
+        userPreferences.setProperty(CoreModel.PREVIOUS_WINDOW_MAX, String.valueOf(getExtendedState()));
+        FileHandler.writeUserPreferences(bitcoinController);
+    }
+
+    private boolean sizeAndCenter() {
         // Get the screen size as a java dimension.
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         int height = (int) (screenSize.height * PROPORTION_OF_VERTICAL_SCREEN_TO_FILL);
         int width = (int) (screenSize.width * PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL);
-
-        // Set the jframe height and width.
-        setPreferredSize(new Dimension(width, height));
         double startVerticalPositionRatio = (1 - PROPORTION_OF_VERTICAL_SCREEN_TO_FILL) / 2;
         double startHorizontalPositionRatio = (1 - PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL) / 2;
-        setLocation((int) (width * startHorizontalPositionRatio), (int) (height * startVerticalPositionRatio));
+        int x = (int) (width * startHorizontalPositionRatio);
+        int y = (int) (height * startVerticalPositionRatio);
+
+        // Try loading the previous window state from the user preferences
+        int savedWidth = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_SIZE_W, String.valueOf(width)));
+        int savedHeight = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_SIZE_H, String.valueOf(height)));
+        int savedX = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_POS_X, String.valueOf(x)));
+        int savedY = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_POS_Y, String.valueOf(y)));
+        int previousState = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_MAX, "0"));
+        boolean previousTray = Boolean.TRUE.toString().equals(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_TRAY, "false"));
+
+        if ((previousState & Frame.MAXIMIZED_BOTH) != 0)
+        {
+            setExtendedState(Frame.MAXIMIZED_BOTH);
+        } else {
+            // Set the jframe height and width.
+            setPreferredSize(new Dimension(savedWidth, savedHeight));
+            setLocation(savedX, savedY);
+            if ((previousState & Frame.ICONIFIED) != 0) {
+                setExtendedState(Frame.ICONIFIED);
+                if (previousTray && tray != null && trayIcon != null)
+                {
+                    try {
+                        tray.add(trayIcon);
+                        setVisible(false);
+                    } catch (AWTException e) {
+                        log.debug("Couldn't add to tray after startup.");
+                    }
+                }
+            }
+        }
+        return previousTray;
     }
 
     private void initUI(View initialView) {

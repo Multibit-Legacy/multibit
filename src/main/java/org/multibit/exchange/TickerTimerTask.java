@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TimerTask;
 
+import com.xeiam.xchange.bitcoinaverage.service.BitcoinaverageBaseService;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 
@@ -300,7 +301,7 @@ public class TickerTimerTask extends TimerTask {
             log.debug("marketDataService = " + marketDataService);
 
             // Get the list of available currencies.
-            exchangeSymbols = marketDataService.getExchangeSymbols();
+            exchangeSymbols = BitcoinaverageBaseService.CURRENCY_PAIRS; // TODO: When XChange fixes that shit, refactor this shit...
             log.debug("exchangeSymbols = " + exchangeSymbols);
 
             if (exchangeSymbols != null) {

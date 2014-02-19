@@ -228,6 +228,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 lookAndFeelHasChanged = true;
             }
 
+            //Minimze to tray
+            boolean newMinimizeToTray = dataProvider.getNewMinimizeToTray();
+            controller.getModel().setUserPreference(CoreModel.MINIMIZE_TO_TRAY, Boolean.valueOf(newMinimizeToTray).toString());
+            mainFrame.allowMinimizeToTray = Boolean.valueOf(newMinimizeToTray);
+
             // Currency ticker.
             boolean showTicker = dataProvider.getNewShowTicker();
             boolean showBitcoinConvertedToFiat = dataProvider.getNewShowBitcoinConvertedToFiat();

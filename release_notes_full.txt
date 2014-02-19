@@ -1,3 +1,19 @@
+MultiDoge release notes:
+
+19 Feb 2014: 0.1.1
++ Saves window state on close so size and position are restored at launch.
++ Option to minimize to tray. Stays in dock on OS X because Apple has no API to change that dynamically. On Linux the icon lacks transparanecy due to an internal Java bug. Sorry, can't change that :/
++ Only allow nodes with more than 105000 blocks to connect. Prevents running on the wrong side of the recent fork.
++ Remove blockchain.info wallet import (leftover)
++ Only allow .wallet files to imported. Prevents users from trying to open .dat files.
+#2: Switched to BitcoinAverage as BTC/fiat rate provider
+#5: Update French transaltion
+#7: Allow parallel running of MultiBit and MultiDoge
+#10: Fix "BTC" leftover in transaction details
+
+7 Feb 2014: 0.1.0
+Initial release.
+
 MultiBit release notes.
 
 19 Nov 2013 Version 0.5.15

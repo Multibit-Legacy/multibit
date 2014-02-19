@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright 2013 multibit.org
-  ~ Copyright 2014 multidoge.org
+  ~ Copyright 2013 multidoge.org
   ~
   ~ Licensed under the MIT license (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -23,15 +22,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multidoge</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <name>MultiDoge</name>
     <description>A Java Swing client for Dogecoin</description>
     <url>https://multidoge.org</url>
     <!-- Use "mvn clean package" to build the code packaged into a basic multidoge.jar 
-        Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
-        to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
-        generate a complete website under target/site Use "mvn site:run" to run a 
-        local webserver localhost:8080/index.html -->
+  		Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
+  		to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
+  		generate a complete website under target/site Use "mvn site:run" to run a 
+  		local webserver localhost:8080/index.html -->
     <licenses>
         <license>
             <name>MIT</name>
@@ -206,7 +205,7 @@
             </plugin>
 
             <!-- Produce staging directory with all resources used in creation of 
-                        the linux IzPack installer and in creation of the Mac application bundle -->
+        				the linux IzPack installer and in creation of the Mac application bundle -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.5</version>
@@ -263,7 +262,7 @@
                     </execution>
 
                     <!-- Produce staging directory with all resources used in creation of 
-                                    the windows IzPack installer -->
+              						the windows IzPack installer -->
                     <execution>
                         <id>copy-resources-to-staging-windows</id>
                         <phase>install</phase>
@@ -317,9 +316,9 @@
 
                     <!-- produce a Mac application bundle -->
                     <!-- this plugin copies a skeleton App and then copies in the resources 
-                                    from the linux staging directory -->
+              						from the linux staging directory -->
                     <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ 
-                                    but cannot get extra resources into my Java directory in the app -->
+              						but cannot get extra resources into my Java directory in the app -->
                     <execution>
                         <id>create-skeleton-Mac-application-bundle</id>
                         <phase>install</phase>
@@ -420,7 +419,7 @@
                         <configuration>
                             <tasks>
                                 <!-- Make the JavaApplicationStub in the Mac application bundle executable
-                                                        (it loses its 'x' permission after the copy) -->
+                       									(it loses its 'x' permission after the copy) -->
                                 <chmod
                                         file="${basedir}/target/MultiDoge.app/Contents/MacOS/JavaApplicationStub"
                                         perm="777" />
@@ -441,7 +440,7 @@
                                 </exec>
 
                                 <!-- Make the JavaAppLauncher in the MultiBit app (it loses its
-                                                        'x' permission after the copy) -->
+                       									'x' permission after the copy) -->
                                 <chmod
                                         file="${basedir}/target/MultiDoge-mac/MultiDoge.app/Contents/MacOS/JavaApplicationStub"
                                         perm="777" />
@@ -485,7 +484,7 @@
                         </goals>
                     </execution>
                     <!-- Produce a Win32 exe from the multidoge-exe.jar (no Maven plugin 
-                                    for JSmooth so drop down to ant) -->
+              						for JSmooth so drop down to ant) -->
                     <execution>
                         <id>jsmooth-installer2exe-exe</id>
                         <phase>package</phase>
@@ -507,7 +506,7 @@
                     </execution>
 
                     <!-- Produce a Win32 exe from the windows IzPack installer (no Maven 
-                                    plugin for JSmooth so drop down to ant) -->
+              						plugin for JSmooth so drop down to ant) -->
                     <execution>
                         <id>jsmooth-installer2exe-installer</id>
                         <phase>install</phase>
@@ -735,6 +734,11 @@
             <version>${xchange.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.xeiam.xchange</groupId>
+            <artifactId>xchange-bitcoinaverage</artifactId>
+            <version>${xchange.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.xeiam.xchart</groupId>
             <artifactId>xchart</artifactId>
             <version>2.2.1</version>
@@ -815,7 +819,7 @@
         <bitcoinj.version>0.10.3-MB-ALICE</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
-        <xchange.version>1.10.0</xchange.version>
+        <xchange.version>2.0.0-SNAPSHOT</xchange.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>

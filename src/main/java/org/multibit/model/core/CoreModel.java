@@ -54,8 +54,15 @@ public class CoreModel extends BaseModel<CoreModel> {
     public static final String PREVIOUS_USER_LANGUAGE_CODE = "previousLanguageCode";
     public static final String PREVIOUS_UNDO_CHANGES_TEXT = "previousUndoChangesText";
     public static final String CAN_UNDO_PREFERENCES_CHANGES = "canUndoPreferencesChanges";
-    
-    
+
+    public static final String PREVIOUS_WINDOW_SIZE_H = "previousWindowSizeH";
+    public static final String PREVIOUS_WINDOW_SIZE_W = "previousWindowSizeW";
+    public static final String PREVIOUS_WINDOW_POS_X = "previousWindowPosX";
+    public static final String PREVIOUS_WINDOW_POS_Y = "previousWindowPosY";
+    public static final String PREVIOUS_WINDOW_MAX = "previousWindowMax";
+    public static final String PREVIOUS_WINDOW_TRAY = "previousWindowTray";
+
+    public static final String MINIMIZE_TO_TRAY = "minimizeToTray";
     
     public CoreModel() {
         this(null);
