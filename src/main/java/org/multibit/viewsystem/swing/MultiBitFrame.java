@@ -218,6 +218,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private int stateBeforeMinimize;
     public boolean allowMinimizeToTray;
 
+    private Properties userPreferences;
+
     @SuppressWarnings("deprecation")
     public MultiBitFrame(CoreController coreController, BitcoinController bitcoinController, ExchangeController exchangeController, GenericApplication application, View initialView) {
         this.coreController = coreController;
@@ -264,7 +266,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        sizeAndCenter();
+        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+        userPreferences = bitcoinController.getModel().getAllUserPreferences();
+
+        if (SystemTray.isSupported())
+            setupTray();
+
+        boolean wasInTray = sizeAndCenter();
 
         viewFactory = new ViewFactory(this.bitcoinController, this.exchangeController, this);
 
@@ -309,10 +317,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         pack();
 
-        setVisible(true);
-
-        if (SystemTray.isSupported())
-            setupTray();
+        if (!wasInTray)
+            setVisible(true);
         
         fireDataChangedTimerTask = new FireDataChangedTimerTask(this);
         fireDataChangedTimer = new Timer();
@@ -324,8 +330,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private void setupTray() {
-        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
-        Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
         allowMinimizeToTray = Boolean.TRUE.toString().equals(userPreferences.getProperty(CoreModel.MINIMIZE_TO_TRAY, "false"));
 
         Image trayIconIcon = new ImageIcon(this.getClass().getResource("/images/multidoge64.png")).getImage();
@@ -336,8 +340,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 1)
                 {
-                    tray.remove(trayIcon);
-                    setVisible(true);
+                    setTray(false);
                     setState(stateBeforeMinimize);
                 }
             }
@@ -356,14 +359,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         addWindowListener(new WindowListener() {
             @Override
             public void windowIconified(WindowEvent e) {
-                if (allowMinimizeToTray)
-                    try {
-                        stateBeforeMinimize = e.getOldState();
-                        tray.add(trayIcon);
-                        setVisible(false);
-                    } catch (AWTException e1) {
-                        log.debug("Couldn't add tray icon");
-                    }
+                stateBeforeMinimize = e.getOldState();
+                setTray(true);
             }
             @Override
             public void windowDeiconified(WindowEvent e) {}
@@ -380,7 +377,33 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
 
-    private void sizeAndCenter() {
+    public boolean isInTray() {
+        if (tray == null)
+            return false;
+        return tray.getTrayIcons().length > 0;
+    }
+
+    private void setTray(boolean isTray) {
+        if (isTray) {
+            if (allowMinimizeToTray)
+                try {
+                    tray.add(trayIcon);
+                    setVisible(false);
+                } catch (AWTException e1) {
+                    log.debug("Couldn't add tray icon");
+                }
+        } else {
+            tray.remove(trayIcon);
+            setVisible(true);
+        }
+
+        // Save window states for next start.
+        userPreferences.setProperty(CoreModel.PREVIOUS_WINDOW_TRAY, String.valueOf(isTray));
+        userPreferences.setProperty(CoreModel.PREVIOUS_WINDOW_MAX, String.valueOf(getExtendedState()));
+        FileHandler.writeUserPreferences(bitcoinController);
+    }
+
+    private boolean sizeAndCenter() {
         // Get the screen size as a java dimension.
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -392,13 +415,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         int y = (int) (height * startVerticalPositionRatio);
 
         // Try loading the previous window state from the user preferences
-        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
-        Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
         int savedWidth = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_SIZE_W, String.valueOf(width)));
         int savedHeight = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_SIZE_H, String.valueOf(height)));
         int savedX = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_POS_X, String.valueOf(x)));
         int savedY = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_POS_Y, String.valueOf(y)));
         int previousState = Integer.parseInt(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_MAX, "0"));
+        boolean previousTray = Boolean.TRUE.toString().equals(userPreferences.getProperty(CoreModel.PREVIOUS_WINDOW_TRAY, "false"));
 
         if ((previousState & Frame.MAXIMIZED_BOTH) != 0)
         {
@@ -407,9 +429,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // Set the jframe height and width.
             setPreferredSize(new Dimension(savedWidth, savedHeight));
             setLocation(savedX, savedY);
+            if ((previousState & Frame.ICONIFIED) != 0) {
+                setExtendedState(Frame.ICONIFIED);
+                if (previousTray && tray != null && trayIcon != null)
+                {
+                    try {
+                        tray.add(trayIcon);
+                        setVisible(false);
+                    } catch (AWTException e) {
+                        log.debug("Couldn't add to tray after startup.");
+                    }
+                }
+            }
         }
-
-
+        return previousTray;
     }
 
     private void initUI(View initialView) {

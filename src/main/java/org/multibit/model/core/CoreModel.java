@@ -60,6 +60,7 @@ public class CoreModel extends BaseModel<CoreModel> {
     public static final String PREVIOUS_WINDOW_POS_X = "previousWindowPosX";
     public static final String PREVIOUS_WINDOW_POS_Y = "previousWindowPosY";
     public static final String PREVIOUS_WINDOW_MAX = "previousWindowMax";
+    public static final String PREVIOUS_WINDOW_TRAY = "previousWindowTray";
 
     public static final String MINIMIZE_TO_TRAY = "minimizeToTray";
     

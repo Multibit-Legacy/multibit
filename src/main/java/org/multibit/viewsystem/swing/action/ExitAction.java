@@ -143,6 +143,7 @@ public class ExitAction extends AbstractExitAction {
             bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_POS_X, String.valueOf(mainFrame.getX()));
             bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_POS_Y, String.valueOf(mainFrame.getY()));
             bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_MAX, String.valueOf(mainFrame.getExtendedState()));
+            bitcoinController.getModel().setUserPreference(CoreModel.PREVIOUS_WINDOW_TRAY, String.valueOf(mainFrame.isInTray()));
         }
 
         if (bitcoinController != null) {
