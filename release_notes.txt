@@ -6,6 +6,7 @@ MultiDoge release notes:
 + Only allow nodes with more than 105000 blocks to connect. Prevents running on the wrong side of the recent fork.
 + Remove blockchain.info wallet import (leftover)
 + Only allow .wallet files to imported. Prevents users from trying to open .dat files.
++ Update Japanese translation
 #2: Switched to BitcoinAverage as BTC/fiat rate provider
 #5: Update French transaltion
 #7: Allow parallel running of MultiBit and MultiDoge
