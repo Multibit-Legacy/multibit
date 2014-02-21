@@ -304,7 +304,7 @@ public class WalletInfoData {
         BufferedWriter out = null;
         try {
             // We write out all the receiving addresses.
-            HashMap<String, WalletAddressBookData> allReceivingAddresses = new HashMap<String, WalletAddressBookData>();
+            LinkedHashMap<String, WalletAddressBookData> allReceivingAddresses = new LinkedHashMap<String, WalletAddressBookData>();
             if (receivingAddresses != null) {
                 for (WalletAddressBookData addressBookData : receivingAddresses) {
                     allReceivingAddresses.put(addressBookData.address, addressBookData);
