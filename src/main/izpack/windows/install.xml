@@ -83,7 +83,7 @@
     <panel classname="TargetPanel"/>
     <panel classname="ShortcutPanel"/>
     <panel classname="InstallPanel"/>
-    <panel classname="FinishPanel"/>
+    <panel classname="SimpleFinishPanel"/>
   </panels>
 
   <!--
