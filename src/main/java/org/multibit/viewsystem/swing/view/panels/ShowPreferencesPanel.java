@@ -684,10 +684,26 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW));
         originalExchange1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
         originalCurrency1 = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
+        // Map MtGox to Bitstamp + USD
+        if (ExchangeData.MT_GOX_EXCHANGE_NAME.equalsIgnoreCase(originalExchange1)) {
+          originalExchange1 = ExchangeData.BITSTAMP_EXCHANGE_NAME;
+          controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, ExchangeData.BITSTAMP_EXCHANGE_NAME);
+
+          originalCurrency1 = "USD";
+          controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, "USD");
+        }
         originalShowSecondRow = Boolean.TRUE.toString().equals(
                 controller.getModel().getUserPreference(ExchangeModel.TICKER_SHOW_SECOND_ROW));
         originalExchange2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
         originalCurrency2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
+        // Map MtGox to Bitstamp
+        if (ExchangeData.MT_GOX_EXCHANGE_NAME.equalsIgnoreCase(originalExchange2)) {
+          originalExchange2 = ExchangeData.BITSTAMP_EXCHANGE_NAME;
+          controller.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, ExchangeData.BITSTAMP_EXCHANGE_NAME);
+
+          originalCurrency2 = "USD";
+          controller.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY, "USD");
+        }
 
         MultiBitTitledPanel tickerPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showPreferencesPanel.ticker.title2"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

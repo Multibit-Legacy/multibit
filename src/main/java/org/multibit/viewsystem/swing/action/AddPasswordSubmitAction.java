@@ -15,24 +15,18 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.nio.CharBuffer;
-
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JPasswordField;
-import javax.swing.SwingUtilities;
-
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
-import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
-import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
@@ -40,11 +34,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.protobuf.ByteString;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.nio.CharBuffer;
 
 /**
  * This {@link Action} action encrypts the private keys with the password.
@@ -53,8 +47,6 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
     private static final Logger log = LoggerFactory.getLogger(AddPasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
-
-    
 
     private AddPasswordPanel addPasswordPanel;
 
@@ -119,7 +111,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
             }
 
             WalletData perWalletModelData = null;
-            WalletInfoData walletInfoData = null;
+            WalletInfoData walletInfoData;
             try {
                 // Double check wallet is not busy then declare that the active
                 // wallet is busy with the task

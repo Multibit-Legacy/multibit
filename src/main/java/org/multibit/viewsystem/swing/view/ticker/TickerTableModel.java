@@ -118,6 +118,15 @@ public class TickerTableModel extends AbstractTableModel {
             currency1 = ExchangeData.DEFAULT_CURRENCY;
         }
 
+        // Map MtGox to Bitstamp
+        if (ExchangeData.MT_GOX_EXCHANGE_NAME.equalsIgnoreCase(exchange1)) {
+          exchange1 = ExchangeData.BITSTAMP_EXCHANGE_NAME;
+          controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, ExchangeData.BITSTAMP_EXCHANGE_NAME);
+
+          currency1 = "USD";
+          controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, "USD");
+        }
+
         exchange2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE);
         if (exchange2 == null || "".equals(exchange2) || "null".equals(exchange2)) {
             exchange2 = ExchangeData.DEFAULT_EXCHANGE;
@@ -126,6 +135,15 @@ public class TickerTableModel extends AbstractTableModel {
         currency2 = controller.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY);
         if (currency2 == null || "".equals(currency2) || "null".equals(currency2)) {
             currency2 = ExchangeData.DEFAULT_CURRENCY;
+        }
+
+              // Map MtGox to Bitstamp
+        if (ExchangeData.MT_GOX_EXCHANGE_NAME.equalsIgnoreCase(exchange2)) {
+          exchange2 = ExchangeData.BITSTAMP_EXCHANGE_NAME;
+          controller.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, ExchangeData.BITSTAMP_EXCHANGE_NAME);
+
+          currency2 = "USD";
+          controller.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY, "USD");
         }
     }
 

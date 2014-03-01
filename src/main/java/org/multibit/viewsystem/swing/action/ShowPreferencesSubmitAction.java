@@ -446,13 +446,6 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                     this.bitcoinController.getModel().setBlinkEnabled(true);
                 }            
             }
-
-//            if (feeValidationError) {
-//                MessageManager.INSTANCE.addMessage(new Message(updateStatusText, false));
-//            } else {
-//                // Clear any previous validation error.
-//                MessageManager.INSTANCE.addMessage(new Message(" "));
-//            }
         } finally {
             if (mainFrame != null) {
                 mainFrame.setCursor(Cursor.getDefaultCursor());

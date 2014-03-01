@@ -685,12 +685,6 @@
             <artifactId>xchange-core</artifactId>
             <version>${xchange.version}</version>
         </dependency>
-        <!-- XChange MtGox exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-mtgox</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
         <!-- XChange VirtEx exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
@@ -719,18 +713,6 @@
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-campbx</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange BTCChina exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-btcchina</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange Kraken exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-kraken</artifactId>
             <version>${xchange.version}</version>
         </dependency>
         <dependency>
