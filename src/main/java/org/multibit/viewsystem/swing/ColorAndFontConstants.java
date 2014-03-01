@@ -62,6 +62,15 @@ public final class ColorAndFontConstants {
   public static void init() {
     MULTIBIT_DEFAULT_FONT_NAME = UIManager.get("Label.font") == null ? Font.DIALOG : ((Font) UIManager.get("Label.font"))
             .getFontName();
+
+    String[] availFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+    for (String fontName: availFonts)
+    {
+        if (fontName.equals("Comic Sans MS"))
+        {
+            MULTIBIT_DEFAULT_FONT_NAME = fontName;
+        }
+    }
     MULTIBIT_DEFAULT_FONT_STYLE = UIManager.get("Label.font") == null ? 0 : ((Font) UIManager.get("Label.font")).getStyle();
     MULTIBIT_DEFAULT_FONT_SIZE = UIManager.get("Label.font") == null ? 13 : ((Font) UIManager.get("Label.font")).getSize() + 1;
 
