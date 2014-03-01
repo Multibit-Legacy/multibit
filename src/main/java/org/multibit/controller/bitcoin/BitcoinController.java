@@ -16,6 +16,7 @@
 package org.multibit.controller.bitcoin;
 
 import com.google.bitcoin.core.*;
+import com.google.bitcoin.script.Script;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
 import org.multibit.controller.AbstractController;
@@ -231,7 +232,13 @@ public class BitcoinController extends AbstractController<CoreController> implem
         log.debug("Keys added : " + keys.toString());
     }
 
-    @Override
+  @Override
+  public void onScriptsAdded(Wallet wallet, List<Script> scripts) {
+    log.debug("Scripts added : " + scripts.toString());
+
+  }
+
+  @Override
     public void onReorganize(Wallet wallet) {
         log.debug("onReorganize called");
         List<WalletData> perWalletModelDataList = getModel().getPerWalletModelDataList();

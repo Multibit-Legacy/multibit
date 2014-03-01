@@ -15,11 +15,8 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.*;
 import com.google.bitcoin.core.Wallet.SendRequest;
-import com.google.bitcoin.core.WrongNetworkException;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
@@ -93,8 +90,14 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
 
                 // Complete it (which works out the fee) but do not sign it yet.
                 log.debug("Just about to complete the tx (and calculate the fee)...");
-                boolean completedOk = bitcoinController.getModel().getActiveWallet().completeTx(sendRequest, false);
-                log.debug("The fee after completing the transaction was " + sendRequest.fee);
+                boolean completedOk;
+                try {
+                    bitcoinController.getModel().getActiveWallet().completeTx(sendRequest, false);
+                  completedOk = true;
+                  log.debug("The fee after completing the transaction was " + sendRequest.fee);
+                } catch (InsufficientMoneyException ime) {
+                  completedOk = false;
+                }
                 if (completedOk) {
                     // There is enough money.
 

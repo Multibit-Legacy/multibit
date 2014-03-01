@@ -457,13 +457,13 @@ public class FileHandler {
                 if (null != oldBackupFilename && !"".equals(oldBackupFilename)) {
                     oldBackupFile = new File(oldBackupFilename);
                 }
-                if (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()
-                        || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
+                if (walletInfo != null && (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()
+                        || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion())) {
                     newBackupFilename = copyExistingWalletToBackupAndDeleteOriginal(walletFile);
                 }
 
                 log.debug("Saving wallet file '" + walletFile.getAbsolutePath() + "' ...");
-                if (MultiBitWalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
+                if (walletInfo != null && MultiBitWalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
                     throw new WalletSaveException("Cannot save wallet '" + walletFile.getAbsolutePath() + "'. Serialized wallets are no longer supported.");
                 } else {
                     // See if there are any encrypted private keys - if there
@@ -498,7 +498,7 @@ public class FileHandler {
                                 + "' but this version of MultiBit does not understand that format.");
                     }
                 }
-                log.debug("... done saving wallet file.");
+                log.debug("... done saving wallet file. Wallet file size is " + walletFile.length() + " bytes.");
 
                 if (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()
                         || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
