@@ -9,7 +9,7 @@
       <outputDirectory></outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <unpack>true</unpack>
-      <useProjectArtifact>false></useProjectArtifact>
+      <useProjectArtifact>false</useProjectArtifact>
       <scope>runtime</scope>
       <excludes>
         <exclude>org.codehaus.izpack:*</exclude>
