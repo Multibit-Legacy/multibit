@@ -368,6 +368,12 @@ public class MultiBitService {
     }
   }
 
+  public void recalculateFastCatchupAndFilter() {
+    if (peerGroup != null) {
+      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND);
+    }
+  }
+
   public static String getFilePrefix() {
     BitcoinController bitcoinController = MultiBit.getBitcoinController();
     // testnet3
