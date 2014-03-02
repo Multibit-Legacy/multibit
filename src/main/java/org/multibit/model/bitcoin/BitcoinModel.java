@@ -66,6 +66,8 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String WALLET_ORDER_TOTAL = "walletOrderTotal";
     public static final String WALLET_ORDER_PREFIX = "walletOrder.";
 
+    public static final String WALLET_CLEANED_OF_SPAM = "walletCleanedOfSpam";
+
     // Send bitcoin and send bitcoin confirm.
     public static final String SEND_ADDRESS = "sendAddress";
     public static final String SEND_LABEL = "sendLabel";

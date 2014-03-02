@@ -29,6 +29,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
+import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ConnectHttps;
 import org.multibit.model.exchange.ExchangeModel;
@@ -61,7 +62,7 @@ import java.util.List;
 
 /**
  * Main MultiBit entry class.
- * 
+ *
  * @author jim
  */
 public final class MultiBit {
@@ -69,7 +70,7 @@ public final class MultiBit {
     private static final Logger log = LoggerFactory.getLogger(MultiBit.class);
 
     private static Controller controller = null;
-    
+
     private static CoreController coreController = null;
     private static BitcoinController bitcoinController = null;
     private static ExchangeController exchangeController = null;
@@ -84,7 +85,7 @@ public final class MultiBit {
 
     /**
      * Start MultiBit user interface.
-     * 
+     *
      * @param args String encoding of arguments ([0]= Bitcoin URI)
      */
     @SuppressWarnings("deprecation")
@@ -102,9 +103,9 @@ public final class MultiBit {
             try {
                 // Fix for Windows / Java 7 / VPN bug.
                 System.setProperty("java.net.preferIPv4Stack", "true");
-                
-                // Fix for version.txt not visible for Java 7 
-                System.setProperty ("jsse.enableSNIExtension", "false");                
+
+                // Fix for version.txt not visible for Java 7
+                System.setProperty ("jsse.enableSNIExtension", "false");
             } catch (SecurityException se) {
                 log.error(se.getClass().getName() + " " + se.getMessage());
             }
@@ -175,7 +176,7 @@ public final class MultiBit {
                 }
             }
             coreController.setLocaliser(localiser);
-            
+
             log.debug("MultiBit version = " + localiser.getVersionNumber());
 
             log.debug("Creating model");
@@ -191,10 +192,10 @@ public final class MultiBit {
 
             // Trust all HTTPS certificates.
             ConnectHttps.trustAllCerts();
-            
+
             // Initialise currency converter.
             CurrencyConverter.INSTANCE.initialise(finalController);
-            
+
             // Initialise replay manager.
             ReplayManager.INSTANCE.initialise(bitcoinController, false);
 
@@ -278,9 +279,9 @@ public final class MultiBit {
                 boolean thereWasAnErrorLoadingTheWallet = false;
 
                 try {
-                    boolean backupWallet = false;
+                    boolean backupWallet;
                     boolean moveSiblingFiles = false;
-                                      
+
                     // If there is no active filename this is a new instance of MultiBit so backup the new wallet when created.
                     if (activeWalletFilename == null || "".equals(activeWalletFilename) || "null".equals(activeWalletFilename) ) {
                         backupWallet = true;
@@ -300,7 +301,18 @@ public final class MultiBit {
                         log.debug("Created/loaded wallet '" + activeWalletFilename + "'");
                         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
                                 "multiBit.createdWallet", new Object[] { activeWalletFilename })));
-                        
+
+                        // Clean out the "1Enjoy 1Sochi" spam
+                        WalletInfoData walletInfo = perWalletModelDataList.get(0).getWalletInfo();
+                        String walletCleanedOfSpam = walletInfo.getProperty(BitcoinModel.WALLET_CLEANED_OF_SPAM);
+                        if (!Boolean.TRUE.toString().equalsIgnoreCase(walletCleanedOfSpam)) {
+                          log.debug("Cleaning wallet '" + activeWalletFilename + "' of spam ...");
+                          perWalletModelDataList.get(0).getWallet().cleanup();
+                          walletInfo.put(BitcoinModel.WALLET_CLEANED_OF_SPAM, Boolean.TRUE.toString());
+                          bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelDataList.get(0), false);
+                          log.debug("done.");
+                        }
+
                         if (backupWallet) {
                             // Backup the wallet and wallet info.
                             BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelDataList.get(0));
@@ -378,7 +390,7 @@ public final class MultiBit {
                     } catch (NumberFormatException nfe) {
                         // Carry on.
                     }
-                    
+
                     // Load up the order the wallets are to appear in.
                     // There may be wallets in this list of types from the future but only load wallets we know about
                     boolean haveWalletOrder = false;
@@ -401,7 +413,7 @@ public final class MultiBit {
                     } catch (NumberFormatException nfe) {
                         // Carry on.
                     }
-                    
+
                     List<String> actualOrderToLoad = new ArrayList<String>();
                     if (haveWalletOrder) {
                         for (String orderWallet : walletFilenameOrder) {
@@ -416,7 +428,7 @@ public final class MultiBit {
                                 // Add it.
                                 actualOrderToLoad.add(loadWallet);
                             }
-                        }                        
+                        }
                     } else {
                         // Just load all the wallets, early then later.
                         for (String loadWallet : walletFilenamesToLoad) {
@@ -426,7 +438,7 @@ public final class MultiBit {
                             }
                         }
                     }
-                    
+
                     if (actualOrderToLoad.size() > 0) {
                         boolean thereWasAnErrorLoadingTheWallet = false;
 
@@ -442,7 +454,7 @@ public final class MultiBit {
                                 String topLevelWalletDirectory = BackupManager.INSTANCE.calculateTopLevelBackupDirectoryName(new File(actualOrder));
                                 boolean firstUsageSinceWalletDirectoriesIntroduced = !(new File(topLevelWalletDirectory).exists());
 
-                                WalletData perWalletModelData = null;
+                                WalletData perWalletModelData;
                                 if (activeWalletFilename != null && activeWalletFilename.equals(actualOrder)) {
                                     perWalletModelData = bitcoinController.addWalletFromFilename(actualOrder);
                                     bitcoinController.getModel().setActiveWalletByFilename(actualOrder);
@@ -453,12 +465,23 @@ public final class MultiBit {
                                         new Object[] { actualOrder }));
                                 message2.setShowInStatusBar(false);
                                 MessageManager.INSTANCE.addMessage(message2);
-                                
+
+                                // Clean out the "1Enjoy 1Sochi" spam
+                                WalletInfoData walletInfo = perWalletModelData.getWalletInfo();
+                                String walletCleanedOfSpam = walletInfo.getProperty(BitcoinModel.WALLET_CLEANED_OF_SPAM);
+                                if (!Boolean.TRUE.toString().equalsIgnoreCase(walletCleanedOfSpam)) {
+                                    log.debug("Cleaning wallet '" + activeWalletFilename + "' of spam ...");
+                                    perWalletModelData.getWallet().cleanup();
+                                    walletInfo.put(BitcoinModel.WALLET_CLEANED_OF_SPAM, Boolean.TRUE.toString());
+                                    bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+                                    log.debug("done.");
+                                }
+
                                 if (firstUsageSinceWalletDirectoriesIntroduced) {
                                     if (perWalletModelData != null && perWalletModelData.getWallet() != null) {
                                         // Backup the wallet and wallet info.
                                         BackupManager.INSTANCE.backupPerWalletModelData(bitcoinController.getFileHandler(), perWalletModelData);
-             
+
                                         // Move any timestamped key and wallet files into their appropriate directories
                                         BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(actualOrder);
                                     }
@@ -488,7 +511,7 @@ public final class MultiBit {
                                 log.error(message.getText());
                                 thereWasAnErrorLoadingTheWallet = true;
                             }
-                            
+
                             if (thereWasAnErrorLoadingTheWallet) {
                                 WalletData loopData = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(actualOrder);
                                 if (loopData != null) {
@@ -533,14 +556,14 @@ public final class MultiBit {
             // Check to see if there is a new version.
             AlertManager.INSTANCE.initialise(bitcoinController, (MultiBitFrame) swingViewSystem);
             AlertManager.INSTANCE.checkVersion();
-            
+
             log.debug("Downloading blockchain");
             if (useFastCatchup) {
                 long earliestTimeSecs = bitcoinController.getModel().getActiveWallet().getEarliestKeyCreationTime();
                 bitcoinController.getMultiBitService().getPeerGroup().setFastCatchupTimeSecs(earliestTimeSecs);
                 log.debug("Using FastCatchup for blockchain sync with time of " + (new Date(earliestTimeSecs)).toString());
             }
-            
+
             // Work out the late date/ block the wallets saw to see if it needs syncing
             // or if we can use regular downloading.
             int currentChainHeight = -1;
@@ -549,9 +572,9 @@ public final class MultiBit {
                     currentChainHeight = bitcoinController.getMultiBitService().getChain().getChainHead().getHeight();
                 }
             }
-            
+
             log.debug("The current chain height is " + currentChainHeight);
-            
+
             List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
             boolean needToSync = false;
             int syncFromHeight = -1;
@@ -584,7 +607,7 @@ public final class MultiBit {
                         }
                     }
                 }
-            } 
+            }
             log.debug("needToSync = " + needToSync);
 
             if (needToSync) {
@@ -668,23 +691,23 @@ public final class MultiBit {
             log.error("UTF=8 is not supported on this platform");
         }
     }
-    
+
     public static Controller getController() {
         return controller;
     }
-    
+
     public static CoreController getCoreController() {
         return coreController;
     }
-    
+
     public static BitcoinController getBitcoinController() {
         return bitcoinController;
     }
-    
+
     public static ExchangeController getExchangeController() {
         return exchangeController;
     }
-    
+
     /**
      * Used in testing
      */
@@ -692,11 +715,11 @@ public final class MultiBit {
         MultiBit.controller = coreController;
         MultiBit.coreController = coreController;
     }
-    
+
     public static void setBitcoinController(BitcoinController bitcoinController) {
         MultiBit.bitcoinController = bitcoinController;
     }
-     
+
      public static void setExchangeController(ExchangeController exchangeController) {
         MultiBit.exchangeController = exchangeController;
     }
