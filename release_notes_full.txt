@@ -1,5 +1,15 @@
 MultiBit release notes.
 
+18 Dec 2013 Version 0.5.16
+Changes:
+#340. Fixed: if you close a wallet then open it immediately it does not appear.
+#347, #410. Updated code to bitcoinj 0.10.3 (transaction is now resent ok if not initially sent).
+#407. Changed reset block chain and transactions to always run before wallet creation date.
+#408. Send is now prevented until sync completes.
+#409. Examined code to see if 'tx is missing' can be improved.
+#415. Removed 'File | Delete Wallet' entirely for safety reasons.
+#418. Now performs a ping of peers before send as a network check.
+
 19 Nov 2013 Version 0.5.15
 Changes:
 #196. Fixed: Bitcoin URI protocol handler does not work properly under Windows.
