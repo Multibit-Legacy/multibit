@@ -28,4 +28,5 @@
     <logger name="org.multibit" level="DEBUG" />
     <logger name="com.google.bitcoin" level="INFO" />
     <logger name="com.google.bitcoin.core.Wallet" level="DEBUG" />
+    <logger name="com.google.bitcoin.utils.Threading" level="ERROR" />
 </configuration>

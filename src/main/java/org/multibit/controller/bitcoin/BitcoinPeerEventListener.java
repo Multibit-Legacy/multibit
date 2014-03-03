@@ -85,7 +85,9 @@ public class BitcoinPeerEventListener implements PeerEventListener {
             Wallet loopWallet = perWalletModelData.getWallet();
             if (loopWallet != null) {
               if (loopWallet.isTransactionRelevant(transaction)) {
-                if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
+                if (!(transaction.isTimeLocked()
+                        && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)
+                        && loopWallet.isTransactionRisky(transaction, null)) {
                   if (loopWallet.getTransaction(transaction.getHash()) == null) {
                     log.debug("MultiBit adding a new pending transaction for the wallet '"
                             + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());

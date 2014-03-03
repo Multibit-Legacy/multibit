@@ -685,12 +685,6 @@
             <artifactId>xchange-core</artifactId>
             <version>${xchange.version}</version>
         </dependency>
-        <!-- XChange MtGox exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-mtgox</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
         <!-- XChange VirtEx exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
@@ -719,18 +713,6 @@
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-campbx</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange BTCChina exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-btcchina</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange Kraken exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-kraken</artifactId>
             <version>${xchange.version}</version>
         </dependency>
         <dependency>
@@ -811,7 +793,7 @@
         </staging.linux.dir>
 
         <!-- Version of BitCoinJ to use (multiple uses) -->
-        <bitcoinj.version>0.10.3-MB-ALICE</bitcoinj.version>
+        <bitcoinj.version>0.11.1-MB-ALICE</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
         <xchange.version>1.10.0</xchange.version>

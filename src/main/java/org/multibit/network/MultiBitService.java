@@ -18,8 +18,8 @@ package org.multibit.network;
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.core.Wallet.SendRequest;
 import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.discovery.DnsDiscovery;
-import com.google.bitcoin.discovery.IrcDiscovery;
+import com.google.bitcoin.net.discovery.DnsDiscovery;
+import com.google.bitcoin.net.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.SPVBlockStore;
@@ -365,6 +365,12 @@ public class MultiBitService {
           }
         }
       }
+    }
+  }
+
+  public void recalculateFastCatchupAndFilter() {
+    if (peerGroup != null) {
+      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND);
     }
   }
 

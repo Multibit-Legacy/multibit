@@ -15,24 +15,6 @@
  */
 package org.multibit.exchange;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Collection;
-import java.util.List;
-import java.util.TimerTask;
-
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
-
-import org.multibit.controller.Controller;
-import org.multibit.controller.exchange.ExchangeController;
-import org.multibit.model.exchange.ExchangeData;
-import org.multibit.model.exchange.ExchangeModel;
-import org.multibit.viewsystem.swing.MultiBitFrame;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.ExchangeSpecification;
@@ -40,6 +22,21 @@ import com.xeiam.xchange.currency.Currencies;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
+import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
+import org.multibit.controller.Controller;
+import org.multibit.controller.exchange.ExchangeController;
+import org.multibit.model.exchange.ExchangeData;
+import org.multibit.model.exchange.ExchangeModel;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Collection;
+import java.util.List;
+import java.util.TimerTask;
 
 /**
  * TimerTask to poll currency exchanges for ticker data process
@@ -329,10 +326,9 @@ public class TickerTimerTask extends TimerTask {
     }
 
     /**
-     * Create the exchange specified by the exchange class name specified e.g.
-     * BitcoinChartsExchange.class.getName();
+     * Create the exchange specified by the exchange short name
      * 
-     * @param exchangeClassName
+     * @param exchangeShortname The name of the exchange to create
      */
     private Exchange createExchange(String exchangeShortname) {
         log.debug("creating exchange from exchangeShortname  = " + exchangeShortname);

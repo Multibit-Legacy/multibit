@@ -674,23 +674,20 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
     }
     private String getConfidenceToolTip(int numberOfPeers) {
         StringBuilder builder = new StringBuilder("");
-        if (numberOfPeers == 0) {
-            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
-        } else {
             builder
                 .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy"))
                 .append(" ");
             builder.append(numberOfPeers);
-            if (numberOfPeers > 1)
-                builder
+            if (numberOfPeers == 1) {
+              builder.append(" ")
+                  .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peer"))
+                  .append(".");
+            } else {
+              builder
                     .append(" ")
                     .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peers"))
                     .append(".");
-            else
-                builder.append(" ")
-                    .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.peer"))
-                    .append(".");
-        }
+            }
         return builder.toString();
     }
 

@@ -194,7 +194,12 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         synchronized (finalPerWalletModelData.getWallet()) {
                             finalPerWalletModelData.getWallet().addKeys(newKeys);
                         }
-                        
+
+                        // Recalculate the bloom filter.
+                        if (bitcoinController.getMultiBitService() != null) {
+                          bitcoinController.getMultiBitService().recalculateFastCatchupAndFilter();
+                        }
+
                         // Add keys to address book.
                         for (ECKey newKey : newKeys) {
                             lastAddressString = newKey.toAddress(finalController.getModel().getNetworkParameters()).toString();
