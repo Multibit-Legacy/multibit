@@ -1,5 +1,11 @@
 MultiDoge release notes:
 
+15 Mar 2014: 0.1.2
++ Prepare for March 17th fork
++ Update XChange component
++ Internal fixes
++ Translation fixes
+
 23 Feb 2014: 0.1.1
 + Saves window state on close so size and position are restored at launch.
 + Option to minimize to tray. Stays in dock on OS X because Apple has no API to change that dynamically. On Linux the icon lacks transparanecy due to an internal Java bug. Sorry, can't change that :/
