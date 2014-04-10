@@ -109,6 +109,7 @@ public class Localiser {
         numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
         numberFormatNotLocalised = NumberFormat.getInstance(Locale.ENGLISH);
         numberFormatNotLocalised.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
+        numberFormatNotLocalised.setGroupingUsed(false);
         
         decimalFormatSymbols = new java.text.DecimalFormatSymbols(locale);
     }
