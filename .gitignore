@@ -1,10 +1,49 @@
-/.settings
+# Temporary or derived resources
 /docs
 /log
 /out
 /target
-/.classpath
 /bin
+multibit.blockchain
+multibit.info
+multibit.blockchain
+multibit.properties
+multibit.wallet
+
+# Eclipse
+.classpath
 .project
-.idea
-multibit.iml
+.settings/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# NetBeans
+nb*.xml
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# Mac
+.DS_Store
+
+# Maven
+target/
+
+# Java
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
