@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright 2013 multibit.org
+  ~ Copyright 2014 multibit.org
   ~
   ~ Licensed under the MIT license (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -51,27 +51,40 @@
     </scm>
 
     <repositories>
-        <repository>
-            <id>sonatype-oss-snapshot</id>
-            <snapshots/>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-        <repository>
-            <id>sonatype-oss-snapshot2</id>
-            <snapshots/>
-            <url>https://oss.sonatype.org/content/groups/public</url>
-        </repository>
-        <!-- bitcoin-j repo -->
+        <!-- Bitcoinj release repo -->
         <repository>
             <id>bitcoinj-release</id>
-            <releases />
             <url>http://distribution.bitcoinj.googlecode.com/git/releases</url>
+            <releases />
         </repository>
-        <!-- zxing repo -->
+        <!-- zxing release repo -->
         <repository>
             <id>mvn-adamgent</id>
             <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
-            <name>Adam Gent Maven Repository</name>
+            <releases/>
+        </repository>
+        <!-- MultiBit repository for releases -->
+        <repository>
+          <id>mbhd-maven-release</id>
+          <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/releases</url>
+          <releases/>
+        </repository>
+        <!-- MultiBit staging repository for snapshots -->
+        <repository>
+            <id>mbhd-maven-snapshot</id>
+            <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
+            <snapshots/>
+        </repository>
+        <!-- Sonatype snapshot repo -->
+        <repository>
+            <id>sonatype-oss-snapshot</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots/>
+        </repository>
+        <repository>
+            <id>sonatype-oss-snapshot2</id>
+            <url>https://oss.sonatype.org/content/groups/public</url>
+            <snapshots/>
         </repository>
     </repositories>
 
