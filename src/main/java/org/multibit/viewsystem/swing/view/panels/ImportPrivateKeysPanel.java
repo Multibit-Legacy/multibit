@@ -15,40 +15,8 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.text.DateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-import javax.swing.filechooser.FileFilter;
-
+import com.google.bitcoin.crypto.KeyCrypterException;
+import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.crypto.KeyCrypterOpenSSL;
@@ -67,19 +35,22 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ImportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.components.*;
 
-import com.google.bitcoin.crypto.KeyCrypterException;
-
-import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
-
-import com.piuk.blockchain.MyWallet;
-import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
-import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.text.DateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * The import private keys view.
@@ -128,8 +99,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
     private KeyCrypterOpenSSL encrypterDecrypter;
 
     public FileFilter multiBitFileChooser;
-    public FileFilter myWalletPlainFileChooser;
-    public FileFilter myWalletEncryptedFileChooser;
+    //public FileFilter myWalletPlainFileChooser;
+    //public FileFilter myWalletEncryptedFileChooser;
 
     private Font adjustedFont;
 
@@ -163,8 +134,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         
         encrypterDecrypter = new KeyCrypterOpenSSL();
         multiBitFileChooser = new PrivateKeyFileFilter(controller);
-        myWalletPlainFileChooser = new MyWalletPlainKeyFileFilter();
-        myWalletEncryptedFileChooser = new MyWalletEncryptedKeyFileFilter();
+        //myWalletPlainFileChooser = new MyWalletPlainKeyFileFilter();
+        //myWalletEncryptedFileChooser = new MyWalletEncryptedKeyFileFilter();
     }
 
     private void initUI() {
@@ -861,8 +832,8 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         fileChooser.addChoosableFileFilter(multiBitFileChooser);
-        fileChooser.addChoosableFileFilter(myWalletPlainFileChooser);
-        fileChooser.addChoosableFileFilter(myWalletEncryptedFileChooser);
+        //fileChooser.addChoosableFileFilter(myWalletPlainFileChooser);
+        //fileChooser.addChoosableFileFilter(myWalletEncryptedFileChooser);
 
         fileChooser.setAcceptAllFileFilterUsed(false);
 
@@ -924,20 +895,21 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                                     "importPrivateKeysSubmitAction.privateKeysImportFailure",
                                     new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                         }
-                    } else if (myWalletEncryptedFileChooser.accept(file)) {
-                        enableImportFilePasswordPanel(true);
-                        passwordField1.requestFocusInWindow();
-                    } else if (myWalletPlainFileChooser.accept(file)) {
-                        // File is not encrypted.
-                        enableImportFilePasswordPanel(false);
-                        try {
-                            readInImportFileAndUpdateDetails();
-                        } catch (KeyCrypterException e) {
-                            setMessageText1(controller.getLocaliser().getString(
-                                    "importPrivateKeysSubmitAction.privateKeysImportFailure",
-                                    new Object[] { e.getClass().getName() + " " + e.getMessage() }));
-                        }
                     }
+//                    else if (myWalletEncryptedFileChooser.accept(file)) {
+//                        enableImportFilePasswordPanel(true);
+//                        passwordField1.requestFocusInWindow();
+//                    } else if (myWalletPlainFileChooser.accept(file)) {
+//                        // File is not encrypted.
+//                        enableImportFilePasswordPanel(false);
+//                        try {
+//                            readInImportFileAndUpdateDetails();
+//                        } catch (KeyCrypterException e) {
+//                            setMessageText1(controller.getLocaliser().getString(
+//                                    "importPrivateKeysSubmitAction.privateKeysImportFailure",
+//                                    new Object[] { e.getClass().getName() + " " + e.getMessage() }));
+//                        }
+//                    }
                 }
             }
         } finally {
@@ -983,7 +955,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
 
     /**
      * Read in the import file and show the file details.
-     * @throws EncrypterDecrypterException 
+     * @throws KeyCrypterException
      * @throws PrivateKeysHandlerException 
      */
     private void readInImportFileAndUpdateDetails() throws PrivateKeysHandlerException, KeyCrypterException {
@@ -1011,57 +983,58 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                             .format(replayDate));
                 }
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            } else if (myWalletEncryptedFileChooser.accept(file)) {
-                try {
-                    String importFileContents = PrivateKeysHandler.readFile(file);
-
-                    String mainPassword = new String(passwordField1.getPassword());
-                    String secondPassword = new String(passwordField2.getPassword());
-
-                    MyWallet wallet = new MyWallet(importFileContents, mainPassword);
-
-                    boolean needSecondPassword = false;
-                    if (wallet.isDoubleEncrypted()) {
-                        if ("".equals(secondPassword)) {
-                            needSecondPassword = true;
-                            requestSecondPassword();
-                        }
-                    }
-
-                    if (!needSecondPassword) {
-                        wallet.setTemporySecondPassword(secondPassword);
-
-                        int numberOfKeys = 0;
-                        if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
-                            numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
-                        }
-                        numberOfKeysLabel.setText("" + numberOfKeys);
-
-                        replayDateLabel.setText(controller.getLocaliser().getString(
-                                "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
-
-                    }
-                } catch (Exception e) {
-                    throw new KeyCrypterException("Error Decrypting Wallet");
-                }
-            } else if (myWalletPlainFileChooser.accept(file)) {
-                try {
-                    String importFileContents = PrivateKeysHandler.readFile(file);
-
-                    MyWallet wallet = new MyWallet(importFileContents);
-
-                    int numberOfKeys = 0;
-                    if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
-                        numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
-                    }
-                    numberOfKeysLabel.setText("" + numberOfKeys);
-
-                    replayDateLabel.setText(controller.getLocaliser().getString(
-                            "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
-                } catch (Exception e) {
-                    throw new KeyCrypterException("Error Opening Wallet");
-                }
             }
+//            else if (myWalletEncryptedFileChooser.accept(file)) {
+//                try {
+//                    String importFileContents = PrivateKeysHandler.readFile(file);
+//
+//                    String mainPassword = new String(passwordField1.getPassword());
+//                    String secondPassword = new String(passwordField2.getPassword());
+//
+//                    MyWallet wallet = new MyWallet(importFileContents, mainPassword);
+//
+//                    boolean needSecondPassword = false;
+//                    if (wallet.isDoubleEncrypted()) {
+//                        if ("".equals(secondPassword)) {
+//                            needSecondPassword = true;
+//                            requestSecondPassword();
+//                        }
+//                    }
+//
+//                    if (!needSecondPassword) {
+//                        wallet.setTemporySecondPassword(secondPassword);
+//
+//                        int numberOfKeys = 0;
+//                        if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
+//                            numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
+//                        }
+//                        numberOfKeysLabel.setText("" + numberOfKeys);
+//
+//                        replayDateLabel.setText(controller.getLocaliser().getString(
+//                                "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
+//
+//                    }
+//                } catch (Exception e) {
+//                    throw new KeyCrypterException("Error Decrypting Wallet");
+//                }
+//            } else if (myWalletPlainFileChooser.accept(file)) {
+//                try {
+//                    String importFileContents = PrivateKeysHandler.readFile(file);
+//
+//                    MyWallet wallet = new MyWallet(importFileContents);
+//
+//                    int numberOfKeys = 0;
+//                    if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
+//                        numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
+//                    }
+//                    numberOfKeysLabel.setText("" + numberOfKeys);
+//
+//                    replayDateLabel.setText(controller.getLocaliser().getString(
+//                            "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
+//                } catch (Exception e) {
+//                    throw new KeyCrypterException("Error Opening Wallet");
+//                }
+//            }
         } finally {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
