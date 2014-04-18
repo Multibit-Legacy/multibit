@@ -35,8 +35,6 @@ import java.util.Collection;
 
 public class PrivateKeysHandlerTest extends TestCase {
     public static final String PRIVATE_KEYS_TESTDATA_DIRECTORY = "privateKeys";
-    public static final String WALLETS_TESTDATA_DIRECTORY = "wallets";
-    public static final String BCI_TESTDATA_DIRECTORY = "BCI-backups";
 
     public static final String TEST1_WALLET_FILE = "test1.wallet";
     public static final String TEST1_PRIVATE_KEYS_FILE = "test1.key";
@@ -111,7 +109,7 @@ public class PrivateKeysHandlerTest extends TestCase {
     }
 
     private String readFile(File inputFile) throws IOException {
-        StringBuffer contents = new StringBuffer();
+        StringBuilder contents = new StringBuilder();
         BufferedReader reader = null;
         String lineSeparator = System.getProperty("line.separator");
         try {

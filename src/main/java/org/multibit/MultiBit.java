@@ -15,8 +15,9 @@
  */
 package org.multibit;
 
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.*;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;
@@ -54,6 +55,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -236,7 +238,7 @@ public final class MultiBit {
 
             // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface with initial view : " + controller.getCurrentView());
-            swingViewSystem = new MultiBitFrame(coreController, bitcoinController, exchangeController, genericApplication, controller.getCurrentView());
+            swingViewSystem = new MultiBitFrame(coreController, bitcoinController, exchangeController, genericApplication);
 
             log.debug("Registering with controller");
             coreController.registerViewSystem(swingViewSystem);
@@ -312,6 +314,7 @@ public final class MultiBit {
                           bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelDataList.get(0), false);
                           log.debug("done.");
                         }
+                        checkPrivateKeysMatchAddresses(perWalletModelDataList.get(0));
 
                         if (backupWallet) {
                             // Backup the wallet and wallet info.
@@ -457,10 +460,12 @@ public final class MultiBit {
                                 WalletData perWalletModelData;
                                 if (activeWalletFilename != null && activeWalletFilename.equals(actualOrder)) {
                                     perWalletModelData = bitcoinController.addWalletFromFilename(actualOrder);
+
                                     bitcoinController.getModel().setActiveWalletByFilename(actualOrder);
                                 } else {
                                     perWalletModelData = bitcoinController.addWalletFromFilename(actualOrder);
                                 }
+                                checkPrivateKeysMatchAddresses(perWalletModelData);
                                 Message message2 = new Message(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                         new Object[] { actualOrder }));
                                 message2.setShowInStatusBar(false);
@@ -732,4 +737,67 @@ public final class MultiBit {
         log.debug("Remembering the bitcoin URI to process of '" + rememberedRawBitcoinURI + "'");
         MultiBit.rememberedRawBitcoinURI = rememberedRawBitcoinURI;
     }
+
+  /**
+   * Check that the private key in the wallet file correctly creates the bitcoin address
+   * @param perWalletModelData the wallet data to check the private keys for
+   */
+  private static void checkPrivateKeysMatchAddresses(WalletData perWalletModelData) {
+    if (perWalletModelData == null || perWalletModelData.getWallet() == null) {
+      return;
+    }
+
+    try {
+      Wallet walletToCheck = perWalletModelData.getWallet();
+      List<ECKey> keysToCheck = walletToCheck.getKeys();
+
+      boolean allKeysAreOk = true;
+      List<String> badAddresses = Lists.newArrayList();
+
+      for (ECKey ecKey : keysToCheck) {
+        Address originalAddress = ecKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+
+        byte[] privateKeyBytes = ecKey.getPrivKeyBytes();
+        if (privateKeyBytes == null) {
+            // The private key in the ecKey is missing
+            allKeysAreOk = false;
+
+            badAddresses.add(originalAddress.toString());
+        } else {
+        // Create an ECKey with just the private key bytes, it creates the public key - the address should be the same
+          ECKey rebornKey = new ECKey(new BigInteger(1, privateKeyBytes), null, ecKey.isCompressed());
+          Address rebornAddress = rebornKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+          if (!rebornAddress.toString().equals(originalAddress.toString())) {
+            // The private key in the ecKey does not match the address - private key could be damaged or missing
+            allKeysAreOk = false;
+            badAddresses.add(originalAddress.toString());
+          }
+        }
+      }
+      if (allKeysAreOk) {
+        // No problems
+        Message message = new Message("All private keys checked against receiving addresses ok.");
+        message.setShowInStatusBar(false);
+        MessageManager.INSTANCE.addMessage(message);
+      } else {
+        Message message = new Message("FAIL of check of private keys against receiving addresses.");
+        message.setShowInStatusBar(false);
+        MessageManager.INSTANCE.addMessage(message);
+
+        message = new Message("The following address(es} do not have correct matching private keys: :" + Joiner.on(" ").join(badAddresses) + ".");
+        message.setShowInStatusBar(false);
+        MessageManager.INSTANCE.addMessage(message);
+
+        message = new Message("DO NOT SEND BITCOIN TO THESE ADDRESS(ES) AS IT WILL NOT BE REDEEMABLE.");
+        message.setShowInStatusBar(false);
+        MessageManager.INSTANCE.addMessage(message);
+
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      Message message = new Message("The check of the private keys against receiving addresses did not finish. The error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() );
+      message.setShowInStatusBar(false);
+      MessageManager.INSTANCE.addMessage(message);
+    }
+  }
 }
