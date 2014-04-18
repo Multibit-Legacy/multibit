@@ -1,0 +1,13 @@
+multiBit.info,1
+walletVersion,3
+receive,19wyLSzw9ME6XFVenNYGYXCExR7Y7JVbMP,
+receive,13Mmh2hPEy3h3g7MCYXjdRfgRRSgSrZ9i7,
+receive,182AFE6wJsJrRyMhb4YhU1jA5vXSvTE8o7,
+receive,12yoTvArxo1mgKocosZkPxSJFQXz9NWb1z,
+receive,18yHUUdGodKeRWBron2qV1aXr6VC7hLX2v,
+receive,1P18y2vBfvoUBV68iHgnpSNUMhDVjFPdKD,
+property,walletDescription,badPrivateKeys%20*password
+property,receiveLabel,
+property,walletCleanedOfSpam,true
+property,walletBackupFile,%2FUsers%2Fjim%2FIdeaProjects%2Fmultibit%2Fsrc%2Ftest%2Fresources%2FprivateKeys%2FbadPrivateKeys-data%2Frolling-backup%2FbadPrivateKeys-20140418185112.wallet
+property,receiveAddress,13Mmh2hPEy3h3g7MCYXjdRfgRRSgSrZ9i7
