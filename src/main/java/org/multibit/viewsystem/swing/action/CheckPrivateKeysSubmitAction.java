@@ -27,7 +27,6 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.network.AlertManager;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.CheckPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,20 +43,18 @@ import java.util.List;
  */
 public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
 
-  private static final Logger log = LoggerFactory.getLogger(ImportPrivateKeysSubmitAction.class);
+  private static final Logger log = LoggerFactory.getLogger(CheckPrivateKeysSubmitAction.class);
 
   private static final long serialVersionUID = 1923333087598757765L;
 
-  private MultiBitFrame mainFrame;
   private CheckPrivateKeysPanel checkPrivateKeysPanel;
 
   /**
    * Creates a new {@link org.multibit.viewsystem.swing.action.CheckPrivateKeysSubmitAction}.
    */
-  public CheckPrivateKeysSubmitAction(BitcoinController bitcoinController, MultiBitFrame mainFrame,
+  public CheckPrivateKeysSubmitAction(BitcoinController bitcoinController,
                                       CheckPrivateKeysPanel checkPrivateKeysPanel, ImageIcon icon) {
     super(bitcoinController, "checkPrivateKeysAction.text", "showCheckPrivateKeysAction.tooltip", "showCheckPrivateKeysAction.mnemonicKey", icon);
-    this.mainFrame = mainFrame;
     this.checkPrivateKeysPanel = checkPrivateKeysPanel;
 
     // This action is a WalletBusyListener.
@@ -101,14 +98,12 @@ public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implement
     }
 
     // Check the private keys match the bitcoin addresses
-    checkPrivateKeysMatchAddresses(bitcoinController.getModel().getActivePerWalletModelData(), walletPassword);
-  }
-
-  private void logError(Exception e) {
-    e.printStackTrace();
-    checkPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString("signMessageAction.error"));
-    checkPrivateKeysPanel.setMessageText2(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2",
-            new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
+    try {
+      checkPrivateKeysMatchAddresses(bitcoinController.getModel().getActivePerWalletModelData(), walletPassword);
+    } catch (PrivateKeysException pke) {
+      // Error messaging is handled in the method itself
+      pke.printStackTrace();
+    }
   }
 
   @Override
@@ -140,23 +135,26 @@ public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implement
    * Check that the private key in the wallet file correctly creates the bitcoin address
    *
    * @param perWalletModelData the wallet data to check the private keys for
+   * @param password the wallet password
+   * @return badAddresses A list of the bad addresses i.e. the addresses for which the private key does not match the bitcoin address.
+   *                      If this is empty then all private keys are present and match the address.
    */
-  private void checkPrivateKeysMatchAddresses(WalletData perWalletModelData, CharSequence password) {
+  private List<String> checkPrivateKeysMatchAddresses(WalletData perWalletModelData, CharSequence password) throws PrivateKeysException {
     if (perWalletModelData == null || perWalletModelData.getWallet() == null) {
-      return;
+      throw new PrivateKeysException("No wallet specified");
     }
-
 
     Message separatorMessage = new Message(AlertManager.MESSAGE_WINDOW_SEPARATOR);
     separatorMessage.setShowInStatusBar(false);
+
+    boolean allKeysAreOk = true;
+    List<String> badAddresses = Lists.newArrayList();
 
     try {
       Wallet walletToCheck = perWalletModelData.getWallet();
       List<ECKey> keysToCheck = walletToCheck.getKeys();
 
-      boolean allKeysAreOk = true;
-      List<String> badAddresses = Lists.newArrayList();
-
+      // Derive keyParameter if wallet is encrypted
       KeyParameter keyParameter = null;
       if (password != null && !password.equals("") && walletToCheck.isEncrypted()) {
         keyParameter = walletToCheck.getKeyCrypter().deriveKey(password);
@@ -206,6 +204,7 @@ public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implement
         message.setShowInStatusBar(false);
         MessageManager.INSTANCE.addMessage(message);
       } else {
+        // Some private keys are missing or damaged
         String messageText = super.bitcoinController.getLocaliser().getString("checkPrivateKeysSubmitAction.fail", new String[]{perWalletModelData.getWalletDescription(), "" + badAddresses.size()});
         checkPrivateKeysPanel.setMessageText1(messageText);
         checkPrivateKeysPanel.setMessageText2(super.bitcoinController.getLocaliser().getString("checkPrivateKeysSubmitAction.details"));
@@ -223,7 +222,6 @@ public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implement
         MessageManager.INSTANCE.addMessage(message);
       }
     } catch (Exception e) {
-      e.printStackTrace();
       String messageText1 = super.bitcoinController.getLocaliser().getString("checkPrivateKeysSubmitAction.didNotComplete");
       String messageText2 = super.bitcoinController.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()});
       checkPrivateKeysPanel.setMessageText1(messageText1);
@@ -235,8 +233,12 @@ public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implement
       message = new Message(messageText2);
       message.setShowInStatusBar(false);
       MessageManager.INSTANCE.addMessage(message);
+
+      throw new PrivateKeysException("The check of the private keys failed", e);
     } finally {
       MessageManager.INSTANCE.addMessage(separatorMessage);
     }
+
+    return badAddresses;
   }
 }

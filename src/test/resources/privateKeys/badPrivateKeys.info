@@ -9,5 +9,5 @@ receive,1P18y2vBfvoUBV68iHgnpSNUMhDVjFPdKD,
 property,walletDescription,badPrivateKeys%20*password
 property,receiveLabel,
 property,walletCleanedOfSpam,true
-property,walletBackupFile,%2FUsers%2Fjim%2FIdeaProjects%2Fmultibit%2Fsrc%2Ftest%2Fresources%2FprivateKeys%2FbadPrivateKeys-data%2Frolling-backup%2FbadPrivateKeys-20140419110009.wallet
+property,walletBackupFile,%2FUsers%2Fjim%2FIdeaProjects%2Fmultibit%2Fsrc%2Ftest%2Fresources%2FprivateKeys%2FbadPrivateKeys-data%2Frolling-backup%2FbadPrivateKeys-20140419141843.wallet
 property,receiveAddress,13Mmh2hPEy3h3g7MCYXjdRfgRRSgSrZ9i7

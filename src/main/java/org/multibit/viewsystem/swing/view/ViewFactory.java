@@ -142,7 +142,7 @@ public class ViewFactory {
         break;
       }
       case SHOW_CHECK_PRIVATE_KEYS_VIEW: {
-        viewToReturn = new CheckPrivateKeysPanel(this.bitcoinController, mainFrame);
+        viewToReturn = new CheckPrivateKeysPanel(this.bitcoinController);
         break;
       }
 
