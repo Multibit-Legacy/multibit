@@ -185,11 +185,11 @@ public class CheckPrivateKeysPanel extends JPanel implements Viewable, WalletBus
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_SIGN_AND_VERIFY_MESSAGE_URL);
+                    HelpContentsPanel.HELP_CHECK_PRIVATE_KEYS_URL);
         } else {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_SIGN_AND_VERIFY_MESSAGE_URL);
+                    HelpContentsPanel.HELP_CHECK_PRIVATE_KEYS_URL);
         }   
                HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
