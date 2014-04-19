@@ -64,7 +64,7 @@ public class KeyCrypterOpenSSL {
     /**
      * number of times the password & salt are hashed during key creation.
      */
-    private static final int NUMBER_OF_ITERATIONS = 1024;
+    private static final int NUMBER_OF_ITERATIONS = 8192;
 
     /**
      * Key length.
