@@ -15,13 +15,12 @@
  */
 package org.multibit.view;
 
-import java.math.BigInteger;
-import java.util.Locale;
-
 import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.multibit.Localiser;
+
+import java.math.BigInteger;
+import java.util.Locale;
 
 public class LocaliserTest extends TestCase {
     // some example keys that are in the viewer i18n files for test purposes
@@ -298,4 +297,39 @@ public class LocaliserTest extends TestCase {
         assertEquals("", localiser.bitcoinValueToString(BigInteger.ZERO, true, true));    
         assertEquals("", localiser.bitcoinValueToString(BigInteger.ZERO, false, true));    
     }
+
+  @Test
+   public void testBitcoinValueToStringNotLocalised() {
+       Localiser localiser = new Localiser(new Locale("de"));
+       BigInteger bigPositiveValue = BigInteger.valueOf(1234567890123L);
+       BigInteger positiveValue = BigInteger.valueOf(1234567890);
+
+       BigInteger bigNegativeValue = BigInteger.valueOf(-1234567890123L);
+       BigInteger negativeValue = BigInteger.valueOf(-1234567890);
+
+       assertEquals("12345.67890123", localiser.bitcoinValueToStringNotLocalised(bigPositiveValue, false, false));
+       assertEquals("12345.67890123 BTC", localiser.bitcoinValueToStringNotLocalised(bigPositiveValue, true, false));
+       assertEquals("12345.67890123 BTC", localiser.bitcoinValueToStringNotLocalised(bigPositiveValue, true, true));
+       assertEquals("12345.67890123", localiser.bitcoinValueToStringNotLocalised(bigPositiveValue, false, true));
+
+       assertEquals("12.3456789", localiser.bitcoinValueToStringNotLocalised(positiveValue, false, false));
+       assertEquals("12.3456789 BTC", localiser.bitcoinValueToStringNotLocalised(positiveValue, true, false));
+       assertEquals("12.3456789 BTC", localiser.bitcoinValueToStringNotLocalised(positiveValue, true, true));
+       assertEquals("12.3456789", localiser.bitcoinValueToStringNotLocalised(positiveValue, false, true));
+
+       assertEquals("-12345.67890123", localiser.bitcoinValueToStringNotLocalised(bigNegativeValue, false, false));
+       assertEquals("-12345.67890123 BTC", localiser.bitcoinValueToStringNotLocalised(bigNegativeValue, true, false));
+       assertEquals("-12345.67890123 BTC", localiser.bitcoinValueToStringNotLocalised(bigNegativeValue, true, true));
+       assertEquals("-12345.67890123", localiser.bitcoinValueToStringNotLocalised(bigNegativeValue, false, true));
+
+       assertEquals("-12.3456789", localiser.bitcoinValueToStringNotLocalised(negativeValue, false, false));
+       assertEquals("-12.3456789 BTC", localiser.bitcoinValueToStringNotLocalised(negativeValue, true, false));
+       assertEquals("-12.3456789 BTC", localiser.bitcoinValueToStringNotLocalised(negativeValue, true, true));
+       assertEquals("-12.3456789", localiser.bitcoinValueToStringNotLocalised(negativeValue, false, true));
+
+       assertEquals("0", localiser.bitcoinValueToStringNotLocalised(BigInteger.ZERO, false, false));
+       assertEquals("0 BTC", localiser.bitcoinValueToStringNotLocalised(BigInteger.ZERO, true, false));
+       assertEquals("", localiser.bitcoinValueToStringNotLocalised(BigInteger.ZERO, true, true));
+       assertEquals("", localiser.bitcoinValueToStringNotLocalised(BigInteger.ZERO, false, true));
+   }
 }

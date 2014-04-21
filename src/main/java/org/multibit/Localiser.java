@@ -15,6 +15,11 @@
  */
 package org.multibit;
 
+import com.google.bitcoin.core.Utils;
+import org.joda.money.BigMoney;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,17 +28,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Properties;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-
-import org.joda.money.BigMoney;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.bitcoin.core.Utils;
+import java.util.*;
 
 /**
  * Class used for producing localised messages it contains a resource bundle and
@@ -109,6 +104,7 @@ public class Localiser {
         numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
         numberFormatNotLocalised = NumberFormat.getInstance(Locale.ENGLISH);
         numberFormatNotLocalised.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
+        numberFormatNotLocalised.setGroupingUsed(false);
         
         decimalFormatSymbols = new java.text.DecimalFormatSymbols(locale);
     }
