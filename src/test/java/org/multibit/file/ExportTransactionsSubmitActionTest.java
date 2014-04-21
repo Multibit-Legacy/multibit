@@ -21,10 +21,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.joda.money.CurrencyUnit;
 import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.CreateControllers;
@@ -33,7 +33,11 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.action.ExportTransactionsSubmitAction;
+import org.multibit.file.WalletTableDataEntryConverter;
 
+import com.googlecode.jcsv.CSVStrategy;
+import com.googlecode.jcsv.writer.CSVColumnJoiner;
+import com.googlecode.jcsv.writer.internal.CSVColumnJoinerImpl;
 import com.google.bitcoin.core.Wallet;
 
 public class ExportTransactionsSubmitActionTest extends TestCase {
@@ -110,9 +114,32 @@ public class ExportTransactionsSubmitActionTest extends TestCase {
         
         assertEquals("Header row incorrect", "Date,Description,Amount (BTC),Amount (\u20AC),Transaction Id", line0);
 
+        String[] rowExpectedAry = new String[5];
+        CSVColumnJoiner columnJoiner = new CSVColumnJoinerImpl();
+        WalletTableDataEntryConverter wtdec = new WalletTableDataEntryConverter();
+        wtdec.setBitcoinController(bitcoinController);
+
+        // Date is 29 Jul 2013 10:23
+        rowExpectedAry[0] = wtdec.dateFormatter.format(new Date(1375089780000l));
         // Note \u5317\u4EAC = Beijing in Chinese.
-        String row1Expected =  "29 Jul 2013 10:23,\"Sent to \"\"unencrypted-1-\u5317\u4EAC\"\" (1CQH7Hp9nNQVDcKtFVwbA8tqPMNWDBvqE3)\",-0.015,-0.15,28916ed8592a4cf216d8eac7e5ccb5a08771f439e508ec2861b7ff612e15b827";
-        String row2Expected = "29 Jul 2013 10:00,\"Received with \"\"protobuf 1.1.\u5317\u4EAC\"\" (1GtMdodCNN5ewFcEUxxVBziBrLtQzSuZvq)\",0.015,0.15,5eeabb42d0522c40cc63dace7746d5f82cd51292bc50a38c4dd68a854ec6cd77";
+        rowExpectedAry[1] = bitcoinController.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
+				new Object[]{"1CQH7Hp9nNQVDcKtFVwbA8tqPMNWDBvqE3", "unencrypted-1-\u5317\u4EAC"});
+        rowExpectedAry[2] = "-0.015";
+        rowExpectedAry[3] = "-0.15";
+        rowExpectedAry[4] = "28916ed8592a4cf216d8eac7e5ccb5a08771f439e508ec2861b7ff612e15b827";
+
+        String row1Expected = columnJoiner.joinColumns(rowExpectedAry, CSVStrategy.UK_DEFAULT);
+
+        // Date is 29 Jul 2013 10:00
+        rowExpectedAry[0] = wtdec.dateFormatter.format(new Date(1375088400000l));
+        // Note \u5317\u4EAC = Beijing in Chinese.
+        rowExpectedAry[1] = bitcoinController.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
+				new Object[]{"1GtMdodCNN5ewFcEUxxVBziBrLtQzSuZvq", "protobuf 1.1.\u5317\u4EAC"});
+        rowExpectedAry[2] = "0.015";
+        rowExpectedAry[3] = "0.15";
+        rowExpectedAry[4] = "5eeabb42d0522c40cc63dace7746d5f82cd51292bc50a38c4dd68a854ec6cd77";
+
+        String row2Expected = columnJoiner.joinColumns(rowExpectedAry, CSVStrategy.UK_DEFAULT);
         assertEquals("Row 1 incorrect", row1Expected, line1);
         assertEquals("Row 2 incorrect", row2Expected, line2);
     }
