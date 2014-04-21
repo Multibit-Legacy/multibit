@@ -1,10 +1,13 @@
 MultiBit release notes.
 
-03 Mar 2014 Version 0.5.17
+xx Apr 2014 Version 0.5.18
 Changes:
-+ upgrade to bitcoinj 0.11.1
-+ removal of "one satoshi" spam transactions
-+ removal of MtGox exchange, default is now Bitstamp/ USD
++ upgrade to bitcoinj 0.11.2
 + update of localisation and checkpoints files.
++ #540: removal of import of blockchain.info wallet export files
++ #540: new utility "Tool | Check Private Keys"
++ #533, #534: Fix for cannot send 1000BTC or more (fix by Telepatheic)
++ #530: fix for test timezone error (fix by allada)
+
 
 
