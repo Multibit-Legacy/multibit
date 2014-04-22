@@ -2,12 +2,13 @@ MultiBit release notes.
 
 xx Apr 2014 Version 0.5.18
 Changes:
-+ upgrade to bitcoinj 0.11.2
-+ update of localisation and checkpoints files.
-+ #540: removal of import of blockchain.info wallet export files
-+ #540: new utility "Tool | Check Private Keys"
-+ #533, #534: Fix for cannot send 1000BTC or more (fix by Telepatheic)
-+ #530: fix for test timezone error (fix by allada)
+  Upgrade to bitcoinj 0.11.2
+  Update of localisation and checkpoints files.
+  #540: Removal of import of blockchain.info wallet export files
+  #540: New utility "Tool | Check Private Keys"
+  #533, #534: Fix for cannot send 1000BTC or more (fix by Telepatheic)
+  #530: Fix for test timezone error (fix by allada)
+  #529: Fix for padding bytes in private key export files (fix by Andreas Schildbach)
 
 
 
