@@ -12,11 +12,6 @@ with Maven then [download it first](http://maven.apache.org) and follow their in
 * [Bitcoinj Enforcer Rules](https://github.com/gary-rowe/BitcoinjEnforcerRules) to prevent dependency chain attacks
 * [XChange](https://github.com/timmolter/XChange) for access to several Bitcoin exchanges
 
-### MultiBit contains cut down JREs so is a large clone
-
-The MultiBit installers contain cut down JREs so the project clone is quite large.
-(100 to 200 MB).
-
 ### The Bitcoinj "Alice" dependency
 
 MultiBit depends on a special fork of Bitcoinj for its Bitcoin support. This is due to legacy wallet serialization issues
