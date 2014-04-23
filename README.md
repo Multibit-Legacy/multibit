@@ -12,11 +12,18 @@ with Maven then [download it first](http://maven.apache.org) and follow their in
 * [Bitcoinj Enforcer Rules](https://github.com/gary-rowe/BitcoinjEnforcerRules) to prevent dependency chain attacks
 * [XChange](https://github.com/timmolter/XChange) for access to several Bitcoin exchanges
 
-#### A note on the Bitcoinj dependency
+### MultiBit contains cut down JREs so is a large clone
+
+The MultiBit installers contain cut down JREs so the project clone is quite large.
+(100 to 200 MB).
+
+### The Bitcoinj "Alice" dependency
 
 MultiBit depends on a special fork of Bitcoinj for its Bitcoin support. This is due to legacy wallet serialization issues
-and the MultiBit team are working towards a complete integration. To build MultiBit you will need to clone this fork from
-here:
+and the MultiBit team are working towards a complete integration through the MultiBit HD project.
+
+While it is possible to build MultiBit using our staging repository you may want to review the modified Bitcoinj library
+for yourself. You can clone from this fork:
 ```
 https://code.google.com/r/jimburton618-bitcoinj-coinbase-tx/source/checkout
 ```
@@ -31,7 +38,7 @@ mvn clean install
 
 ### Branching strategy
 
-This follows the  [master-develop](http://nvie.com/posts/a-successful-git-branching-model/) pattern.
+This follows the ["master-develop" or "Git flow"](http://nvie.com/posts/a-successful-git-branching-model/) pattern.
 
 There are 2 main branches: `master` and `develop`. The `master` branch is exclusively for releases, while the `develop`
 is exclusively for release candidates. The `develop` branch always has a Maven version of `develop-SNAPSHOT`.
