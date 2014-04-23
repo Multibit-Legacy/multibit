@@ -1,3 +1,7 @@
 /test1.info
 /test1.wallet
 /test1-data
+
+/badPrivateKeys-data/rolling-backup/*.wallet
+/badPrivateKeys.wallet
+/badPrivateKeys.info

@@ -55,6 +55,7 @@ public class HelpContentsPanel extends JPanel implements Viewable {
     public static final String HELP_CONTENTS_URL = "help_contents.html";
     public static final String HELP_EXPORTING_PRIVATE_KEYS_URL = "help_exportingPrivateKeys.html";
     public static final String HELP_IMPORTING_PRIVATE_KEYS_URL = "help_importingPrivateKeys.html";
+    public static final String HELP_CHECK_PRIVATE_KEYS_URL = "help_checkPrivateKeys.html";
     public static final String HELP_PASSWORD_PROTECTION_URL = "help_passwordProtection.html";
     public static final String HELP_PREFERENCES_URL = "help_preferences.html";
     public static final String HELP_RECEIVING_URL = "help_receivingBitcoin.html";

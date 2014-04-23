@@ -195,6 +195,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     
     private MultiBitWalletBusyAction showImportPrivateKeysAction;
     private MultiBitWalletBusyAction showExportPrivateKeysAction;
+    private MultiBitWalletBusyAction showCheckPrivateKeysAction;
     private MultiBitWalletBusyAction resetTransactionsAction;
  
     /**
@@ -1046,6 +1047,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         toolsMenu.add(menuItem);
 
+        // Check private keys.
+        showCheckPrivateKeysAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.CHECK_PRIVATE_KEYS_ICON_FILE,
+                "showCheckPrivateKeysAction.text", "showCheckPrivateKeysAction.tooltip", "showCheckPrivateKeysAction.mnemonic",
+                View.SHOW_CHECK_PRIVATE_KEYS_VIEW);
+        menuItem = new JMenuItem(showCheckPrivateKeysAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        toolsMenu.add(menuItem);
+
         toolsMenu.addSeparator();
 
         resetTransactionsAction = new MultiBitWalletBusyAction(this.bitcoinController, ImageLoader.RESET_TRANSACTIONS_ICON_FILE,
@@ -1298,6 +1308,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         signMessageAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         showImportPrivateKeysAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         showExportPrivateKeysAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
+        showCheckPrivateKeysAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
         resetTransactionsAction.setEnabled(!this.bitcoinController.getModel().getActivePerWalletModelData().isBusy());
 
         if (this.bitcoinController.getModel().getActiveWallet() == null) {
@@ -1334,6 +1345,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             signMessageAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             showImportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             showExportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
+            showCheckPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             resetTransactionsAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             addPasswordAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
             changePasswordAction.putValue(Action.SHORT_DESCRIPTION, walletIsBusyText);
@@ -1343,6 +1355,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             signMessageAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("signMessageAction.tooltip")));
             showImportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("showImportPrivateKeysAction.tooltip")));
             showExportPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip")));
+            showCheckPrivateKeysAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("showCheckPrivateKeysAction.tooltip")));
             resetTransactionsAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("resetTransactionsAction.tooltip")));
             addPasswordAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("addPasswordAction.tooltip")));
             changePasswordAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem(controller.getLocaliser().getString("changePasswordAction.tooltip")));

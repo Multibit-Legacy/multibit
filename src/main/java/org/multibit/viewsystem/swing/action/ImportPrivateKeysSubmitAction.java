@@ -20,7 +20,6 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypter;
 import com.google.bitcoin.crypto.KeyCrypterException;
-import com.piuk.blockchain.MyWallet;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.*;
@@ -156,68 +155,69 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
                 changeWalletBusyAndImportInBackground(privateKeyAndDateArray,  CharBuffer.wrap(walletPasswordField.getPassword()));
                 importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            } else if (importPrivateKeysPanel.myWalletEncryptedFileChooser.accept(importFile)) {
-                log.debug("MyWallet encrypted wallet backup import.");
-                String importFileContents = PrivateKeysHandler.readFile(importFile);
-
-                String mainPassword = new String(passwordField.getPassword());
-                String secondPassword = new String(passwordField2.getPassword());
-
-                MyWallet wallet = new MyWallet(importFileContents, mainPassword);
-
-                log.debug("Create MyWallet wallet " + wallet);
-
-                boolean needSecondPassword = false;
-                if (wallet.isDoubleEncrypted()) {
-                    if ("".equals(secondPassword)) {
-                        log.debug("Second password missing but is needed");
-                        needSecondPassword = true;
-                        importPrivateKeysPanel.requestSecondPassword();
-                    }
-                }
-
-                log.debug("needSecondPassword = " + needSecondPassword);
-
-                if (!needSecondPassword) {
-                    wallet.setTemporySecondPassword(secondPassword);
-
-                    Wallet bitcoinj = wallet.getBitcoinJWallet();
-                    log.debug("bitcoinj wallet.1 = " + bitcoinj);
-                    
-                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-                    if (bitcoinj != null && bitcoinj.getKeychain() != null) {
-                        log.debug("Found " + bitcoinj.getKeychainSize() + " keys to import.1");
-                        for (ECKey key : bitcoinj.getKeychain()) {
-                            privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
-                        }
-                    } else {
-                        log.debug("Bitcoinj wallet was null or contained no keychain.1");
-                    }
-                    changeWalletBusyAndImportInBackground(privateKeyAndDateArray, CharBuffer.wrap(walletPasswordField.getPassword()));
-                }
-
-            } else if (importPrivateKeysPanel.myWalletPlainFileChooser.accept(importFile)) {
-                log.debug("MyWallet unencrypted wallet backup import.");
-                
-                String importFileContents = PrivateKeysHandler.readFile(importFile);
-                log.debug("Imported file contents length was " + importFileContents.length());
-                
-                MyWallet wallet = new MyWallet(importFileContents);
-                log.debug("MyWallet wallet.2 = " + wallet);
-
-                Wallet bitcoinj = wallet.getBitcoinJWallet();
-                log.debug("bitcoinj wallet.2 = " + bitcoinj);
-                
-                Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-                if (bitcoinj != null && bitcoinj.getKeychain() != null) {
-                    log.debug("Found " + bitcoinj.getKeychainSize() + " keys to import.2");
-                    for (ECKey key : bitcoinj.getKeychain()) {
-                        privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
-                    }
-                } else {
-                    log.debug("Bitcoinj wallet was null or contained no keychain.2");
-                }
-                changeWalletBusyAndImportInBackground(privateKeyAndDateArray, CharBuffer.wrap(walletPasswordField.getPassword()));
+//            }
+//            else if (importPrivateKeysPanel.myWalletEncryptedFileChooser.accept(importFile)) {
+//                log.debug("MyWallet encrypted wallet backup import.");
+//                String importFileContents = PrivateKeysHandler.readFile(importFile);
+//
+//                String mainPassword = new String(passwordField.getPassword());
+//                String secondPassword = new String(passwordField2.getPassword());
+//
+//                MyWallet wallet = new MyWallet(importFileContents, mainPassword);
+//
+//                log.debug("Create MyWallet wallet " + wallet);
+//
+//                boolean needSecondPassword = false;
+//                if (wallet.isDoubleEncrypted()) {
+//                    if ("".equals(secondPassword)) {
+//                        log.debug("Second password missing but is needed");
+//                        needSecondPassword = true;
+//                        importPrivateKeysPanel.requestSecondPassword();
+//                    }
+//                }
+//
+//                log.debug("needSecondPassword = " + needSecondPassword);
+//
+//                if (!needSecondPassword) {
+//                    wallet.setTemporySecondPassword(secondPassword);
+//
+//                    Wallet bitcoinj = wallet.getBitcoinJWallet();
+//                    log.debug("bitcoinj wallet.1 = " + bitcoinj);
+//
+//                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
+//                    if (bitcoinj != null && bitcoinj.getKeychain() != null) {
+//                        log.debug("Found " + bitcoinj.getKeychainSize() + " keys to import.1");
+//                        for (ECKey key : bitcoinj.getKeychain()) {
+//                            privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
+//                        }
+//                    } else {
+//                        log.debug("Bitcoinj wallet was null or contained no keychain.1");
+//                    }
+//                    changeWalletBusyAndImportInBackground(privateKeyAndDateArray, CharBuffer.wrap(walletPasswordField.getPassword()));
+//                }
+//
+//            } else if (importPrivateKeysPanel.myWalletPlainFileChooser.accept(importFile)) {
+//                log.debug("MyWallet unencrypted wallet backup import.");
+//
+//                String importFileContents = PrivateKeysHandler.readFile(importFile);
+//                log.debug("Imported file contents length was " + importFileContents.length());
+//
+//                MyWallet wallet = new MyWallet(importFileContents);
+//                log.debug("MyWallet wallet.2 = " + wallet);
+//
+//                Wallet bitcoinj = wallet.getBitcoinJWallet();
+//                log.debug("bitcoinj wallet.2 = " + bitcoinj);
+//
+//                Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
+//                if (bitcoinj != null && bitcoinj.getKeychain() != null) {
+//                    log.debug("Found " + bitcoinj.getKeychainSize() + " keys to import.2");
+//                    for (ECKey key : bitcoinj.getKeychain()) {
+//                        privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
+//                    }
+//                } else {
+//                    log.debug("Bitcoinj wallet was null or contained no keychain.2");
+//                }
+//                changeWalletBusyAndImportInBackground(privateKeyAndDateArray, CharBuffer.wrap(walletPasswordField.getPassword()));
 
             } else {
                 log.error("The wallet import file was not a recognised type.");
@@ -229,7 +229,6 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                     "importPrivateKeysSubmitAction.privateKeysUnlockFailure", new Object[] { e.getMessage() }));
             importPrivateKeysPanel.setMessageText2(" ");
-            return;
         } finally {
             importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
