@@ -896,20 +896,6 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                                     new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                         }
                     }
-//                    else if (myWalletEncryptedFileChooser.accept(file)) {
-//                        enableImportFilePasswordPanel(true);
-//                        passwordField1.requestFocusInWindow();
-//                    } else if (myWalletPlainFileChooser.accept(file)) {
-//                        // File is not encrypted.
-//                        enableImportFilePasswordPanel(false);
-//                        try {
-//                            readInImportFileAndUpdateDetails();
-//                        } catch (KeyCrypterException e) {
-//                            setMessageText1(controller.getLocaliser().getString(
-//                                    "importPrivateKeysSubmitAction.privateKeysImportFailure",
-//                                    new Object[] { e.getClass().getName() + " " + e.getMessage() }));
-//                        }
-//                    }
                 }
             }
         } finally {
@@ -984,57 +970,6 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                 }
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
-//            else if (myWalletEncryptedFileChooser.accept(file)) {
-//                try {
-//                    String importFileContents = PrivateKeysHandler.readFile(file);
-//
-//                    String mainPassword = new String(passwordField1.getPassword());
-//                    String secondPassword = new String(passwordField2.getPassword());
-//
-//                    MyWallet wallet = new MyWallet(importFileContents, mainPassword);
-//
-//                    boolean needSecondPassword = false;
-//                    if (wallet.isDoubleEncrypted()) {
-//                        if ("".equals(secondPassword)) {
-//                            needSecondPassword = true;
-//                            requestSecondPassword();
-//                        }
-//                    }
-//
-//                    if (!needSecondPassword) {
-//                        wallet.setTemporySecondPassword(secondPassword);
-//
-//                        int numberOfKeys = 0;
-//                        if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
-//                            numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
-//                        }
-//                        numberOfKeysLabel.setText("" + numberOfKeys);
-//
-//                        replayDateLabel.setText(controller.getLocaliser().getString(
-//                                "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
-//
-//                    }
-//                } catch (Exception e) {
-//                    throw new KeyCrypterException("Error Decrypting Wallet");
-//                }
-//            } else if (myWalletPlainFileChooser.accept(file)) {
-//                try {
-//                    String importFileContents = PrivateKeysHandler.readFile(file);
-//
-//                    MyWallet wallet = new MyWallet(importFileContents);
-//
-//                    int numberOfKeys = 0;
-//                    if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
-//                        numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
-//                    }
-//                    numberOfKeysLabel.setText("" + numberOfKeys);
-//
-//                    replayDateLabel.setText(controller.getLocaliser().getString(
-//                            "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
-//                } catch (Exception e) {
-//                    throw new KeyCrypterException("Error Opening Wallet");
-//                }
-//            }
         } finally {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
