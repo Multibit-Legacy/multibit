@@ -64,8 +64,6 @@ public class WalletTest extends TestWithWallet {
     private Address myEncryptedAddress2;
 
     private Wallet encryptedWallet;
-    // A wallet with an initial unencrypted private key and an encrypted private key.
-    private Wallet encryptedMixedWallet;
 
     private static CharSequence PASSWORD1 = "my helicopter contains eels";
     private static CharSequence WRONG_PASSWORD = "nothing noone nobody nowhere";
@@ -86,16 +84,11 @@ public class WalletTest extends TestWithWallet {
         keyCrypter = new KeyCrypterScrypt(scryptParameters);
 
         encryptedWallet = new Wallet(params, keyCrypter);
-        encryptedMixedWallet = new Wallet(params, keyCrypter);
 
         aesKey = keyCrypter.deriveKey(PASSWORD1);
         wrongAesKey = keyCrypter.deriveKey(WRONG_PASSWORD);
         ECKey myEncryptedKey = encryptedWallet.addNewEncryptedKey(keyCrypter, aesKey);
         myEncryptedAddress = myEncryptedKey.toAddress(params);
-
-        encryptedMixedWallet.addKey(new ECKey());
-        ECKey myEncryptedKey2 = encryptedMixedWallet.addNewEncryptedKey(keyCrypter, aesKey);
-        myEncryptedAddress2 = myEncryptedKey2.toAddress(params);
     }
 
     @After
@@ -118,11 +111,6 @@ public class WalletTest extends TestWithWallet {
     @Test
     public void basicSpendingWithEncryptedWallet() throws Exception {
         basicSpendingCommon(encryptedWallet, myEncryptedAddress, new ECKey().toAddress(params), true);
-    }
-
-    @Test
-    public void basicSpendingWithEncryptedMixedWallet() throws Exception {
-        basicSpendingCommon(encryptedMixedWallet, myEncryptedAddress2, new ECKey().toAddress(params), true);
     }
 
     static class TestRiskAnalysis implements RiskAnalysis {
@@ -1285,38 +1273,33 @@ public class WalletTest extends TestWithWallet {
 
     @Test
     public void encryptionDecryptionBasic() throws Exception {
-        encryptionDecryptionBasicCommon(encryptedWallet);
-        encryptionDecryptionBasicCommon(encryptedMixedWallet);
-    }
-
-    private void encryptionDecryptionBasicCommon(Wallet wallet) {
         // Check the wallet is initially of WalletType ENCRYPTED.
-        assertTrue("Wallet is not an encrypted wallet", wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
 
         // Correct password should decrypt first encrypted private key.
-        assertTrue("checkPassword result is wrong with correct password.2", wallet.checkPassword(PASSWORD1));
+        assertTrue("checkPassword result is wrong with correct password.2", encryptedWallet.checkPassword(PASSWORD1));
 
         // Incorrect password should not decrypt first encrypted private key.
-        assertFalse("checkPassword result is wrong with incorrect password.3", wallet.checkPassword(WRONG_PASSWORD));
+        assertFalse("checkPassword result is wrong with incorrect password.3", encryptedWallet.checkPassword(WRONG_PASSWORD));
 
         // Decrypt wallet.
         assertTrue("The keyCrypter is missing but should not be", keyCrypter != null);
-        wallet.decrypt(aesKey);
+        encryptedWallet.decrypt(aesKey);
 
         // Wallet should now be unencrypted.
-        assertTrue("Wallet is not an unencrypted wallet", wallet.getKeyCrypter() == null);
+        assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getKeyCrypter() == null);
 
         // Correct password should not decrypt first encrypted private key as wallet is unencrypted.
-        assertTrue("checkPassword result is wrong with correct password", !wallet.checkPassword(PASSWORD1));
+        assertTrue("checkPassword result is wrong with correct password", !encryptedWallet.checkPassword(PASSWORD1));
 
         // Incorrect password should not decrypt first encrypted private key as wallet is unencrypted.
-        assertTrue("checkPassword result is wrong with incorrect password", !wallet.checkPassword(WRONG_PASSWORD));
+        assertTrue("checkPassword result is wrong with incorrect password", !encryptedWallet.checkPassword(WRONG_PASSWORD));
 
         // Encrypt wallet.
-        wallet.encrypt(keyCrypter, aesKey);
+        encryptedWallet.encrypt(keyCrypter, aesKey);
 
         // Wallet should now be of type WalletType.ENCRYPTED_SCRYPT_AES.
-        assertTrue("Wallet is not an encrypted wallet", wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
+        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
     }
 
     @Test

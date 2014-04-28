@@ -79,8 +79,7 @@ public class CheckPrivateKeysPanel extends JPanel implements Viewable, WalletBus
     mainPanel.setOpaque(false);
     mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-    String[] keys = new String[]{"showExportPrivateKeysPanel.walletPasswordPrompt",
-            "verifyMessagePanel.message.text"};
+    String[] keys = new String[]{"showExportPrivateKeysPanel.walletPasswordPrompt"};
 
     int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this)
             + ExportPrivateKeysPanel.STENT_DELTA;
@@ -383,14 +382,6 @@ public class CheckPrivateKeysPanel extends JPanel implements Viewable, WalletBus
   public void setMessageText2(String message2) {
     if (messageLabel2 != null) {
       messageLabel2.setText(message2);
-    }
-  }
-
-  public String getMessageText2() {
-    if (messageLabel2 != null) {
-      return messageLabel2.getText();
-    } else {
-      return "";
     }
   }
 

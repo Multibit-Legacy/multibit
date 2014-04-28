@@ -15,16 +15,11 @@
  */
 package org.multibit.file;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.util.Date;
-
+import com.google.bitcoin.core.Wallet;
+import com.googlecode.jcsv.CSVStrategy;
+import com.googlecode.jcsv.writer.CSVColumnJoiner;
+import com.googlecode.jcsv.writer.internal.CSVColumnJoinerImpl;
 import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.CreateControllers;
@@ -33,12 +28,11 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.viewsystem.swing.action.ExportTransactionsSubmitAction;
-import org.multibit.file.WalletTableDataEntryConverter;
 
-import com.googlecode.jcsv.CSVStrategy;
-import com.googlecode.jcsv.writer.CSVColumnJoiner;
-import com.googlecode.jcsv.writer.internal.CSVColumnJoinerImpl;
-import com.google.bitcoin.core.Wallet;
+import java.io.*;
+import java.math.BigDecimal;
+import java.util.Date;
+
 
 public class ExportTransactionsSubmitActionTest extends TestCase {
     public static final String WALLETS_TESTDATA_DIRECTORY = "wallets";
