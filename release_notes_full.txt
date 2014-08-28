@@ -1,5 +1,11 @@
 MultiDoge release notes:
 
+28 Aug 2014: 0.1.3
++ Prepare for AuxPoW fork
++ Default font fix
++ Updated checkpoints
++ Translation fixes
+
 15 Mar 2014: 0.1.2
 + Prepare for March 17th fork
 + Update XChange component
