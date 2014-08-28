@@ -69,7 +69,6 @@ public final class ColorAndFontConstants {
         if (fontName.equals("Comic Sans MS"))
         {
             MULTIBIT_DEFAULT_FONT_NAME = fontName;
-            break;
         }
     }
     MULTIBIT_DEFAULT_FONT_STYLE = UIManager.get("Label.font") == null ? 0 : ((Font) UIManager.get("Label.font")).getStyle();
