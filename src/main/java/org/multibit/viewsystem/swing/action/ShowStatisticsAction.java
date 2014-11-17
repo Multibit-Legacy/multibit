@@ -25,16 +25,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.awt.event.ActionEvent;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.WalletTableModel;
-import org.multibit.viewsystem.swing.view.dialogs.SendEmailDialog;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
 /**
@@ -53,12 +50,10 @@ public class ShowStatisticsAction extends AbstractAction {
 
     private Font adjustedFont;
     
-    private SendEmailDialog sendEmailDialog;
-    
     private ShowTransactionsPanel showTransactionsPanel;
     private JTable table;
     private WalletTableModel walletTableModel;
-     private TableRowSorter<TableModel> rowSorter;
+    private TableRowSorter<TableModel> rowSorter;
     
     /**
      * Creates a new {@link ExportTransactionsSubmitAction}.
