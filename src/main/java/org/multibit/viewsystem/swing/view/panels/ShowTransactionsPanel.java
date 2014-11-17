@@ -58,6 +58,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
+import org.multibit.viewsystem.swing.action.ShowStatisticsAction;
+
+
 
 public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
@@ -105,6 +108,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     
     private Action exportTransactionsSubmitAction;
     private MultiBitButton exportTransactionsButton;
+   
+    
+    private Action showStatisticsAction;
+    private MultiBitButton showStatisticsButton;
     
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 1000; // milliseconds
     
@@ -393,11 +400,26 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         buttonPanel.add(exportTransactionsButton, constraints);
+        
+        
+        showStatisticsAction = new ShowStatisticsAction(bitcoinController, mainFrame);
+        showStatisticsButton = new MultiBitButton(showStatisticsAction, controller);
+        showStatisticsButton.setText("Statistics");
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        buttonPanel.add(showStatisticsButton, constraints);
+
 
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 200;
         constraints.weighty = 1;
