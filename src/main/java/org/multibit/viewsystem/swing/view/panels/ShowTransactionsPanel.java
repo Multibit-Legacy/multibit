@@ -50,6 +50,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -165,7 +167,6 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     public JPanel createFilterPanel(){
         JPanel filterPanel = new JPanel();
         filterPanel.setLayout(new GridBagLayout());
-
         GridBagConstraints constraints = new GridBagConstraints();
 
         filterPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
@@ -197,6 +198,21 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
+        ItemListener itemListener = new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                int state = itemEvent.getStateChange();
+                RowFilter<TableModel, Object> rf = null;
+                try {
+                    if(!transactionT.getSelectedItem().equals("Both")){
+                        rf = RowFilter.regexFilter("(?i)" + transactionT.getSelectedItem(), 2);
+                    }
+                } catch (java.util.regex.PatternSyntaxException e) {
+                    return;
+                }
+                rowSorter.setRowFilter(rf);
+            }
+        };
+        transactionT.addItemListener(itemListener);
         filterPanel.add(transactionT, constraints);
         
         transactionPeriod =  new MultiBitLabel("Period (dd/mm/yy)");
