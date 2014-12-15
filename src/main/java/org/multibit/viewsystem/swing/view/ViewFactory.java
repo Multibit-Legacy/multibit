@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.io.IOException;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.exchange.ExchangeController;
@@ -53,7 +54,7 @@ public class ViewFactory {
     viewMap = new EnumMap<View, Viewable>(View.class);
   }
 
-  public Viewable getView(View viewNumber) {
+  public Viewable getView(View viewNumber) throws IOException{
     Viewable viewToReturn = viewMap.get(viewNumber);
 
     if (viewToReturn == null) {
@@ -67,7 +68,7 @@ public class ViewFactory {
     viewMap.put(viewNumber, view);
   }
 
-  private Viewable createView(View viewNumber) {
+  private Viewable createView(View viewNumber) throws IOException{
     Viewable viewToReturn = null;
 
     switch (viewNumber) {
@@ -77,7 +78,7 @@ public class ViewFactory {
         break;
       }
 
-      case WELCOME_VIEW: {
+     case WELCOME_VIEW: {
         viewToReturn = new WelcomePanel(controller, mainFrame);
         break;
       }
@@ -116,7 +117,8 @@ public class ViewFactory {
         viewToReturn = new ResetTransactionsPanel(this.bitcoinController, mainFrame);
         break;
       }
-
+      
+      
       case SHOW_OPEN_URI_DIALOG_VIEW: {
         viewToReturn = new ShowOpenUriDialog(this.bitcoinController, mainFrame);
         break;
@@ -165,12 +167,14 @@ public class ViewFactory {
         viewToReturn = new RemovePasswordPanel(this.bitcoinController, mainFrame);
         break;
       }
-
-      case CHARTS_VIEW: {
+       case CHARTS_VIEW: {
         viewToReturn = new ChartsPanel(this.bitcoinController, mainFrame);
         break;
       }
-
+       
+      case DRAFT_VIEW: {
+        viewToReturn = new DraftsPanel(bitcoinController, mainFrame);
+      }
       default: {
       }
     }

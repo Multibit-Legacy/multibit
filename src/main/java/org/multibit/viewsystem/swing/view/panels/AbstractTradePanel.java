@@ -58,11 +58,17 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import static java.lang.System.out;
 import java.math.BigDecimal;
 import java.text.Collator;
 import java.util.*;
 import java.util.List;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import org.multibit.viewsystem.swing.action.SendDraftAction;
 
 
 /**
@@ -93,7 +99,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 3;
 
     protected MultiBitFrame mainFrame;
-
+    protected SendBitcoinPanel sendBitcoinPanel;
     protected final Controller controller;
     protected final BitcoinController bitcoinController;
 
@@ -115,6 +121,11 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     protected JTable addressesTable;
 
     protected MultiBitTextField addressTextField;
+    protected MultiBitTextField searchTextField;
+    
+    protected JComboBox searchByList;
+    
+    TableRowSorter<TableModel> rowSorter;
 
     protected int selectedAddressRowModel;
 
@@ -149,6 +160,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     protected MultiBitButton copyQRCodeImageButton;
     protected MultiBitButton pasteSwatchButton;
     protected MultiBitButton zoomButton;
+    private MultiBitButton draftButton;
+    private Action draftAction;
     protected JPanel qrCodeButtonPanelStent1;
     protected JPanel qrCodeButtonPanelStent2;
     protected JPanel qrCodeButtonPanelStent3;
@@ -164,7 +177,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     private QRCodeGenerator qrCodeGenerator;
     
     private JScrollPane addressesScrollPane;
-
     /**
      * map that maps one of the key constants in this class to the actual key to
      * use for localisation
@@ -259,7 +271,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         return stringToReturn;
     }
 
-    protected void initUI() {
+    protected void initUI() throws IOException {
         setMinimumSize(new Dimension(550, 220));
         setLayout(new GridBagLayout());
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -296,11 +308,9 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         constraints.weighty = 2.0;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createAddressesPanel(), constraints);
-        
         CurrencyConverter.INSTANCE.updateFormatters();
         updateFiatAmount();
     }
-
     protected void createFormPanelStentsAndForcers(JPanel panel, GridBagConstraints constraints) {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -482,101 +492,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     protected abstract void loadForm();
 
-    protected JPanel createAddressesHeaderPanel() {
-        JPanel addressesHeaderPanel = new JPanel();
-        addressesHeaderPanel.setOpaque(true);
-        addressesHeaderPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
-
-        addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
-        addressesHeaderPanel.setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.01;
-        constraints.weighty = 0.01;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        addressesHeaderPanel.add(MultiBitTitledPanel.createStent(HELP_BUTTON_INDENT), constraints);
-
-        createNewAddressAction = getCreateNewAddressAction();
-        createNewButton = new MultiBitButton(createNewAddressAction, controller);
-        createNewButton.setText(controller.getLocaliser().getString("crudButton.new"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        addressesHeaderPanel.add(createNewButton, constraints);
-
-        int offset;
-        deleteAddressAction = getDeleteAddressAction();
-        if (isReceiveBitcoin()) {
-            // Put in a stent
-            MultiBitButton dummyDeleteButton = new MultiBitButton(deleteAddressAction, controller);
-            JPanel deleteButtonStent = MultiBitTitledPanel.createStent(dummyDeleteButton.getPreferredSize().width, dummyDeleteButton.getPreferredSize().height);
-            offset = 1;
-            constraints.fill = GridBagConstraints.NONE;
-            constraints.gridx = 2;
-            constraints.gridy = 0;
-            constraints.gridwidth = 1;
-            constraints.weightx = 0.1;
-            constraints.weighty = 1;
-            constraints.anchor = GridBagConstraints.LINE_START;
-            addressesHeaderPanel.add(deleteButtonStent, constraints);
-        } else {
-            deleteButton = new MultiBitButton(deleteAddressAction, controller);
-            offset = 1;
-            constraints.fill = GridBagConstraints.NONE;
-            constraints.gridx = 2;
-            constraints.gridy = 0;
-            constraints.gridwidth = 1;
-            constraints.weightx = 0.1;
-            constraints.weighty = 1;
-            constraints.anchor = GridBagConstraints.LINE_START;
-            addressesHeaderPanel.add(deleteButton, constraints);           
-        }
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2 + offset;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        addressesHeaderPanel.add(MultiBitTitledPanel.createStent(HELP_BUTTON_INDENT * 2), constraints);
-
-        titleLabel = new JLabel();
-        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        titleLabel.setText(getLocalisationString(ADDRESSES_TITLE, null));
-        titleLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3 + offset;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        addressesHeaderPanel.add(titleLabel, constraints);
-
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 4;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1000;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        addressesHeaderPanel.add(filler2, constraints);
-
-        return addressesHeaderPanel;
-    }
-
-    protected JPanel createAddressesPanel() {
+    
+    protected JPanel createAddressesPanel() throws IOException {
         JPanel addressPanel = new JPanel();
         addressPanel.setOpaque(true);
         addressPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -595,7 +512,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         addressesTable.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + ShowTransactionsPanel.HEIGHT_DELTA);
 
         // row sorter
-        TableRowSorter<TableModel> rowSorter = new TableRowSorter<TableModel>(addressesTable.getModel());
+        rowSorter = new TableRowSorter<TableModel>(addressesTable.getModel());
         addressesTable.setRowSorter(rowSorter);
 
         // sort by date descending
@@ -683,7 +600,169 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
         return addressPanel;
     }
-    
+    protected JPanel createAddressesHeaderPanel() throws IOException {
+        JPanel addressesHeaderPanel = new JPanel();
+        addressesHeaderPanel.setOpaque(true);
+        addressesHeaderPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
+
+        addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
+        addressesHeaderPanel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.01;
+        constraints.weighty = 0.01;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(MultiBitTitledPanel.createStent(HELP_BUTTON_INDENT), constraints);
+
+        createNewAddressAction = getCreateNewAddressAction();
+        createNewButton = new MultiBitButton(createNewAddressAction, controller);
+        createNewButton.setText(controller.getLocaliser().getString("crudButton.new"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(createNewButton, constraints);
+
+        deleteAddressAction = getDeleteAddressAction();
+        if (isReceiveBitcoin()) {
+            // Put in a stent
+            MultiBitButton dummyDeleteButton = new MultiBitButton(deleteAddressAction, controller);
+            JPanel deleteButtonStent = MultiBitTitledPanel.createStent(dummyDeleteButton.getPreferredSize().width, dummyDeleteButton.getPreferredSize().height);
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.weightx = 0.1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            addressesHeaderPanel.add(deleteButtonStent, constraints);
+        } else {
+            deleteButton = new MultiBitButton(deleteAddressAction, controller);
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.weightx = 0.1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            addressesHeaderPanel.add(deleteButton, constraints);           
+        }
+
+        if (isReceiveBitcoin()) {
+            MultiBitButton dummyDraftButton = new MultiBitButton(deleteAddressAction, controller);
+            JPanel deleteButtonStent = MultiBitTitledPanel.createStent(dummyDraftButton.getPreferredSize().width, dummyDraftButton.getPreferredSize().height);
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 3;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.weightx = 0.1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            addressesHeaderPanel.add(deleteButtonStent, constraints);
+        
+        }
+        else{
+        draftAction = new SendDraftAction(bitcoinController, mainFrame, this, addressTextField, labelTextArea, amountBTCTextField);
+        draftButton = new MultiBitButton(draftAction, controller);
+        draftButton.setText("Draft");
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(draftButton, constraints);}
+        
+         constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(MultiBitTitledPanel.createStent(HELP_BUTTON_INDENT * 2), constraints);
+        
+        titleLabel = new JLabel();
+        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
+        titleLabel.setText(getLocalisationString(ADDRESSES_TITLE, null));
+        titleLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
+
+        
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 4;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(titleLabel, constraints);
+        
+        String[] searchStrings = { "   Find By   ", "Label","Address"};
+        searchByList = new JComboBox(searchStrings);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 5 ;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(searchByList, constraints);
+       
+        searchTextField = new MultiBitTextField("", 15, controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 6;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        DocumentListener documentListener = new DocumentListener() {
+      public void changedUpdate(DocumentEvent documentEvent) {
+        search(documentEvent);
+      }
+      public void insertUpdate(DocumentEvent documentEvent) {
+        search(documentEvent);
+      }
+      public void removeUpdate(DocumentEvent documentEvent) {
+        search(documentEvent);
+      }
+      private void search(DocumentEvent documentEvent) {
+          Document source = documentEvent.getDocument();
+      String exp = source.toString();
+      RowFilter<TableModel, Object> rf = null;
+        try {
+      
+            rf = RowFilter.regexFilter("(?i)" + searchTextField.getText(), searchByList.getSelectedIndex()-1);
+    } catch (java.util.regex.PatternSyntaxException e) {
+      return;
+    }
+    rowSorter.setRowFilter(rf);
+      }};
+        searchTextField.getDocument().addDocumentListener(documentListener);
+        addressesHeaderPanel.add(searchTextField, constraints);
+
+       
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 4;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 100;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(filler2, constraints);
+
+        return addressesHeaderPanel;
+    }
+
     private void setupScrollPane() {
         addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         addressesScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
@@ -943,6 +1022,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         qrCodeLabel.validate();
         upperPanel.validate();
         thisAbstractTradePanel.repaint();
+        
     }
 
     protected void createQRCodeButtonPanel(JPanel panel, GridBagConstraints constraints) {
@@ -1227,7 +1307,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         setupScrollPane();
         getAddressesTableModel().fireTableDataChanged();
         selectRows();
-
         // Disable any new changes if another process has changed the wallet.
         if (this.bitcoinController.getModel().getActivePerWalletModelData() != null
                 && this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
@@ -1314,7 +1393,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 amountUnitFiatLabel.setVisible(false);
             }
         }
-        updateQRCodePanel();
+       updateQRCodePanel();
         displaySidePanel();
     }
 
@@ -1869,7 +1948,6 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         }
        return amount;
     }
-
     @Override
     public String getAmountFiat() {
        if (amountFiatTextField != null) {
