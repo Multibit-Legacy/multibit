@@ -51,6 +51,8 @@ public enum View {
     CHANGE_PASSWORD_VIEW,
     REMOVE_PASSWORD_VIEW,
     CHARTS_VIEW,
+    STATS_VIEW,
+    DRAFT_VIEW,
     VERIFY_MESSAGE_VIEW,
     SIGN_MESSAGE_VIEW;
 
@@ -104,10 +106,11 @@ public enum View {
             case 20 : return CHANGE_PASSWORD_VIEW;
             case 21 : return REMOVE_PASSWORD_VIEW;
             case 22 : return CHARTS_VIEW;
-            case 23 : return SIGN_MESSAGE_VIEW;
-            case 24 : return VERIFY_MESSAGE_VIEW;
+            case 23 : return DRAFT_VIEW;
+            case 24 : return SIGN_MESSAGE_VIEW;
+            case 25 : return VERIFY_MESSAGE_VIEW;
                 
-            case 3 : case 8 : case 9 : case 10 : case 12 :
+            case 8 : case 9 : case 10 : case 12 :
                 return TRANSACTIONS_VIEW;
                 
             default : return null;
@@ -145,8 +148,10 @@ public enum View {
             case CHANGE_PASSWORD_VIEW : return 20;
             case REMOVE_PASSWORD_VIEW : return 21;
             case CHARTS_VIEW : return 22;
-            case SIGN_MESSAGE_VIEW : return 23;
-            case VERIFY_MESSAGE_VIEW : return 24;
+            case DRAFT_VIEW : return 23;
+            case SIGN_MESSAGE_VIEW : return 24;
+            case VERIFY_MESSAGE_VIEW : return 25;
+            
 
             default : return 0;
         }

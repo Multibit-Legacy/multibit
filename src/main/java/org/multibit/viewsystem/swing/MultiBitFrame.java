@@ -66,9 +66,11 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Timer;
+import java.util.logging.Level;
 
 
 /*
@@ -212,7 +214,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static FireDataChangedTimerTask fireDataChangedTimerTask;
 
     @SuppressWarnings("deprecation")
-    public MultiBitFrame(CoreController coreController, BitcoinController bitcoinController, ExchangeController exchangeController, GenericApplication application, View initialView) {
+    public MultiBitFrame(CoreController coreController, BitcoinController bitcoinController, ExchangeController exchangeController, GenericApplication application, View initialView) throws IOException{
         this.coreController = coreController;
         this.bitcoinController = bitcoinController;
         this.exchangeController = exchangeController;
@@ -327,7 +329,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setLocation((int) (width * startHorizontalPositionRatio), (int) (height * startVerticalPositionRatio));
     }
 
-    private void initUI(View initialView) {
+    private void initUI(View initialView) throws IOException {
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridBagLayout());
         contentPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -903,6 +905,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
+        
+        // View Drafts action.
+        MultiBitAction showDraftsAction = new MultiBitAction(controller, "drafts.png",
+                "Drafts", "View drafts", "draftsPanelAction.mnemonic",
+                View.DRAFT_VIEW);
+        showDraftsAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipTextForMenuItem("View Drafts"));
+        menuItem = new JMenuItem(showDraftsAction);
+        menuItem.setText("Drafts");
+        ImageIcon image = new ImageIcon("drafts.png");
+        menuItem.setIcon(image);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        viewMenu.add(menuItem);
 
         // Show messages action.
         MultiBitAction showMessagesAction = new MultiBitAction(controller, ImageLoader.MESSAGES_ICON_FILE, "messagesPanel.text",
@@ -1084,18 +1099,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void recreateAllViews(final boolean initUI, final View initialView) {
         // if initUI set, do an invokeLater or else it can sometimes leave the menu items in the Mac header row.
         if (EventQueue.isDispatchThread() && !initUI) {
-            recreateAllViewsOnSwingThread(initUI, initialView);
+            try {
+                recreateAllViewsOnSwingThread(initUI, initialView);
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(MultiBitFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    recreateAllViewsOnSwingThread(initUI, initialView);
+                    try {
+                        recreateAllViewsOnSwingThread(initUI, initialView);
+                    } catch (IOException ex) {
+                        java.util.logging.Logger.getLogger(MultiBitFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
         }
     }
 
-    private void recreateAllViewsOnSwingThread(final boolean initUI, View initialView) {
+    private void recreateAllViewsOnSwingThread(final boolean initUI, View initialView) throws IOException {
         ColorAndFontConstants.init();
 
         // Close down current view.
@@ -1179,40 +1202,44 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     @Override
     public void displayView(View viewToDisplay) {
-        log.debug("Displaying view '" + viewToDisplay + "'");
-        // Open wallet view obselete - show transactions
-        if (View.OPEN_WALLET_VIEW == viewToDisplay) {
-            viewToDisplay = View.TRANSACTIONS_VIEW;
-        }
-        // Create Bulk addreses obselete - show transactions
-        if (View.CREATE_BULK_ADDRESSES_VIEW == viewToDisplay) {
-            viewToDisplay = View.TRANSACTIONS_VIEW;
-        }
-
-        // Show wallets view always on display.
-        if (View.YOUR_WALLETS_VIEW == viewToDisplay) {
-            walletsView.displayView(DisplayHint.COMPLETE_REDRAW);
-            return;
-        }
-
-        controller.setCurrentView(viewToDisplay);
-
-        final Viewable nextViewFinal = viewFactory.getView(viewToDisplay);
-
-        if (nextViewFinal == null) {
-            log.debug("Cannot display view " + viewToDisplay);
-            return;
-        }
-
-        if (EventQueue.isDispatchThread()) {
-            displayViewOnSwingThread(nextViewFinal);
-        } else {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    displayViewOnSwingThread(nextViewFinal);
-                }
-            });
+        try {
+            log.debug("Displaying view '" + viewToDisplay + "'");
+            // Open wallet view obselete - show transactions
+            if (View.OPEN_WALLET_VIEW == viewToDisplay) {
+                viewToDisplay = View.TRANSACTIONS_VIEW;
+            }
+            // Create Bulk addreses obselete - show transactions
+            if (View.CREATE_BULK_ADDRESSES_VIEW == viewToDisplay) {
+                viewToDisplay = View.TRANSACTIONS_VIEW;
+            }
+            
+            // Show wallets view always on display.
+            if (View.YOUR_WALLETS_VIEW == viewToDisplay) {
+                walletsView.displayView(DisplayHint.COMPLETE_REDRAW);
+                return;
+            }
+            
+            controller.setCurrentView(viewToDisplay);
+            
+            final Viewable nextViewFinal = viewFactory.getView(viewToDisplay);
+            
+            if (nextViewFinal == null) {
+                log.debug("Cannot display view " + viewToDisplay);
+                return;
+            }
+            
+            if (EventQueue.isDispatchThread()) {
+                displayViewOnSwingThread(nextViewFinal);
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        displayViewOnSwingThread(nextViewFinal);
+                    }
+                });
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(MultiBitFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -1260,24 +1287,30 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     @Override
     public void navigateAwayFromView(View viewToNavigateAwayFrom) {
-        if (View.YOUR_WALLETS_VIEW == viewToNavigateAwayFrom) {
-            // Do nothing
-            return;
-        }
-
-        final Viewable viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
-
-        if (viewToNavigateAwayFromFinal != null) {
-            if (EventQueue.isDispatchThread()) {
-                viewToNavigateAwayFromFinal.navigateAwayFromView();
-            } else {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        viewToNavigateAwayFromFinal.navigateAwayFromView();
-                    }
-                });
+        try {
+            if (View.YOUR_WALLETS_VIEW == viewToNavigateAwayFrom) {
+                // Do nothing
+                return;
             }
+            
+            final Viewable viewToNavigateAwayFromFinal;
+            viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
+            
+            
+            if (viewToNavigateAwayFromFinal != null) {
+                if (EventQueue.isDispatchThread()) {
+                    viewToNavigateAwayFromFinal.navigateAwayFromView();
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            viewToNavigateAwayFromFinal.navigateAwayFromView();
+                        }
+                    });
+                }
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(MultiBitFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -1426,12 +1459,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void fireDataChangedUpdateNow(final DisplayHint displayHint) {
         if (EventQueue.isDispatchThread()) {
-            fireDataChangedOnSwingThread(displayHint);   
+            try {   
+                fireDataChangedOnSwingThread(displayHint);
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(MultiBitFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    fireDataChangedOnSwingThread(displayHint); 
+                    try { 
+                        fireDataChangedOnSwingThread(displayHint);
+                    } catch (IOException ex) {
+                        java.util.logging.Logger.getLogger(MultiBitFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
         }
@@ -1451,7 +1492,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Actually update the UI.
      * (Called back from the FireDataChangedTimerTask).
      */
-    private void fireDataChangedOnSwingThread(DisplayHint displayHint) {
+    private void fireDataChangedOnSwingThread(DisplayHint displayHint) throws IOException {
         updateHeader();
 
         // Update the password related menu items.

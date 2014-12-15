@@ -59,6 +59,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
     regularTooltipText = controller.getLocaliser().getString("sendBitcoinAction.tooltip");
     pleaseWaitTooltipText = controller.getLocaliser().getString("sendBitcoinAction.pleaseWait.tooltip");
+    
   }
 
   public static void setEnableSendButton(boolean enableSendButton) {
@@ -218,7 +219,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     PasteAddressAction pasteAddressAction = new PasteAddressAction(super.bitcoinController, this, pasteIcon);
     pasteAddressButton = new MultiBitButton(pasteAddressAction, controller);
     constraints.fill = GridBagConstraints.NONE;
-    constraints.gridx = 8;
+    constraints.gridx = 7;
     constraints.gridy = 1;
     constraints.weightx = 10.0;
     constraints.weighty = 0.2;
@@ -395,7 +396,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
       return "";
     }
   }
-
+  public void changeValue(String ad, String la, String am){
+      addressTextField.setText(ad);
+      labelTextArea.setText(la);
+      amountBTCTextField.setText(am);
+  }
+  
   @Override
   public void loadForm() {
     // get the current address, label and amount from the model
@@ -451,8 +457,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
   }
 
   public void setAddressBookDataByRow(WalletAddressBookData addressBookData) {
-    addressTextField.setText(addressBookData.getAddress());
+    addressTextField.setText(DELETE_TOOLTIP);
     addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRowModel, false);
+    
   }
 
   @Override
