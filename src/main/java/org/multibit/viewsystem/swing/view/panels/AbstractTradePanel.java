@@ -120,10 +120,10 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
 
     protected JTable addressesTable;
 
-    protected MultiBitTextField addressTextField;
-    protected MultiBitTextField searchTextField;
+   protected MultiBitTextField addressTextField;
+   // protected MultiBitTextField searchTextField;
     
-    protected JComboBox searchByList;
+   // protected JComboBox searchByList;
     
     TableRowSorter<TableModel> rowSorter;
 
@@ -703,7 +703,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(titleLabel, constraints);
-        
+        /*
         String[] searchStrings = { "   Find By   ", "Label","Address"};
         searchByList = new JComboBox(searchStrings);
         constraints.fill = GridBagConstraints.NONE;
@@ -747,7 +747,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
       }};
         searchTextField.getDocument().addDocumentListener(documentListener);
         addressesHeaderPanel.add(searchTextField, constraints);
-
+*/
        
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
@@ -761,7 +761,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         addressesHeaderPanel.add(filler2, constraints);
 
         return addressesHeaderPanel;
-    }
+    } 
 
     private void setupScrollPane() {
         addressesScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
