@@ -22,14 +22,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multidoge</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
     <name>MultiDoge</name>
     <description>A Java Swing client for Dogecoin</description>
     <url>https://multidoge.org</url>
-    <!-- Use "mvn clean package" to build the code packaged into a basic multidoge.jar 
-  		Use "mvn clean verify" before submitting a patch Use "mvn clean install" 
-  		to build the executable jar, installers and Mac DMG Use "mvn site:site" to 
-  		generate a complete website under target/site Use "mvn site:run" to run a 
+    <!-- Use "mvn clean package" to build the code packaged into a basic multidoge.jar
+  		Use "mvn clean verify" before submitting a patch Use "mvn clean install"
+  		to build the executable jar, installers and Mac DMG Use "mvn site:site" to
+  		generate a complete website under target/site Use "mvn site:run" to run a
   		local webserver localhost:8080/index.html -->
     <licenses>
         <license>
@@ -204,7 +204,7 @@
                 </dependencies>
             </plugin>
 
-            <!-- Produce staging directory with all resources used in creation of 
+            <!-- Produce staging directory with all resources used in creation of
         				the linux IzPack installer and in creation of the Mac application bundle -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -261,7 +261,7 @@
                         </configuration>
                     </execution>
 
-                    <!-- Produce staging directory with all resources used in creation of 
+                    <!-- Produce staging directory with all resources used in creation of
               						the windows IzPack installer -->
                     <execution>
                         <id>copy-resources-to-staging-windows</id>
@@ -315,9 +315,9 @@
                     </execution>
 
                     <!-- produce a Mac application bundle -->
-                    <!-- this plugin copies a skeleton App and then copies in the resources 
+                    <!-- this plugin copies a skeleton App and then copies in the resources
               						from the linux staging directory -->
-                    <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ 
+                    <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/
               						but cannot get extra resources into my Java directory in the app -->
                     <execution>
                         <id>create-skeleton-Mac-application-bundle</id>
@@ -483,7 +483,7 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                    <!-- Produce a Win32 exe from the multidoge-exe.jar (no Maven plugin 
+                    <!-- Produce a Win32 exe from the multidoge-exe.jar (no Maven plugin
               						for JSmooth so drop down to ant) -->
                     <execution>
                         <id>jsmooth-installer2exe-exe</id>
@@ -505,7 +505,7 @@
                         </goals>
                     </execution>
 
-                    <!-- Produce a Win32 exe from the windows IzPack installer (no Maven 
+                    <!-- Produce a Win32 exe from the windows IzPack installer (no Maven
               						plugin for JSmooth so drop down to ant) -->
                     <execution>
                         <id>jsmooth-installer2exe-installer</id>
@@ -609,7 +609,7 @@
                     <urn>org.joda:joda-money:0.8:jar:null:compile:29e5cdf8cb4af8fffb0b013b1dc63d493cb02115</urn>
                     <urn>org.simplericity.macify:macify:1.6:jar:null:compile:969fedd5d187e92bec18cf4a88cf82fa9668c8d3</urn>
                     <urn>org.slf4j:slf4j-api:1.6.2:jar:null:compile:8619e95939167fb37245b5670135e4feb0ec7d50</urn>
-                  
+
                     <!-- A check for the rules themselves -->
                     <urn>uk.co.froot.maven.enforcer:digest-enforcer-rules:0.0.1:jar:null:runtime:16a9e04f3fe4bb143c42782d07d5faf65b32106f</urn>
                   </urns>

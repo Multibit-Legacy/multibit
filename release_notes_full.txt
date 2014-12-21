@@ -1,5 +1,9 @@
 MultiDoge release notes:
 
+21 Dec 2014: 0.1.4
++ Enable sending coins to MultiSig addresses
++ Updated checkpoints for faster initial sync
+
 28 Aug 2014: 0.1.3
 + Prepare for AuxPoW fork
 + Default font fix
@@ -62,7 +66,7 @@ Changes:
 
 22 Jul 2013 Version 0.5.13
 Changes:
-#190. The backing up of wallets has been improved. 
+#190. The backing up of wallets has been improved.
       There is now a data directory for each wallet.
 
 #111. Failing test fixed. Also fixed functional tests.
@@ -197,7 +201,7 @@ Bug fixes:
 
 Please note: this version does NOT include a full fix for the zero-confirmation vulnerability
 announced by Retep on 10 Jan 2013. (This is still being worked on).
- 
+
 Improvements
 + Improved status notifications for transactions
 + Update to bitcoinj 0.6.1
@@ -244,7 +248,7 @@ Bug fixes
 25 Oct 2012 Version 0.5.5beta
 + New encrypted wallet format - NOT backwards compatible
 + Fix for bug where encrypted wallets could be opened as unencrypted
-+ Arabic translation 100% 
++ Arabic translation 100%
 + Automatic backup of private keys on wallet encryption/ change password/ create new private keys.
 + Forward port of everything from 0.4.13
 + Update to bitcoinj version 0.6
@@ -393,7 +397,7 @@ Enhancements:
 +  Added currency ticker with support for MtGox exchange
 +  Address books are now sorted and current row moves-as-you-type
 +  Welcome screen added : available in de, en, es, nl.
-+  From the transactions details dialog, the user can open transaction details 
++  From the transactions details dialog, the user can open transaction details
    in blockchain.info or blockexplorer.com in their browser
 +  Can now specify a date from which to reset the blockchain and transactions
 
@@ -498,7 +502,7 @@ Enhancements
 Bug fixes
 +  Fixed issue #3 - Zero confirmation transactions not confirming.   Added 'Reset transactions and blockchain' screen.
 
- 
+
 04 Dec 2011.   Version 0.2.0beta3
 Enhancements
 +  Added Linux shortcuts
@@ -507,7 +511,7 @@ Enhancements
 Bug fixes
 +  Fixed issue #6 - Windows installer cannot install into C:/Program Files.
 
-     
+
 11 Nov 2011.   Version 0.2.0beta2
 Enhancements
 +  German added.
@@ -529,7 +533,7 @@ Bug fixes
 13 Oct 2011.  Version 0.2.0beta1
 Enhancements
 +  More language work done - English, Russian, Spanish, Swedish complete.
-   French, Italian, Norwegian coming along nicely.  
+   French, Italian, Norwegian coming along nicely.
    Improved language picker in preferences screen.
 +  Installers for Windows, Linux and DMG file for Mac.
 +  Copy and paste added to address field.
@@ -538,7 +542,7 @@ Enhancements
 +  Added 'singleConnectionNode' option into multibit.properties.
 +  Various user interface tidy ups.
 
-  
+
 12 Sep 2011.  Version 0.1.3
 Enhancements
 +  Added QRcode support, including drag and drop.
@@ -560,16 +564,16 @@ Enhancements:
 +  Added log directory with console log and log4j debug log.
 +  Added lib directory to tidy up runtime environment.
 +  There is now a project_plan.txt describing planned future development.
-	
+
 Bug fixes
 +  Copy address in receive bitcoin cleared label bug fixed.
 +  Not connecting to testnet when multibit.properties setting testOrProductionNetwork = test fixed.
 
-	
+
 4 Aug 2011.  Version 0.1.1
 Initial working version with:
 +  Send and receive bitcoins.
-+  Address book.  
++  Address book.
 +  English and Spanish translation with ability to switch languages in a preferences setting.
 
 
