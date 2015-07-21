@@ -8,7 +8,7 @@ MultiBit relies on the following technologies:
 with Maven then [download it first](http://maven.apache.org) and follow their installation instructions.
 * [ZXing ("Zebra Crossing")](https://code.google.com/p/zxing/) for QR codes
 * [Bitcoinj](https://code.google.com/p/bitcoinj/) for access to the Bitcoin network
-* IzPack for creating installers for Windows, Mac, Linux
+* Install4j for creating installers for Windows, Mac, Linux
 * [Bitcoinj Enforcer Rules](https://github.com/gary-rowe/BitcoinjEnforcerRules) to prevent dependency chain attacks
 * [XChange](https://github.com/timmolter/XChange) for access to several Bitcoin exchanges
 
@@ -70,18 +70,11 @@ maven clean install
 After some processing, you will have the following artifacts in the target directory:
 
 * an executable jar = multibit-exe.jar
-* a Mac application bundle = MultiBit.app
-* a Mac DMG file = multibit-x.y.z.dmg
-* an installer for Windows = multibit-x.y.z-windows.exe
-* an installer for Linux = multibit-x.y.z-linux.jar
+
+Use the Install4j installer in the multibit-installers project to create your Mac/ Win/ Linux installers.
 
 To run MultiBit from these artifacts you can follow the instructions [provided on the main MultiBit
 website](https://multibit.org/help.html)
-
-### MultiBit contains cut down JREs so is a large clone
-
-The MultiBit installers contain cut down JREs so the project clone is quite large.
-(100 to 200 MB).
 
 ### Custom configuration
 
@@ -90,12 +83,5 @@ is discussed in more detail in [configuration.md](configuration.md)
 
 ### Contributing
 
-MultiBit is a very active project and if you would like to contribute please feel free to get in touch using [jim@multibit.org](mailto:jim@multibit.org).
-We are particularly looking for developers with the following skills to contribute:
-
-* Experienced Java programmers
-* Web designers [for the website](https://github.com/jim618/multibit-website)
-* Translators using the [Crowdin site](http://translate.multibit.org/)
-* Beta testers for checking the latest pre-release
-
+MultiBit is now in maintenance mode as it has largely been replaced by MultiBit HD.
 All contributors must be OK with releasing their work under the MIT license.
