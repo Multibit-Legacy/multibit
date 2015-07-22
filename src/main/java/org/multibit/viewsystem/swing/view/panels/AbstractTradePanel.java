@@ -1228,64 +1228,31 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         getAddressesTableModel().fireTableDataChanged();
         selectRows();
 
-        // Disable any new changes if another process has changed the wallet.
-        if (this.bitcoinController.getModel().getActivePerWalletModelData() != null
-                && this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-            // files have been changed by another process - disallow edits
-            mainFrame.setUpdatesStoppedTooltip(labelTextArea);
-            labelTextArea.setEditable(false);
-            labelTextArea.setEnabled(false);
-            mainFrame.setUpdatesStoppedTooltip(amountBTCTextField);
-            amountBTCTextField.setEditable(false);
-            amountBTCTextField.setEnabled(false);
-            if (amountFiatTextField != null) {
-                amountFiatTextField.setEditable(false);
-                amountFiatTextField.setEnabled(false);
-            }
-            
-            if (createNewButton != null) {
-                createNewButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(createNewButton);
-            }
-            if (deleteButton != null) {
-                deleteButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(deleteButton);
-            }
-            if (pasteSwatchButton != null) {
-                pasteSwatchButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(pasteSwatchButton);
-            }
-        } else {
-            labelTextArea.setToolTipText(null);
-            labelTextArea.setEditable(true);
-            labelTextArea.setEnabled(true);
-            amountBTCTextField.setToolTipText(null);
-            amountBTCTextField.setEditable(true);
-            amountBTCTextField.setEnabled(true);
-            if (amountFiatTextField != null) {
-                amountFiatTextField.setToolTipText(null);
-                amountFiatTextField.setEditable(true);
-                amountFiatTextField.setEnabled(true);
-            }
-            if (createNewButton != null) {
-                createNewButton.setEnabled(true);
-                createNewButton.setToolTipText(HelpContentsPanel.createTooltipText(getLocalisationString(CREATE_NEW_TOOLTIP, null)));
-            }
-            if (deleteButton != null) {
-                checkDeleteSendingEnabled();
-//                boolean deleteEnable = false;
-//                if (addressesTableModel != null) {
-//                    deleteEnable = addressesTableModel.getRowCount() > 0;
-//                }
-//                deleteButton.setEnabled(deleteEnable);
-                deleteButton.setToolTipText(HelpContentsPanel.createTooltipText(getLocalisationString(DELETE_TOOLTIP, null)));
-            }
-            if (pasteSwatchButton != null) {
-                pasteSwatchButton.setEnabled(true);
-                pasteSwatchButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("pasteSwatchAction.tooltip")));
-            }
+        labelTextArea.setToolTipText(null);
+        labelTextArea.setEditable(true);
+        labelTextArea.setEnabled(true);
+        amountBTCTextField.setToolTipText(null);
+        amountBTCTextField.setEditable(true);
+        amountBTCTextField.setEnabled(true);
+        if (amountFiatTextField != null) {
+            amountFiatTextField.setToolTipText(null);
+            amountFiatTextField.setEditable(true);
+            amountFiatTextField.setEnabled(true);
         }
-        
+        if (createNewButton != null) {
+            createNewButton.setEnabled(true);
+            createNewButton.setToolTipText(HelpContentsPanel.createTooltipText(getLocalisationString(CREATE_NEW_TOOLTIP, null)));
+        }
+        if (deleteButton != null) {
+            checkDeleteSendingEnabled();
+
+            deleteButton.setToolTipText(HelpContentsPanel.createTooltipText(getLocalisationString(DELETE_TOOLTIP, null)));
+        }
+        if (pasteSwatchButton != null) {
+            pasteSwatchButton.setEnabled(true);
+            pasteSwatchButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("pasteSwatchAction.tooltip")));
+        }
+
         if (CurrencyConverter.INSTANCE.isShowingFiat() && CurrencyConverter.INSTANCE.getRate() != null) {
             if (amountFiatTextField != null) {
                 amountFiatTextField.setVisible(true);
@@ -1592,134 +1559,122 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     public boolean processDecodedString(String decodedString, ImageIcon icon) {
         // check to see if the wallet files have changed
         WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
+        // decode the string to an WalletAddressBookData
 
-        if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire
-            // data changed
-            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+        // Early MultiBit versions did not URL encode the label hence may
+        // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
+        // i.e be lenient
+        String uriString = decodedString.replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
+        BitcoinURI bitcoinURI;
+        try {
+            bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
+        } catch (BitcoinURIParseException e) {
+            Message message = new Message(e.getClass().getName() + " " + e.getMessage());
+            MessageManager.INSTANCE.addMessage(message);
             return false;
-        } else {
-            // decode the string to an WalletAddressBookData
-            // TODO Consider handling the possible runtime exception at a
-            // suitable level for recovery
+        }
+        log.debug("AbstractTradePanel - ping 1");
+        Address address = bitcoinURI.getAddress();
+        log.debug("AbstractTradePanel - ping 2");
+        String addressString = address.toString();
+        log.debug("AbstractTradePanel - ping 3");
+        String amountString = "";
+        String amountStringLocalised = "";
+        if (amountBTCTextField != null) {
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
 
-            // Early MultiBit versions did not URL encode the label hence may
-            // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
-            // i.e be lenient
-            String uriString = decodedString.replace(" ", BitcoinController.ENCODED_SPACE_CHARACTER);
-            BitcoinURI bitcoinURI;
-            try {
-                bitcoinURI = new BitcoinURI(this.bitcoinController.getModel().getNetworkParameters(), uriString);
-            } catch (BitcoinURIParseException e) {
-                Message message = new Message(e.getClass().getName() +  " " + e.getMessage());
-                MessageManager.INSTANCE.addMessage(message);
-                return false;
-            }
-            log.debug("AbstractTradePanel - ping 1");
-            Address address = bitcoinURI.getAddress();
-            log.debug("AbstractTradePanel - ping 2");
-            String addressString = address.toString();
-            log.debug("AbstractTradePanel - ping 3");
-            String amountString = "";
-            String amountStringLocalised = "";
-            if (amountBTCTextField != null) {
-                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
-                
-                if (converterResult.isBtcMoneyValid()) {
-                    parsedAmountBTC = converterResult.getBtcMoney();
-                    amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
-                    amountStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
-                } else {
-                    parsedAmountBTC = null;
-                    if (notificationLabel != null) {
-                        notificationLabel.setText(converterResult.getBtcMessage());
-                    }
-                }
-            }
-            if (bitcoinURI.getAmount() != null) {
-                amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(bitcoinURI.getAmount(), false, false);
-                parsedAmountBTC = Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinURI.getAmount()));
+            if (converterResult.isBtcMoneyValid()) {
+                parsedAmountBTC = converterResult.getBtcMoney();
+                amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
                 amountStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
-            }
-            log.debug("AbstractTradePanel - ping 4");
-            String decodedLabel = "";
-            try {
-                if (bitcoinURI.getLabel() != null) {
-                    decodedLabel = java.net.URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
+            } else {
+                parsedAmountBTC = null;
+                if (notificationLabel != null) {
+                    notificationLabel.setText(converterResult.getBtcMessage());
                 }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
             }
+        }
+        if (bitcoinURI.getAmount() != null) {
+            amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(bitcoinURI.getAmount(), false, false);
+            parsedAmountBTC = Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinURI.getAmount()));
+            amountStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
+        }
+        log.debug("AbstractTradePanel - ping 4");
+        String decodedLabel = "";
+        try {
+            if (bitcoinURI.getLabel() != null) {
+                decodedLabel = java.net.URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
-            log.debug("AbstractTradePanel#processDecodedString addressString = " + addressString + ", amountString = " + amountString
-                    + ", label = " + decodedLabel);
-            log.debug("AbstractTradePanel - ping 5");
+        log.debug("AbstractTradePanel#processDecodedString addressString = " + addressString + ", amountString = " + amountString
+                + ", label = " + decodedLabel);
+        log.debug("AbstractTradePanel - ping 5");
 
-            WalletAddressBookData addressBookData = new WalletAddressBookData(decodedLabel, addressString);
-            log.debug("AbstractTradePanel - ping 6");
-            // see if the address is already in the address book
-            // see if the current address is on the table and
-            // select it
-            int rowToSelectModel = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
+        WalletAddressBookData addressBookData = new WalletAddressBookData(decodedLabel, addressString);
+        log.debug("AbstractTradePanel - ping 6");
+        // see if the address is already in the address book
+        // see if the current address is on the table and
+        // select it
+        int rowToSelectModel = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
+        if (rowToSelectModel >= 0) {
+            addressesTableModel.setAddressBookDataByRow(addressBookData, rowToSelectModel, false);
+            selectedAddressRowModel = rowToSelectModel;
+
+            selectRowInTableFromModelRow(rowToSelectModel);
+        } else {
+            // add a new row to the table
+            this.bitcoinController.getModel().getActiveWalletWalletInfo().addSendingAddress(addressBookData);
+            this.bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
+
+            addressesTableModel.fireTableDataChanged();
+
+            // select new row
+            rowToSelectModel = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
             if (rowToSelectModel >= 0) {
-                addressesTableModel.setAddressBookDataByRow(addressBookData, rowToSelectModel, false);
                 selectedAddressRowModel = rowToSelectModel;
 
                 selectRowInTableFromModelRow(rowToSelectModel);
-            } else {
-                // add a new row to the table
-                this.bitcoinController.getModel().getActiveWalletWalletInfo().addSendingAddress(addressBookData);
-                this.bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
-
-                addressesTableModel.fireTableDataChanged();
-
-                // select new row
-                rowToSelectModel = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
-                if (rowToSelectModel >= 0) {
-                    selectedAddressRowModel = rowToSelectModel;
-
-                    selectRowInTableFromModelRow(rowToSelectModel);
-                }
             }
-            addressesTable.invalidate();
-            addressesTable.validate();
-            addressesTable.repaint();
-            mainFrame.invalidate();
-            mainFrame.validate();
-            mainFrame.repaint();
-
-            log.debug("AbstractTradePanel - ping 7");
-            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, addressString);
-            log.debug("AbstractTradePanel - ping 8");
-            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_LABEL, decodedLabel);
-            log.debug("AbstractTradePanel - ping 9");
-
-            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_AMOUNT, amountString);
-            log.debug("AbstractTradePanel - ping 10");
-            addressTextField.setText(addressString);
-            log.debug("AbstractTradePanel - ping 11");
-            amountBTCTextField.setText(amountStringLocalised);
-            log.debug("AbstractTradePanel - ping 12");
-            labelTextArea.setText(decodedLabel);
-            log.debug("AbstractTradePanel - ping 13");
-            updateFiatAmount();
-            log.debug("AbstractTradePanel - ping 14");
-            Message message = new Message("");
-            MessageManager.INSTANCE.addMessage(message);
-
-            if (icon != null) {
-                qrCodeLabel.setIcon(icon);
-                setDragLabelTextAndTooltip();
-            } else {
-                displayQRCode(addressString, amountString, decodedLabel);
-            }
-            
-            checkDeleteSendingEnabled();
-
-            return true;
         }
+        addressesTable.invalidate();
+        addressesTable.validate();
+        addressesTable.repaint();
+        mainFrame.invalidate();
+        mainFrame.validate();
+        mainFrame.repaint();
+
+        log.debug("AbstractTradePanel - ping 7");
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, addressString);
+        log.debug("AbstractTradePanel - ping 8");
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_LABEL, decodedLabel);
+        log.debug("AbstractTradePanel - ping 9");
+
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_AMOUNT, amountString);
+        log.debug("AbstractTradePanel - ping 10");
+        addressTextField.setText(addressString);
+        log.debug("AbstractTradePanel - ping 11");
+        amountBTCTextField.setText(amountStringLocalised);
+        log.debug("AbstractTradePanel - ping 12");
+        labelTextArea.setText(decodedLabel);
+        log.debug("AbstractTradePanel - ping 13");
+        updateFiatAmount();
+        log.debug("AbstractTradePanel - ping 14");
+        Message message = new Message("");
+        MessageManager.INSTANCE.addMessage(message);
+
+        if (icon != null) {
+            qrCodeLabel.setIcon(icon);
+            setDragLabelTextAndTooltip();
+        } else {
+            displayQRCode(addressString, amountString, decodedLabel);
+        }
+
+        checkDeleteSendingEnabled();
+
+        return true;
     }
 
     /**

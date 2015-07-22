@@ -1080,11 +1080,9 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                     new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
             importPrivateKeysSubmitAction.setEnabled(false);           
         } else {
-            // Enable unless wallet has been modified by another process.
-            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip")));
-                importPrivateKeysSubmitAction.setEnabled(true);
-            }
+            // Enable
+            importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip")));
+            importPrivateKeysSubmitAction.setEnabled(true);
         }
     }
     

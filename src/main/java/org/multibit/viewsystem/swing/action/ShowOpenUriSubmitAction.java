@@ -18,7 +18,6 @@ package org.multibit.viewsystem.swing.action;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.BitcoinModel;
-import org.multibit.model.bitcoin.WalletData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -64,46 +63,35 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        // check to see if the wallet files have changed
-        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
+        // get the data out of the temporary data and put it in the wallet
+        // preferences
 
-        if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire
-            // data changed
-            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
-        } else {
-            // get the data out of the temporary data and put it in the wallet
-            // preferences
+        String sendAddress = dataProvider.getAddress();
+        String sendLabel = dataProvider.getLabel();
+        String sendAmount = dataProvider.getAmount();
+        boolean showDialog = dataProvider.isShowUriDialog();
 
-            String sendAddress = dataProvider.getAddress();
-            String sendLabel = dataProvider.getLabel();
-            String sendAmount = dataProvider.getAmount();
-            boolean showDialog = dataProvider.isShowUriDialog();
-
-            if (sendAddress != null) {
-                this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, sendAddress);
-            }
-            if (sendLabel != null) {
-                this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_LABEL, sendLabel);
-            }
-            if (sendAmount != null) {
-                this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_AMOUNT, sendAmount);
-            }
-            
-            // we want the send view to paste in the send data
-            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "true");
-
-            // we want to set the user preference to use the uri as the user
-            // clicked yes
-            controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_USE_URI, "true");
-
-            // save as user preference whether to show dialog or not
-            controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, (Boolean.valueOf(showDialog)).toString());
-
-            showOpenUriDialog.setVisible(false);
-            controller.displayView(View.SEND_BITCOIN_VIEW);
+        if (sendAddress != null) {
+            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_ADDRESS, sendAddress);
         }
+        if (sendLabel != null) {
+            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_LABEL, sendLabel);
+        }
+        if (sendAmount != null) {
+            this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_AMOUNT, sendAmount);
+        }
+
+        // we want the send view to paste in the send data
+        this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "true");
+
+        // we want to set the user preference to use the uri as the user
+        // clicked yes
+        controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_USE_URI, "true");
+
+        // save as user preference whether to show dialog or not
+        controller.getModel().setUserPreference(BitcoinModel.OPEN_URI_SHOW_DIALOG, (Boolean.valueOf(showDialog)).toString());
+
+        showOpenUriDialog.setVisible(false);
+        controller.displayView(View.SEND_BITCOIN_VIEW);
     }
 }

@@ -418,11 +418,9 @@ public class CheckPrivateKeysPanel extends JPanel implements Viewable, WalletBus
               new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
       checkPrivateKeysSubmitAction.setEnabled(false);
     } else {
-      // Enable unless wallet has been modified by another process.
-      if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-        checkPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showCheckPrivateKeysAction.tooltip")));
-        checkPrivateKeysSubmitAction.setEnabled(true);
-      }
+      // Enable
+      checkPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showCheckPrivateKeysAction.tooltip")));
+      checkPrivateKeysSubmitAction.setEnabled(true);
     }
   }
 
@@ -438,7 +436,7 @@ public class CheckPrivateKeysPanel extends JPanel implements Viewable, WalletBus
   }
 
   public void setWalletPassword(CharSequence password) {
-      walletPasswordField.setText(password.toString());
+    walletPasswordField.setText(password.toString());
   }
 
 

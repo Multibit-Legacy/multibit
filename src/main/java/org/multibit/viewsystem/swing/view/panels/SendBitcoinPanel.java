@@ -473,45 +473,26 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
       mainFrame.bringToFront();
     }
 
-    // disable any new changes if another process has changed the wallet
-    if (this.bitcoinController.getModel().getActivePerWalletModelData() != null
-            && this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-      // files have been changed by another process - disallow edits
-      mainFrame.setUpdatesStoppedTooltip(addressTextField);
-      addressTextField.setEditable(false);
-      addressTextField.setEnabled(false);
+    addressTextField.setToolTipText(null);
+    addressTextField.setEditable(true);
+    addressTextField.setEnabled(true);
 
-      if (sendButton != null) {
+    if (sendButton != null) {
+      if (SendBitcoinPanel.enableSendButton) {
+        sendButton.setEnabled(true);
+        sendButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinAction.tooltip")));
+      } else {
         sendButton.setEnabled(false);
-        mainFrame.setUpdatesStoppedTooltip(sendButton);
+        sendButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinAction.pleaseWait.tooltip")));
       }
-      if (pasteAddressButton != null) {
-        pasteAddressButton.setEnabled(false);
-        mainFrame.setUpdatesStoppedTooltip(pasteAddressButton);
-      }
-      titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle.mayBeOutOfDate"));
-      mainFrame.setUpdatesStoppedTooltip(titleLabel);
-    } else {
-      addressTextField.setToolTipText(null);
-      addressTextField.setEditable(true);
-      addressTextField.setEnabled(true);
-
-      if (sendButton != null) {
-        if (SendBitcoinPanel.enableSendButton) {
-          sendButton.setEnabled(true);
-          sendButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinAction.tooltip")));
-        } else {
-          sendButton.setEnabled(false);
-          sendButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("sendBitcoinAction.pleaseWait.tooltip")));
-        }
-      }
-      if (pasteAddressButton != null) {
-        pasteAddressButton.setEnabled(true);
-        pasteAddressButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("pasteAddressAction.tooltip")));
-      }
-      titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
-      titleLabel.setToolTipText(null);
     }
+    if (pasteAddressButton != null) {
+      pasteAddressButton.setEnabled(true);
+      pasteAddressButton.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("pasteAddressAction.tooltip")));
+    }
+    titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
+    titleLabel.setToolTipText(null);
+
     checkDeleteSendingEnabled();
   }
 

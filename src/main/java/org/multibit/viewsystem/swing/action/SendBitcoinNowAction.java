@@ -101,67 +101,60 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
 
     // Check to see if the wallet files have changed.
     WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
-    boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
 
-    if (haveFilesChanged) {
-      // Set on the perWalletModelData that files have changed and fire data changed.
-      perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-      this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
-    } else {
-      // Put sending message and remove the send button.
+    // Put sending message and remove the send button.
+    sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), "");
+
+    // Get the label and address out of the wallet preferences.
+    String sendAddress = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
+    String sendLabel = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
+
+    if (sendLabel != null && !sendLabel.equals("")) {
+      WalletInfoData addressBook = perWalletModelData.getWalletInfo();
+      addressBook.addSendingAddress(new WalletAddressBookData(sendLabel, sendAddress));
+    }
+
+    char[] walletPassword = walletPasswordField.getPassword();
+
+    if (this.bitcoinController.getModel().getActiveWallet() != null
+            && this.bitcoinController.getModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
+      // Encrypted wallet.
+      if (walletPassword == null || walletPassword.length == 0) {
+        // User needs to enter password.
+        sendBitcoinConfirmPanel.setMessageText(
+                controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
+        return;
+      }
+
+      try {
+        if (!this.bitcoinController.getModel().getActiveWallet().checkPassword(CharBuffer.wrap(walletPassword))) {
+          // The password supplied is incorrect.
+          sendBitcoinConfirmPanel.setMessageText(
+                  controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"),
+                  "");
+          return;
+        }
+      } catch (KeyCrypterException kce) {
+        log.debug(kce.getClass().getCanonicalName() + " " + kce.getMessage());
+        // The password supplied is probably incorrect.
+        sendBitcoinConfirmPanel.setMessageText(
+                controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
+        return;
+      }
+    }
+
+    // Double check wallet is not busy then declare that the active wallet is busy with the task
+    if (!perWalletModelData.isBusy()) {
+      perWalletModelData.setBusy(true);
+      perWalletModelData.setBusyTaskVerbKey("sendBitcoinNowAction.sendingBitcoin");
+
+      this.bitcoinController.fireWalletBusyChange(true);
       sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), "");
+      sendBitcoinConfirmPanel.invalidate();
+      sendBitcoinConfirmPanel.validate();
+      sendBitcoinConfirmPanel.repaint();
 
-      // Get the label and address out of the wallet preferences.
-      String sendAddress = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_ADDRESS);
-      String sendLabel = this.bitcoinController.getModel().getActiveWalletPreference(BitcoinModel.SEND_LABEL);
-
-      if (sendLabel != null && !sendLabel.equals("")) {
-        WalletInfoData addressBook = perWalletModelData.getWalletInfo();
-        addressBook.addSendingAddress(new WalletAddressBookData(sendLabel, sendAddress));
-      }
-
-      char[] walletPassword = walletPasswordField.getPassword();
-
-      if (this.bitcoinController.getModel().getActiveWallet() != null
-              && this.bitcoinController.getModel().getActiveWallet().getEncryptionType() != EncryptionType.UNENCRYPTED) {
-        // Encrypted wallet.
-        if (walletPassword == null || walletPassword.length == 0) {
-          // User needs to enter password.
-          sendBitcoinConfirmPanel.setMessageText(
-                  controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
-          return;
-        }
-
-        try {
-          if (!this.bitcoinController.getModel().getActiveWallet().checkPassword(CharBuffer.wrap(walletPassword))) {
-            // The password supplied is incorrect.
-            sendBitcoinConfirmPanel.setMessageText(
-                    controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"),
-                    "");
-            return;
-          }
-        } catch (KeyCrypterException kce) {
-          log.debug(kce.getClass().getCanonicalName() + " " + kce.getMessage());
-          // The password supplied is probably incorrect.
-          sendBitcoinConfirmPanel.setMessageText(
-                  controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
-          return;
-        }
-      }
-
-      // Double check wallet is not busy then declare that the active wallet is busy with the task
-      if (!perWalletModelData.isBusy()) {
-        perWalletModelData.setBusy(true);
-        perWalletModelData.setBusyTaskVerbKey("sendBitcoinNowAction.sendingBitcoin");
-
-        this.bitcoinController.fireWalletBusyChange(true);
-        sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), "");
-        sendBitcoinConfirmPanel.invalidate();
-        sendBitcoinConfirmPanel.validate();
-        sendBitcoinConfirmPanel.repaint();
-
-        performSend(perWalletModelData, sendRequest, CharBuffer.wrap(walletPassword));
-      }
+      performSend(perWalletModelData, sendRequest, CharBuffer.wrap(walletPassword));
     }
   }
 
@@ -280,11 +273,9 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
               new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
       setEnabled(false);
     } else {
-      // Enable unless wallet has been modified by another process.
-      if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
-        setEnabled(true);
-      }
+      // Enable
+      putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
+      setEnabled(true);
     }
   }
 }

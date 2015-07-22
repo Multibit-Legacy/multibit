@@ -1,23 +1,12 @@
 package org.multibit.file;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.SecureRandom;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.EncryptedPrivateKey;
+import com.google.bitcoin.crypto.KeyCrypter;
+import com.google.bitcoin.crypto.KeyCrypterException;
+import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
@@ -28,13 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.EncryptedPrivateKey;
-import com.google.bitcoin.crypto.KeyCrypter;
-import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
-import com.google.protobuf.ByteString;
+import java.io.*;
+import java.security.SecureRandom;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -126,15 +114,9 @@ public enum BackupManager {
             try {
                 String encryptedFilename = loopFile.getAbsolutePath() + "." + FILE_ENCRYPTED_WALLET_SUFFIX;
                 copyFileAndEncrypt(loopFile, new File(encryptedFilename), passwordToUse);
-                FileHandler.secureDelete(loopFile);
-            } catch (IOException ioe) {
+                SecureFiles.secureDelete(loopFile);
+            } catch (IOException | IllegalArgumentException | IllegalStateException | KeyCrypterException ioe) {
                 log.error(ioe.getClass().getName() + " " + ioe.getMessage());
-            } catch (IllegalArgumentException iae) {
-                log.error(iae.getClass().getName() + " " + iae.getMessage());
-            } catch (IllegalStateException ise) {
-                log.error(ise.getClass().getName() + " " + ise.getMessage());
-            } catch (KeyCrypterException kce) {
-                log.error(kce.getClass().getName() + " " + kce.getMessage());
             }
         }
     }
@@ -281,14 +263,14 @@ public enum BackupManager {
                 // Secure delete the chosen backup wallet and its info file if present.
                 log.debug("To save space, secure deleting backup wallet '"
                         + backupWallets.get(walletBackupToDeleteIndex).getAbsolutePath() + "'.");
-                FileHandler.secureDelete(backupWallets.get(walletBackupToDeleteIndex));
+                SecureFiles.secureDelete(backupWallets.get(walletBackupToDeleteIndex));
 
                 String walletInfoBackupFilename = backupWallets.get(walletBackupToDeleteIndex).getAbsolutePath()
                         .replaceAll(BitcoinModel.WALLET_FILE_EXTENSION + "$", INFO_FILE_SUFFIX_STRING);
                 File walletInfoBackup = new File(walletInfoBackupFilename);
                 if (walletInfoBackup.exists()) {
                     log.debug("To save space, secure deleting backup info file '" + walletInfoBackup.getAbsolutePath() + "'.");
-                    FileHandler.secureDelete(walletInfoBackup);
+                    SecureFiles.secureDelete(walletInfoBackup);
                 }
             } catch (IOException ioe) {
                 log.error(ioe.getClass().getName() + " " + ioe.getMessage());

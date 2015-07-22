@@ -123,11 +123,9 @@ public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implement
       );
       setEnabled(false);
     } else {
-      // Enable unless wallet has been modified by another process.
-      if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showCheckPrivateKeysAction.tooltip"));
-        setEnabled(true);
-      }
+      // Enable
+      putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showCheckPrivateKeysAction.tooltip"));
+      setEnabled(true);
     }
   }
 

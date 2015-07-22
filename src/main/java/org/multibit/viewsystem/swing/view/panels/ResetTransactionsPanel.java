@@ -345,11 +345,9 @@ public class ResetTransactionsPanel extends JPanel implements Viewable, WalletBu
                     new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
             resetTransactionsSubmitAction.setEnabled(false);           
         } else {
-            // Enable unless wallet has been modified by another process.
-            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip")));
-                resetTransactionsSubmitAction.setEnabled(true);
-            }
+            // Enable
+            resetTransactionsSubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip")));
+            resetTransactionsSubmitAction.setEnabled(true);
         }
     }
 }

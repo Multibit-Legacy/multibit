@@ -197,10 +197,8 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
             putValue(SHORT_DESCRIPTION, this.bitcoinController.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
                     new Object[]{this.bitcoinController.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
         } else {
-            // Enable unless wallet has been modified by another process.
-            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                putValue(SHORT_DESCRIPTION, this.bitcoinController.getLocaliser().getString("addPasswordSubmitAction.text"));
-            }
+            // Enable
+            putValue(SHORT_DESCRIPTION, this.bitcoinController.getLocaliser().getString("addPasswordSubmitAction.text"));
         }
     }
 }

@@ -131,14 +131,6 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
     public static final String PEERS = "peers";
 
-    
-    // Sizes and last modified dates of files.
-    public static final String WALLET_FILE_SIZE = "walletFileSize";
-    public static final String WALLET_FILE_LAST_MODIFIED = "walletFileLastModified";
-
-    public static final String WALLET_INFO_FILE_SIZE = "walletInfoFileSize";
-    public static final String WALLET_INFO_FILE_LAST_MODIFIED = "walletInfoFileLastModified";
-
     // User preferences undo.
     public static final String PREVIOUS_OPEN_URI_SHOW_DIALOG = "previousOpenUriShowDialog";
     public static final String PREVIOUS_OPEN_URI_USE_URI = "previousOpenUriUseUri";
