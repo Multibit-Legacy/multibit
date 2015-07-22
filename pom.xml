@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright 2014 multibit.org
+  ~ Copyright 2015 multibit.org
   ~
   ~ Licensed under the MIT license (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -110,14 +110,14 @@
             </resource>
         </resources>
         <plugins>
-            <!-- Standard compile to ensure Java6 is used in all environments (e.g. Jenkins) -->
+            <!-- Standard compile to ensure Java7 is used in all environments (e.g. Jenkins) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                 </configuration>
@@ -147,37 +147,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Proguard the executable jar file to remove unnecessary classes -->
-            <plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.0.6</version>
-                <executions>
-                    <execution>
-                        <id>package-with-proguard</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>proguard</goal>
-                        </goals>
-                        <configuration>
-                            <maxMemory>256m</maxMemory>
-                            <attach>false</attach>
-                            <addMavenDescriptor>false</addMavenDescriptor>
-                            <proguardInclude>src/main/proguard/multibit-exe.pro</proguardInclude>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>net.sf.proguard</groupId>
-                        <artifactId>proguard-base</artifactId>
-                        <version>4.9</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
 
             <!-- Produce staging directory with all resources used in creation of the installers -->
             <plugin>

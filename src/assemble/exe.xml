@@ -1,5 +1,5 @@
 <assembly>
-  <id>exe-full</id>
+  <id>exe</id>
   <formats>
     <format>jar</format>
   </formats>
@@ -11,9 +11,6 @@
       <unpack>true</unpack>
       <useProjectArtifact>false></useProjectArtifact>
       <scope>runtime</scope>
-      <excludes>
-        <exclude>org.codehaus.izpack:*</exclude>
-      </excludes>
     </dependencySet>
   </dependencySets>
   <fileSets>

@@ -54,17 +54,7 @@ An announcement is made on the MultiBit website to alert everyone that a new ver
 The important targets are:
 
 ```
-mvn clean package
-```
-
-which will package the MultiBit project into `multibit-x.y.z.jar` where `x.y.z` is the current version
-number. This is suitable for local development work.
-
-If you want to generate a complete set of multi-platform installers (Windows, Mac and Linux) you 
-use the following command
-
-```
-maven clean install
+mvn clean install
 ```
 
 After some processing, you will have the following artifacts in the target directory:
