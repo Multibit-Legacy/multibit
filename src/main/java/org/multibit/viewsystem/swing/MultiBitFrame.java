@@ -66,8 +66,10 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.TextAttribute;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 
 
@@ -464,7 +466,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     tickerTablePanel = new TickerTablePanel(this, this.exchangeController);
 
-    //HorizontalGradientPanel headerPanel = new HorizontalGradientPanel(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     JPanel headerPanel = new JPanel();
 
     int heightOfBalances = 2 * spendableHeight + 3 * BALANCE_SPACER - 2 + 3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE;
@@ -703,6 +704,45 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     constraints.anchor = GridBagConstraints.CENTER;
     headerPanel.add(tickerTablePanel, constraints);
 
+    // Add the link suggesting users try MultiBit HD
+    JPanel tryMultiBitHDPanel = new JPanel();
+    tryMultiBitHDPanel.setOpaque(false);
+
+    LaunchBrowserAction launchBrowserAction = new LaunchBrowserAction(controller, "multiBitFrame.tryMultiBitHD", "multiBitFrame.tryMultiBitHD.tooltip");
+    JButton tryMultiBitHDButton = new JButton(launchBrowserAction);
+    tryMultiBitHDButton.setBorderPainted(false);
+
+    MouseListener l = new MouseAdapter() {
+        Font original;
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            original = e.getComponent().getFont();
+            Map attributes = original.getAttributes();
+            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+            e.getComponent().setFont(original.deriveFont(attributes));
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            e.getComponent().setFont(original);
+        }
+
+
+    };
+    tryMultiBitHDButton.addMouseListener(l);
+
+    tryMultiBitHDPanel.add(tryMultiBitHDButton);
+
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.gridx = 10;
+    constraints.gridy = 0;
+    constraints.weightx = 10;
+    constraints.weighty = 10;
+    constraints.gridwidth = 1;
+    constraints.gridheight = 1;
+    headerPanel.add(tryMultiBitHDPanel, constraints);
+
     // Add a little stent to keep it off the right hand edge.
     int stent = 6; // A reasonable default.
     Insets tabAreaInsets = UIManager.getInsets("TabbedPane.tabAreaInsets");
@@ -710,7 +750,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
       stent = tabAreaInsets.right;
     }
     constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.gridx = 10;
+    constraints.gridx = 11;
     constraints.gridy = 0;
     constraints.weightx = 1;
     constraints.weighty = 1;

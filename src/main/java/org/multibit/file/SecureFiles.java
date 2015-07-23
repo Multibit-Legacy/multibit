@@ -1,5 +1,6 @@
 package org.multibit.file;
 
+import org.multibit.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public class SecureFiles {
 
     log.trace("Start of secureDelete");
 
-    if (isWindows()) {
+    if (OSUtils.isWindows()) {
       // Use slow secure delete
       slowSecureDelete(file);
     } else {
@@ -169,16 +170,12 @@ public class SecureFiles {
       boolean deleteSuccess = Files.deleteIfExists(file.toPath());
       log.trace("Result of initial delete was {} for:\n'{}'", deleteSuccess, file.getAbsolutePath());
 
-      if (isWindows()) {
+      if (OSUtils.isWindows()) {
         // Work around an issue on Windows whereby files are not deleted
         File canonical = file.getCanonicalFile();
         if (canonical.exists() && !canonical.delete())
           log.debug("Failed to delete canonical file {}", file.getCanonicalPath());
       }
     }
-  }
-
-  private static boolean isWindows() {
-      return System.getProperty("os.name").toLowerCase().contains("win");
   }
 }
