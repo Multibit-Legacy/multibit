@@ -125,7 +125,7 @@ public class SecureFiles {
    * @param file the file to secure delete
    */
   private static void fastSecureDelete(File file) throws IOException {
-    if (file.exists()) {
+    if (file != null && file.exists()) {
       RandomAccessFile raf = null;
       FileChannel channel = null;
       MappedByteBuffer buffer;
