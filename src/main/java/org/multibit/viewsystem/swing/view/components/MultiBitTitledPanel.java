@@ -1,20 +1,10 @@
 package org.multibit.viewsystem.swing.view.components;
 
-import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.util.Locale;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.multibit.Localiser;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Panel that has a title bar at the top. The panel always uses GridBagLayout

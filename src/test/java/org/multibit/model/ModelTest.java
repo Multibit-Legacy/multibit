@@ -32,8 +32,8 @@ public class ModelTest extends TestCase {
 
     @Test
     public void testPropertiesRoundTrip() throws Exception {
-        String FEE_PER_KB_1 = "0.005";
-        String FEE_PER_KB_2 = "0.006";
+        String FEE_PER_KB_1 = "5000";
+        String FEE_PER_KB_2 = "6000";
 
         // Create runtime
         final File multibitDirectory = createMultiBitRuntime();

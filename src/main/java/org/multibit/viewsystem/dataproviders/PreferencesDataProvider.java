@@ -13,19 +13,7 @@ public interface PreferencesDataProvider extends DataProvider {
      * Get the previous 'undo changes' text
      */
     public String getPreviousUndoChangesText();
-    
-    
-//    /**
-//     * Get the previous send fee
-//     */
-//    public String getPreviousSendFee();
-//    
-//    /**
-//     * Get the new send fee
-//     */
-//    public String getNewSendFee();
-    
-    
+
     /**
      * Get the previous user language code
      */
