@@ -920,6 +920,7 @@ public class WalletTest extends TestWithWallet {
     @Test
     public void transactionsList() throws Exception {
         // Check the wallet can give us an ordered list of all received transactions.
+        Utils.setMockClock();
         Utils.rollMockClock(0);
         Transaction tx1 = sendMoneyToWallet(Utils.toNanoCoins(1, 0), AbstractBlockChain.NewBlockType.BEST_CHAIN);
         Utils.rollMockClock(60 * 10);
@@ -958,6 +959,7 @@ public class WalletTest extends TestWithWallet {
     @Test
     public void keyCreationTime() throws Exception {
         wallet = new Wallet(params);
+        Utils.setMockClock();
         long now = Utils.rollMockClock(0).getTime() / 1000;  // Fix the mock clock.
         // No keys returns current time.
         assertEquals(now, wallet.getEarliestKeyCreationTime());
@@ -972,6 +974,7 @@ public class WalletTest extends TestWithWallet {
     @Test
     public void scriptCreationTime() throws Exception {
         wallet = new Wallet(params);
+        Utils.setMockClock();
         long now = Utils.rollMockClock(0).getTime() / 1000;  // Fix the mock clock.
         // No keys returns current time.
         assertEquals(now, wallet.getEarliestKeyCreationTime());
@@ -2142,6 +2145,7 @@ public class WalletTest extends TestWithWallet {
         sendMoneyToWallet(wallet, CENT, key1.toAddress(params), AbstractBlockChain.NewBlockType.BEST_CHAIN);
         sendMoneyToWallet(wallet, CENT, key2.toAddress(params), AbstractBlockChain.NewBlockType.BEST_CHAIN);
         sendMoneyToWallet(wallet, CENT, key2.toAddress(params), AbstractBlockChain.NewBlockType.BEST_CHAIN);
+        Utils.setMockClock();
         Utils.rollMockClock(86400);
         Date compromiseTime = Utils.now();
         assertEquals(0, broadcaster.size());
