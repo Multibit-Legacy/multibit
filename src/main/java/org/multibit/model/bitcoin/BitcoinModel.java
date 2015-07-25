@@ -77,7 +77,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String SHOW_SIDE_PANEL = "showSidePanel";
     public static final String DISPLAY_AS_SWATCH = "displayAsSwatch";
     public static final String DISPLAY_AS_QR_CODE = "displayAsQRcode";
-    
+
     public static final int MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED = 2;
 
     // Open bitcoin URI.
@@ -87,17 +87,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String OPEN_URI_LABEL = "openUriLabel";
     public static final String OPEN_URI_AMOUNT = "openUriAmount";
     public static final String BRING_TO_FRONT = "bringToFront";
-
-    // Default fee and feePerKB
-    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000");
-    public static final BigInteger SEND_FEE_PER_KB_DEFAULT = new BigInteger("10000");
     
-    // Minimum fee.
-    public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
-
-    // Maximum fee.
-    public static final BigInteger SEND_MAXIMUM_FEE = new BigInteger("100000000"); // 1 BTC.
-
     // Receive bitcoin.
     public static final String IS_RECEIVE_BITCOIN = "isReceiveBitcoin";
     public static final String RECEIVE_ADDRESS = "receiveAddress";

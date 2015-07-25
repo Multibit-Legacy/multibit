@@ -37,9 +37,11 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
+import org.multibit.viewsystem.swing.view.components.FeeSlider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -601,7 +603,13 @@ public class MultiBitService {
     }
     sendRequest.aesKey = aesKey;
     sendRequest.fee = BigInteger.ZERO;
-    sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
+
+    // Work out fee per KB
+    String unparsedFeePerKB = controller.getModel().getUserPreference(CoreModel.FEE_PER_KB);
+
+    // Ensure the initialFeeValue is in range of the slider
+    sendRequest.feePerKb = BigInteger.valueOf(FeeSlider.parseAndNormaliseFeePerKB(unparsedFeePerKB));
+    log.debug("Fee per KB set to {}", sendRequest.feePerKb);
 
     sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
 

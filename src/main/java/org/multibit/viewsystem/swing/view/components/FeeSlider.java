@@ -52,7 +52,7 @@ public class FeeSlider {
     int maximumPosition = (int) MAXIMUM_FEE_PER_KB / RESOLUTION;
 
     // Make sure feePerKB is normalised first so that it will be in range of the slider
-    int currentPosition = (int) normaliseRawFeePerKB(initialPosition) / RESOLUTION;
+    int currentPosition = (int) normaliseFeePerKB(initialPosition) / RESOLUTION;
     JSlider feePerKBSlider = new JSlider(minimumPosition, maximumPosition,
             currentPosition);
 
@@ -76,12 +76,33 @@ public class FeeSlider {
   }
 
   /**
+   * Parse and normalise the feePerKB so that it is always between the minimum and maximum values
+   *
+   * @param rawFeePerKB the raw value of feePerKB, as String. From user preferences so may not be a number
+   * @return the normalised feePerKB, as a long/ satoshi
+   */
+  public static long parseAndNormaliseFeePerKB(String rawFeePerKB) {
+    long feeValue;
+    if (rawFeePerKB == null) {
+      feeValue = FeeSlider.DEFAULT_FEE_PER_KB;
+    } else {
+      try {
+        feeValue = Long.parseLong(rawFeePerKB);
+      } catch (NumberFormatException nfe) {
+        // Value in multibit.properties was not a number - use the default value
+        feeValue = FeeSlider.DEFAULT_FEE_PER_KB;
+      }
+    }
+    return normaliseFeePerKB(feeValue);
+  }
+
+  /**
    * Normalise the feePerKB so that it is always between the minimum and maximum values
    *
    * @param rawFeePerKB the raw value of feePerKB, as long/ satoshi
    * @return the normalised feePerKB, as a long/ satoshi
    */
-  public static long normaliseRawFeePerKB(long rawFeePerKB) {
+  public static long normaliseFeePerKB(long rawFeePerKB) {
     if (rawFeePerKB == 0) {
       return DEFAULT_FEE_PER_KB;
     }

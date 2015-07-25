@@ -383,15 +383,9 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
     // Work out initial setting
     String unparsedFeePerKB = controller.getModel().getUserPreference(CoreModel.FEE_PER_KB);
-    long initialFeeValue;
-    try {
-      initialFeeValue = Long.parseLong(unparsedFeePerKB);
-    } catch (NumberFormatException nfe) {
-      // Value in multibit.properties was not a number - use the default value
-      initialFeeValue = FeeSlider.DEFAULT_FEE_PER_KB;
-    }
+
     // Ensure the initialFeeValue is in range of the slider
-    initialFeeValue = FeeSlider.normaliseRawFeePerKB(initialFeeValue);
+    long initialFeeValue = FeeSlider.parseAndNormaliseFeePerKB(unparsedFeePerKB);
     feeSlider = FeeSlider.newFeeSlider(controller, this, initialFeeValue);
 
     constraints.fill = GridBagConstraints.NONE;
