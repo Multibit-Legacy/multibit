@@ -37,6 +37,7 @@ import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
+import org.multibit.utils.OSUtils;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -588,6 +589,13 @@ public final class MultiBit {
             } else {
                 // Just sync the blockchain without a replay task being involved.
                 ReplayManager.INSTANCE.downloadBlockChain();
+            }
+
+            if (OSUtils.isWindowsXPOrEarlier()) {
+              log.error("Windows XP or earlier detected. Issuing warning.");
+              JOptionPane.showMessageDialog(
+                null, "This version of Windows is not recommended for security reasons.\nPlease upgrade.", "Error",
+                JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
             // An odd unrecoverable error occurred.
