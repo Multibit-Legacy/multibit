@@ -87,7 +87,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String OPEN_URI_LABEL = "openUriLabel";
     public static final String OPEN_URI_AMOUNT = "openUriAmount";
     public static final String BRING_TO_FRONT = "bringToFront";
-    
+
     // Receive bitcoin.
     public static final String IS_RECEIVE_BITCOIN = "isReceiveBitcoin";
     public static final String RECEIVE_ADDRESS = "receiveAddress";

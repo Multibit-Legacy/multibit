@@ -692,19 +692,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     constraints.anchor = GridBagConstraints.LINE_START;
     headerPanel.add(filler3, constraints);
 
-    // Add ticker panel.
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.gridx = 9;
-    constraints.gridy = 0;
-    constraints.weightx = 10;
-    constraints.weighty = 10000;
-    constraints.gridwidth = 1;
-    constraints.gridheight = 5;
-
-    constraints.anchor = GridBagConstraints.CENTER;
-    headerPanel.add(tickerTablePanel, constraints);
-
-    // Add the link suggesting users try MultiBit HD
+       // Add the link suggesting users try MultiBit HD
     JPanel tryMultiBitHDPanel = new JPanel();
     tryMultiBitHDPanel.setOpaque(false);
 
@@ -727,21 +715,31 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         public void mouseExited(MouseEvent e) {
             e.getComponent().setFont(original);
         }
-
-
     };
     tryMultiBitHDButton.addMouseListener(l);
 
     tryMultiBitHDPanel.add(tryMultiBitHDButton);
 
     constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.gridx = 10;
+    constraints.gridx = 9;
     constraints.gridy = 0;
     constraints.weightx = 10;
     constraints.weighty = 10;
     constraints.gridwidth = 1;
-    constraints.gridheight = 1;
+    constraints.gridheight = 5;
     headerPanel.add(tryMultiBitHDPanel, constraints);
+
+    // Add ticker panel.
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.gridx = 10;
+    constraints.gridy = 0;
+    constraints.weightx = 10;
+    constraints.weighty = 10000;
+    constraints.gridwidth = 1;
+    constraints.gridheight = 5;
+
+    constraints.anchor = GridBagConstraints.CENTER;
+    headerPanel.add(tickerTablePanel, constraints);
 
     // Add a little stent to keep it off the right hand edge.
     int stent = 6; // A reasonable default.
