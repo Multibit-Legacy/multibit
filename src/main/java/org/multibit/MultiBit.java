@@ -599,12 +599,7 @@ public final class MultiBit {
             }
         } catch (Exception e) {
             // An odd unrecoverable error occurred.
-            e.printStackTrace();
-
-            log.error("An unexpected error caused MultiBit to quit.");
-            log.error("The error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
-            e.printStackTrace();
-            log.error("Please read http://multibit.org/help_troubleshooting.html for help on troubleshooting.");
+            log.error("An unexpected error caused MultiBit to quit.", e);
 
             // Try saving any dirty wallets.
             if (controller != null) {
