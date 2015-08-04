@@ -26,7 +26,6 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.WalletBusyListener;
 import org.multibit.model.bitcoin.WalletData;
-import org.multibit.network.AlertManager;
 import org.multibit.viewsystem.swing.view.panels.CheckPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,8 @@ public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implement
   private static final Logger log = LoggerFactory.getLogger(CheckPrivateKeysSubmitAction.class);
 
   private static final long serialVersionUID = 1923333087598757765L;
+
+  public static final String MESSAGE_WINDOW_SEPARATOR = "----------------------------------------------------------------";
 
   private CheckPrivateKeysPanel checkPrivateKeysPanel;
 
@@ -142,7 +143,7 @@ public class CheckPrivateKeysSubmitAction extends MultiBitSubmitAction implement
       throw new PrivateKeysException("No wallet specified");
     }
 
-    Message separatorMessage = new Message(AlertManager.MESSAGE_WINDOW_SEPARATOR);
+    Message separatorMessage = new Message(MESSAGE_WINDOW_SEPARATOR);
     separatorMessage.setShowInStatusBar(false);
 
     boolean allKeysAreOk = true;
