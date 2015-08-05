@@ -28,31 +28,31 @@ import java.net.URI;
 /**
  * This {@link javax.swing.Action} represents an action that displays a URL in an external browser
  */
-public class LaunchBrowserAction extends AbstractAction {
+public class LaunchTryMultiBitHDAction extends AbstractAction {
 
     private static final long serialVersionUID = 191948287465057705L;
 
-    public static final String MULTIBIT_LANDING_PAGE = "https://multibit.org";
+    public static final String TRY_MULTIBIT_HD_PAGE = "https://multibit.org/try-multibit-hd.html";
 
     /**
-     * Creates a new {@link org.multibit.viewsystem.swing.action.LaunchBrowserAction}.
+     * Creates a new {@link LaunchTryMultiBitHDAction}.
      * @param controller The Controller
      * @param textKey The localisation key for the text of the action
      * @param tooltipKey The localisation key for the tooltip of the action
      */
-    public LaunchBrowserAction(Controller controller, String textKey, String tooltipKey) {
+    public LaunchTryMultiBitHDAction(Controller controller, String textKey, String tooltipKey) {
         Localiser localiser = controller.getLocaliser();
         putValue(Action.NAME, localiser.getString(textKey));
         putValue(SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(localiser.getString(tooltipKey)));
     }
 
     /**
-     * Open an external browser to the MultiBit landing page
+     * Open an external browser to the 'Try MultiBit HD' page
      */
     @Override
     public void actionPerformed(ActionEvent e) {
           // Attempt to open the URI
-         if (!SafeDesktop.browse(URI.create(MULTIBIT_LANDING_PAGE))) {
+         if (!SafeDesktop.browse(URI.create(TRY_MULTIBIT_HD_PAGE))) {
              Toolkit.getDefaultToolkit().beep();
          }
     }
