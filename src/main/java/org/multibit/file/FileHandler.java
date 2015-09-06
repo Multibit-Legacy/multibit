@@ -17,6 +17,7 @@ package org.multibit.file;
 
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.ApplicationDataDirectoryLocator;
@@ -296,11 +297,11 @@ public class FileHandler {
             }
         }
     }
-    
+
     /**
      * Simply save the wallet and wallet info files.
      * Used for backup writes.
-     * 
+     *
      * @param perWalletModelData the wallet data
      * @param walletFilename the wallet filename
      * @param walletInfoFilename the wallet info filename
@@ -417,7 +418,12 @@ public class FileHandler {
                 }
                 if (walletInfo != null && (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()
                         || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion())) {
-                    newBackupFilename = copyExistingWalletToBackupAndDeleteOriginal(walletFile);
+                    newBackupFilename = BackupManager.INSTANCE.createBackupFilename(walletFile, BackupManager.ROLLING_WALLET_BACKUP_DIRECTORY_NAME, false, false, BitcoinModel.WALLET_FILE_EXTENSION);
+                    File newWalletBackupFile = new File(newBackupFilename);
+
+                    // Rename the existing wallet to the newWalletBackupFile
+                    boolean result = rename(walletFile, newWalletBackupFile);
+                    log.debug("Result of the wallet rename to backup file was " + result);
                 }
 
                 log.debug("Saving wallet file '" + walletFile.getAbsolutePath() + "' ...");
@@ -438,13 +444,25 @@ public class FileHandler {
                     }
 
                     if (walletIsActuallyEncrypted) {
-                        walletInfo.setWalletVersion(MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                        if (walletInfo == null) {
+                            walletInfo = new WalletInfoData(walletFilename, wallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                            perWalletModelData.setWalletInfo(walletInfo);
+                        } else {
+                            walletInfo.setWalletVersion(MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
+                        }
                     }
 
-                    if (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()) {
+                    if (walletInfo != null && MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()) {
                         // Save as a Wallet message.
                         perWalletModelData.getWallet().saveToFile(walletFile);
-                    } else if (MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
+                    } else if (walletInfo != null && MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
+                        // Create wallet output file if it does not exist
+                        if (!walletFile.exists()) {
+                            boolean createdOk = walletFile.createNewFile();
+                            log.debug("Result of empty wallet create for file {} was {}", walletFile, createdOk);
+                        } else {
+                            log.debug("Wallet file {} already exists - does not need creating", walletFile);
+                        }
                         fileOutputStream = new FileOutputStream(walletFile);
 
                         // Save as a Wallet message with a mandatory extension
@@ -452,7 +470,7 @@ public class FileHandler {
                         walletProtobufSerializer.writeWallet(perWalletModelData.getWallet(), fileOutputStream);
                     } else {
                         throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
-                                + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString()
+                                + "'. Its wallet version is '" + (walletInfo == null ? "UNKNOWN" : walletInfo.getWalletVersion().toString())
                                 + "' but this version of MultiBit does not understand that format.");
                     }
                 }
@@ -460,8 +478,10 @@ public class FileHandler {
 
                 if (MultiBitWalletVersion.PROTOBUF == walletInfo.getWalletVersion()
                         || MultiBitWalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
-                    perWalletModelData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, newBackupFilename);
-
+                    if (newBackupFilename != null) {
+                        perWalletModelData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, newBackupFilename);
+                    }
+                    
                     // Delete the oldBackupFile unless the user has manually
                     // opened it.
                     boolean userHasOpenedBackupFile = false;
@@ -482,14 +502,18 @@ public class FileHandler {
                 }
             }
         } catch (IOException ioe) {
-            throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename(), ioe);
+            String message = "Cannot save wallet '" + perWalletModelData.getWalletFilename();
+            log.error(message + " (1) " + ioe.getClass().getCanonicalName() + " " + ioe.getMessage());
+            throw new WalletSaveException(message, ioe);
         } finally {
             if (fileOutputStream != null) {
                 try {
                     fileOutputStream.flush();
                     fileOutputStream.close();
                 } catch (IOException e) {
-                    throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename(), e);
+                    String message = "Cannot save wallet '" + perWalletModelData.getWalletFilename();
+                    log.error(message + " (2) " + e.getClass().getCanonicalName() + " " + e.getMessage());
+                    throw new WalletSaveException(message, e);
                 }
             }
         }
@@ -547,7 +571,7 @@ public class FileHandler {
      * @return the new wallet backup name
      * @throws IOException
      */
-    private String copyExistingWalletToBackupAndDeleteOriginal(File walletFile) throws IOException {
+    private String copyExistingWalletToBackupAndDeleteOriginal(File walletFile, boolean secureDelete) throws IOException {
         String newWalletBackupFilename = BackupManager.INSTANCE.createBackupFilename(walletFile, BackupManager.ROLLING_WALLET_BACKUP_DIRECTORY_NAME, false, false, BitcoinModel.WALLET_FILE_EXTENSION);
         File newWalletBackupFile = new File(newWalletBackupFilename);
         if (walletFile != null && walletFile.exists()) {
@@ -558,12 +582,40 @@ public class FileHandler {
             }
 
             if (!walletFile.getAbsolutePath().equals(newWalletBackupFile.getAbsolutePath())) {
-                SecureFiles.secureDelete(walletFile);
+                if (secureDelete) {
+                    log.debug("Using secure delete to delete wallet file {}", walletFile);
+                    SecureFiles.secureDelete(walletFile);
+                } else {
+                    log.debug("Result of wallet delete was {}", walletFile.delete());
+                }
             }
         }
 
         return newWalletBackupFilename;
     }
+
+    /**
+        Rename a file from the original to the new File
+     **/
+    private boolean rename(File originalFile, File newFile) {
+        try {
+            if (Utils.isWindows()) {
+                // Work around an issue on Windows whereby you can't rename over existing files.
+                File canonical = newFile.getCanonicalFile();
+                if (canonical.exists() && !canonical.delete())
+                    throw new IOException("Failed to delete canonical destination file");
+                if (originalFile.renameTo(canonical))
+                    return true;  // else fall through.
+                throw new IOException("Failed to rename " + originalFile + " to " + canonical);
+            } else if (!originalFile.renameTo(newFile)) {
+                throw new IOException("Failed to rename " + originalFile + " to " + newFile);
+            }
+            return true;
+        } catch (IOException ioe) {
+            log.error("Error in renaming file " + originalFile + "  to " + newFile, ioe);
+            return false;
+        }
+     }
 
     /**
      * Secure delete the wallet and the wallet info file.

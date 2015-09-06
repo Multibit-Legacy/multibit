@@ -17,6 +17,7 @@ package org.multibit.viewsystem.swing.action;
 
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -37,6 +38,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Exit the application.
@@ -45,7 +47,7 @@ public class ExitAction extends AbstractExitAction {
 
     private static final long serialVersionUID = 8784284740245520863L;
     
-    private static final int MAXIMUM_TIME_TO_WAIT_FOR_HEALTH_CHECK_TASK = 10000; // ms
+    private static final int MAXIMUM_TIME_TO_WAIT_FOR_HEALTH_CHECK_TASK = 30000; // ms
     private static final int TIME_TO_WAIT = 200; // ms
 
     private final MultiBitFrame mainFrame;
@@ -53,6 +55,12 @@ public class ExitAction extends AbstractExitAction {
 
     private CoreController coreController = null;
     private BitcoinController bitcoinController = null;
+
+    /**
+     * Boolean indicating if the ExitAction is running.
+     * This depends on there only being one ExitAction being active at any one time
+     */
+    private static boolean running = false;
 
     /**
      * Creates a new {@link ExitAction}.
@@ -76,6 +84,8 @@ public class ExitAction extends AbstractExitAction {
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
+        running = true;
+
         String shuttingDownTitle = bitcoinController.getLocaliser().getString("multiBitFrame.title.shuttingDown");
 
         if (mainFrame != null) {
@@ -95,18 +105,12 @@ public class ExitAction extends AbstractExitAction {
             // If the HealthCheckTimerTask is running wait until it completes.
             HealthCheckTimerTask healthCheckTimerTask = mainFrame.getHealthCheckTimerTask();
             if (healthCheckTimerTask != null) {
-                boolean breakout = false;
                 int timeWaited = 0;
                 
-                while(healthCheckTimerTask.isRunning() && !breakout && timeWaited < MAXIMUM_TIME_TO_WAIT_FOR_HEALTH_CHECK_TASK) {
-                    try {
-                        log.debug("Waiting for healthCheckTimerTask to complete (waited so far = " + timeWaited + "). . .");
-                        Thread.sleep(TIME_TO_WAIT);
-                        timeWaited = timeWaited + TIME_TO_WAIT;
-                    } catch (InterruptedException e) {
-                        breakout = true;
-                        e.printStackTrace();
-                    }
+                while(healthCheckTimerTask.isRunning() && timeWaited < MAXIMUM_TIME_TO_WAIT_FOR_HEALTH_CHECK_TASK) {
+                    log.debug("Waiting for healthCheckTimerTask to complete (waited so far = " + timeWaited + "). . .");
+                    Uninterruptibles.sleepUninterruptibly(TIME_TO_WAIT, TimeUnit.MILLISECONDS);
+                    timeWaited = timeWaited + TIME_TO_WAIT;
                 }
             }
         }
@@ -196,6 +200,11 @@ public class ExitAction extends AbstractExitAction {
             mainFrame.dispose();
         }
 
+        running = false;
         System.exit(0);
+    }
+
+    public static boolean isRunning() {
+        return running;
     }
 }

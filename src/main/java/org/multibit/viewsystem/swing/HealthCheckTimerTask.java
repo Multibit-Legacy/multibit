@@ -22,6 +22,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.store.WalletVersionException;
+import org.multibit.viewsystem.swing.action.ExitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,34 +69,38 @@ public class HealthCheckTimerTask extends TimerTask {
     try {
       log.debug("Start of HealthCheckTimerTask");
 
-      //if (counter == 0) {
-      log.debug("Checking if wallets are dirty . . .");
-      List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
+      // See if the ExitAction is running - if so let that persist dirty wallets
+      if (ExitAction.isRunning()) {
+        log.debug("Skipping HealthCheckTimerTask#run as the ExitAction is already running");
+      } else {
+        log.debug("Checking if wallets are dirty . . .");
+        List<WalletData> perWalletModelDataList = bitcoinController.getModel().getPerWalletModelDataList();
 
-      if (perWalletModelDataList != null) {
-        Iterator<WalletData> iterator = perWalletModelDataList.iterator();
-        while (iterator.hasNext()) {
-          WalletData loopModelData = iterator.next();
-          if (bitcoinController.getFileHandler() != null) {
-            // See if they are dirty - write out if so.
-            if (loopModelData.isDirty()) {
-              log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'...");
-              try {
-                bitcoinController.getFileHandler().savePerWalletModelData(loopModelData, false);
-                log.debug("... done.");
-              } catch (WalletSaveException | WalletVersionException e) {
-                String message = controller.getLocaliser().getString(
-                        "createNewWalletAction.walletCouldNotBeCreated",
-                        new Object[]{loopModelData.getWalletFilename(), e.getMessage()});
-                log.error(message);
-                MessageManager.INSTANCE.addMessage(new Message(message));
+        if (perWalletModelDataList != null) {
+          Iterator<WalletData> iterator = perWalletModelDataList.iterator();
+          while (iterator.hasNext()) {
+            WalletData loopModelData = iterator.next();
+            if (bitcoinController.getFileHandler() != null) {
+              // See if they are dirty - write out if so.
+              if (loopModelData.isDirty()) {
+                log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'...");
+                try {
+                  bitcoinController.getFileHandler().savePerWalletModelData(loopModelData, false);
+                  log.debug("... done.");
+                } catch (WalletSaveException | WalletVersionException e) {
+                  String message = controller.getLocaliser().getString(
+                          "createNewWalletAction.walletCouldNotBeCreated",
+                          new Object[]{loopModelData.getWalletFilename(), e.getMessage()});
+                  log.error(message);
+                  MessageManager.INSTANCE.addMessage(new Message(message));
+                }
               }
             }
           }
         }
-      }
 
-      log.debug("End of HealthCheckTimerTask");
+        log.debug("End of HealthCheckTimerTask");
+      }
     } catch (java.util.ConcurrentModificationException cme) {
       log.error("The list of open wallets was changed whilst files were being written.");
     } finally {
