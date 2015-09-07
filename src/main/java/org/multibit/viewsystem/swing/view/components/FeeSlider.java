@@ -61,14 +61,28 @@ public class FeeSlider {
     feePerKBSlider.setPreferredSize(new Dimension(400, 80));
     feePerKBSlider.setOpaque(false);
     feePerKBSlider.setBorder(BorderFactory.createEmptyBorder());
+    feePerKBSlider.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
     Localiser localiser = controller.getLocaliser();
 
     // Create the label table
     Hashtable<Integer, JComponent> labelTable = new Hashtable<>();
-    labelTable.put(minimumPosition, new JLabel(localiser.getString("sliders.lower")));
-    labelTable.put(defaultPosition, newDefaultNote(localiser));
-    labelTable.put(maximumPosition, new JLabel(localiser.getString("sliders.higher")));
+
+    JLabel lowerLabel = new JLabel(localiser.getString("sliders.lower"));
+    lowerLabel.setOpaque(false);
+    lowerLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
+    JLabel defaultLabel =  newDefaultNote(localiser);
+    defaultLabel.setOpaque(false);
+    defaultLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
+    JLabel upperLabel =  new JLabel(localiser.getString("sliders.higher"));
+    upperLabel.setOpaque(false);
+    upperLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
+    labelTable.put(minimumPosition, lowerLabel);
+    labelTable.put(defaultPosition, defaultLabel);
+    labelTable.put(maximumPosition, upperLabel);
     feePerKBSlider.setLabelTable(labelTable);
     feePerKBSlider.setPaintLabels(true);
 
