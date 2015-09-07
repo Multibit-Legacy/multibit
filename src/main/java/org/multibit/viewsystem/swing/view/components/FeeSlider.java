@@ -72,7 +72,7 @@ public class FeeSlider {
     lowerLabel.setOpaque(false);
     lowerLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-    JLabel defaultLabel =  newDefaultNote(localiser);
+    JLabel defaultLabel = newDefaultNote(localiser);
     defaultLabel.setOpaque(false);
     defaultLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
@@ -141,7 +141,7 @@ public class FeeSlider {
   private static JLabel newDefaultNote(Localiser localiser) {
     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
     String[] lines = new String[2];
-    lines[0] = "\u25B2"; // 25B2 =up black triangle
+    lines[0] = "\u007c"; // ASCII vertical line // 25B2 =up black triangle
     lines[1] = localiser.getString("sliders.default");
     JLabel label = new JLabel(HtmlUtils.localiseCenteredWithLineBreaks(lines));
     label.setHorizontalAlignment(SwingConstants.CENTER);
