@@ -58,7 +58,7 @@ public class FeeSlider {
 
     feePerKBSlider.setMajorTickSpacing(10);
     feePerKBSlider.setPaintTicks(true);
-    feePerKBSlider.setPreferredSize(new Dimension(400, 80));
+    feePerKBSlider.setPreferredSize(new Dimension(400, 120));
     feePerKBSlider.setOpaque(false);
     feePerKBSlider.setBorder(BorderFactory.createEmptyBorder());
     feePerKBSlider.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
