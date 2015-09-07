@@ -481,9 +481,8 @@ public class FileHandler {
                     if (newBackupFilename != null) {
                         perWalletModelData.getWalletInfo().put(BitcoinModel.WALLET_BACKUP_FILE, newBackupFilename);
                     }
-                    
-                    // Delete the oldBackupFile unless the user has manually
-                    // opened it.
+
+                    // Delete the oldBackupFile unless the user has manually opened it.
                     boolean userHasOpenedBackupFile = false;
                     List<WalletData> perWalletModelDataList = this.bitcoinController.getModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null) {
