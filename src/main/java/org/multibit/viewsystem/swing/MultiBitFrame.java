@@ -699,6 +699,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     LaunchTryMultiBitHDAction launchTryMultiBitHDAction = new LaunchTryMultiBitHDAction(controller, "multiBitFrame.tryMultiBitHD", "multiBitFrame.tryMultiBitHD.tooltip");
     JButton tryMultiBitHDButton = new JButton(launchTryMultiBitHDAction);
     tryMultiBitHDButton.setBorderPainted(false);
+    tryMultiBitHDButton.setOpaque(false);
+    tryMultiBitHDButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
     MouseListener l = new MouseAdapter() {
         Font original;
