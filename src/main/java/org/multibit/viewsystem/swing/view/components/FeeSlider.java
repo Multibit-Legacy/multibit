@@ -59,6 +59,8 @@ public class FeeSlider {
     feePerKBSlider.setMajorTickSpacing(10);
     feePerKBSlider.setPaintTicks(true);
     feePerKBSlider.setPreferredSize(new Dimension(400, 80));
+    feePerKBSlider.setOpaque(false);
+    feePerKBSlider.setBorder(BorderFactory.createEmptyBorder());
 
     Localiser localiser = controller.getLocaliser();
 
