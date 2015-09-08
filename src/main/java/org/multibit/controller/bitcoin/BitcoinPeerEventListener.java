@@ -43,7 +43,7 @@ public class BitcoinPeerEventListener implements PeerEventListener {
   @Override
   public void onPeerConnected(Peer peer, int peerCount) {
     if (peer != null) {
-      log.debug("Connected to peer:" + peer.getPeerVersionMessage());
+      log.info("Connected to peer:" + peer.getPeerVersionMessage());
     }
     if (peerCount >= 1) {
       controller.setOnlineStatus(StatusEnum.ONLINE);
@@ -57,7 +57,7 @@ public class BitcoinPeerEventListener implements PeerEventListener {
   @Override
   public void onPeerDisconnected(Peer peer, int peerCount) {
     if (peer != null) {
-      log.debug("Disconnected from peer, address : " + peer.getAddress() + ", peerCount = " + peerCount);
+      log.info("Disconnected from peer, address : " + peer.getAddress() + ", peerCount = " + peerCount);
     }
     if (peerCount == 0) {
       controller.setOnlineStatus(StatusEnum.CONNECTING);
