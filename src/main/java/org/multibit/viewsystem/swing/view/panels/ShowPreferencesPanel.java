@@ -2140,7 +2140,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
   public void stateChanged(ChangeEvent e) {
     if (feeValueLabel != null && feeSlider != null) {
       long feeValue = feeSlider.getValue() * FeeSlider.RESOLUTION;
-      System.out.println("fee:" + feeValue);
       controller.getModel().setUserPreference(CoreModel.FEE_PER_KB, "" + feeValue);
       feeValueLabel.setText(FeeSlider.convertSatoshiToString(feeValue));
     }
