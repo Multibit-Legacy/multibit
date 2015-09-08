@@ -15,22 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.dialogs;
 
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.BitcoinModel;
@@ -46,6 +30,9 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The show open uri view.
@@ -245,6 +232,10 @@ public class ShowOpenUriDialog extends MultiBitDialog implements Viewable, ShowU
             rememberCheckBox.setSelected(true);
         }
         setVisible(true);
+
+        invalidate();
+        validate();
+        repaint();
         
         // bring this dialog to the front
         bringToFront();
