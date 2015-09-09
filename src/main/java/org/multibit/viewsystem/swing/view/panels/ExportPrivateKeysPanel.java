@@ -1051,11 +1051,9 @@ public class ExportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                     new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())})));
             exportPrivateKeySubmitAction.setEnabled(false);           
         } else {
-            // Enable unless wallet has been modified by another process.
-            if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                exportPrivateKeySubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip")));
-                exportPrivateKeySubmitAction.setEnabled(true);
-            }
+            // Enable
+            exportPrivateKeySubmitAction.putValue(Action.SHORT_DESCRIPTION, HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip")));
+            exportPrivateKeySubmitAction.setEnabled(true);
         }
     }
   

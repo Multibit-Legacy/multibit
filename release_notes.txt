@@ -1,14 +1,5 @@
 MultiBit release notes.
 
-28 Apr 2014 Version 0.5.18
+dd mmm 2015 Version 0.5.19
 Changes:
-  Upgrade to bitcoinj 0.11.2. This is mainly bug fixes.
-  Update of localisation and checkpoints files.
-  #540: Removal of import of blockchain.info wallet export files
-  #540: New utility "Tool | Check Private Keys"
-  #533, #534: Fix for cannot send 1000BTC or more (fix by Telepatheic)
-  #530: Fix for test timezone error (fix by allada)
-  #529: Fix for padding bytes in private key export files (fix by Andreas Schildbach)
-
-
-
+  Upgrade to Install4j as installer

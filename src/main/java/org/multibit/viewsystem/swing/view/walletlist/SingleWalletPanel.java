@@ -470,62 +470,59 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     this.selected = selected;
 
     myRoundedPanel.setSelected(selected);
-    if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-      setPreferredSize(new Dimension(normalWidth, normalHeight));
-      if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
-        setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
-      } else {
-        setMinimumSize(new Dimension(normalWidth, normalHeight));
+
+    setPreferredSize(new Dimension(normalWidth, normalHeight));
+    if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+      setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
+    } else {
+      setMinimumSize(new Dimension(normalWidth, normalHeight));
+    }
+    setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
+
+    if (selected) {
+      walletDescriptionTextField.setForeground(ColorAndFontConstants.TEXT_COLOR);
+      if (!walletDescriptionTextField.isEditable()) {
+        walletDescriptionTextField.setEditable(true);
       }
-      setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
+      requestFocusInWindow();
 
-      if (selected) {
-        walletDescriptionTextField.setForeground(ColorAndFontConstants.TEXT_COLOR);
-        if (!walletDescriptionTextField.isEditable()) {
-          walletDescriptionTextField.setEditable(true);
-        }
-        requestFocusInWindow();
+      walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
+      walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+      myRoundedPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
-        walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        myRoundedPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+      walletTypeButton.setOpaque(true);
+      walletTypeButton.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+      Color selectionBackGroundColor = ColorAndFontConstants.SELECTION_BACKGROUND_COLOR;
+      selectionBackGroundColor = ColorAndFontConstants.isInverse() ? selectionBackGroundColor.brighter() : selectionBackGroundColor.darker();
+      walletTypeButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, selectionBackGroundColor),
+              BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR)));
+      walletTypeButton.setBorderPainted(true);
 
-        walletTypeButton.setOpaque(true);
-        walletTypeButton.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        Color selectionBackGroundColor = ColorAndFontConstants.SELECTION_BACKGROUND_COLOR;
-        selectionBackGroundColor = ColorAndFontConstants.isInverse() ? selectionBackGroundColor.brighter() : selectionBackGroundColor.darker();
-        walletTypeButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, selectionBackGroundColor),
-                BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR)));
-        walletTypeButton.setBorderPainted(true);
+      myRoundedPanel.repaint();
+      twistyStent.setVisible(true);
+    } else {
+      walletDescriptionTextField.setForeground(ColorAndFontConstants.TEXT_COLOR);
+      walletDescriptionTextField.setEditable(false);
+      Insets insets = walletDescriptionTextFieldBorder.getBorderInsets(this);
+      Border border = BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right);
+      walletDescriptionTextField.setBorder(border);
+      walletDescriptionTextField.setBackground(inactiveBackGroundColor);
+      myRoundedPanel.setBackground(inactiveBackGroundColor);
 
-        myRoundedPanel.repaint();
-        twistyStent.setVisible(true);
-      } else {
-        walletDescriptionTextField.setForeground(ColorAndFontConstants.TEXT_COLOR);
-        walletDescriptionTextField.setEditable(false);
-        Insets insets = walletDescriptionTextFieldBorder.getBorderInsets(this);
-        Border border = BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right);
-        walletDescriptionTextField.setBorder(border);
-        walletDescriptionTextField.setBackground(inactiveBackGroundColor);
-        myRoundedPanel.setBackground(inactiveBackGroundColor);
+      walletTypeButton.setOpaque(false);
+      walletTypeButton.setBackground(inactiveBackGroundColor);
+      walletTypeButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+      walletTypeButton.setBorderPainted(false);
 
-        walletTypeButton.setOpaque(false);
-        walletTypeButton.setBackground(inactiveBackGroundColor);
-        walletTypeButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        walletTypeButton.setBorderPainted(false);
-
-        myRoundedPanel.repaint();
-        twistyStent.setVisible(true);
-      }
+      myRoundedPanel.repaint();
+      twistyStent.setVisible(true);
     }
   }
 
   @Override
   public void actionPerformed(ActionEvent evt) {
     saveChanges();
-    if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-      walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-    }
+    walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
     requestFocusInWindow();
   }
 
@@ -535,17 +532,15 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
   @Override
   public void focusGained(FocusEvent arg0) {
-    if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-      walletDescriptionTextField.setSelectedTextColor(ColorAndFontConstants.SELECTION_FOREGROUND_COLOR);
-      walletDescriptionTextField.setSelectionColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
-      String text = walletDescriptionTextField.getText();
-      walletDescriptionTextField.setCaretPosition(text == null ? 0 : text.length());
-      perWalletModelData.setWalletDescription(text);
+    walletDescriptionTextField.setSelectedTextColor(ColorAndFontConstants.SELECTION_FOREGROUND_COLOR);
+    walletDescriptionTextField.setSelectionColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
+    String text = walletDescriptionTextField.getText();
+    walletDescriptionTextField.setCaretPosition(text == null ? 0 : text.length());
+    perWalletModelData.setWalletDescription(text);
 
-      if (!(arg0.getSource() instanceof JTextField)) {
-        // Panel selection.
-        requestFocusInWindow();
-      }
+    if (!(arg0.getSource() instanceof JTextField)) {
+      // Panel selection.
+      requestFocusInWindow();
     }
   }
 
@@ -555,20 +550,18 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
   }
 
   private void saveChanges() {
-    if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-      walletDescriptionTextField.setForeground(ColorAndFontConstants.TEXT_COLOR);
-      walletDescriptionTextField.select(0, 0);
-      String text = walletDescriptionTextField.getText();
-      perWalletModelData.setWalletDescription(text);
+    walletDescriptionTextField.setForeground(ColorAndFontConstants.TEXT_COLOR);
+    walletDescriptionTextField.select(0, 0);
+    String text = walletDescriptionTextField.getText();
+    perWalletModelData.setWalletDescription(text);
 
-      String titleText = controller.getLocaliser().getString("multiBitFrame.title");
-      if (this.bitcoinController.getModel().getActiveWallet() != null) {
-        titleText = titleText + MultiBitFrame.SEPARATOR
-                + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
-                + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletFilename();
-      }
-      mainFrame.setTitle(titleText);
+    String titleText = controller.getLocaliser().getString("multiBitFrame.title");
+    if (this.bitcoinController.getModel().getActiveWallet() != null) {
+      titleText = titleText + MultiBitFrame.SEPARATOR
+              + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR
+              + this.bitcoinController.getModel().getActivePerWalletModelData().getWalletFilename();
     }
+    mainFrame.setTitle(titleText);
   }
 
   /**
@@ -610,24 +603,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     if (perWalletModelData.getWallet() != null) {
       setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
-    }
-
-    if (perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-      myRoundedPanel.setOpaque(true);
-      myRoundedPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-      walletDescriptionTextField.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-      walletDescriptionTextField.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
-      walletDescriptionTextField.setForeground(ColorAndFontConstants.DATA_HAS_CHANGED_TEXT_COLOR);
-      walletDescriptionTextField.setDisabledTextColor(ColorAndFontConstants.DATA_HAS_CHANGED_TEXT_COLOR);
-
-      mainFrame.setUpdatesStoppedTooltip(walletDescriptionTextField);
-      walletDescriptionTextField.setEnabled(false);
-      walletDescriptionTextField.setEditable(false);
-      amountLabelBTC.setText("");
-      amountLabelBTC.setEnabled(false);
-      amountLabelFiat.setText("");
-      amountLabelFiat.setEnabled(false);
-      walletTypeButton.setEnabled(false);
     }
 
     invalidate();

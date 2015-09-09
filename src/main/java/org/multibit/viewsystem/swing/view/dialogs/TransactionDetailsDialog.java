@@ -403,7 +403,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(filler2, constraints);
   
         MultiBitLabel sizeLabel = new MultiBitLabel("");
-        feeLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
+        feeLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.feeLabel.text"));
         feeLabel.setToolTipText(controller.getLocaliser().getString("transactionDetailsDialog.feeLabel.tooltip"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;

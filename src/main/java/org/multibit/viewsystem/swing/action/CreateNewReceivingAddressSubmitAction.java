@@ -312,11 +312,9 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
             setEnabled(false);           
         } else {
-            // Enable unless wallet has been modified by another process.
-            if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                putValue(SHORT_DESCRIPTION, this.bitcoinController.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
-                setEnabled(true);
-            }
+            // Enable
+            putValue(SHORT_DESCRIPTION, this.bitcoinController.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
+            setEnabled(true);
             
             // Make sure the cancel button is enabled.
             createNewReceivingAddressPanel.getCancelButton().setEnabled(true);

@@ -15,27 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.panels;
 
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Arrays;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -52,6 +31,12 @@ import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Arrays;
 
 
 
@@ -694,14 +679,11 @@ public class AddPasswordPanel extends JPanel implements Viewable, WalletBusyList
                                     new Object[] { controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
                     addPasswordSubmitAction.setEnabled(false);
                 } else {
-                    // Enable unless wallet has been modified by another
-                    // process.
-                    if (!this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                        addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
+                    // Enable
+                    addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
                                 controller.getLocaliser().getString("addPasswordSubmitAction.text"));
 
-                        addPasswordSubmitAction.setEnabled(true);
-                    }
+                    addPasswordSubmitAction.setEnabled(true);
                 }
             }
         }

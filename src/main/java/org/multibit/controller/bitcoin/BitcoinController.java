@@ -138,15 +138,6 @@ public class BitcoinController extends AbstractController<CoreController> implem
         }
         return perWalletModelDataToReturn;
     }
-
-    public void fireFilesHaveBeenChangedByAnotherProcess(WalletData perWalletModelData) {
-        //log.debug("fireFilesHaveBeenChangedByAnotherProcess called");
-        for (ViewSystem viewSystem : super.getViewSystem()) {
-            viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
-        }
-
-        fireDataChangedUpdateNow();
-    }
        
     /**
      * Fire that a wallet has changed its busy state.
@@ -380,9 +371,6 @@ public class BitcoinController extends AbstractController<CoreController> implem
         public void handleQuitEvent(ExitAction exitAction) {
             exitAction.setBitcoinController(super.controller);
         }
-    }
-
-    public void onConfidenceChanged(Transaction tx) {
     }
 
     @Override

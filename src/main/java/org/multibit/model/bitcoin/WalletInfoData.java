@@ -344,10 +344,6 @@ public class WalletInfoData {
             // Remove some properties form the wallet file that dont need to be persisted.
             Properties walletPreferencesClone = new Properties();
             walletPreferencesClone.putAll(walletPreferences);
-            walletPreferencesClone.remove(BitcoinModel.WALLET_FILE_SIZE);
-            walletPreferencesClone.remove(BitcoinModel.WALLET_FILE_LAST_MODIFIED);
-            walletPreferencesClone.remove(BitcoinModel.WALLET_INFO_FILE_SIZE);
-            walletPreferencesClone.remove(BitcoinModel.WALLET_INFO_FILE_LAST_MODIFIED);
 
             walletPreferencesClone.remove(BitcoinModel.VALIDATION_ADDRESS_IS_INVALID);
             walletPreferencesClone.remove(BitcoinModel.VALIDATION_ADDRESS_VALUE);
@@ -390,9 +386,6 @@ public class WalletInfoData {
 
     /**
      * Load the internally referenced wallet info file.
-     * 
-     * @throws WalletInfoException
-     *             Exception if read is unsuccessful
      */
     public void loadFromFile() {
         String walletInfoFilename = null;

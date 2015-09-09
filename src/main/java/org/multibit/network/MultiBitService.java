@@ -37,9 +37,11 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
+import org.multibit.model.core.CoreModel;
 import org.multibit.model.core.StatusEnum;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.store.WalletVersionException;
+import org.multibit.viewsystem.swing.view.components.FeeSlider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -80,7 +82,6 @@ public class MultiBitService {
   public static final String TESTNET3_PREFIX = "testnet3";
   public static final String SEPARATOR = "-";
 
-  public static final String BLOCKCHAIN_SUFFIX = ".blockchain";
   public static final String SPV_BLOCKCHAIN_SUFFIX = ".spvchain";
   public static final String CHECKPOINTS_SUFFIX = ".checkpoints";
   public static final String WALLET_SUFFIX = ".wallet";
@@ -389,7 +390,7 @@ public class MultiBitService {
   /**
    * Initialize wallet from the wallet filename.
    *
-   * @param walletFilename
+   * @param walletFilename the wallet filename
    * @return perWalletModelData
    */
   public WalletData addWalletFromFilename(String walletFilename) throws IOException {
@@ -584,13 +585,7 @@ public class MultiBitService {
           result.get(4, TimeUnit.SECONDS);
           atLeastOnePingWorked = true;
           break;
-        } catch (ProtocolException e) {
-          log.warn("Peer '" + peer.getAddress().toString() + "' failed ping test. Message was " + e.getMessage());
-        } catch (InterruptedException e) {
-          log.warn("Peer '" + peer.getAddress().toString() + "' failed ping test. Message was " + e.getMessage());
-        } catch (ExecutionException e) {
-          log.warn("Peer '" + peer.getAddress().toString() + "' failed ping test. Message was " + e.getMessage());
-        } catch (TimeoutException e) {
+        } catch (ProtocolException | InterruptedException | ExecutionException | TimeoutException e) {
           log.warn("Peer '" + peer.getAddress().toString() + "' failed ping test. Message was " + e.getMessage());
         }
       }
@@ -609,7 +604,13 @@ public class MultiBitService {
     }
     sendRequest.aesKey = aesKey;
     sendRequest.fee = BigInteger.ZERO;
-    sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
+
+    // Work out fee per KB
+    String unparsedFeePerKB = controller.getModel().getUserPreference(CoreModel.FEE_PER_KB);
+
+    // Ensure the initialFeeValue is in range of the slider
+    sendRequest.feePerKb = BigInteger.valueOf(FeeSlider.parseAndNormaliseFeePerKB(unparsedFeePerKB));
+    log.debug("Fee per KB set to {}", sendRequest.feePerKb);
 
     sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
 
@@ -628,7 +629,6 @@ public class MultiBitService {
 
       log.debug("Sending transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
     } catch (VerificationException e1) {
-      // TODO Auto-generated catch block
       e1.printStackTrace();
     }
 
@@ -636,7 +636,6 @@ public class MultiBitService {
 
     log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
-    assert sendTransaction != null;
     // We should never try to send more coins than we have!
     // throw an exception if sendTransaction is null - no money.
     if (sendTransaction != null) {
@@ -651,10 +650,7 @@ public class MultiBitService {
 
       try {
         bitcoinController.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-      } catch (WalletSaveException wse) {
-        log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
-        MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-      } catch (WalletVersionException wse) {
+      } catch (WalletSaveException | WalletVersionException wse) {
         log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
         MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
       }
@@ -685,8 +681,6 @@ public class MultiBitService {
             }
           }
         }
-      } catch (ScriptException e) {
-        e.printStackTrace();
       } catch (VerificationException e) {
         e.printStackTrace();
       }

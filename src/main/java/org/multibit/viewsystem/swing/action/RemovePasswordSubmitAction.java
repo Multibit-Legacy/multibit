@@ -15,20 +15,13 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-import java.nio.CharBuffer;
-
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JPasswordField;
-import javax.swing.SwingUtilities;
-
-import org.multibit.controller.Controller;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
-import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletBusyListener;
+import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -36,8 +29,9 @@ import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.KeyCrypterException;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.nio.CharBuffer;
 
 /**
  * This {@link Action} action removes the encryption of private keys in a wallet.
@@ -143,10 +137,8 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
             putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", 
                     new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));         
         } else {
-            // Enable unless wallet has been modified by another process.
-            if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("removePasswordSubmitAction.text"));
-            }
+            // Enable
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("removePasswordSubmitAction.text"));
         }
     }
 }

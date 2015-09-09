@@ -1,14 +1,12 @@
 package org.multibit.viewsystem.swing.action;
 
-import javax.swing.AbstractAction;
-import javax.swing.Icon;
-
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.WalletData;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+
+import javax.swing.*;
 
 /**
  * Abstract super class to check for whether wallet files have changed and
@@ -46,19 +44,6 @@ public abstract class MultiBitSubmitAction extends AbstractAction {
             return true;
         }
 
-        // check to see if another process has changed the active wallet
-        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
-        
-        if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire
-            // data changed
-            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData); 
- 
-            return true;
-        }
-        
         return false;
     }
 }

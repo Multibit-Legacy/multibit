@@ -21,10 +21,11 @@ import com.google.bitcoin.crypto.KeyCrypterException;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.bitcoin.BitcoinModel;
+import org.multibit.model.core.CoreModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.components.FeeSlider;
 import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.dialogs.ValidationErrorDialog;
 import org.slf4j.Logger;
@@ -84,7 +85,12 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
                 SendRequest sendRequest = SendRequest.to(sendAddressObject, Utils.toNanoCoins(sendAmount));
                 sendRequest.ensureMinRequiredFee = true;
                 sendRequest.fee = BigInteger.ZERO;
-                sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
+
+                // Work out fee per KB
+                String unparsedFeePerKB = controller.getModel().getUserPreference(CoreModel.FEE_PER_KB);
+
+                // Ensure the initialFeeValue is in range of the slider
+                sendRequest.feePerKb = BigInteger.valueOf(FeeSlider.parseAndNormaliseFeePerKB(unparsedFeePerKB));
 
                 // Note - Request is populated with the AES key in the SendBitcoinNowAction after the user has entered it on the SendBitcoinConfirm form.
 

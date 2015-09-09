@@ -279,11 +279,9 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     new Object[]{controller.getLocaliser().getString(this.bitcoinController.getModel().getActivePerWalletModelData().getBusyTaskKey())}));
             setEnabled(false);           
         } else {
-            // Enable unless wallet has been modified by another process.
-            if (!super.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("exportPrivateKeysSubmitAction.text"));
-                setEnabled(true);
-            }
+            // Enable
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("exportPrivateKeysSubmitAction.text"));
+            setEnabled(true);
         }
     }
 }

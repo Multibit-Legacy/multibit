@@ -9,6 +9,6 @@ Tim Molter
 
 Internationalisation:
 ---------------------
-http://translate.multibit.org
+https://crowdin.com/project/multibit
 
 Thanks to all the MultiBit localisers.

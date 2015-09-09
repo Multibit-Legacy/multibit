@@ -15,23 +15,18 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Image;
-import java.awt.Toolkit;
+import org.multibit.controller.Controller;
+import org.multibit.controller.bitcoin.BitcoinController;
+import org.multibit.utils.WhitespaceTrimmer;
+import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-
-import org.multibit.controller.Controller;
-import org.multibit.controller.bitcoin.BitcoinController;
-import org.multibit.model.bitcoin.WalletData;
-import org.multibit.utils.WhitespaceTrimmer;
-import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 
 /**
  * This {@link Action} enables you to paste a swatch into the Send Bitcoin Panel
@@ -62,43 +57,32 @@ public class PasteSwatchAction extends AbstractAction {
     }
 
     /**
-     * paste the swatch data
+     * Paste the swatch data
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        // check to see if the wallet files have changed
-        WalletData perWalletModelData = this.bitcoinController.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = this.bitcoinController.getFileHandler().haveFilesChanged(perWalletModelData);
-
-        if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire
-            // data changed
-            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            this.bitcoinController.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+        // see if an image was pasted
+        Image image = getImageFromClipboard();
+        if (image != null) {
+            if (tradePanel != null) {
+                tradePanel.processDroppedImage(image);
+            }
         } else {
-            // see if an image was pasted
-            Image image = getImageFromClipboard();
-            if (image != null) {
-                if (tradePanel != null) {
-                     tradePanel.processDroppedImage(image);
-                }
-            } else {
-                // see if text was pasted
-                TextTransfer textTransfer = new TextTransfer();
-                String stringToPaste = textTransfer.getClipboardContents();
-                if (stringToPaste != null) {
-                    // some text was pasted
-                    stringToPaste = WhitespaceTrimmer.trim(stringToPaste);
+            // see if text was pasted
+            TextTransfer textTransfer = new TextTransfer();
+            String stringToPaste = textTransfer.getClipboardContents();
+            if (stringToPaste != null) {
+                // some text was pasted
+                stringToPaste = WhitespaceTrimmer.trim(stringToPaste);
 
-                    if (tradePanel != null) {
-                        tradePanel.processDecodedString(stringToPaste, null);
-                    }
+                if (tradePanel != null) {
+                    tradePanel.processDecodedString(stringToPaste, null);
                 }
             }
-
-            // forward back to the view currently being displayed
-            controller.displayView(controller.getCurrentView());
         }
+
+        // forward back to the view currently being displayed
+        controller.displayView(controller.getCurrentView());
     }
 
     private Image getImageFromClipboard() {

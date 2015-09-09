@@ -24,7 +24,6 @@ import org.multibit.controller.exchange.ExchangeController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.BackupManager;
 import org.multibit.file.FileHandler;
-import org.multibit.file.WalletLoadException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.bitcoin.BitcoinModel;
@@ -38,7 +37,7 @@ import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
-import org.multibit.store.WalletVersionException;
+import org.multibit.utils.OSUtils;
 import org.multibit.viewsystem.DisplayHint;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -52,7 +51,6 @@ import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -219,13 +217,7 @@ public final class MultiBit {
                 } else {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
-            } catch (UnsupportedLookAndFeelException e) {
-                // Carry on.
-            } catch (ClassNotFoundException e) {
-                // Carry on.
-            } catch (InstantiationException e) {
-                // Carry on.
-            } catch (IllegalAccessException e) {
+            } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 // Carry on.
             }
 
@@ -322,25 +314,7 @@ public final class MultiBit {
                             BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(activeWalletFilename);
                         }
                     }
-                } catch (WalletLoadException e) {
-                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                            new Object[] { activeWalletFilename, e.getMessage() });
-                    MessageManager.INSTANCE.addMessage(new Message(message));
-                    log.error(message);
-                    thereWasAnErrorLoadingTheWallet = true;
-                } catch (WalletVersionException e) {
-                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                            new Object[] { activeWalletFilename, e.getMessage() });
-                    MessageManager.INSTANCE.addMessage(new Message(message));
-                    log.error(message);
-                    thereWasAnErrorLoadingTheWallet = true;
-                } catch (IOException e) {
-                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                            new Object[] { activeWalletFilename, e.getMessage() });
-                    MessageManager.INSTANCE.addMessage(new Message(message));
-                    log.error(message);
-                    thereWasAnErrorLoadingTheWallet = true;
-                }  catch (Exception e) {
+                } catch (Exception e) {
                     String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                             new Object[] { activeWalletFilename, e.getMessage() });
                     MessageManager.INSTANCE.addMessage(new Message(message));
@@ -486,24 +460,6 @@ public final class MultiBit {
                                         BackupManager.INSTANCE.moveSiblingTimestampedKeyAndWalletBackups(actualOrder);
                                     }
                                 }
-                            } catch (WalletLoadException e) {
-                                message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                        new Object[] { actualOrder, e.getMessage() }));
-                                MessageManager.INSTANCE.addMessage(message);
-                                log.error(message.getText());
-                                thereWasAnErrorLoadingTheWallet = true;
-                            } catch (WalletVersionException e) {
-                                message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                        new Object[] { actualOrder, e.getMessage() }));
-                                MessageManager.INSTANCE.addMessage(message);
-                                log.error(message.getText());
-                                thereWasAnErrorLoadingTheWallet = true;
-                            } catch (IOException e) {
-                                message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                        new Object[] { actualOrder, e.getMessage() }));
-                                MessageManager.INSTANCE.addMessage(message);
-                                log.error(message.getText());
-                                thereWasAnErrorLoadingTheWallet = true;
                             } catch (Exception e) {
                                 message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                         new Object[] { actualOrder, e.getMessage() }));
@@ -552,10 +508,6 @@ public final class MultiBit {
 
             // Check for any pending URI operations.
             bitcoinController.handleOpenURI(rememberedRawBitcoinURI);
-
-            // Check to see if there is a new version.
-            AlertManager.INSTANCE.initialise(bitcoinController, (MultiBitFrame) swingViewSystem);
-            AlertManager.INSTANCE.checkVersion();
 
             log.debug("Downloading blockchain");
             if (useFastCatchup) {
@@ -634,14 +586,16 @@ public final class MultiBit {
                 // Just sync the blockchain without a replay task being involved.
                 ReplayManager.INSTANCE.downloadBlockChain();
             }
+
+            if (OSUtils.isWindowsXPOrEarlier()) {
+              log.error("Windows XP or earlier detected. Issuing warning.");
+              JOptionPane.showMessageDialog(
+                null, "This version of Windows is not recommended for security reasons.\nPlease upgrade.", "Error",
+                JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception e) {
             // An odd unrecoverable error occurred.
-            e.printStackTrace();
-
-            log.error("An unexpected error caused MultiBit to quit.");
-            log.error("The error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
-            e.printStackTrace();
-            log.error("Please read http://multibit.org/help_troubleshooting.html for help on troubleshooting.");
+            log.error("An unexpected error caused MultiBit to quit.", e);
 
             // Try saving any dirty wallets.
             if (controller != null) {

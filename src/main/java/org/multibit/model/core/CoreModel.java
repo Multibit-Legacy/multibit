@@ -23,9 +23,10 @@
  */
 package org.multibit.model.core;
 
-import java.util.Properties;
 import org.multibit.model.BaseModel;
 import org.multibit.model.ModelEnum;
+
+import java.util.Properties;
 
 /**
  *
@@ -55,7 +56,8 @@ public class CoreModel extends BaseModel<CoreModel> {
     public static final String PREVIOUS_UNDO_CHANGES_TEXT = "previousUndoChangesText";
     public static final String CAN_UNDO_PREFERENCES_CHANGES = "canUndoPreferencesChanges";
     
-    
+    public static final String FEE_PER_KB = "feePerKB";
+
     
     public CoreModel() {
         this(null);

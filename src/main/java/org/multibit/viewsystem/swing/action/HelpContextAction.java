@@ -15,17 +15,15 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-
 import org.multibit.controller.Controller;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+
 /**
- * This {@link Action} represents an action thath displays a context specific help page
+ * This {@link Action} represents an action that displays a context specific help page
  */
 public class HelpContextAction extends AbstractAction {
 
@@ -41,7 +39,7 @@ public class HelpContextAction extends AbstractAction {
      * @param textKey The localisation key for the text of the action
      * @param tooltipKey The localisation key for the tooltip of the action
      * @param mnemonicKey The localisation key for the mnemonic of the action
-     * @param viewToDisplay The help context to display on action activation.   A path in the help
+     * @param helpContextToDisplay The help context to display on action activation.   A path in the help
      */
     public HelpContextAction(Controller controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, String helpContextToDisplay) {
         super(controller.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
