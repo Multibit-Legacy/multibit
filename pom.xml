@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multidoge</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.5</version>
     <name>MultiDoge</name>
     <description>A Java Swing client for Dogecoin</description>
     <url>https://multidoge.org</url>
@@ -178,7 +178,7 @@
             <plugin>
                 <groupId>com.github.wvengen</groupId>
                 <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.0.6</version>
+                <version>2.0.11</version>
                 <executions>
                     <execution>
                         <id>package-with-proguard</id>
@@ -198,7 +198,7 @@
                     <dependency>
                         <groupId>net.sf.proguard</groupId>
                         <artifactId>proguard-base</artifactId>
-                        <version>4.9</version>
+                        <version>5.2</version>
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
@@ -791,7 +791,7 @@
             <groupId>com.oracle</groupId>
             <artifactId>javafx</artifactId>
             <version>2.2.40</version>
-            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+            <systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath>
             <scope>system</scope>
         </dependency>
     </dependencies>

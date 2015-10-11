@@ -1,5 +1,5 @@
 MultiDoge release notes:
 
-21 Dec 2014: 0.1.4
-+ Enable sending coins to MultiSig addresses
+11 Oct 2015: 0.1.5
++ Conform to low-s constraint and fix sync against 1.10 nodes
 + Updated checkpoints for faster initial sync
