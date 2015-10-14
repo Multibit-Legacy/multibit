@@ -1,5 +1,8 @@
 MultiDoge release notes:
 
+14 Oct 2015: 0.1.6
++ Fix syncing issue preventing to sync further than Oct 12
+
 11 Oct 2015: 0.1.5
 + Conform to low-s constraint and fix sync against 1.10 nodes
 + Updated checkpoints for faster initial sync
