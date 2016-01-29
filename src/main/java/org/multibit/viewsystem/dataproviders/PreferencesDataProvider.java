@@ -133,10 +133,5 @@ public interface PreferencesDataProvider extends DataProvider {
     boolean getPreviousShowBitcoinConvertedToFiat();
 
 
-    String getNewOpenExchangeRatesApiCode();
-
-
-    String getPreviousOpenExchangeRatesApiCode();
-
     boolean getNewMinimizeToTray();
 }

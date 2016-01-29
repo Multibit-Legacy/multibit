@@ -31,6 +31,7 @@ import org.multibit.model.bitcoin.BitcoinModel;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.CoreModel;
 import org.multibit.model.exchange.ConnectHttps;
+import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.exchange.ExchangeModel;
 import org.multibit.network.*;
 import org.multibit.platform.GenericApplication;
@@ -610,6 +611,14 @@ public final class MultiBit {
             } else {
                 // Just sync the blockchain without a replay task being involved.
                 ReplayManager.INSTANCE.downloadBlockChain();
+            }
+
+            // Upgrade path from cryptsy
+            if (bitcoinController.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE).equals(ExchangeData.CRYPTS_EXCHANGE_NAME)) {
+                bitcoinController.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, ExchangeData.POLONIEX_EXCHANGE_NAME);
+            }
+            if (bitcoinController.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE).equals(ExchangeData.CRYPTS_EXCHANGE_NAME)) {
+                bitcoinController.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, ExchangeData.POLONIEX_EXCHANGE_NAME);
             }
         } catch (Exception e) {
             // An odd unrecoverable error occurred.

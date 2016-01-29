@@ -311,15 +311,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String newCurrency1 = dataProvider.getNewCurrency1();
             if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
                 controller.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
-                String newCurrencyCode = newCurrency1;
-                if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(newExchange1)) {
-                    // Use only the last three characters - the currency code.
-                     if (newCurrency1.length() >= 3) {
-                        newCurrencyCode = newCurrency1.substring(newCurrency1.length() - 3);
-                    }
-                }
                 try {
-                    CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrencyCode));
+                    CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrency1));
                 } catch ( org.joda.money.IllegalCurrencyException e) {
                     e.printStackTrace();
                 }
@@ -353,15 +346,6 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 controller.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
                 wantToFireDataStructureChanged = true;
                 restartTickerTimer = true;
-            }
-            
-            String previousOerApicode = dataProvider.getPreviousOpenExchangeRatesApiCode();
-            String newOerApiCode = dataProvider.getNewOpenExchangeRatesApiCode();
-            if (newOerApiCode != null && !newOerApiCode.equals(previousOerApicode)) {
-                wantToFireDataStructureChanged = true;
-                restartTickerTimer = true;
-
-                controller.getModel().setUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE, newOerApiCode);
             }
 
             // Can undo.

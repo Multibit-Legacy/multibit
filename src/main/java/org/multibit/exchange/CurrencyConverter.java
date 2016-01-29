@@ -88,12 +88,6 @@ public enum CurrencyConverter {
         String currencyCode = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_CURRENCY);
         String exchange = controller.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE);
         String newCurrencyCode = currencyCode;
-        if (ExchangeData.BITCOIN_CHARTS_EXCHANGE_NAME.equals(exchange)) {
-            // Use only the last three characters - the currency code.
-            if (currencyCode.length() >= 3) {
-                newCurrencyCode = currencyCode.substring(currencyCode.length() - 3);
-            }
-        }
         initialise(controller, newCurrencyCode);
     }
     
