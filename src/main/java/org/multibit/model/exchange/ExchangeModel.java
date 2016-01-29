@@ -48,7 +48,6 @@ public class ExchangeModel extends AbstractModel<CoreModel> {
     
     // Currency support.
     public static final String SHOW_BITCOIN_CONVERTED_TO_FIAT = "showBitcoinConvertedToFiat";   // boolean
-    public static final String OPEN_EXCHANGE_RATES_API_CODE = "openExchangeRatesApiCode";
     
     
     private Map<String, ExchangeData> shortExchangeNameToExchangeMap;

@@ -76,9 +76,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private static final int EXCHANGE_COMBO_HEIGHT_DELTA = 15;
     private static final int COMBO_WIDTH_DELTA = 150;
 
-    private static final int API_CODE_FIELD_HEIGHT = 30;
-    private static final int API_CODE_FIELD_WIDTH = 200;
-
     private final Controller controller;
     private final BitcoinController bitcoinController;
     private final ExchangeController exchangeController;
@@ -146,16 +143,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     private JComboBox lookAndFeelComboBox;
     private String localisedSystemLookAndFeelName;
 
-    private JPanel oerStent;
-    private MultiBitTextField oerApiCodeTextField;
-    private String haveShownErrorMessageForApiCode;
-    private MultiBitButton getOerAppIdButton;
-    private MultiBitLabel oerApiCodeLabel;
-    private MultiBitLabel oerMessageLabel1, oerMessageLabel2;
-    private String originalOERApiCode;
-    public static final String OPEN_EXCHANGE_RATES_SIGN_UP_URI = "https://openexchangerates.org/signup/free?r=multibit";
-    public static final int LENGTH_OF_OPEN_EXCHANGE_RATE_APP_ID = 32;
-
     private Font selectedFont;
 
     private static final int STENT_DELTA = 0;
@@ -171,7 +158,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         this.mainFrame = mainFrame;
 
         localisedSystemLookAndFeelName = controller.getLocaliser().getString("showPreferencesPanel.systemLookAndFeel");
-        originalOERApiCode = controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE);
 
         initUI();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -256,9 +242,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         } else {
             undoChangesButton.setEnabled(false);
         }
-        
-        originalOERApiCode = controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE);
-        oerApiCodeTextField.setText(originalOERApiCode);
 
         invalidate();
         validate();
@@ -280,7 +263,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
 
         String[] keys = new String[] { "fontChooser.fontName", "fontChooser.fontStyle",
                 "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency",
-                "showPreferencesPanel.lookAndFeel", "showPreferencesPanel.oerLabel.text" };
+                "showPreferencesPanel.lookAndFeel"};
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -918,8 +901,7 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         exchangeComboBox1.setOpaque(false);
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        int textWidth = Math.max(fontMetrics.stringWidth(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME), fontMetrics.stringWidth("USD"))
-                + COMBO_WIDTH_DELTA;
+        int textWidth = fontMetrics.stringWidth("USD") + COMBO_WIDTH_DELTA;
         Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight()
                 + EXCHANGE_COMBO_HEIGHT_DELTA);
         exchangeComboBox1.setPreferredSize(preferredSize);
@@ -942,20 +924,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(exchangeComboBox1, constraints);
-
-        oerMessageLabel1 = new MultiBitLabel("    " + controller.getLocaliser().getString("showPreferencesPanel.getAppId.label")); 
-        oerMessageLabel1.setForeground(Color.GREEN.darker().darker());
-        boolean showMessageLabel1 = isBrowserSupported() && ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeToUse1) 
-            && (originalOERApiCode == null || originalOERApiCode.trim().length() == 0);
-        oerMessageLabel1.setVisible(showMessageLabel1);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 5;
-        constraints.gridy = 15;
-        constraints.weightx = 0.8;
-        constraints.weighty = 0.6;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(oerMessageLabel1, constraints);
 
         MultiBitLabel currencyLabel1 = new MultiBitLabel(controller.getLocaliser()
                 .getString("showPreferencesPanel.ticker.currency"));
@@ -1026,18 +994,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                             }
                         }
                     }
-                    
-                    // Enable the OpenExchangeRates App ID if required.
-                    boolean showOER = ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortName) ||  
-                            ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase((String) exchangeComboBox2.getSelectedItem());
-                    oerStent.setVisible(showOER); 
-                    oerApiCodeLabel.setVisible(showOER);     
-                    oerApiCodeTextField.setVisible(showOER);
-                    getOerAppIdButton.setVisible(showOER);
-                    
-                    boolean showMessageLabel = isBrowserSupported() && ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortName) 
-                        && (oerApiCodeTextField.getText() == null || oerApiCodeTextField.getText().trim().length() == 0);
-                    oerMessageLabel1.setVisible(showMessageLabel);
                 }
             }
         });
@@ -1142,18 +1098,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
                             }
                         }
                     }
-                    
-                    // Enable the OpenExchangeRates App ID if required.
-                    boolean showOER = ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortName) ||  
-                            ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase((String) exchangeComboBox1.getSelectedItem());
-                    oerStent.setVisible(showOER); 
-                    oerApiCodeLabel.setVisible(showOER);     
-                    oerApiCodeTextField.setVisible(showOER);
-                    getOerAppIdButton.setVisible(showOER);
-                    
-                    boolean showMessageLabel = isBrowserSupported() && ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeShortName) 
-                        && (oerApiCodeTextField.getText() == null || oerApiCodeTextField.getText().trim().length() == 0);
-                    oerMessageLabel2.setVisible(showMessageLabel);
                 }
             }
         });
@@ -1166,21 +1110,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(exchangeComboBox2, constraints);
-
-        oerMessageLabel2 = new MultiBitLabel("    " + controller.getLocaliser().getString("showPreferencesPanel.getAppId.label"));       
-        oerMessageLabel2.setForeground(Color.GREEN.darker().darker());
-        boolean showMessageLabel2 = isBrowserSupported() && ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeToUse2) 
-            && (originalOERApiCode == null || originalOERApiCode.trim().length() == 0);
-        oerMessageLabel2.setVisible(showMessageLabel2);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 5;
-        constraints.gridy = 22;
-        constraints.weightx = 0.8;
-        constraints.weighty = 0.6;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(oerMessageLabel2, constraints);
-
 
         currencyLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.currency"));
         currencyLabel2.setHorizontalAlignment(JLabel.TRAILING);
@@ -1254,177 +1183,8 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(fill1, constraints);
-        
-        boolean showOerSignup = ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeToUse1) ||
-        ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equalsIgnoreCase(exchangeToUse2);
-
-        oerStent = MultiBitTitledPanel.createStent(12, 12);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 26;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        oerStent.setVisible(showOerSignup);
-        tickerPanel.add(oerStent, constraints);
- 
-        oerApiCodeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.oerLabel.text"));
-        oerApiCodeLabel.setToolTipText(HelpContentsPanel.createTooltipText(controller.getLocaliser().getString("showPreferencesPanel.oerLabel.tooltip")));
-        oerApiCodeLabel.setVisible(showOerSignup);
-
-        oerApiCodeTextField = new MultiBitTextField("", 25, controller);
-        oerApiCodeTextField.setHorizontalAlignment(JLabel.LEADING);
-        oerApiCodeTextField.setMinimumSize(new Dimension(API_CODE_FIELD_WIDTH, API_CODE_FIELD_HEIGHT));
-        oerApiCodeTextField.setPreferredSize(new Dimension(API_CODE_FIELD_WIDTH, API_CODE_FIELD_HEIGHT));
-        oerApiCodeTextField.setMaximumSize(new Dimension(API_CODE_FIELD_WIDTH, API_CODE_FIELD_HEIGHT));
-        oerApiCodeTextField.setVisible(showOerSignup);
-        oerApiCodeTextField.setText(originalOERApiCode);
-        oerApiCodeTextField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent arg0) {               
-            }
-
-            @Override
-            public void focusLost(FocusEvent arg0) {
-                String apiCode = oerApiCodeTextField.getText();
-                if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0)
-                        && !apiCode.equals(controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE))) {
-                    // New API code.
-                    // Check its length
-                    if (!(apiCode.trim().length() == LENGTH_OF_OPEN_EXCHANGE_RATE_APP_ID)
-                            && !apiCode.equals(haveShownErrorMessageForApiCode)) {
-                        haveShownErrorMessageForApiCode = apiCode;
-                        // Give user a message that App ID is not in the correct format.
-                        JOptionPane.showMessageDialog(null, new String[] {controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text1"), " ",
-                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text2"), 
-                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text3")},
-                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.title"), 
-                                JOptionPane.ERROR_MESSAGE, ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE));
-                        return;
-                    }
-                }
-                updateApiCode();
-            }});
-        oerApiCodeTextField.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                String apiCode = oerApiCodeTextField.getText();
-                if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE))) {
-                    // New API code.
-                    // Check its length
-                    if (!(apiCode.trim().length() == LENGTH_OF_OPEN_EXCHANGE_RATE_APP_ID)
-                            && !apiCode.equals(haveShownErrorMessageForApiCode)) {
-                        haveShownErrorMessageForApiCode = apiCode;
-                        // Give user a message that App ID is not in the correct format.
-                        JOptionPane.showMessageDialog(null, new String[] {controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text1"),
-                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text2"), 
-                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.text3")},
-                                controller.getLocaliser().getString("showPreferencesPanel.oerValidationError.title"), 
-                                JOptionPane.ERROR_MESSAGE, ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE));
-                        return;
-                    }
-                }
-                updateApiCode();
-            }});
-        
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 27;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        tickerPanel.add(oerApiCodeLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 4;
-        constraints.gridy = 27;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 2;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(oerApiCodeTextField, constraints);
-        
-        if (isBrowserSupported()) {
-            getOerAppIdButton = new MultiBitButton(controller.getLocaliser().getString("showPreferencesPanel.getAppId.text"));
-            getOerAppIdButton.setToolTipText(controller.getLocaliser().getString("showPreferencesPanel.getAppId.tooltip"));
-            getOerAppIdButton.setVisible(showOerSignup);
-
-            getOerAppIdButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent arg0) {
-                    try {
-                        openURI(new URI(OPEN_EXCHANGE_RATES_SIGN_UP_URI));
-                    } catch (URISyntaxException e) {
-                        log.debug(e.getMessage());
-                    } 
-                }});
-            
-            constraints.fill = GridBagConstraints.NONE;
-            constraints.gridx = 4;
-            constraints.gridy = 28;
-            constraints.weightx = 1;
-            constraints.weighty = 1;
-            constraints.gridwidth = 1;
-            constraints.anchor = GridBagConstraints.LINE_START;
-            tickerPanel.add(getOerAppIdButton, constraints);
-        }
 
         return tickerPanel;
-    }
-    
-    private void updateApiCode() {
-        String apiCode = oerApiCodeTextField.getText();
-        if (apiCode != null && !(WhitespaceTrimmer.trim(apiCode).length() == 0) && !apiCode.equals(controller.getModel().getUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE))) {
-            // New API code.
-            apiCode = WhitespaceTrimmer.trim(apiCode);
-            oerApiCodeTextField.setText(apiCode);
-            
-            controller.getModel().setUserPreference(ExchangeModel.OPEN_EXCHANGE_RATES_API_CODE, apiCode);
-            if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals((String)exchangeComboBox1.getSelectedItem())) {
-                if (mainFrame != null && mainFrame.getTickerTimerTask1() != null) {
-                    TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask1();
-                    synchronized (tickerTimerTask) {
-                        tickerTimerTask.createExchangeObjects(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
-                        currencyComboBox1.removeAllItems();
-                        Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
-                        if (currenciesToUse != null) {
-                            for (String currency : currenciesToUse) {
-                                String loopItem = currency;
-                                String description = CurrencyConverter.INSTANCE.getCurrencyCodeToDescriptionMap().get(currency);
-                                if (description != null && description.trim().length() > 0) {
-                                    loopItem = loopItem + " (" + description + ")";
-                                }
-                                currencyComboBox1.addItem(loopItem);
-                            }
-                        }
-                    }
-                }
-                oerMessageLabel1.setVisible(false);
-            }
-            if (ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME.equals((String)exchangeComboBox2.getSelectedItem())) {
-                if (mainFrame != null && mainFrame.getTickerTimerTask2() != null) {
-                    TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask2();
-                    synchronized (tickerTimerTask) {
-                        tickerTimerTask.createExchangeObjects(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
-                        currencyComboBox2.removeAllItems();
-                        Collection<String> currenciesToUse = ExchangeData.getAvailableCurrenciesForExchange(ExchangeData.OPEN_EXCHANGE_RATES_EXCHANGE_NAME);
-                        if (currenciesToUse != null) {
-                            for (String currency : currenciesToUse) {
-                                String loopItem = currency;
-                                String description = CurrencyConverter.INSTANCE.getCurrencyCodeToDescriptionMap().get(currency);
-                                if (description != null && description.trim().length() > 0) {
-                                    loopItem = loopItem + " (" + description + ")";
-                                }
-                                currencyComboBox2.addItem(loopItem);
-                            }
-                        }
-                    }
-                }
-                oerMessageLabel2.setVisible(false);
-            }
-        }
     }
 
     private JPanel createBrowserIntegrationPanel(int stentWidth) {
@@ -1595,7 +1355,6 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
         exchangeComboBox2.setEnabled(enableTickerSecondRow);
         currencyLabel2.setEnabled(enableTickerSecondRow);
         currencyComboBox2.setEnabled(enableTickerSecondRow);
-        oerMessageLabel2.setEnabled(enableTickerSecondRow);
     }
 
     private ImageIcon createImageIcon(String text) {
@@ -1756,20 +1515,10 @@ public class ShowPreferencesPanel extends JPanel implements Viewable, Preference
     public String getPreviousUndoChangesText() {
         return controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text");
     }
-    
-    @Override
-    public String getPreviousOpenExchangeRatesApiCode() {
-        return originalOERApiCode;
-    }
 
     @Override
     public boolean getNewMinimizeToTray() {
         return minimizeToTrayCheckBox.isSelected();
-    }
-
-    @Override
-    public String getNewOpenExchangeRatesApiCode() {
-        return oerApiCodeTextField.getText();
     }
     
 

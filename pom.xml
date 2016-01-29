@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multidoge</artifactId>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
     <name>MultiDoge</name>
     <description>A Java Swing client for Dogecoin</description>
     <url>https://multidoge.org</url>
@@ -685,52 +685,10 @@
             <artifactId>xchange-core</artifactId>
             <version>${xchange.version}</version>
         </dependency>
-        <!-- XChange MtGox exchange support -->
+        <!-- XChange Poloniex exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-mtgox</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange VirtEx exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-cavirtex</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange Open Exchange Rates exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-openexchangerates</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange BTC-E exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-btce</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange Bitstamp exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-bitstamp</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange CampBX exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-campbx</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange BTCChina exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-btcchina</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
-        <!-- XChange Kraken exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-kraken</artifactId>
+            <artifactId>xchange-poloniex</artifactId>
             <version>${xchange.version}</version>
         </dependency>
         <dependency>
@@ -819,7 +777,7 @@
         <bitcoinj.version>0.10.3-MB-ALICE</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
-        <xchange.version>2.0.0-SNAPSHOT</xchange.version>
+        <xchange.version>3.1.0</xchange.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
