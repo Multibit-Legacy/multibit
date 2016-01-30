@@ -241,13 +241,6 @@ public class TickerTimerTask extends TimerTask {
         Exchange exchangeDOGE = ExchangeFactory.INSTANCE.createExchange(PoloniexExchange.class.getName());
 
         if (exchange != null) {
-            try {
-                exchange.remoteInit();
-                exchangeDOGE.remoteInit();
-            } catch (IOException e) {
-                log.error("Could not contact exchanges for init!");
-                return;
-            }
 
             // Interested in the public market data feed (no authentication).
             marketDataServiceBTC = exchange.getPollingMarketDataService();
@@ -255,7 +248,7 @@ public class TickerTimerTask extends TimerTask {
             log.debug("marketDataServiceBTC = " + marketDataServiceBTC);
 
             // Get the list of available currencies.
-            exchangeSymbols = new ArrayList<CurrencyPair>(exchange.getMetaData().getMarketMetaDataMap().keySet());
+            exchangeSymbols = exchange.getMetaData().getCurrencyPairs();
             log.debug("exchangeSymbols = " + exchangeSymbols);
 
             if (exchangeSymbols != null) {
