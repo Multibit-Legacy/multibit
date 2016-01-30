@@ -1,6 +1,6 @@
 MultiDoge release notes:
 29 Jan 2016: 0.1.7
-+ Update XChange to 3.1.0
++ Update XChange to 3.0.0
 + Replace Cryptsy with Poloniex as source for the DOGE/BTC exchange rate
 + BTC/Fiat exchange rates are provided by BitcoinAverage
 + Updated checkpoints
