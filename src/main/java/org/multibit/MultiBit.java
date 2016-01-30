@@ -614,11 +614,13 @@ public final class MultiBit {
             }
 
             // Upgrade path from cryptsy
-            if (bitcoinController.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE).equals(ExchangeData.CRYPTS_EXCHANGE_NAME)) {
-                bitcoinController.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, ExchangeData.POLONIEX_EXCHANGE_NAME);
-            }
-            if (bitcoinController.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE).equals(ExchangeData.CRYPTS_EXCHANGE_NAME)) {
-                bitcoinController.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, ExchangeData.POLONIEX_EXCHANGE_NAME);
+            if (bitcoinController != null && bitcoinController.getModel() != null) { // Mac sometimes isn't ready yet...
+                if (ExchangeData.CRYPTS_EXCHANGE_NAME.equals(bitcoinController.getModel().getUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE))) {
+                    bitcoinController.getModel().setUserPreference(ExchangeModel.TICKER_FIRST_ROW_EXCHANGE, ExchangeData.POLONIEX_EXCHANGE_NAME);
+                }
+                if (ExchangeData.CRYPTS_EXCHANGE_NAME.equals(bitcoinController.getModel().getUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE))) {
+                    bitcoinController.getModel().setUserPreference(ExchangeModel.TICKER_SECOND_ROW_EXCHANGE, ExchangeData.POLONIEX_EXCHANGE_NAME);
+                }
             }
         } catch (Exception e) {
             // An odd unrecoverable error occurred.
