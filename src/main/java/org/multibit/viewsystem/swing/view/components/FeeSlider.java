@@ -23,7 +23,7 @@ public class FeeSlider {
 
   public static final long MINIMUM_FEE_PER_KB = 1000;   // Slightly higher than the minimum relay fee (1000 sat per KB)  as per Bitcoin Core 0.9
   public static final long DEFAULT_FEE_PER_KB = 10000;  // 0.1 mBTC per KB - a long used fee structure which works as of spam attacks of July 2015
-  public static final long MAXIMUM_FEE_PER_KB = 50000;  // 0.5 mBTC per KB
+  public static final long MAXIMUM_FEE_PER_KB = 150000;  // 1.5 mBTC per KB
 
   public static final BigDecimal NUMBER_OF_SATOSHI_IN_A_BITCOIN = new BigDecimal(100000000);
   public static final int SCALE = 8;
