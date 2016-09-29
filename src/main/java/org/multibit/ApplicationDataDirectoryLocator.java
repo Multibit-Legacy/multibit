@@ -100,6 +100,11 @@ public class ApplicationDataDirectoryLocator {
                 if (!created) {
                     log.error("Could not create the application data directory of '" + applicationDataDirectory + "'");
                 }
+                // Set directory to be readable only by owner on opperating systems that support this.
+                boolean permissionsSet = directory.setReadable(false, false) && directory.setReadable(true, true);
+                if (!permissionsSet) {
+                    log.error("Could not set permissions on the the application data directory '" + applicationDataDirectory + "'");
+                }
             }
         }
 
