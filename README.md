@@ -1,3 +1,39 @@
+# Multibit is Deprecated - Do Not Use
+
+Wednesday, July 26, 2017
+
+Dear Bitcoin Community,
+
+It is time for us to let Multibit go. 
+
+KeepKey acquired Multibit a little over 1 year ago. At the time, the engineers who originally built and supported Multibit had announced that they would no longer be working on it or providing support. Multibit played an important role in the Bitcoin infrastructure. We felt that it was important for Multibit to continue and hoped that with our existing support and development teams, we would be able to keep Multibit alive.
+
+The reality is that Multibit is in need of a lot of work. It has stubborn bugs that have caused us and Multibit users much grief. Additionally, Bitcoin has gone through a fundamental change in regards to the way fees work. The addition of SegWit in the coming weeks will mean the Multibit software has fallen still further behind.
+
+Unfortunately, KeepKey simply does not have the resources to support the current issues, nor to rebuild Multibit to ensure ideal user experience. By focusing our attention on the KeepKey device, we will continue building and improving the best hardware wallet available.
+
+Thus, KeepKey will discontinue support and maintenance of Multibit, effective immediately.
+
+We recommend that all Multibit users discontinue using it and you move your keys to other wallet software of your choosing. 
+
+## Next Steps for Multibit Users 
+Videos that demonstrate how to move your wallet to Electrum are available on YouTube.
+
+- Multibit HD: https://youtu.be/E-KcY6KUVnY
+- Multibit Classic: https://youtu.be/LaijbTcxsv8
+
+Please note that the version of Electrum available for download today (version 2.8.3) doesn’t fully support the importing Multibit HD wallet words. The version shown in the Multibit HD video is the soon-to-be-released next version.
+
+Multibit was a fantastic piece of software in its time, and we want to thank the Multibit developers for such an important contribution to Bitcoin’s history.
+
+Sincerely,
+
+Ken Heutmaker
+
+CTO, KeepKey 
+
+------
+
 ### Introduction
 
 MultiBit is a Simplified Payment Verification (SPV) Bitcoin desktop client.
