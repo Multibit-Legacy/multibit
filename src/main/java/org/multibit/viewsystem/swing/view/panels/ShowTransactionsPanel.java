@@ -50,6 +50,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -58,6 +60,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
+
 
 public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
@@ -106,6 +110,16 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     private Action exportTransactionsSubmitAction;
     private MultiBitButton exportTransactionsButton;
     
+    private Action sendEmailAction;
+    private MultiBitButton sendEmailButton;
+    private MultiBitLabel transactionType;
+    private MultiBitLabel transactionPeriod;
+    private MultiBitLabel fromLabel;
+    private MultiBitLabel toLabel;
+    private JComboBox transactionT;
+    private MultiBitTextField fromDate;
+    private MultiBitTextField toDate;
+    
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 1000; // milliseconds
     
     private JScrollPane scrollPane;
@@ -136,10 +150,10 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
     private void initUI() {
         setLayout(new BorderLayout());
         JPanel buttonPanel = createButtonPanel();
-
+        JPanel filterPanel = createFilterPanel();
         JPanel transactionsPanel = createTransactionsPanel();
         add(transactionsPanel, BorderLayout.CENTER);
-        
+        add(filterPanel,BorderLayout.NORTH);
         buttonPanel.setMinimumSize(new Dimension(60, 60));
         add(buttonPanel, BorderLayout.SOUTH);
     }
@@ -150,6 +164,115 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         }
     }
 
+    public JPanel createFilterPanel(){
+        JPanel filterPanel = new JPanel();
+        filterPanel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        filterPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
+        filterPanel.setOpaque(true);
+        filterPanel.setBackground(ColorAndFontConstants.MID_BACKGROUND_COLOR);
+        filterPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
+        transactionType =  new MultiBitLabel("Transaction type: ");
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        filterPanel.add(transactionType, constraints);
+        
+        transactionT =  new JComboBox();
+        transactionT.addItem("Select type");
+        transactionT.addItem("Received");
+        transactionT.addItem("Sent");
+        transactionT.addItem("Both");
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        ItemListener itemListener = new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                int state = itemEvent.getStateChange();
+                RowFilter<TableModel, Object> rf = null;
+                try {
+                    if(!transactionT.getSelectedItem().equals("Both")){
+                        rf = RowFilter.regexFilter("(?i)" + transactionT.getSelectedItem(), 2);
+                    }
+                } catch (java.util.regex.PatternSyntaxException e) {
+                    return;
+                }
+                rowSorter.setRowFilter(rf);
+            }
+        };
+        transactionT.addItemListener(itemListener);
+        filterPanel.add(transactionT, constraints);
+        
+        transactionPeriod =  new MultiBitLabel("Period (dd/mm/yy)");
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        filterPanel.add(transactionPeriod, constraints);
+        
+        fromLabel =  new MultiBitLabel("From: ");
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        filterPanel.add(fromLabel, constraints);
+        
+        fromDate =  new MultiBitTextField("", 10, controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 4;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        filterPanel.add(fromDate, constraints);
+        
+        toLabel =  new MultiBitLabel("To: ");
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 5;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        filterPanel.add(toLabel, constraints);
+        
+        toDate =  new MultiBitTextField("", 10, controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 6;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        filterPanel.add(toDate, constraints);
+        
+        return filterPanel;
+    }
+    
     private JPanel createTransactionsPanel() {
         JPanel transactionsPanel = new JPanel();
         transactionsPanel.setMinimumSize(new Dimension(550, 160));
@@ -393,11 +516,11 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         buttonPanel.add(exportTransactionsButton, constraints);
-
+        
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 200;
         constraints.weighty = 1;
