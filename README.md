@@ -19,10 +19,8 @@ MultiDoge depends on a special fork of Dogecoinj for its Bitcoin support. This i
 and the MultiDoge team are working towards a complete integration. To build MultiDoge you will need to clone this fork from
 here:
 ```
-https://code.google.com/r/maxkeller90-dogecoinj-multibit/
+https://github.com/langerhans/dogecoinj-alice
 ```
-
-The branch you should use for the MultiDoge develop code is: `bcj-0.10.3-mb-alice`
 
 Once cloned, you should then install the custom Dogecoinj library using
 
