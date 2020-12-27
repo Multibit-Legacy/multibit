@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.multibit</groupId>
     <artifactId>multibit</artifactId>
-    <version>0.5.19</version>
+    <version>0.5.18</version>
     <name>MultiBit</name>
     <description>A Java Swing client for Bitcoin</description>
     <url>https://multibit.org</url>
@@ -253,10 +253,10 @@
                                             com.google.protobuf:protobuf-java:2.4.1:jar:null:compile:0c589509ec6fd86d5d2fda37e07c08538235d3b9
                                         </urn>
                                         <urn>
-                                            com.google.zxing:core:1.6:jar:null:compile:f6d1452ca591861d139c8d5b82a75444b7c2434a
+                                            com.google.zxing:core:1.7:jar:null:compile:f6d1452ca591861d139c8d5b82a75444b7c2434a
                                         </urn>
                                         <urn>
-                                            com.google.zxing:javase:1.6:jar:null:compile:a247611f2d7decb734c6eb796b02b902341312e3
+                                            com.google.zxing:javase:1.7:jar:null:compile:a247611f2d7decb734c6eb796b02b902341312e3
                                         </urn>
                                         <urn>
                                             com.lambdaworks:scrypt:1.3.2:jar:null:compile:b144d80b2b915a900730dd156ae749a88c0e2555
@@ -415,7 +415,7 @@
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
