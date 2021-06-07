@@ -402,7 +402,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.9</version>
+            <version>1.2.0</version>
             <scope>compile</scope>
         </dependency>
         <!-- spongycastle used by bitcoinj clones -->
